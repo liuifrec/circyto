@@ -4,8 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "circyto"
-version = "0.2.0"
-description = "circyto.py — CIRI-full wrapper for scRNA-seq circRNA quantification to Loom/H5AD."
+version = "0.3.0"
+description = "circyto.py — Run CIRI-full for plate scRNA-seq (manifest) and 10x (3'/5') to produce circ×cell, .loom/.h5ad."
 readme = "README.md"
 license = {text = "MIT"}
 authors = [{name="James Liu", email="example@example.com"}]
