@@ -1,4 +1,10 @@
-# circyto.py
+<p align="center">
+  <img src="assets/circCyto_logo.png" alt="circCyto logo" width="500">
+</p>
+
+# circCyto
+*A CIRI-full based pipeline for single-cell circRNA quantification*
+
 
 A CLI to run **CIRI-full** on:
 - **Plate/full-length** scRNA-seq (Smart-seq/2, RamDA-seq, Quartz-seq, SUPeR-seq, Tang) via a **manifest** of per-cell FASTQs.
