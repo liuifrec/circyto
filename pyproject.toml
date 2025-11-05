@@ -23,3 +23,12 @@ dependencies = [
 
 [project.scripts]
 circyto = "circyto.cli.circyto:app"
+[project.optional-dependencies]
+detectors = [
+  "CIRCexplorer2",
+  "biopython",
+  "pysam",
+  "requests",
+  "numpy",
+  "pandas"
+]
