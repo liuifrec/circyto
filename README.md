@@ -1,3 +1,5 @@
+![CI](https://github.com/liuifrec/circyto/actions/workflows/test.yml/badge.svg)
+
 <p align="center">
   <img src="assets/circCyto_logo.png" alt="circCyto logo" width="500">
 </p>
