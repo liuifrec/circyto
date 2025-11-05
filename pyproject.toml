@@ -1,13 +1,13 @@
 [build-system]
-requires = ["setuptools>=61.0"]
+requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [project]
 name = "circyto"
 version = "0.3.0"
-description = "circyto.py — Run CIRI-full for plate scRNA-seq (manifest) and 10x (3'/5') to produce circ×cell, .loom/.h5ad."
+description = "circyto.py — CIRI-full wrapper for plate scRNA-seq (manifest) and 10x (3'/5') to produce circ×cell matrices and Loom/H5AD"
 readme = "README.md"
-license = {text = "MIT"}
+license = "MIT"  # ← use SPDX-like string, fixes warning
 authors = [{name="James Liu", email="example@example.com"}]
 dependencies = [
   "typer>=0.12.0",
@@ -23,6 +23,7 @@ dependencies = [
 
 [project.scripts]
 circyto = "circyto.cli.circyto:app"
+
 [project.optional-dependencies]
 detectors = [
   "CIRCexplorer2",
@@ -32,3 +33,9 @@ detectors = [
   "numpy",
   "pandas"
 ]
+
+# >>> Tell setuptools to ONLY package the 'circyto' package
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["circyto*"]
+exclude = ["tests*", "assets*", "paper*", "docs*", "examples*", ".*"]
