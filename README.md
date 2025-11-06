@@ -4,9 +4,14 @@
   <img src="assets/circCyto_logo.png" alt="circCyto logo" width="500">
 </p>
 
-# circCyto
-*A CIRI-full based pipeline for single-cell circRNA quantification*
+# circyto
 
+![GitHub release (latest by date)](https://img.shields.io/github/v/release/liuifrec/circyto)
+![CI](https://github.com/liuifrec/circyto/actions/workflows/ci.yml/badge.svg)
+
+A Python CLI toolkit for single-cell circRNA detection, merging, and conversion.
+Supports modular detectors (CIRI-full, CIRI-long, find_circ, CIRCexplorer2) and
+outputs sparse matrices for downstream analysis (Scanpy, scVelo, etc.).
 
 A CLI to run **CIRI-full** on:
 - **Plate/full-length** scRNA-seq (Smart-seq/2, RamDA-seq, Quartz-seq, SUPeR-seq, Tang) via a **manifest** of per-cell FASTQs.
