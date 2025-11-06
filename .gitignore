@@ -1,0 +1,40 @@
+# Python cache & build artifacts
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+.eggs/
+.cache/
+*.log
+*.tmp
+*.bak
+
+# Virtual envs
+.venv/
+venv/
+env/
+.mamba/
+.conda/
+*.env
+
+# Jupyter / VSCode / PyCharm / Codespaces
+.ipynb_checkpoints/
+.vscode/
+.idea/
+.python-version
+*.code-workspace
+
+# OS noise
+.DS_Store
+Thumbs.db
+
+# circyto runtime artifacts
+tests/out_*/
+tests/*.mtx
+tests/*.loom
+tests/*.txt
+tests/*.tsv
+tests/fastq_batches/
+CIRI-*/    # local binaries
+logs/
