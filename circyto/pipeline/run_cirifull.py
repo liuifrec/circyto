@@ -7,10 +7,12 @@ import pandas as pd
 console = Console()
 
 def _run_cmd(cmd: str):
+    pass
 console.print(cmd)
 subprocess.run(cmd, shell=True, check=False)
 
 def _run_one_batch(batch_dir: Path, outdir: Path, template: str, ref_fa: Path, gtf: Path):
+    pass
 outdir.mkdir(parents=True, exist_ok=True)
 r1 = batch_dir / "R1.fastq.gz"
 r2 = batch_dir / "R2.fastq.gz"
@@ -37,6 +39,7 @@ json.dump({"batches": [str(x) for x in results]}, f, indent=2)
 console.print(f"[green]Done[/green]: outputs in {outdir}")
 
 def _cell_row_to_cmd(row, outdir: Path, template: str, ref_fa: Path, gtf: Path):
+    pass
 cell_id = str(row["cell_id"])
 r1 = str(row["r1"])
 r2 = str(row.get("r2", "") or "")
