@@ -1,0 +1,76 @@
+Metadata-Version: 2.4
+Name: circyto
+Version: 0.3.0
+Summary: circyto.py — CIRI-full wrapper for plate scRNA-seq (manifest) and 10x (3'/5') to produce circ×cell matrices and Loom/H5AD
+Author-email: James Liu <example@example.com>
+License-Expression: MIT
+Description-Content-Type: text/markdown
+Requires-Dist: typer>=0.12.0
+Requires-Dist: rich>=13.0.0
+Requires-Dist: pysam>=0.22.0
+Requires-Dist: pandas>=2.0.0
+Requires-Dist: numpy>=1.24.0
+Requires-Dist: scipy>=1.10.0
+Requires-Dist: loompy>=3.0.7
+Requires-Dist: anndata>=0.10.5
+Requires-Dist: joblib>=1.3.0
+Provides-Extra: detectors
+Requires-Dist: CIRCexplorer2; extra == "detectors"
+Requires-Dist: biopython; extra == "detectors"
+Requires-Dist: pysam; extra == "detectors"
+Requires-Dist: requests; extra == "detectors"
+Requires-Dist: numpy; extra == "detectors"
+Requires-Dist: pandas; extra == "detectors"
+
+![CI](https://github.com/liuifrec/circyto/actions/workflows/test.yml/badge.svg)
+
+<p align="center">
+  <img src="assets/circCyto_logo.png" alt="circCyto logo" width="500">
+</p>
+
+# circCyto
+*A CIRI-full based pipeline for single-cell circRNA quantification*
+
+
+A CLI to run **CIRI-full** on:
+- **Plate/full-length** scRNA-seq (Smart-seq/2, RamDA-seq, Quartz-seq, SUPeR-seq, Tang) via a **manifest** of per-cell FASTQs.
+- **10x Genomics** 3' and 5' chemistries from a **BAM** (experimental; best fidelity comes from manifest).
+
+## Commands
+- `circyto prepare` — 10x BAM → batched FASTQs (`--chemistry tenx-3p|tenx-5p`)
+- `circyto run` — run CIRI-full on batches from `prepare`
+- `circyto run-manifest` — run CIRI-full per-cell via a manifest TSV (recommended for plate data)
+- `circyto collect` — build circ×cell matrix from outputs (auto plate/batch mode)
+- `circyto convert` — write .loom / .h5ad
+- `circyto make` — all-in-one; accepts either `--bam` (10x) or `--manifest` (plate)
+
+## Manifest format (plate/full-length)
+TSV with headers:
+
+cell_id r1 r2
+A01 /data/A01_R1.fastq.gz /data/A01_R2.fastq.gz
+A02 /data/A02_R1.fastq.gz /data/A02_R2.fastq.gz
+
+For single-end protocols, omit `r2` or leave it blank.
+
+## Examples
+Plate:
+```bash
+circyto make \
+  --manifest cells.tsv \
+  --ref-fa ref.fa --gtf genes.gtf \
+  --outdir work --threads 32 \
+  --cmd-template "CIRI-full -r {ref_fa} -a {gtf} -1 {r1} -2 {r2} -o {out_tsv}"
+
+
+10x 5':
+
+circyto make \
+  --bam possorted_genome_bam.bam \
+  --chemistry tenx-5p \
+  --ref-fa ref.fa --gtf genes.gtf \
+  --outdir work --threads 16 \
+  --cmd-template 'CIRI-full -r {ref_fa} -a {gtf} -1 {r1} -2 {r2} -o {out_tsv}'
+
+
+Note: For 10x BAM, R1/R2 reconstruction is heuristic. For best results, use plate/manifest mode (true per-cell FASTQs).
