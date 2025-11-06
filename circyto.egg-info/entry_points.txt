@@ -1,0 +1,2 @@
+[console_scripts]
+circyto = circyto.cli.circyto:app
