@@ -7,7 +7,8 @@
 # circyto
 
 ![GitHub release (latest by date)](https://img.shields.io/github/v/release/liuifrec/circyto)
-![CI](https://github.com/liuifrec/circyto/actions/workflows/ci.yml/badge.svg)
+[![CI](https://github.com/liuifrec/circyto/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/liuifrec/circyto/actions/workflows/test.yml)
+
 
 A Python CLI toolkit for single-cell circRNA detection, merging, and conversion.
 Supports modular detectors (CIRI-full, CIRI-long, find_circ, CIRCexplorer2) and
