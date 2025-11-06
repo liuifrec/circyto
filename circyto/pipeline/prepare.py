@@ -7,6 +7,7 @@ from collections import defaultdict
 console = Console()
 
 def _read_whitelist(path: Optional[Path]):
+    pass
 if path is None:
 return None
 op = gzip.open if str(path).endswith(".gz") else open
