@@ -4,7 +4,11 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "circyto"
+<<<<<<< HEAD
+version = "0.3.2"
+=======
 version = "0.3.0"
+>>>>>>> origin/main
 description = "circyto.py — CIRI-full wrapper for plate scRNA-seq (manifest) and 10x (3'/5') to produce circ×cell matrices and Loom/H5AD"
 readme = "README.md"
 license = "MIT"  # ← use SPDX-like string, fixes warning
