@@ -38,6 +38,7 @@ tests/*.tsv
 tests/fastq_batches/
 CIRI-*/    # local binaries
 logs/
+<<<<<<< HEAD
 # data & refs (keep these local only)
 data/
 fastq/
@@ -53,3 +54,5 @@ work_*/
 *.h5ad
 *.tar
 *.tgz
+=======
+>>>>>>> origin/main

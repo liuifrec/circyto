@@ -135,4 +135,8 @@ Liu, Y.-C. *et al.* **circCyto** — a modular toolkit for single-cell circRNA p
 
 ## 📜 License
 
+<<<<<<< HEAD
 MIT License © 2025 **Yusei (James) Liu**
+=======
+MIT License © 2025 **Yu-Chen (James) Liu**
+>>>>>>> origin/main
