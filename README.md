@@ -14,9 +14,6 @@
   </a>
 </p>
 
-[![CI](https://github.com/liuifrec/circyto/actions/workflows/test.yml/badge.svg?branch=main)](https://github.com/liuifrec/circyto/actions/workflows/test.yml)
-[![release](https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag)](https://github.com/liuifrec/circyto/releases)
-
 <p align="center">
   <img src="assets/circCyto_logo.png" alt="circyto logo" width="420">
 </p>
