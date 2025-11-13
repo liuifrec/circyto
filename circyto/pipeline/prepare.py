@@ -4,6 +4,7 @@ from typing import Optional
 
 __all__ = ["extract_per_cell_fastq"]
 
+
 def _write_minimal_fastq(path: Path) -> None:
     """
     Write a tiny FASTQ payload. We don't actually compress in CI;
@@ -12,6 +13,7 @@ def _write_minimal_fastq(path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with open(path, "w", encoding="utf-8") as f:
         f.write("@r\nACGT\n+\n####\n")
+
 
 def extract_per_cell_fastq(
     bam: Path,

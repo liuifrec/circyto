@@ -1,4 +1,0 @@
-#!/usr/bin/env bash
-# Simple wrapper to invoke CIRI-full.pl in this directory
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-exec perl "$DIR/CIRI-full.pl" "$@"
