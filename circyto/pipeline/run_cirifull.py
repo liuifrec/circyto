@@ -1,8 +1,3 @@
-# add near imports
-import os
-TOOLS = os.path.join(os.path.dirname(os.path.dirname(__file__)), "..", "tools")
-os.environ["PATH"] = TOOLS + os.pathsep + os.environ.get("PATH", "")
-
 from __future__ import annotations
 
 import csv

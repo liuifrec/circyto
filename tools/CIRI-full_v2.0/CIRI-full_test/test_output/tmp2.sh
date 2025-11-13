@@ -1,0 +1,2 @@
+#!/bin/sh
+bwa mem -T 19 /user/ifrec/liuyuchen/CIRI/CIRI-full_v2.0/CIRI-full_test/test_ref.fa /user/ifrec/liuyuchen/CIRI/CIRI-full_v2.0/CIRI-full_test/test_output//CIRI-full_output/testunset_ro1.fq > /user/ifrec/liuyuchen/CIRI/CIRI-full_v2.0/CIRI-full_test/test_output//sam/testunset_ro.sam
