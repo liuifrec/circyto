@@ -1,4 +1,34 @@
 # 🧬 Changelog
+# Changelog
+
+## [0.4.0] - 2025-11-13 (unreleased)
+### Added
+- **CIRI-full integration**:
+  - Support for running CIRI-full v2.x via `circyto run-manifest` with a manifest of paired-end Smart-seq2 FASTQs.
+  - New `tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh` adapter that:
+    - Handles gzipped FASTQs
+    - Runs CIRI-full in Pipeline mode
+    - Detects CIRI_output / CIRI-full_output files automatically
+    - Normalizes outputs to a simple TSV schema: `circ_id, chr, start, end, strand, support`
+  - End-to-end validation on a 16-cell chr21 Smart-seq2 subset (E-MTAB-6072) producing a 12 × 16 sparse matrix with 13 non-zero entries.
+
+- **Integration test**:
+  - `tests/test_cirifull_chr21_integration.py`: runs `run-manifest` on a 2-cell chr21 subset and `collect` to ensure:
+    - Non-empty matrix (nnz > 0)
+    - Number of matrix columns matches the manifest cell count.
+
+### Changed
+- Improved error messages and logging in the CIRI-full adapter, including:
+  - Sanity checks for `bwa` and `samtools`
+  - Reference index presence checks
+  - Run directory and recursive file listings for debugging.
+
+### TODO / Planned (0.4.x)
+- Change MatrixMarket header from `symmetric` → `general` for all `collect` outputs.
+- Add `circyto export-h5ad` command to export circRNA × cell matrices as `.h5ad` for direct use with Scanpy.
+- Normalize circRNA IDs to a consistent internal format: `chr:start|end|strand`.
+- Add initial support and documentation for additional detectors (CIRI-long, CIRCexplorer2, find_circ).
+
 ## [v0.3.2] — 2025-11-07
 **Fixes and Robustness**
 - 🧩 Fixed `to_loom()` to safely handle all empty-matrix shapes (`0×0`, `0×N`, `N×0`) and produce valid `.empty.tsv` outputs instead of raising Pandas errors.
