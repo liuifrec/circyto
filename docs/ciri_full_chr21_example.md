@@ -132,7 +132,6 @@ pytest tests/test_cirifull_chr21_integration.py -vv
 This test protects the CIRI-full integration against future refactoring.
 
 ## Notes / TODO
-
-- MatrixMarket header is currently `symmetric`; this should be changed to `general` in a future release.
+- MatrixMarket header uses `general`, so the matrix can be read directly with `scipy.io.mmread` and Scanpy.
 - circRNA IDs will be normalized to a consistent format such as `chr:start|end|strand`.
 - A dedicated `circyto export-h5ad` command is planned for direct AnnData export.
