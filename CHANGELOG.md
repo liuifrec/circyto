@@ -22,9 +22,10 @@
   - Sanity checks for `bwa` and `samtools`
   - Reference index presence checks
   - Run directory and recursive file listings for debugging.
+- MatrixMarket header uses `general` for `collect` outputs (compatible with Scanpy / scipy.io.mmread).
 
 ### TODO / Planned (0.4.x)
-- Change MatrixMarket header from `symmetric` → `general` for all `collect` outputs.
+
 - Add `circyto export-h5ad` command to export circRNA × cell matrices as `.h5ad` for direct use with Scanpy.
 - Normalize circRNA IDs to a consistent internal format: `chr:start|end|strand`.
 - Add initial support and documentation for additional detectors (CIRI-long, CIRCexplorer2, find_circ).
