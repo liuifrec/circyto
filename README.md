@@ -1,17 +1,25 @@
 # circCyto
 <p align="center">
-  <a href="https://github.com/liuifrec/circyto/actions/workflows/test.yml">
-    <img src="https://github.com/liuifrec/circyto/actions/workflows/test.yml/badge.svg?branch=main" alt="CI status">
+  <a href="https://github.com/liuifrec/circyto/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?branch=main&label=CI&style=flat-square" />
   </a>
+
   <a href="https://github.com/liuifrec/circyto/releases">
-    <img src="https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag" alt="Latest release">
+    <img src="https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag&sort=semver&style=flat-square" />
   </a>
+
   <a href="https://github.com/liuifrec/circyto/issues">
-    <img src="https://img.shields.io/github/issues/liuifrec/circyto" alt="Issues">
+    <img src="https://img.shields.io/github/issues/liuifrec/circyto?style=flat-square" />
   </a>
+
   <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/liuifrec/circyto" alt="License">
+    <img src="https://img.shields.io/github/license/liuifrec/circyto?style=flat-square" />
   </a>
+
+  <img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue?style=flat-square" />
+
+  <!-- PyPI placeholder for future v1.0.0 -->
+  <img src="https://img.shields.io/badge/PyPI-coming_soon-lightgrey?style=flat-square" />
 </p>
 
 <p align="center">
