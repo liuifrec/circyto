@@ -68,3 +68,16 @@ import scanpy as sc
 adata = sc.read_mtx("circ.mtx").T
 adata.obs_names = open("cell_ids.txt").read().split()
 adata.var_names = open("circ_ids.txt").read().split()
+
+## Multimodal export (mRNA + circRNA)
+
+If you have a standard Scanpy `.h5ad` with gene expression, and a circRNA × cell
+matrix built by `circyto collect`, you can combine them:
+
+```bash
+circyto export-multimodal \
+  --genes-h5ad genes.h5ad \
+  --circ-matrix work_smartseq2/circ_chr21_all.mtx \
+  --circ-index work_smartseq2/circ_chr21_all_ids.txt \
+  --cell-index work_smartseq2/cell_chr21_all_ids.txt \
+  --out multimodal_circ_genes.h5ad
