@@ -7,6 +7,10 @@ from ..pipeline.prepare import extract_per_cell_fastq
 from ..pipeline.run_cirifull import run_cirifull_over_fastqs, run_cirifull_with_manifest
 from ..pipeline.collect import collect_matrix
 from ..writers.convert import convert_matrix_files
+from ..pipeline.export_multimodal import export_multimodal as _export_multimodal
+from ..pipeline.annotate_host_gene import annotate_host_genes
+
+
 
 app = typer.Typer(
     add_completion=False,
@@ -135,3 +139,60 @@ def make(
     cell_idx = outdir / "cell_index.txt"
     collect_matrix(outdir / "cirifull_out", mat, circ_idx, cell_idx, 1)
     convert_matrix_files(mat, circ_idx, cell_idx, h5ad=outdir / "circ.h5ad")
+@app.command("export-multimodal")
+def export_multimodal_cmd(
+    genes_h5ad: Path = typer.Option(..., exists=True, help="Base gene expression .h5ad"),
+    circ_matrix: Path = typer.Option(..., exists=True, help="circRNA MatrixMarket .mtx"),
+    circ_index: Path = typer.Option(..., exists=True, help="circRNA index (rows)"),
+    cell_index: Path = typer.Option(..., exists=True, help="Cell index (columns)"),
+    out: Path = typer.Option(..., help="Output multimodal .h5ad"),
+    circ_feature_table: Optional[Path] = typer.Option(
+        None,
+        help="Optional circ_feature_table.tsv with host gene annotations",
+    ),
+):
+    """
+    Attach circRNA counts as a separate modality (obsm['X_circ']) to an existing
+    gene-expression AnnData. If a feature table is provided, include circRNA
+    annotations and host-gene mapping.
+    """
+    _export_multimodal(
+        genes_h5ad=genes_h5ad,
+        circ_matrix=circ_matrix,
+        circ_index=circ_index,
+        cell_index=cell_index,
+        out=out,
+        circ_feature_table=circ_feature_table,
+    )
+
+@app.command("annotate-host-genes")
+def annotate_host_genes_cmd(
+    circ_feature_table: Path = typer.Option(
+        ..., exists=True, help="circ_feature_table.tsv from circyto collect"
+    ),
+    gtf: Path = typer.Option(..., exists=True, help="Reference GTF used for circ calling"),
+    out: Optional[Path] = typer.Option(
+        None,
+        help="Output feature table (TSV). If omitted, overwrites circ_feature_table.tsv",
+    ),
+    max_genes_per_circ: int = typer.Option(
+        5, help="Maximum number of host genes to record per circRNA"
+    ),
+):
+    """
+    Annotate circRNAs with host gene(s) using a reference GTF.
+
+    Adds columns:
+      - host_gene
+      - host_gene_id
+      - host_genes_multi
+      - host_gene_ids_multi
+      - host_gene_n
+    """
+    annotate_host_genes(
+        circ_feature_table=circ_feature_table,
+        gtf_path=gtf,
+        out=out,
+        max_genes_per_circ=max_genes_per_circ,
+    )
+
