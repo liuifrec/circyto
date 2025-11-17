@@ -195,4 +195,80 @@ def annotate_host_genes_cmd(
         out=out,
         max_genes_per_circ=max_genes_per_circ,
     )
+@ app.command()
+def run_detector(
+    detector: str = typer.Argument(..., help="Detector name (e.g., ciri-full)"),
+    manifest: Path = typer.Option(..., help="Manifest TSV"),
+    outdir: Path = typer.Option(..., help="Output directory"),
+    ref_fa: Optional[Path] = typer.Option(None, help="Reference (FA)"),
+    gtf: Optional[Path] = typer.Option(None, help="Annotation (GTF/GFF)"),
+    threads: int = typer.Option(8),
+    parallel: int = typer.Option(4),
+):
+    """
+    Run a single circRNA detector over a manifest of FASTQs.
+    """
+    from circyto.detectors import available_detectors
+    from circyto.pipeline.run_detector import run_detector_manifest
 
+    engines = available_detectors()
+    if detector not in engines:
+        raise typer.Exit(f"Detector {detector} not available. Available: {list(engines)}")
+
+    det = engines[detector]
+    print(f"[circyto] Running detector '{det.name}' (version={det.version()})")
+
+    results = run_detector_manifest(
+        detector=det,
+        manifest=manifest,
+        outdir=outdir,
+        ref_fa=ref_fa,
+        gtf=gtf,
+        threads=threads,
+        parallel=parallel,
+    )
+
+    print(f"[circyto] Completed {len(results)} jobs.")
+
+import typer
+from pathlib import Path
+# ... existing imports ...
+
+from circyto.compare import compare_detectors_from_root  # add this with other imports
+
+
+# ... existing @app.command() functions ...
+
+
+@app.command()
+def compare_detectors(
+    root_dir: Path = typer.Option(..., help="Root directory containing per-detector subdirectories"),
+    detectors: str = typer.Option(..., help="Comma-separated detector names (subdir names under root_dir)"),
+    outdir: Path = typer.Option(..., help="Output directory for comparison results"),
+):
+    """
+    Compare multiple detectors by their circRNA calls.
+
+    Expects a layout like:
+
+      root_dir/
+        ciri-full/
+          cell1.tsv
+          cell2.tsv
+        ciri-long/
+          cell1.tsv
+          cell2.tsv
+
+    and will write circ × detector presence matrix, union/intersection lists,
+    and a summary JSON into `outdir`.
+    """
+    det_list = [d.strip() for d in detectors.split(",") if d.strip()]
+    if not det_list:
+        raise typer.Exit("No detectors specified.")
+
+    print(f"[circyto] Comparing detectors: {det_list}")
+    summary = compare_detectors_from_root(root_dir, det_list, outdir)
+    print("[circyto] Comparison complete.")
+    print(f"[circyto] Detectors: {summary.get('n_detectors', 0)}")
+    print(f"[circyto] Union circRNAs: {summary.get('union_size', 0)}")
+    print(f"[circyto] Intersection circRNAs: {summary.get('intersection_size', 0)}")
