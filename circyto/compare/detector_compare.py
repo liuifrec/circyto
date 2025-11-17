@@ -18,7 +18,14 @@ def _ensure_dir(path: Path) -> None:
 def _load_circ_ids_from_tsv(tsv_path: Path) -> Set[str]:
     """
     Load circRNA IDs from a detector TSV.
-    We prefer a 'circ_id' column, but if missing, we fall back to the first column.
+
+    Priority for ID extraction:
+      1) A column named like 'circ_id', 'CIRC_ID', 'circ', 'circRNA_id', 'id'
+      2) If no circ-like column but coord-style columns exist (chr/chrom, start, end, optional strand),
+         synthesize: {chrom}:{start}|{end}|{strand or '.'}
+      3) Fallback to the first column.
+
+    Whitespace is stripped; empty / 'NA' values are skipped.
     """
     circs: Set[str] = set()
     with tsv_path.open() as f:
@@ -27,18 +34,72 @@ def _load_circ_ids_from_tsv(tsv_path: Path) -> Set[str]:
         if not fieldnames:
             return circs
 
-        if "circ_id" in fieldnames:
-            key = "circ_id"
-        else:
-            # fall back to first column
-            key = fieldnames[0]
+        # 1) Try circ-like columns
+        lower_map = {c.lower(): c for c in fieldnames}
+        circ_like_candidates = [
+            "circ_id",
+            "circular_rna_id",
+            "circrna_id",
+            "circ",
+            "id",
+        ]
+        circ_col: Optional[str] = None
+        for key in circ_like_candidates:
+            if key in lower_map:
+                circ_col = lower_map[key]
+                break
+
+        # 2) If no circ-like column, try coordinate-style columns
+        coord_mode = False
+        chrom_col = None
+        start_col = None
+        end_col = None
+        strand_col = None
+        if circ_col is None:
+            for name in fieldnames:
+                ln = name.lower()
+                if ln in {"chr", "chrom", "chromosome"}:
+                    chrom_col = name
+                elif ln == "start":
+                    start_col = name
+                elif ln == "end":
+                    end_col = name
+                elif ln in {"strand", "direction"}:
+                    strand_col = name
+            if chrom_col and start_col and end_col:
+                coord_mode = True
+
+        # 3) If neither circ_col nor coord_mode, fallback to first column
+        fallback_col = fieldnames[0]
 
         for row in rd:
-            cid = row.get(key)
-            if cid:
-                circs.add(str(cid))
-    return circs
+            val: Optional[str] = None
 
+            if circ_col is not None:
+                raw = row.get(circ_col)
+                val = str(raw).strip() if raw is not None else None
+
+            elif coord_mode:
+                chrom = row.get(chrom_col, "").strip()
+                start = row.get(start_col, "").strip()
+                end = row.get(end_col, "").strip()
+                strand = row.get(strand_col, "").strip() if strand_col else ""
+                if chrom and start and end:
+                    strand_clean = strand if strand in {"+", "-", "."} else "."
+                    val = f"{chrom}:{start}|{end}|{strand_clean}"
+
+            else:
+                raw = row.get(fallback_col)
+                val = str(raw).strip() if raw is not None else None
+
+            if not val:
+                continue
+            if val.upper() == "NA":
+                continue
+
+            circs.add(val)
+
+    return circs
 
 def _collect_circ_sets(
     root_dir: Path,

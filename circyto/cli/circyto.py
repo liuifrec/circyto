@@ -9,6 +9,9 @@ from ..pipeline.collect import collect_matrix
 from ..writers.convert import convert_matrix_files
 from ..pipeline.export_multimodal import export_multimodal as _export_multimodal
 from ..pipeline.annotate_host_gene import annotate_host_genes
+from circyto.detectors import available_detectors
+from circyto.pipeline.run_detector import run_detector_manifest, run_multidetector
+from circyto.compare import compare_detectors_from_root  # already added earlier
 
 
 
@@ -205,11 +208,7 @@ def run_detector(
     threads: int = typer.Option(8),
     parallel: int = typer.Option(4),
 ):
-    """
-    Run a single circRNA detector over a manifest of FASTQs.
-    """
-    from circyto.detectors import available_detectors
-    from circyto.pipeline.run_detector import run_detector_manifest
+
 
     engines = available_detectors()
     if detector not in engines:
@@ -230,11 +229,8 @@ def run_detector(
 
     print(f"[circyto] Completed {len(results)} jobs.")
 
-import typer
-from pathlib import Path
-# ... existing imports ...
 
-from circyto.compare import compare_detectors_from_root  # add this with other imports
+
 
 
 # ... existing @app.command() functions ...
@@ -272,3 +268,44 @@ def compare_detectors(
     print(f"[circyto] Detectors: {summary.get('n_detectors', 0)}")
     print(f"[circyto] Union circRNAs: {summary.get('union_size', 0)}")
     print(f"[circyto] Intersection circRNAs: {summary.get('intersection_size', 0)}")
+@app.command()
+def run_multidetector_cli(
+    detectors: str = typer.Option(..., help="Comma-separated detector names (e.g. 'ciri-full,ciri-long')"),
+    manifest: Path = typer.Option(..., help="Manifest TSV with cell_id, r1, r2"),
+    root_outdir: Path = typer.Option(..., help="Root output directory (per-detector subdirs will be created)"),
+    ref_fa: Path = typer.Option(..., help="Reference FASTA"),
+    gtf: Path = typer.Option(..., help="Annotation GTF/GFF"),
+    threads: int = typer.Option(8, help="Threads per detector"),
+    parallel: int = typer.Option(4, help="Parallel jobs per detector"),
+):
+    """
+    Run multiple detectors over the same manifest.
+
+    Output layout:
+
+      root_outdir/
+        <detector_name>/
+          <cell>.tsv
+    """
+    det_list = [d.strip() for d in detectors.split(",") if d.strip()]
+    if not det_list:
+        raise typer.Exit("No detectors specified.")
+
+    engines_all = available_detectors()
+    missing = [d for d in det_list if d not in engines_all]
+    if missing:
+        raise typer.Exit(f"Detectors not available: {missing}. Available: {list(engines_all)}")
+
+    engines = {d: engines_all[d] for d in det_list}
+
+    print(f"[circyto] Running multi-detector pipeline: {det_list}")
+    run_multidetector(
+        detectors=engines,
+        manifest=manifest,
+        root_outdir=root_outdir,
+        ref_fa=ref_fa,
+        gtf=gtf,
+        threads=threads,
+        parallel=parallel,
+    )
+    print("[circyto] Multi-detector run complete.")

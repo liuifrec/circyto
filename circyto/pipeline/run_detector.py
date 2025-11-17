@@ -69,3 +69,43 @@ def run_detector_manifest(
             results.append(fut.result())
 
     return results
+
+def run_multidetector(
+    detectors: Dict[str, DetectorBase],
+    manifest: Path,
+    root_outdir: Path,
+    ref_fa: Optional[Path],
+    gtf: Optional[Path],
+    threads: int = 8,
+    parallel: int = 4,
+) -> Dict[str, List[DetectorResult]]:
+    """
+    Run multiple detectors over the same manifest.
+
+    Layout:
+
+      root_outdir/
+        <detector_name>/
+          <cell>.tsv
+
+    Returns a dict: detector_name -> list[DetectorResult]
+    """
+    ensure_dir(root_outdir)
+
+    results: Dict[str, List[DetectorResult]] = {}
+
+    for name, det in detectors.items():
+        det_out = root_outdir / name
+        print(f"[circyto] Running detector {name} into {det_out}")
+        res = run_detector_manifest(
+            detector=det,
+            manifest=manifest,
+            outdir=det_out,
+            ref_fa=ref_fa,
+            gtf=gtf,
+            threads=threads,
+            parallel=parallel,
+        )
+        results[name] = res
+
+    return results
