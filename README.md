@@ -135,6 +135,68 @@ circyto now exposes a small detector API:
 See `docs/getting_started.md#detectors` for details and current limitations
 (e.g. some low-support cells can still be filtered out by CIRI even under `-0`).
 
+## 🔀 Multi-Detector Workflow (v0.6.0+)
+
+circyto now supports running multiple circRNA detectors in one unified command.
+
+This enables:
+- cross-detector benchmarking
+- agreement/union analysis
+- downstream consensus circRNA calling
+- comparing sensitivity in single-cell data
+
+### Run multiple detectors on the same manifest
+
+```bash
+circyto run-multidetector ciri-full ciri2 \
+  --manifest manifest.tsv \
+  --outdir work/multi \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 8 --parallel 1
+Output layout
+work/multi/
+  ├── ciri-full/
+  │     ├── <cell>.tsv
+  │     └── <run dirs + logs>
+  ├── ciri2/
+  │     ├── <cell>.tsv
+  │     └── <run dirs + logs>
+  └── summary.json
+
+
+Example summary.json:
+
+{
+  "ciri-full": {
+    "n_cells": 2,
+    "detector": "ciri-full",
+    "outdir": "work/multi/ciri-full"
+  },
+  "ciri2": {
+    "n_cells": 2,
+    "detector": "ciri2",
+    "outdir": "work/multi/ciri2"
+  }
+}
+
+Available detectors (v0.6.0)
+CLI name	Backend	Notes
+ciri-full	CIRI-full	Stable, complete output
+ciri2	CIRI2.pl	Experimental; strict filter
+Next step: multi-detector matrix merging (v0.7.0)
+
+The next release will add:
+
+TSV merging
+
+per-detector support comparison
+
+union/intersection circRNA matrices
+
+metadata tables for benchmarking
+
+Stay tuned!
 
 ## 📖 Citation
 
