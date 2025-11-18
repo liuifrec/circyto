@@ -93,8 +93,39 @@ pip install -e .[detectors]
 | `circyto convert` | Convert `.mtx` + index files to `.loom` or `.h5ad` |
 | `circyto make` | All-in-one pipeline (detects manifest or BAM input) |
 
----
 ### Detector engines (v0.6.0)
+
+circyto uses a small pluggable detector API under the hood.  
+Current engines:
+
+- **ciri-full** – Java **CIRI-full Pipeline** wrapper driven via `ciri_full_adapter.sh`.
+  - Takes paired-end FASTQ, reference `FA`, and `GTF`.
+  - Produces one normalized TSV per cell, plus the usual CIRI-full run directory.
+- **ciri2** *(experimental)* – standalone **CIRI2.pl** wrapper.
+  - Uses the same manifest layout (R1/R2 FASTQ, cell ID) and writes per-cell TSVs.
+  - Configured with relaxed stringency (`-0` / `--no_strigency`) by default to better suit sparse scRNA-seq data.
+
+Example single-detector run on a small Smart-seq2 chr21 subset:
+
+```bash
+circyto run-detector ciri-full \
+  --manifest manifest.tsv \
+  --outdir work/ciri_full_chr21 \
+  --ref-fa ref/chr21.fa \
+  --gtf ref/chr21.gtf \
+  --threads 8 \
+  --parallel 4
+and for CIRI2:
+
+bash
+Copy code
+circyto run-detector ciri2 \
+  --manifest manifest.tsv \
+  --outdir work/ciri2_chr21 \
+  --ref-fa ref/chr21.fa \
+  --gtf ref/chr21.gtf \
+  --threads 8 \
+  --parallel 4
 
 circyto now exposes a small detector API:
 
