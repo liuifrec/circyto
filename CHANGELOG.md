@@ -1,5 +1,63 @@
 # 🧬 Changelog
 # Changelog
+## v0.6.0 — Multi-detector engine & CIRI2 integration (2025-11-18)
+
+This release introduces the first major extension beyond single-detector workflows, adding a unified detector API, experimental CIRI2 support, and a fully functional multi-detector orchestration CLI.
+
+### ✨ New Features
+
+#### 1. Detector Engine API
+- Added `DetectorBase`, `DetectorRunInputs`, and `DetectorResult`.
+- Standardized normalized TSV output format:  
+  `circ_id, chr, start, end, strand, support`.
+
+#### 2. CIRI-full Engine
+- Rewritten `CiriFullDetector` with:
+  - Clean adapter scripting
+  - Automatic output discovery
+  - Robust logging + sanity checks
+  - Normalization into the standard TSV format
+
+#### 3. Experimental CIRI2 Support
+- Added `circyto/detectors/ciri2.py`
+- Wrapper for `CIRI2.pl`
+- Supports low-stringency mode (`-w`)
+- Automatically normalizes output
+
+> Note: CIRI2 remains strict for single-cell RNA-seq and may produce sparse results.
+
+#### 4. New CLI: `run-multidetector`
+Run multiple detectors on the same manifest:
+
+```bash
+circyto run-multidetector ciri-full ciri2 \
+  --manifest manifest.tsv \
+  --outdir work/multi \
+  --ref-fa ref.fa --gtf genes.gtf \
+  --threads 8 --parallel 1
+5. Utils
+
+Added ensure_dir, read_tsv, write_tsv
+
+Added build_default_engines() to enumerate detectors
+
+🐛 Fixes & Improvements
+
+Improved adapter environment handling
+
+Path robustness in Codespaces
+
+Deterministic output directory naming
+
+Clearer detector availability messages
+
+⚠ Known Issues
+
+CIRI-full requires --parallel 1 for stability on Codespaces
+
+CIRI2 strict filtering often eliminates marginal circRNAs
+
+Multi-detector merging not yet implemented — planned for v0.7.0
 
 ## [0.4.0] - 2025-11-13 (unreleased)
 ### Added
