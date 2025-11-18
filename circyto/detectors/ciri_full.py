@@ -1,6 +1,7 @@
 # circyto/detectors/ciri_full.py
 from __future__ import annotations
 
+import os
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -9,19 +10,23 @@ from typing import Optional
 
 from .base import DetectorBase, DetectorRunInputs, DetectorResult
 
-
 CIRI_FULL_JAR_DEFAULT = Path("tools/CIRI-full_v2.0/CIRI-full.jar")
 CIRI_FULL_ADAPTER_DEFAULT = Path("tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh")
 
 
 @dataclass
-class CiriFullDetector:
+class CiriFullDetector(DetectorBase):
     """
     Detector engine for the CIRI-full Pipeline.
 
     This is a thin wrapper around the existing ciri_full_adapter.sh and
-    the CIRI-full jar. For now we keep it simple and single-cell oriented;
-    later we can add manifest-based orchestration.
+    the CIRI-full jar. We expose it through the generic DetectorBase
+    interface so it can be used with run-detector / future multi-detector
+    orchestration.
+
+    IMPORTANT: CIRI-full is *not* safe to run in parallel across many cells
+    in the same process / working directory. We enforce max_parallel = 1
+    at the orchestration layer.
     """
 
     name: str = "ciri-full"
@@ -31,8 +36,11 @@ class CiriFullDetector:
     ciri_full_jar: Path = CIRI_FULL_JAR_DEFAULT
     adapter_script: Path = CIRI_FULL_ADAPTER_DEFAULT
 
+    # New: tell the orchestrator this tool must run serially
+    max_parallel: int = 1
+
     def is_available(self) -> bool:
-        # Check that the adapter script and jar exist, and that java is on PATH
+        # java + jar + adapter must exist
         if shutil.which("java") is None:
             return False
         if not self.ciri_full_jar.exists():
@@ -43,27 +51,26 @@ class CiriFullDetector:
 
     def version(self) -> Optional[str]:
         """
-        Try to get a version string by grepping the manual or jar banner.
-        Keep this lightweight; return None on failure.
+        Try to get a version string.
+
+        For now, we just return the manual version you've observed (2.1.1).
+        We can make this smarter later by parsing '-h' output.
         """
-        # For now, we just hardcode the manual version you observed (2.1.1).
-        # This can be made smarter later by parsing the manual or `-h` output.
         return "CIRI-full 2.1.1"
 
     def run(self, inputs: DetectorRunInputs) -> DetectorResult:
         """
-        Run CIRI-full on a single cell using the adapter script.
+        Run CIRI-full on a single cell via the adapter script.
 
-        We call the adapter via bash, passing environment variables:
+        Environment variables passed to the adapter:
 
-          R1, R2, REF_FA, GTF, OUT_DIR, OUT_BASENAME, THREADS
+          R1, R2, REF_FA, GTF, OUT_DIR, OUT_BASENAME, OUT_TSV, THREADS
 
         The adapter is responsible for:
-          - creating a run directory
-          - invoking java -jar CIRI-full.jar Pipeline ...
-          - copying / linking the final .ciri/.txt into OUT_TSV
 
-        Here we set OUT_TSV = <outdir>/<cell_id>.tsv
+          - creating a run directory:  ${OUT_DIR}/${OUT_BASENAME}.ciri_full_run
+          - invoking: java -jar CIRI-full.jar Pipeline ...
+          - copying/linking the final .ciri/.txt into OUT_TSV (normalized TSV)
         """
         outdir = inputs.outdir
         outdir.mkdir(parents=True, exist_ok=True)
@@ -79,6 +86,8 @@ class CiriFullDetector:
             raise ValueError("CiriFullDetector requires ref_fa")
         if gtf is None:
             raise ValueError("CiriFullDetector requires gtf")
+        if r1 is None:
+            raise ValueError("CiriFullDetector requires R1 FASTQ")
 
         out_tsv = outdir / f"{cell_id}.tsv"
         run_dir = outdir / f"{cell_id}.ciri_full_run"
@@ -93,11 +102,14 @@ class CiriFullDetector:
             "OUT_BASENAME": cell_id,
             "OUT_TSV": str(out_tsv),
             "THREADS": str(threads),
+            # NEW: ask CIRI-full/CIRI to keep 1-BSJ circRNAs
+            "CIRI_EXTRA_FLAGS": "-0",
         }
 
-        # Inherit current environment but override with our vars
-        real_env = dict(**env)
-        real_env.update(**env)
+        # Inherit the current environment, then overlay our variables.
+        # This ensures PATH, java, bwa, samtools, etc. are visible.
+        real_env = os.environ.copy()
+        real_env.update(env)
 
         cmd = [
             "bash",
@@ -105,7 +117,7 @@ class CiriFullDetector:
             f'"{self.adapter_script}"',
         ]
 
-        # Run and let errors propagate
+        # Let errors propagate; the orchestrator will catch CalledProcessError.
         subprocess.run(
             " ".join(cmd),
             shell=True,
@@ -113,7 +125,8 @@ class CiriFullDetector:
             env=real_env,
         )
 
-        # We expect the adapter to have written out_tsv and log_path
+        # If we reach here, the adapter exited 0.
+        # We expect OUT_TSV and the run dir to exist.
         return DetectorResult(
             detector=self.name,
             cell_id=cell_id,

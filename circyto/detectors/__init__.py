@@ -5,15 +5,12 @@ from typing import Dict
 
 from .base import DetectorBase, DetectorRunInputs, DetectorResult
 from .ciri_full import CiriFullDetector
-
+from .ciri2 import Ciri2Detector  # new
 
 def available_detectors() -> Dict[str, DetectorBase]:
     """
     Return a mapping from detector name -> detector engine for all
     detectors that appear to be available in the current environment.
-
-    For now this only includes CIRI-full, but v0.6.0+ will extend this
-    to CIRI-long, find_circ, CIRCexplorer2, etc.
     """
     engines: Dict[str, DetectorBase] = {}
 
@@ -21,7 +18,12 @@ def available_detectors() -> Dict[str, DetectorBase]:
     if cirifull.is_available():
         engines[cirifull.name] = cirifull
 
+    ciri2 = Ciri2Detector()
+    if ciri2.is_available():
+        engines[ciri2.name] = ciri2
+
     return engines
+
 
 
 __all__ = [
@@ -29,5 +31,16 @@ __all__ = [
     "DetectorRunInputs",
     "DetectorResult",
     "CiriFullDetector",
+    "Ciri2Detector",
     "available_detectors",
+    "build_default_engines",
 ]
+
+def build_default_engines():
+    """
+    Return the default detector engines keyed by CLI name.
+    """
+    return {
+        "ciri-full": CiriFullDetector(),
+        "ciri2": Ciri2Detector(),
+    }
