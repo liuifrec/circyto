@@ -94,6 +94,15 @@ pip install -e .[detectors]
 | `circyto make` | All-in-one pipeline (detects manifest or BAM input) |
 
 ---
+### Detector engines (v0.6.0)
+
+circyto now exposes a small detector API:
+
+- **ciri-full** – Java CIRI-full Pipeline wrapper via `ciri_full_adapter.sh`
+- **ciri2 (experimental)** – standalone `CIRI2.pl` wrapper (BWA → CIRI2 → normalized TSV)
+
+See `docs/getting_started.md#detectors` for details and current limitations
+(e.g. some low-support cells can still be filtered out by CIRI even under `-0`).
 
 
 ## 📖 Citation
