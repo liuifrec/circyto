@@ -2,6 +2,7 @@ from pathlib import Path
 from typing import Optional
 import typer
 from rich.console import Console
+from typing import List
 
 from ..pipeline.prepare import extract_per_cell_fastq
 from ..pipeline.run_cirifull import run_cirifull_over_fastqs, run_cirifull_with_manifest
@@ -309,3 +310,95 @@ def run_multidetector_cli(
         parallel=parallel,
     )
     print("[circyto] Multi-detector run complete.")
+@ app.command()
+def run_multidetector(
+    detectors: List[str] = typer.Argument(..., help="List of detectors, e.g. ciri-full ciri2"),
+    manifest: Path = typer.Option(..., exists=True),
+    outdir: Path = typer.Option(...),
+    ref_fa: Path = typer.Option(None),
+    gtf: Path = typer.Option(None),
+    threads: int = typer.Option(8),
+    parallel: int = typer.Option(1),
+):
+    """
+    Run multiple detectors on the same manifest.
+
+    Example:
+        circyto run-multidetector ciri-full ciri2 \
+            --manifest manifest.tsv \
+            --outdir work/multi \
+            --ref-fa ref.fa --gtf genes.gtf
+    """
+    from circyto.detectors import build_default_engines
+    from circyto.pipeline.run_detector import run_detector_manifest
+    from circyto.utils import ensure_dir
+
+    engines = build_default_engines()
+    for det in detectors:
+        if det not in engines:
+            raise ValueError(f"Detector '{det}' is not available. Available: {list(engines.keys())}")
+
+    ensure_dir(outdir)
+
+    metadata = {}
+
+    for det in detectors:
+        det_engine = engines[det]
+        det_out = outdir / det
+        ensure_dir(det_out)
+
+        print(f"[multidetector] Running detector: {det}")
+        results = run_detector_manifest(
+            detector=det_engine,
+            manifest=manifest,
+            outdir=det_out,
+            ref_fa=ref_fa,
+            gtf=gtf,
+            threads=threads,
+            parallel=parallel,
+        )
+
+        metadata[det] = {
+            "n_cells": len(results),
+            "detector": det,
+            "outdir": str(det_out),
+        }
+
+    # write summary json
+    import json
+    summary_path = outdir / "summary.json"
+    summary_path.write_text(json.dumps(metadata, indent=2))
+
+    print(f"[multidetector] Completed. Summary at {summary_path}")
+@ app.command()
+def collect_multidetector(
+    multi_out: Path = typer.Argument(..., help="Output dir from run-multidetector"),
+):
+    """
+    Build per-detector circRNA sparse matrices.
+    """
+    from circyto.pipeline.multidetector_collect import (
+        build_detector_matrix,
+        write_matrix,
+    )
+    from circyto.detectors import build_default_engines
+    from circyto.utils import ensure_dir
+
+    ensure_dir(multi_out)
+    det_dirs = [d for d in multi_out.iterdir() if d.is_dir()]
+
+    for det_dir in det_dirs:
+        tsv_dir = det_dir
+        det_name = det_dir.name
+
+        print(f"[collect-multidetector] Building matrix for {det_name}")
+
+        X, circ_ids, cell_ids = build_detector_matrix(tsv_dir)
+
+        matrices_dir = multi_out / "matrices"
+        ensure_dir(matrices_dir)
+
+        prefix = matrices_dir / det_name
+        write_matrix(X, circ_ids, cell_ids, prefix)
+
+        print(f"[collect-multidetector] WROTE: {prefix}.mtx")
