@@ -36,21 +36,31 @@ def run_detector_manifest(
     detector: DetectorBase,
     manifest: Path,
     outdir: Path,
-    ref_fa: Optional[Path],
-    gtf: Optional[Path],
+    ref_fa: Path | None = None,
+    gtf: Path | None = None,
     threads: int = 8,
     parallel: int = 4,
-) -> List[DetectorResult]:
+) -> list[DetectorResult]:
     """
-    Dispatch a single detector across all rows in a manifest file.
+    Run a single detector across all rows in a manifest.
+
+    For detectors that are not process-parallel safe (e.g. CIRI-full),
+    we respect detector.max_parallel if present and override the user-
+    supplied `parallel` accordingly.
     """
-
-    ensure_dir(outdir)
-
     rows = read_manifest(manifest)
-    results: List[DetectorResult] = []
+    outdir.mkdir(parents=True, exist_ok=True)
 
-    def _run_one(row):
+    # NEW: limit effective parallelism based on detector capability
+    det_max_parallel = getattr(detector, "max_parallel", parallel)
+    effective_parallel = min(parallel, det_max_parallel)
+    if effective_parallel < parallel:
+        print(
+            f"[circyto] Detector '{detector.name}' only supports parallel={effective_parallel}; "
+            f"overriding requested parallel={parallel}."
+        )
+
+    def _run_one(row: tuple[str, Path, Path | None]) -> DetectorResult:
         cell_id, r1, r2 = row
         inputs = DetectorRunInputs(
             cell_id=cell_id,
@@ -60,10 +70,14 @@ def run_detector_manifest(
             ref_fa=ref_fa,
             gtf=gtf,
             threads=threads,
+            extra={},
         )
         return detector.run(inputs)
 
-    with ThreadPoolExecutor(max_workers=parallel) as ex:
+    results: list[DetectorResult] = []
+
+    # Use the effective parallelism
+    with ThreadPoolExecutor(max_workers=effective_parallel) as ex:
         futures = [ex.submit(_run_one, r) for r in rows]
         for fut in futures:
             results.append(fut.result())

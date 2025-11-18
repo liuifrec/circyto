@@ -5,6 +5,7 @@ R1="${R1:?}"; R2="${R2:-}"
 REF_FA="${REF_FA:?}"; GTF="${GTF:?}"
 OUT_TSV="${OUT_TSV:?}"
 THREADS="${THREADS:-4}"
+CIRI_EXTRA_FLAGS="${CIRI_EXTRA_FLAGS:-}"
 
 OUT_PREFIX="${OUT_TSV%.tsv}"
 OUT_DIR="$(dirname "${OUT_PREFIX}")"
@@ -49,6 +50,7 @@ echo "R1=${R1}" | tee -a "${LOG}"
 echo "REF_FA=${REF_FA}" | tee -a "${LOG}"
 echo "GTF=${GTF}" | tee -a "${LOG}"
 echo "OUT_DIR=${OUT_DIR} OUT_BASENAME=${OUT_BASENAME} THREADS=${THREADS}" | tee -a "${LOG}"
+[[ -n "${CIRI_EXTRA_FLAGS}" ]] && echo "CIRI_EXTRA_FLAGS=${CIRI_EXTRA_FLAGS}" | tee -a "${LOG}"
 
 RUN_DIR="${OUT_DIR}/${OUT_BASENAME}.ciri_full_run"
 rm -rf "${RUN_DIR}" 2>/dev/null || true
@@ -74,7 +76,14 @@ cmd=( "${JAVA}" -Xmx8g -jar "${JAR}" Pipeline \
       -r "${REF_FA}" \
       -a "${GTF}" \
       -t "${THREADS}" )
+
 [[ -n "${R2_IN}" ]] && cmd+=( -2 "${R2_IN}" )
+
+# Append extra flags for CIRI if provided (e.g. -0, -low, --no_strigency)
+if [[ -n "${CIRI_EXTRA_FLAGS}" ]]; then
+  # Let the shell split the flags
+  cmd+=( ${CIRI_EXTRA_FLAGS} )
+fi
 
 echo ">>> CMD: ${cmd[*]}" | tee -a "${LOG}"
 if ! bash -lc "${cmd[*]}" >> "${LOG}" 2>&1; then
