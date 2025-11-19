@@ -1,142 +1,144 @@
-Multi-Detector Integration (v0.6.0+)
 
-circyto v0.6.0 introduces the detector engine API and the first working implementation of multi-detector orchestration.
+# Multi-detector circRNA workflows
 
-This document explains how detectors work, how to run them individually, and how to run multiple detectors in parallel on the same set of single-cell FASTQ files.
+`circyto` v0.7.0 adds a small **multi-detector framework** on top of the
+per-detector engines (currently **CIRI-full** and experimental **CIRI2.pl**).
 
-1. Detector Engine Overview
+The goal is to make it easy to:
 
-A detector is defined by a Python class that implements:
+- run multiple circRNA detectors on the **same cells**,
+- normalize their outputs to a single circRNA schema,
+- **merge** results into union / long-form tables,
+- **compare** detectors with simple metrics (e.g. Jaccard overlap).
 
-class DetectorBase:
-    name: str
-    input_type: str                # e.g., "fastq"
-    supports_paired_end: bool
+This document walks through the standard workflow:
 
-    def is_available(self) -> bool: ...
-    def version(self) -> Optional[str]: ...
-    def run(self, inputs: DetectorRunInputs) -> DetectorResult: ...
+1. `run-multidetector` – run multiple detectors on a manifest
+2. `merge-detectors` – build union and long-form circRNA tables
+3. `compare-detectors` – compute overlap / summary metrics
 
+---
 
-DetectorRunInputs provides:
+## 1. Prerequisites
 
-cell_id
+You should already have:
 
-r1 / r2
+- A working `circyto` installation:
 
-ref_fa
+  ```
+  git clone https://github.com/liuifrec/circyto.git
+  cd circyto
+  pip install -e .
+  ```
 
-gtf
+- External tools installed and on `PATH` for the detectors you want to use:
 
-threads
+  - **CIRI-full** (Java pipeline, BWA, samtools, etc.)
+  - **CIRI2.pl** (Perl script; typically bundled under `tools/CIRI-full_v2.0/bin/`)
 
-outdir
+- A **manifest TSV** describing per-cell FASTQs. Minimal columns:
 
-Each detector must write a normalized TSV with the columns:
+  ```
+  cell_id    r1                       r2
+  ERR2139486 fastq/.../ERR2139486_1.fastq.gz fastq/.../ERR2139486_2.fastq.gz
+  ERR2139559 fastq/.../ERR2139559_1.fastq.gz fastq/.../ERR2139559_2.fastq.gz
+  ```
 
-circ_id   chr   start   end   strand   support
+- A reference genome and annotation:
 
+  - `ref/genome.fa` (or `ref/chr21.fa` for a toy test)
+  - `ref/genes.gtf` (or `ref/chr21.gtf`)
 
-This is the format consumed by collect, convert, and downstream multimodal export.
+---
 
-Implemented detectors (v0.6.0)
-Detector	Status	Notes
-ciri-full	✓ stable	full CIRI-full Pipeline via ciri_full_adapter.sh
-ciri2	✓ experimental	wrapper for CIRI2.pl; strict filtering often gives sparse output
-2. Running a Single Detector
+## 2. Run multiple detectors on the same cells
 
-Use:
+Use `run-multidetector` to execute multiple engines against the same manifest.
+The example below uses **CIRI-full** and **CIRI2.pl** on a small Smart-seq2
+chr21 subset:
 
-circyto run-detector <detector> \
-  --manifest manifest.tsv \
-  --outdir work/<detector> \
-  --ref-fa ref/genome.fa \
-  --gtf ref/genes.gtf \
-  --threads 8 \
-  --parallel 4
-
-
-Example (CIRI-full on chr21 subset):
-
-circyto run-detector ciri-full \
-  --manifest manifest_2.tsv \
-  --outdir work/ciri-full \
-  --ref-fa ref/chr21.fa \
-  --gtf ref/chr21.gtf \
-  --threads 8 --parallel 1
-
-
-⚠ Note:
-CIRI-full is not thread-safe when running multiple jobs concurrently on the same reference directory.
---parallel 1 is recommended for Codespaces or local testing.
-
-3. Running Multiple Detectors (NEW)
-
-You can now run any number of detectors in one unified command.
-
-circyto run-multidetector <detector1> <detector2> ... \
-  --manifest manifest.tsv \
-  --outdir work/multi \
-  --ref-fa ref/genome.fa \
-  --gtf ref/genes.gtf \
-  --threads 8 --parallel 1
-
-
-Example using two detectors on a 2-cell manifest:
-
+```
 circyto run-multidetector ciri-full ciri2 \
-  --manifest manifest_2.tsv \
-  --outdir work/multi \
+  --manifest manifest.tsv \
+  --outdir work/multi_chr21 \
   --ref-fa ref/chr21.fa \
   --gtf ref/chr21.gtf \
-  --threads 8 --parallel 1
+  --threads 8 \
+  --parallel 1
+```
 
-Output Structure
-work/multi/
-├── ciri-full/
-│   ├── ERR2139486.tsv
-│   ├── ERR2139559.tsv
-│   └── <run dirs + logs>
-├── ciri2/
-│   ├── ERR2139486.tsv
-│   ├── ERR2139559.tsv
-│   └── <run dirs + logs>
-└── summary.json
+Notes:
 
+- The detector names (`ciri-full`, `ciri2`) correspond to the internal
+  detector engines exposed by `circyto`.
+- For some environments, CIRI-full is more stable with `--parallel 1`
+  (especially inside constrained Codespaces).
+- Each detector writes its outputs into a dedicated subdirectory under
+  `--outdir`.
 
-summary.json contains a simple machine-readable record:
+Resulting layout:
 
-{
-  "ciri-full": {
-    "n_cells": 2,
-    "detector": "ciri-full",
-    "outdir": "work/multi/ciri-full"
-  },
-  "ciri2": {
-    "n_cells": 2,
-    "detector": "ciri2",
-    "outdir": "work/multi/ciri2"
-  }
-}
+```
+work/multi_chr21/
+  ├── ciri-full/
+  ├── ciri2/
+  └── summary.json
+```
 
-4. Notes on CIRI2 Strictness
+---
 
-CIRI2.pl is designed for bulk RNA-seq and applies very strict filtering, often removing circRNAs even when candidate signals are present.
+## 3. Merge detector outputs into union / long-form tables
 
-Common reasons for empty outputs:
+```
+circyto merge-detectors \
+  work/multi_chr21 \
+  work/multi_chr21/merged
+```
 
-small number of junction reads (<2)
+Produces:
 
-insufficient PCC support
+```
+merged/
+  ├── circ_union.tsv
+  ├── circ_by_detector.tsv
+  └── metadata.json
+```
 
-multi-mapping reads
+---
 
-single-cell sparse coverage
+## 4. Compare detectors (overlap & summary metrics)
 
-partial support only from R1/R2
+```
+circyto compare-detectors \
+  work/multi_chr21/merged \
+  work/multi_chr21/compare
+```
 
-Even with low-stringency flags (-w), many single-cell circRNAs do not pass.
+Produces:
 
-This is expected.
+```
+compare/
+  ├── jaccard.tsv
+  ├── detector_summary.tsv
+  └── compare_metadata.json
+```
 
-circyto reports these cleanly as header-only TSVs.
+---
+
+## 5. Practical notes
+
+- CIRI2 may still filter extremely low-support circRNAs even with `-0`.
+- CIRI-full may require `--parallel 1` in constrained environments.
+- The union / long-form tables are designed to integrate with Scanpy, Seurat,
+  and ML-based workflows.
+- Future versions will add more detectors and consensus calling.
+
+---
+
+## 6. End-to-end example
+
+```
+circyto run-multidetector ciri-full ciri2 --manifest manifest.tsv --outdir work/multi --ref-fa ref.fa --gtf genes.gtf
+circyto merge-detectors work/multi work/multi/merged
+circyto compare-detectors work/multi/merged work/multi/compare
+```

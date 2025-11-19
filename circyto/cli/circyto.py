@@ -370,6 +370,55 @@ def run_multidetector(
     summary_path.write_text(json.dumps(metadata, indent=2))
 
     print(f"[multidetector] Completed. Summary at {summary_path}")
+@app.command("merge-detectors")
+def merge_detectors_cmd(
+    indir: Path = typer.Argument(..., help="Input directory from run-multidetector"),
+    outdir: Path = typer.Argument(..., help="Output directory for merged tables"),
+):
+    """
+    Merge outputs from run-multidetector into union/long-format tables.
+
+    Example:
+      circyto merge-detectors work/multi work/multi_merged
+    """
+    from circyto.pipeline.merge_detectors import merge_detectors as _merge
+
+    _merge(indir=indir, outdir=outdir)
+    print(f"[circyto] Wrote merged detector tables to {outdir}")
+@app.command()
+def compare_detectors(
+    indir: Path = typer.Argument(
+        ...,
+        exists=True,
+        file_okay=False,
+        dir_okay=True,
+        help="Input directory with merged detector outputs (circ_union.tsv from merge-detectors).",
+    ),
+    outdir: Path = typer.Option(
+        ...,
+        "--outdir",
+        "-o",
+        help="Output directory for comparison results (jaccard.tsv, detector_summary.tsv, compare_metadata.json).",
+    ),
+):
+    """
+    Compare detectors using merged circ_union.tsv from merge-detectors.
+
+    This command computes:
+      - pairwise Jaccard similarity of circRNA sets between detectors
+      - per-detector summary (n_circ, total_support, total_cells)
+    """
+    from circyto.pipeline.compare_detectors import compare_detectors as compare_detectors_fn
+
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    print(f"[circyto] Comparing detectors from {indir} → {outdir}")
+    result = compare_detectors_fn(indir=indir, outdir=outdir)
+
+    print(f"[circyto] Detectors: {', '.join(result.detectors)}")
+    print(f"[circyto] Wrote Jaccard matrix to {outdir / 'jaccard.tsv'}")
+    print(f"[circyto] Wrote detector summary to {outdir / 'detector_summary.tsv'}")
+    print(f"[circyto] Wrote metadata JSON to {outdir / 'compare_metadata.json'}")
 @ app.command()
 def collect_multidetector(
     multi_out: Path = typer.Argument(..., help="Output dir from run-multidetector"),
@@ -402,3 +451,82 @@ def collect_multidetector(
         write_matrix(X, circ_ids, cell_ids, prefix)
 
         print(f"[collect-multidetector] WROTE: {prefix}.mtx")
+@app.command("merge-detectors")
+def merge_detectors_cmd(
+    indir: Path = typer.Argument(
+        ...,
+        exists=True,
+        file_okay=False,
+        help="Input directory from `circyto run-multidetector` (contains summary.json and per-detector subdirs).",
+    ),
+    outdir: Path = typer.Argument(
+        ...,
+        help="Output directory for merged TSVs (union + long-form) and metadata.",
+    ),
+) -> None:
+    """
+    Merge per-detector cell-level TSVs into:
+
+    - circ_union.tsv        (one row per circRNA, per-detector support columns)
+    - circ_by_detector.tsv  (long-form circ × detector × cell table)
+    - metadata.json         (basic info about detectors / cells / files)
+    """
+    from circyto.pipeline.merge_detectors import merge_detectors
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    res = merge_detectors(indir=indir, outdir=outdir)
+
+    # Be robust to possible return structures
+    msg_parts = ["[merge-detectors] finished."]
+    if isinstance(res, dict):
+        union = res.get("union_path")
+        long = res.get("long_path")
+        meta = res.get("metadata_path")
+        if union:
+            msg_parts.append(f"union={union}")
+        if long:
+            msg_parts.append(f"long={long}")
+        if meta:
+            msg_parts.append(f"meta={meta}")
+    typer.echo(" ".join(msg_parts))
+
+
+@app.command("compare-detectors")
+def compare_detectors_cmd(
+    indir: Path = typer.Argument(
+        ...,
+        exists=True,
+        file_okay=False,
+        help="Input directory containing circ_union.tsv (typically the output of `merge-detectors`).",
+    ),
+    outdir: Path = typer.Argument(
+        ...,
+        help="Output directory for Jaccard matrix, detector summary, and metadata.",
+    ),
+) -> None:
+    """
+    Compare detectors based on a merged circ_union.tsv.
+
+    Produces:
+
+    - jaccard.tsv           (detector × detector Jaccard similarity)
+    - detector_summary.tsv  (per-detector stats: n_circ, total_support, total_cells)
+    - compare_metadata.json (parameters and basic bookkeeping)
+    """
+    from circyto.pipeline.compare_detectors import compare_detectors
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    res = compare_detectors(indir=indir, outdir=outdir)
+
+    msg_parts = ["[compare-detectors] finished."]
+    if isinstance(res, dict):
+        jac = res.get("jaccard_path")
+        summ = res.get("summary_path")
+        meta = res.get("metadata_path")
+        if jac:
+            msg_parts.append(f"jaccard={jac}")
+        if summ:
+            msg_parts.append(f"summary={summ}")
+        if meta:
+            msg_parts.append(f"meta={meta}")
+    typer.echo(" ".join(msg_parts))
