@@ -1,24 +1,19 @@
 # circCyto
+
 <p align="center">
   <a href="https://github.com/liuifrec/circyto/actions">
     <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?branch=main&label=CI&style=flat-square" />
   </a>
-
   <a href="https://github.com/liuifrec/circyto/releases">
     <img src="https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag&sort=semver&style=flat-square" />
   </a>
-
   <a href="https://github.com/liuifrec/circyto/issues">
     <img src="https://img.shields.io/github/issues/liuifrec/circyto?style=flat-square" />
   </a>
-
   <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/liuifrec/circyto?style=flat-square" />
   </a>
-
   <img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue?style=flat-square" />
-
-  <!-- PyPI placeholder for future v1.0.0 -->
   <img src="https://img.shields.io/badge/PyPI-coming_soon-lightgrey?style=flat-square" />
 </p>
 
@@ -31,81 +26,106 @@
   integrating multiple circRNA detectors into a unified sparse matrix workflow.
 </p>
 
-
 ---
 
 ## Overview
 
 `circyto` is a Python CLI framework to:
 
-- run external circRNA detectors (CIRI-full, CIRI-long, CIRCexplorer2, find_circ, …)
+- run external circRNA detectors (CIRI-full, CIRI2, and future engines)
 - normalize their outputs to a common circRNA schema
 - assemble sparse circRNA × cell matrices
-- export results for Scanpy / Seurat / ML downstream analysis.
+- export results for Scanpy / Seurat / ML downstream analysis
 
 Core ideas:
 
-- Detector-agnostic adapters
-- Manifest-based reproducible job execution
-- Sparse matrix output (MatrixMarket)
-- Planned `.h5ad` export and multi-detector benchmarking.
+- **Detector-agnostic adapters**
+- **Manifest-based reproducible job execution**
+- **Sparse matrix output (MatrixMarket + AnnData)**
+- **Multi-detector benchmarking** (v0.6.0+)
+
 ---
-### Detector comparison
 
-| Detector        | Input type              | Index / reference needed          | Output granularity         | Strengths                                                     | Limitations / Notes                                           | circyto support level |
-|----------------|-------------------------|-----------------------------------|----------------------------|----------------------------------------------------------------|---------------------------------------------------------------|------------------------|
-| **CIRI-full**  | Paired-end FASTQ        | Genome FASTA + BWA index + GTF    | Full-length circRNA + AS   | Full-length reconstruction, integrates RO/AS, detailed output | Heavy, multi-stage pipeline; requires good reference indices | ✅ Fully integrated (chr21 Smart-seq2, `run-manifest` + `collect`) |
-| **CIRI-long**  | Long-read FASTQ (ONT)   | Genome FASTA + minimap2 index     | Full-length circRNA        | Designed for long-read; captures complex isoforms             | Long-read only; runtime and memory depend on read length     | 🔜 Planned integration |
-| **CIRCexplorer2** | BAM (spliced alignments) | Genome FASTA + annotation        | Back-splice junctions      | Widely used; works from alignment BAMs                        | No full-length reconstruction; depends on upstream aligner   | 🔜 Planned integration |
-| **find_circ**  | FASTQ (or BAM)          | Genome FASTA + BWA index          | Back-splice junctions      | Simple, fast; classic circRNA detector                        | Older; higher FP rate; no full-length info                   | 🔜 Planned integration |
-| **circRNA_finder** (optional) | BAM    | Genome FASTA                      | Back-splice junctions      | Works directly on STAR outputs                                | STAR-specific; less widely maintained                        | ❓ Maybe (low priority) |
+## ✨ Features (v0.7.0)
 
-**Support levels**
+- 🔧 **Single-detector runs**
+  - `circyto run-detector` wraps individual engines:
+    - **ciri-full** – Java CIRI-full Pipeline via `ciri_full_adapter.sh`
+    - **ciri2 (experimental)** – standalone `CIRI2.pl` wrapper
+  - Normalizes outputs to a shared TSV schema (`circ_id, chr, start, end, strand, support`)
 
-- ✅ **Fully integrated**: wired through `run`/`run-manifest` + `collect`; tested end-to-end.
-- 🔜 **Planned**: CLI + adapter design ready, implementation not finalized.
-- ❓ **Maybe**: candidate for future integration based on demand.
+- 🧬 **Manifest-based Smart‑seq2 / 10x support**
+  - `circyto prepare` converts 10x BAMs → per-cell FASTQs
+  - `circyto run-manifest` / `run` execute CIRI-full across many cells
+  - `circyto collect` builds circRNA × cell sparse matrices and feature tables
 
-## 🧬 Installation
+- 🧠 **Host‑gene aware multimodal export**
+  - `circyto collect` writes `circ_feature_table.tsv`
+  - `circyto annotate-host-genes` attaches host-gene columns via GTF
+  - `circyto export-multimodal` integrates circRNA counts into an existing `.h5ad`
+    - gene expression in `.X`
+    - circRNA matrix in `obsm["X_circ"]`
+    - circ feature + host map in `adata.uns["circ"]` / `adata.uns["circ_host_map"]`
 
-```
+- 🔀 **Multi-detector orchestration (v0.6.0+)**
+  - `circyto run-multidetector`: run several detectors on the same manifest
+  - `circyto merge-detectors`: merge per-detector TSVs into union tables
+  - `circyto compare-detectors`: compute Jaccard and summary stats across detectors
+
+---
+
+## 🧪 Detector comparison
+
+| Detector | Input type | Index / reference | Output granularity | Strengths | Limitations / Notes | circyto status |
+|---------|------------|-------------------|--------------------|-----------|---------------------|----------------|
+| **CIRI-full** | Paired-end FASTQ | Genome FASTA + BWA index + GTF | Full-length circRNA + AS | Full-length reconstruction, integrates RO/AS, detailed output | Heavy, multi-stage pipeline; needs good reference indices | ✅ Fully integrated (`prepare`/`run-manifest`/`run-detector` + `collect`) |
+| **CIRI2** | Paired-end FASTQ | Genome FASTA + BWA index + GTF | Back-splice junctions | Simple, widely used C detector, good for benchmarking | Designed for bulk; some low-support sc calls still filtered even with relaxed settings | ⚗️ Experimental (`run-detector`, `run-multidetector`) |
+| **CIRI-long** | Long-read FASTQ (ONT) | Genome FASTA + minimap2 index | Full-length circRNA | Tailored to long reads; captures complex isoforms | Long-read only; runtime/memory depend on read length | 🔜 Planned |
+| **CIRCexplorer2** | BAM (spliced alignments) | Genome FASTA + annotation | Back-splice junctions | Works from common alignment BAMs; widely cited | No full-length reconstruction; depends on upstream aligner | 🔜 Planned |
+| **find_circ** | FASTQ / BAM | Genome FASTA + BWA index | Back-splice junctions | Simple and fast; classic circRNA detector | Older; higher FP rate; no full-length info | 🔜 Planned |
+
+**Status legend**
+
+- ✅ **Integrated** – wired through CLI + adapters and tested on Smart‑seq2 chr21
+- ⚗️ **Experimental** – useful but still under tuning for sparse scRNA-seq
+- 🔜 **Planned** – API design in place, implementation not merged yet
+
+---
+
+## 🚀 Installation
+
+```bash
 git clone https://github.com/liuifrec/circyto.git
 cd circyto
 pip install -e .
 ```
 
-Optional extras:
+Optional extras (future detector integrations, dev tooling):
 
-```
+```bash
 pip install -e .[detectors]
 ```
 
 ---
 
-## ⚙️ Commands
+## 🕹️ CLI Commands
+
+### Core pipeline
 
 | Command | Description |
-|----------|--------------|
+|--------|-------------|
 | `circyto prepare` | 10x BAM → FASTQs (`--chemistry tenx-3p|tenx-5p`) |
 | `circyto run` | Run CIRI-full on batches produced by `prepare` |
 | `circyto run-manifest` | Run CIRI-full using a manifest TSV (per-cell FASTQs) |
-| `circyto collect` | Merge all CIRI outputs into a circ × cell matrix |
-| `circyto convert` | Convert `.mtx` + index files to `.loom` or `.h5ad` |
-| `circyto make` | All-in-one pipeline (detects manifest or BAM input) |
+| `circyto collect` | Merge CIRI outputs into circ × cell sparse matrix + `circ_feature_table.tsv` |
+| `circyto annotate-host-genes` | Add host-gene columns to `circ_feature_table.tsv` using a GTF |
+| `circyto export-multimodal` | Attach circRNA counts and metadata to an existing `.h5ad` |
+| `circyto convert` | Convert `.mtx` + index files to `.loom` / `.h5ad` (legacy helper) |
+| `circyto make` | All-in-one helper that detects manifest or BAM inputs and runs the pipeline |
 
-### Detector engines (v0.6.0)
+### Detector engines (single-detector runs)
 
-circyto uses a small pluggable detector API under the hood.  
-Current engines:
-
-- **ciri-full** – Java **CIRI-full Pipeline** wrapper driven via `ciri_full_adapter.sh`.
-  - Takes paired-end FASTQ, reference `FA`, and `GTF`.
-  - Produces one normalized TSV per cell, plus the usual CIRI-full run directory.
-- **ciri2** *(experimental)* – standalone **CIRI2.pl** wrapper.
-  - Uses the same manifest layout (R1/R2 FASTQ, cell ID) and writes per-cell TSVs.
-  - Configured with relaxed stringency (`-0` / `--no_strigency`) by default to better suit sparse scRNA-seq data.
-
-Example single-detector run on a small Smart-seq2 chr21 subset:
+`circyto run-detector` runs one detector over a manifest, writing one normalized TSV per cell.
 
 ```bash
 circyto run-detector ciri-full \
@@ -115,10 +135,9 @@ circyto run-detector ciri-full \
   --gtf ref/chr21.gtf \
   --threads 8 \
   --parallel 4
-and for CIRI2:
+```
 
-bash
-Copy code
+```bash
 circyto run-detector ciri2 \
   --manifest manifest.tsv \
   --outdir work/ciri2_chr21 \
@@ -126,35 +145,34 @@ circyto run-detector ciri2 \
   --gtf ref/chr21.gtf \
   --threads 8 \
   --parallel 4
+```
 
-circyto now exposes a small detector API:
+Under the hood:
 
-- **ciri-full** – Java CIRI-full Pipeline wrapper via `ciri_full_adapter.sh`
-- **ciri2 (experimental)** – standalone `CIRI2.pl` wrapper (BWA → CIRI2 → normalized TSV)
+- **ciri-full** → Java CIRI-full Pipeline via `tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh`
+- **ciri2** → Perl `CIRI2.pl` via `tools/CIRI-full_v2.0/bin/ciri2_adapter.sh`, with relaxed stringency flags (`-0`) by default to retain low-support sc candidates where possible
 
-See `docs/getting_started.md#detectors` for details and current limitations
-(e.g. some low-support cells can still be filtered out by CIRI even under `-0`).
+Note: even with relaxed flags, CIRI2’s internal filters can still drop borderline single-cell candidates. This is expected behaviour and part of the cross-detector comparison story.
 
-## 🔀 Multi-Detector Workflow (v0.6.0+)
+---
 
-circyto now supports running multiple circRNA detectors in one unified command.
+## 🔀 Multi-detector workflow (v0.6.0+)
 
-This enables:
-- cross-detector benchmarking
-- agreement/union analysis
-- downstream consensus circRNA calling
-- comparing sensitivity in single-cell data
-
-### Run multiple detectors on the same manifest
+### 1. Run multiple detectors on the same manifest
 
 ```bash
 circyto run-multidetector ciri-full ciri2 \
   --manifest manifest.tsv \
   --outdir work/multi \
-  --ref-fa ref/genome.fa \
-  --gtf ref/genes.gtf \
-  --threads 8 --parallel 1
-Output layout
+  --ref-fa ref/chr21.fa \
+  --gtf ref/chr21.gtf \
+  --threads 8 \
+  --parallel 1
+```
+
+Output layout:
+
+```text
 work/multi/
   ├── ciri-full/
   │     ├── <cell>.tsv
@@ -163,49 +181,93 @@ work/multi/
   │     ├── <cell>.tsv
   │     └── <run dirs + logs>
   └── summary.json
+```
 
+`summary.json` tracks which detectors ran and where their outputs live, e.g.:
 
-Example summary.json:
-
+```json
 {
   "ciri-full": {
-    "n_cells": 2,
     "detector": "ciri-full",
+    "n_cells": 2,
     "outdir": "work/multi/ciri-full"
   },
   "ciri2": {
-    "n_cells": 2,
     "detector": "ciri2",
+    "n_cells": 2,
     "outdir": "work/multi/ciri2"
   }
 }
+```
 
-Available detectors (v0.6.0)
-CLI name	Backend	Notes
-ciri-full	CIRI-full	Stable, complete output
-ciri2	CIRI2.pl	Experimental; strict filter
-Next step: multi-detector matrix merging (v0.7.0)
+### 2. Merge per-detector TSVs
 
-The next release will add:
+```bash
+circyto merge-detectors \
+  --indir work/multi \
+  --outdir work/multi_merged
+```
 
-TSV merging
+This produces:
 
-per-detector support comparison
+- `circ_union.tsv` – union of all circRNAs with per-detector support, e.g.
 
-union/intersection circRNA matrices
+  - `circ_id, chr, start, end, strand`
+  - `ciri-full_total_support, ciri-full_n_cells`
+  - `ciri2_total_support, ciri2_n_cells`
+  - … for each detector
 
-metadata tables for benchmarking
+- `circ_by_detector.tsv` – long-format table (`circ_id, detector, total_support, n_cells`)
+- `metadata.json` – detector list and basic counts
 
-Stay tuned!
+### 3. Compare detectors (Jaccard / summary metrics)
+
+```bash
+circyto compare-detectors \
+  --indir work/multi_merged \
+  --outdir work/multi_compare
+```
+
+Outputs:
+
+- `jaccard.tsv` – Jaccard index of presence/absence across detectors
+
+  - 1.0 on the diagonal
+  - 0–1 between detectors (`intersection / union` of circ sets)
+
+- `detector_summary.tsv` – per-detector statistics
+
+  - `n_circ` – number of circRNAs called
+  - `total_support` – sum of support counts
+  - `total_cells` – sum of cells contributing to each detector’s calls
+
+- `compare_metadata.json` – configuration + basic metadata
+
+These files are designed to be read directly into Python/R for:
+- sensitivity / specificity patterns by detector
+- consensus circRNA sets
+- downstream filtering before building final circ × cell matrices
+
+---
+
+## 📚 Getting started
+
+More detailed examples (Smart‑seq2 chr21 subset, multi-detector runs, multimodal AnnData export) are documented in:
+
+- `docs/getting_started.md`
+- `docs/multidetector.md`
+
+---
 
 ## 📖 Citation
 
-Liu, Y.-C. *et al.* **circCyto** — a modular toolkit for single-cell circRNA profiling and integration with scRNA-seq workflows.  
-*(Manuscript in preparation, 2025).*
+If you use **circCyto / circyto** in your work, please cite:
+
+> Liu, Y.-C. *et al.* **circCyto** — a modular toolkit for single-cell circRNA profiling and integration with scRNA-seq workflows.  
+> *Manuscript in preparation, 2025.*
 
 ---
 
 ## 📜 License
 
-MIT License © 2025 **Yu-Chen (James) Liu**
-
+MIT License © 2025 **Yu‑Chen (James) Liu**
