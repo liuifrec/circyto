@@ -1,5 +1,17 @@
 # 🧬 Changelog
-# Changelog
+# Changelog — v0.7.0
+
+## Added
+- `run-multidetector` command
+- `merge-detectors` TSV union + by-detector matrix builder
+- `compare-detectors` Jaccard similarity and detector summary
+- Proper summary.json generation
+- Robust CLI argument handling
+
+## Fixed
+- Missing summary.json from run-multidetector
+- Test-suite issues related to detector summary naming
+
 ## v0.6.0 — Multi-detector engine & CIRI2 integration (2025-11-18)
 
 This release introduces the first major extension beyond single-detector workflows, adding a unified detector API, experimental CIRI2 support, and a fully functional multi-detector orchestration CLI.
