@@ -1,0 +1,69 @@
+MAGE-TAB Version	1.1
+Investigation Title	Single-cell RNA-seq of CD4+ Treg and Tmem cells from different tissues in mouse and human
+
+Experimental Design	organism part comparison design	disease state design	cell type comparison design	species design
+Experimental Design Term Source REF	EFO	EFO	EFO	EFO
+Experimental Design Term Accession Number	EFO_0001750	EFO_0001756	EFO_0001745	EFO_0001753
+
+Experimental Factor Name	organism	disease	organism part	cell type	single cell identifier
+Experimental Factor Type	organism	disease	organism part	cell type	single cell identifier
+Experimental Factor Term Source REF
+Experimental Factor Term Accession Number
+
+Person Last Name	Gomes
+Person First Name	Tomas
+Person Mid Initials
+Person Email	tomas.pc.gomes@gmail.com
+Person Phone
+Person Fax
+Person Affiliation	Wellcome Trust Sanger Institute
+Person Address	Wellcome Trust Sanger Institute Wellcome Genome Campus Hinxton Cambridge CB10 1SA UK
+Person Roles	data analyst;submitter
+Person Roles Term Source REF
+Person Roles Term Accession Number
+
+Quality Control Type
+Quality Control Term Source REF
+Quality Control Term Accession Number
+
+Replicate Type
+Replicate Term Source REF
+Replicate Term Accession Number
+
+Normalization Type
+Normalization Term Source REF
+Normalization Term Accession Number
+
+Date of Experiment	2015-05-25
+Public Release Date	2018-12-31
+
+PubMed ID
+Publication DOI
+Publication Author List
+Publication Title
+Publication Status
+Publication Status Term Source REF
+Publication Status Term Accession Number
+
+Experiment Description	Non-lymphoid tissues (NLTs) harbour a pool of adaptive immune cells distinct from their counterparts in lymphoid tissues, and their development and phenotype remains largely unexplored. We used scRNA-seq to survey CD4+ T regulatory (Treg) and memory T (Tmem) cells in spleen, lymph nodes, skin and colon in an unbiased way, in mouse and human. This cross-tissues, cross-species comparison allows us to obtain marker genes for immune populations in specific locations with likely relevance for human studies. Additionally, a continuous phenotype of Treg migration can be modelled from the mouse data, unravelling the transcriptional stages through which these cells transition between tissues.
+
+Protocol Name	P-MTAB-67781	P-MTAB-67782	P-MTAB-67776	P-MTAB-67777	P-MTAB-67779	P-MTAB-67778	P-MTAB-67780
+Protocol Type	nucleic acid sequencing protocol	high throughput sequence alignment protocol	sample collection protocol	sample collection protocol	nucleic acid extraction protocol	treatment protocol	nucleic acid library construction protocol
+Protocol Term Source REF	EFO	EFO	EFO	EFO	EFO	EFO	EFO
+Protocol Term Accession Number	EFO_0004170	EFO_0004917	EFO_0005518	EFO_0005518	EFO_0002944	EFO_0003969	EFO_0004184
+Protocol Description	Libraries from single cells were pooled and purified using AMPure XP beads (Beckman Coulter). Pooled samples were sequenced aiming at an average depth of 1Million reads/cell, on an Illumina HiSeq 2500 (paired-end 100-bp reads) or Illumina HiSeq 2000 v4 chemistry (paired-end 75-bp reads).	Gene expression from scRNA-seq data was quantified in Transcripts Per Million (TPM) using Salmon v0.6.0, with the parameters --fldMax 150000000 --fldMean 350 --fldSD 250 --numBootstraps 100 --biasCorrect --allowOrphans --useVBOpt. For mouse, the cDNA sequences used contain genes from GRCm38 and sequences from RepBase, as well as ERCC sequences and an EGFP sequence. Since the EGFP RNA is transcribed together with Foxp3, TPM from these two genes were added after quantification to represent Foxp3 expression. For human data quantification, cDNA sequences from GRCh38 and ERCC were used.	Isolation of mouse CD4+ T cells: Isolation of murine leukocytes for steady-state skin dataset: To isolate leukocytes from ear tissue, ears were removed at the base, split into halves and cut into very small pieces. Tissue was digested in 3.5ml RPMI media with 0.1% BSA, 15mM Hepes, 1mg/ml collagenase D (Roche) and 450g/ml Liberase TL (Roche) for 60 minutes at 37C in a shaking incubator at 200rpm. Digested tissue was passed through an 18G needle to further disrupt the tissue and release cells. Cells were passed through a 70m cell strainer, and the digestion was terminated by addition of ice-cold RPMI containing 0.1%BSA and 5mM EDTA. A three-layer (30/40/70%) Percoll density-gradient was used to enrich for the lymphocytes. Cells obtained from the digestion were layered in the 30% layer on top of the 40% and 70% layers, and centrifuged for 20 minutes at 1800rpm without brake. Cells at the 40/70% interface were collected for the subsequent analysis. Cell suspensions from spleen and bLN were prepared as described previously (Uhlig et al., 2006). Isolation of murine leukocytes for steady-state colon dataset: Colons were washed twice in RPMI media with 0.1%BSA and 5mM EDTA in a shaking incubator at 200rpm at 37C to remove epithelial cells. The tissue was then digested for an hour in the presence of RPMI/10%FCS/15mM Hepes with 100U/ml collagenase VIII. Digestion was terminated by addition of ice-cold RPMI/10% FCS/5mM EDTA. A three-layer (30/40/70%) Percoll density-gradient was used to enrich for the lymphocytes. Cells obtained from the digestion were layered in the 30% layer on top of the 40% and 70% layers, and centrifuged for 20 minutes at 1800rpm without brake. Cells at the 40/70% interface were collected for the subsequent analysis. Cell suspensions from spleen and mLN were prepared as described previously (Uhlig et al., 2006).	Isolation of human CD4+ T cells: Isolation of leukocytes from Human skin: Plastic surgery skin included reticular dermis to the depth of the fat layer.  The upper 200 microns of skin were harvested using a split skin graft knife.  Whole skin was digested in RF10 with 1.6mg/ml type IV collagenase for 12-16 hours at 37C and 5%CO2.  Digest was passed repeatedly through a 10ml pipette until no visible material remained. To yield a single cell suspension, digest was passed through a 100-micron filter into a polypropylene sorting tube. Wells were washed twice using cold sort buffer without calcium or magnesium to collect residual and adherent cells.Isolation of leukocytes from Human colon:Normal regions of bowel adjacent to resected colorectal tumours were prepared as previously described, with minor modifications (Bettelli et al., 2006; Geremia et al., 2011). In brief, mucosa was dissected and washed in 1 mM dithiothreitol (DTT) solution for 15 min at room temperature to remove mucus. Specimens were then washed three times in 0.75 mM EDTA to deplete epithelial crypts and were digested for 2h in 0.1 mg/ml collagenase A solution (Roche, UK). For enrichment of mononuclear cells, digests were centrifuged for 30 min at 500g in a four-layer Percoll gradient and collected at the 40%/60% interface.Peripheral blood mononuclear cell isolation: 10ml blood from skin donors were collected into EDTA. Density centrifugation with Lymphoprep was performed according to manufacturer instructions. Recovered cells were cryopreserved by pelleting and resuspending in 1ml heat-inactivated fetal calf serum containing 10% DMSO, and storing at -80oC. Cryovials were later thawed in water bath, then rapidly being transferred to warmed medium (RPMI 1640 with 100IU/ml penicillin, 10ug/ml streptomycin, 2mM L-glutamine, 10% heat-inactivated fetal calf serum) and filtered through a 100-micron filter.	Mouse and human cell suspensions were stained with the antibodies in Supplementary Table 1 and DAPI. Single-cells were sorted in 2l of Lysis Buffer (1:20 solution of RNase Inhibitor (Clontech, cat. no. 2313A) in 0.2% v/v Triton X-100 (Sigma-Aldrich, cat. no. T9284)) in 96 well plates, spun down and immediately frozen at -80 degrees. Smart-seq2 protocol was largely followed to obtain mRNA libraries from single-cells. Oligo-dT primer, dNTPs (ThermoFisher, cat. no. 10319879) and ERCC RNA Spike-In Mix (1:50,000,000 final dilution, Ambion, cat. no. 4456740) were then added. Reverse Transcription and PCR were performed as previously published21, using 50U of SMARTScribeTM Reverse Transcriptase (Clontech, cat. no. 639538).	Mouse melanoma induction: The melanoma induction experiments were performed in accordance with UK Home Office regulations under Project License PPL 80/2574. Protocol used was adapted from a previous publication (Riedel et al., 2016). For syngeneic tumours, 2.5  105 B16.F10 melanoma cells were inoculated subcutaneously into the shoulder region 6- to 14-week-old female  Foxp3-IRES-GFP mice (Haribhai et al., 2007). Animals were excluded only if tumours failed to form or if health concerns were reported. Control Foxp3-IRES-GFP mice were injected with 50 l PBS. Animals were culled after 11 days. Tumour tissue, tumour-draining (brachial) lymph nodes and spleen were isolated for subsequent analysis. PBS-injected and steady-state skin, draining  lymph nodes (bLN) and spleen were collected from control mice. Tumour and PBS-injected skin were mechanically disrupted and digested in a 1ml mixture of 1 mg/ml collagenase A (Roche) and 0.4 mg/ml DNase I (Roche) in PBS (solution A) at 37C for 1h with 600rpm rotation. 1ml of PBS containing 1mg/ml Collagenase D (Roche) and 0.4 mg/ml DNase I (solution B) was then added to each sample, which returned  to 37 C for 1h with 600 rpm rotation. Lymph nodes were digested for 30min in 500l of solution A, and for further 30min after the addition of 500l of solution B. EDTA at the final concentration of 10mM was added to all samples. Spleens were processed as described previously (Uhlig et al., 2006). Suspensions were passed through a 70 m mesh before immunostaining with combinations of fluorescently conjugated antibodies. Samples from different animals were kept separated throughout processing and sorting. Cells from PBS-injected and steady-state skin were compared and concluded to be equivalent in expression.	The cDNA libraries for sequencing were prepared using Nextera XT DNA Sample Preparation Kit (Illumina, cat. no. FC-131-1096), according to the protocol supplied by Fluidigm (PN 100-5950 B1).
+Protocol Parameters
+Protocol Hardware	Illumina HiSeq 2500
+Protocol Software		Salmon v0.6.0
+Protocol Contact
+
+Term Source Name	EFO	ArrayExpress
+Term Source File	http://www.ebi.ac.uk/efo/	http://www.ebi.ac.uk/arrayexpress/
+Term Source Version	2.38
+
+SDRF File	E-MTAB-6072.sdrf.txt
+Comment [Submitted Name]	Single-cell RNA-seq of CD4+ Treg and Tmem cells from different tissues in mouse and human
+Comment [SecondaryAccession]	ERP104512
+Comment [SequenceDataURI]	http://www.ebi.ac.uk/ena/data/view/ERR2139464-ERR2143684
+Comment [AEExperimentType]	RNA-seq of coding RNA from single cells
+Comment[ArrayExpressAccession]	E-MTAB-6072

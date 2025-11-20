@@ -1,6 +1,9 @@
+# circyto/writers/convert.py
 from __future__ import annotations
+
 from pathlib import Path
 from typing import List, Optional
+
 import numpy as np
 import pandas as pd
 from scipy import sparse as sp
@@ -30,10 +33,15 @@ def _read_index_lines(p: Path) -> List[str]:
 
 
 def to_loom(
-    matrix_csr: sp.csr_matrix, circ_ids: List[str], cell_ids: List[str], out_path: str
+    matrix_csr: sp.csr_matrix,
+    circ_ids: List[str],
+    cell_ids: List[str],
+    out_path: str,
 ) -> Optional[str]:
     """
-    Write a loom file. loom expects (rows, cols) = (features, cells).
+    Write a loom file.
+
+    loom expects (rows, cols) = (features, cells).
     Our internal matrix is (circs, cells) already, so no transpose here.
     Handle empty matrices by writing a small TSV instead.
     """
@@ -62,10 +70,15 @@ def to_loom(
 
 
 def _to_h5ad(
-    matrix_csr: sp.csr_matrix, circ_ids: List[str], cell_ids: List[str], out_path: str
+    matrix_csr: sp.csr_matrix,
+    circ_ids: List[str],
+    cell_ids: List[str],
+    out_path: str,
 ) -> Optional[str]:
     """
-    Write H5AD using AnnData. AnnData expects X shape (cells, features).
+    Write H5AD using AnnData.
+
+    AnnData expects X shape (cells, features).
     We therefore pass X = matrix_csr.T (cells × circs).
     Handle empty matrices by constructing an empty CSR of shape (len(cells), len(circs)).
     """
@@ -76,6 +89,7 @@ def _to_h5ad(
     out.parent.mkdir(parents=True, exist_ok=True)
 
     n_rows, n_cols = matrix_csr.shape  # (circs, cells)
+
     # Construct X for AnnData: (cells, circs)
     if n_rows == 0 or n_cols == 0:
         X = sp.csr_matrix((len(cell_ids), len(circ_ids)), dtype=np.int32)
