@@ -1,6 +1,7 @@
 from pathlib import Path
 from typing import Dict, List, Tuple, Optional
 
+import numpy as np
 import pandas as pd
 from scipy import sparse
 from scipy.io import mmwrite
@@ -25,7 +26,12 @@ def _gather_cell_tsvs(in_dir: str) -> List[Tuple[str, Path]]:
 
 def _build_matrix_and_features(
     cirifull_dir: str,
-) -> Tuple[sparse.csr_matrix, List[str], List[str], Dict[str, Dict[str, Optional[str]]]]:
+) -> Tuple[
+    sparse.csr_matrix,
+    List[str],
+    List[str],
+    Dict[str, Dict[str, Optional[str]]],
+]:
     """
     Internal: build csr_matrix + circ_ids + cell_ids + feature dict in memory.
 
@@ -75,32 +81,35 @@ def _build_matrix_and_features(
             if circ not in circ_index:
                 circ_index[circ] = len(circ_index)
 
-                chrom = str(r["chr"]) if "chr" in df.columns and pd.notna(r["chr"]) else ""
+                chrom = (
+                    str(r["chr"])
+                    if "chr" in df.columns and pd.notna(r["chr"])
+                    else ""
+                )
 
                 # start
-                start = None
+                start: Optional[int] = None
                 if "start" in df.columns and pd.notna(r["start"]):
                     try:
                         start = int(r["start"])
                     except (ValueError, TypeError):
                         start = None
 
-    # end
-                end = None
+                # end
+                end: Optional[int] = None
                 if "end" in df.columns and pd.notna(r["end"]):
                     try:
                         end = int(r["end"])
                     except (ValueError, TypeError):
                         end = None
 
-                strand = str(r["strand"]) if "strand" in df.columns and pd.notna(r["strand"]) else ""
+                strand = ""
+                if "strand" in df.columns and pd.notna(r["strand"]):
+                    strand = str(r["strand"])
 
-                host_gene = (
-                    str(r["host_gene"])
-                    if "host_gene" in df.columns and pd.notna(r["host_gene"])
-                    else ""
-                )
-
+                host_gene = ""
+                if "host_gene" in df.columns and pd.notna(r["host_gene"]):
+                    host_gene = str(r["host_gene"])
 
                 features[circ] = {
                     "chrom": chrom,
@@ -112,7 +121,17 @@ def _build_matrix_and_features(
 
             rows.append(circ_index[circ])
             cols.append(col)
-            val = supports.get(circ, 1)
+
+            # Prefer 'support' if present; otherwise fall back to 'count' or 1
+            val = supports.get(circ)
+            if val is None:
+                if "count" in df.columns:
+                    try:
+                        val = int(r["count"])
+                    except Exception:
+                        val = 1
+                else:
+                    val = 1
             data.append(val)
 
     if not data:
@@ -150,9 +169,11 @@ def collect_matrix(
     """
     X, circ_ids, cell_ids, features = _build_matrix_and_features(cirifull_dir)
 
-    # Filter by per-cell totals (on the matrix)
-    if X.shape[1] > 0 and min_count_per_cell > 1:
-        keep_cols = X.sum(axis=0).A1 >= min_count_per_cell
+    # Column filter by total counts per cell
+    if min_count_per_cell > 0 and X.shape[1] > 0:
+        col_sums = np.asarray(X.sum(axis=0)).ravel()
+        keep_cols = col_sums >= min_count_per_cell
+
         if keep_cols.any():
             X = X[:, keep_cols]
             cell_ids = [cid for cid, keep in zip(cell_ids, keep_cols) if keep]
