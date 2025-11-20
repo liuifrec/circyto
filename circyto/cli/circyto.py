@@ -7,26 +7,25 @@ from typing import List, Optional
 import typer
 from rich.console import Console
 
-from ..pipeline.prepare import extract_per_cell_fastq
-from ..pipeline.run_cirifull import (
+from circyto.pipeline.prepare import extract_per_cell_fastq
+from circyto.pipeline.run_cirifull import (
     run_cirifull_over_fastqs,
     run_cirifull_with_manifest,
 )
-from ..pipeline.collect import collect_matrix
-from ..writers.convert import convert_matrix_files
-from ..pipeline.export_multimodal import export_multimodal as _export_multimodal
-from ..pipeline.annotate_host_gene import annotate_host_genes
-from ..pipeline.run_detector import run_detector_manifest
-from ..pipeline.run_multidetector import run_multidetector_pipeline
-from ..pipeline.merge_detectors import merge_detectors as _merge_detectors
-from ..pipeline.compare_detectors import compare_detectors as _compare_detectors
-from ..pipeline.multidetector_collect import (
+from circyto.pipeline.collect import collect_matrix
+from circyto.writers.convert import convert_matrix_files
+from circyto.pipeline.export_multimodal import export_multimodal as _export_multimodal
+from circyto.pipeline.annotate_host_gene import annotate_host_genes
+from circyto.pipeline.run_detector import run_detector_manifest
+from circyto.pipeline.run_multidetector import run_multidetector_pipeline
+from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
+from circyto.pipeline.compare_detectors import compare_detectors as _compare_detectors
+from circyto.pipeline.multidetector_collect import (
     build_detector_matrix,
     write_matrix,
 )
-from ..utils import ensure_dir
-from ..detectors import available_detectors, build_default_engines
-
+from circyto.utils import ensure_dir
+from circyto.detectors import build_default_engines
 
 app = typer.Typer(
     add_completion=False,
@@ -41,9 +40,8 @@ app = typer.Typer(
 )
 console = Console()
 
-
 # --------------------------------------------------------------------------------------
-# Core 10x / CIRI-full pipeline commands (legacy, still supported)
+# Core 10x / CIRI-full pipeline commands
 # --------------------------------------------------------------------------------------
 
 
@@ -205,10 +203,10 @@ def collect(
     Collect CIRI-full per-cell TSVs into a circ × cell MatrixMarket matrix.
     """
     collect_matrix(
-        cirifull_dir=cirifull_dir,
-        matrix=matrix,
-        circ_index=circ_index,
-        cell_index=cell_index,
+        cirifull_dir=str(cirifull_dir),
+        matrix_path=str(matrix),
+        circ_index_path=str(circ_index),
+        cell_index_path=str(cell_index),
         min_count_per_cell=min_count_per_cell,
     )
 
@@ -243,9 +241,9 @@ def convert(
     Convert circ × cell matrix and index files to loom/h5ad.
     """
     convert_matrix_files(
-        matrix=matrix,
-        circ_index=circ_index,
-        cell_index=cell_index,
+        matrix_path=matrix,
+        circ_index_path=circ_index,
+        cell_index_path=cell_index,
         loom=loom,
         h5ad=h5ad,
     )
@@ -338,19 +336,18 @@ def make(
     cell_idx = outdir / "cell_index.txt"
 
     collect_matrix(
-        cirifull_dir=outdir / "cirifull_out",
-        matrix=mat,
-        circ_index=circ_idx,
-        cell_index=cell_idx,
+        cirifull_dir=str(outdir / "cirifull_out"),
+        matrix_path=str(mat),
+        circ_index_path=str(circ_idx),
+        cell_index_path=str(cell_idx),
         min_count_per_cell=1,
     )
     convert_matrix_files(
-        matrix=mat,
-        circ_index=circ_idx,
-        cell_index=cell_idx,
+        matrix_path=mat,
+        circ_index_path=circ_idx,
+        cell_index_path=cell_idx,
         h5ad=outdir / "circ.h5ad",
     )
-
 
 # --------------------------------------------------------------------------------------
 # Multimodal export and host-gene annotation
@@ -432,7 +429,6 @@ def annotate_host_genes_cmd(
         max_genes_per_circ=max_genes_per_circ,
     )
 
-
 # --------------------------------------------------------------------------------------
 # Detector API: single-detector and multi-detector runners
 # --------------------------------------------------------------------------------------
@@ -500,24 +496,23 @@ def run_detector_cmd(
         f"[bold cyan][circyto][/bold cyan] Completed {len(results)} jobs into {outdir}"
     )
 
+
 @app.command("run-multidetector")
 def run_multidetector_cmd(
     detectors: List[str] = typer.Argument(..., help="List of detectors to run"),
     manifest: Path = typer.Option(..., exists=True, dir_okay=False),
     outdir: Path = typer.Argument(...),
-    ref_fa: Path = typer.Option(None),
-    gtf: Path = typer.Option(None),
-    threads: int = 8,
-    parallel: int = 1,
-):
+    ref_fa: Optional[Path] = typer.Option(None),
+    gtf: Optional[Path] = typer.Option(None),
+    threads: int = typer.Option(8),
+    parallel: int = typer.Option(1),
+) -> None:
     """
     Run multiple detectors on the same manifest.
     """
-    from circyto.pipeline.run_multidetector import run_multidetector_pipeline
-
     outdir.mkdir(parents=True, exist_ok=True)
 
-    result = run_multidetector_pipeline(
+    run_multidetector_pipeline(
         detectors=detectors,
         manifest=manifest,
         outdir=outdir,
@@ -528,7 +523,6 @@ def run_multidetector_cmd(
     )
 
     typer.echo(f"[run-multidetector] Completed. Summary at {outdir/'summary.json'}")
-
 
 # --------------------------------------------------------------------------------------
 # Multi-detector: merge, collect matrices, compare
@@ -647,3 +641,7 @@ def compare_detectors_cmd(
         if meta:
             msg += f" meta={meta}"
     console.print(msg)
+
+
+if __name__ == "__main__":
+    app()
