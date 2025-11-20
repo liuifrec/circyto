@@ -1,4 +1,24 @@
 # 🧬 Changelog
+## [v0.8.0] - 2025-11-20
+
+### Added
+- End-to-end **CIRI-full integration** via `circyto run-manifest` + `circyto collect`, with a chr21 Smart-seq2 test plate.
+- New **chr21 Smart-seq2 integration test** (`test_cirifull_chr21_integration.py`) validating a non-empty circ × cell matrix.
+- Convenience scripts and docs for downloading ENA FASTQ subsets with `aria2c` (`make_fastq_urls.py` and usage notes).
+
+### Changed
+- Normalized and simplified `writers/convert.py` so matrix/AnnData conversion behaves consistently across commands.
+- Cleaned and unified the collect pipeline (`pipeline/collect.py`), including consistent index writing and min-count handling.
+- Updated command templates for CIRI-full (`run_cirifull_with_manifest`) to work cleanly under WSL/Ubuntu and local Linux.
+
+### Removed
+- Large meta-data files `E-MTAB-6072.idf.txt` and `E-MTAB-6072.sdrf.txt` from the repository.
+- Kept only the **chr21 subset reference** (`ref/chr21.fa`, `ref/chr21.gtf`) and manifest files needed for tests.
+
+### Documentation
+- Updated `README.md` with WSL instructions and clarified how to run the chr21 integration tests locally.
+- Extended `.gitignore` to exclude experiment metadata and runtime artifacts (e.g., `E-MTAB-6072*.txt`, `tests/out_*`, `tests/*.mtx`).
+
 # Changelog — v0.7.0
 
 ## Added
