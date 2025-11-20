@@ -29,7 +29,7 @@ env/
 # OS noise
 .DS_Store
 Thumbs.db
-
+E-MTAB-6072*.txt
 # circyto runtime artifacts
 tests/out_*/
 tests/*.mtx

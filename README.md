@@ -1,9 +1,6 @@
 # circCyto
 
 <p align="center">
-  <a href="https://github.com/liuifrec/circyto/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?branch=main&label=CI&style=flat-square" />
-  </a>
   <a href="https://github.com/liuifrec/circyto/releases">
     <img src="https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag&sort=semver&style=flat-square" />
   </a>
@@ -46,7 +43,7 @@ Core ideas:
 
 ---
 
-## ✨ Features (v0.7.0)
+## ✨ Features (v0.8.0)
 
 - 🔧 **Single-detector runs**
   - `circyto run-detector` wraps individual engines:
