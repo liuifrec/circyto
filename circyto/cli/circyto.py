@@ -24,6 +24,7 @@ from circyto.pipeline.multidetector_collect import (
     build_detector_matrix,
     write_matrix,
 )
+from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
 from circyto.utils import ensure_dir
 from circyto.detectors import build_default_engines
 
@@ -204,6 +205,48 @@ def collect(
     """
     collect_matrix(
         cirifull_dir=str(cirifull_dir),
+        matrix_path=str(matrix),
+        circ_index_path=str(circ_index),
+        cell_index_path=str(cell_index),
+        min_count_per_cell=min_count_per_cell,
+    )
+
+
+@app.command("collect-find-circ3")
+def collect_find_circ3_cmd(
+    findcirc3_dir: Path = typer.Option(
+        ...,
+        exists=True,
+        help=(
+            "Directory with find_circ3 per-cell outputs "
+            "(<cell_id>/<cell_id>_splice_sites.bed)."
+        ),
+    ),
+    matrix: Path = typer.Option(
+        ...,
+        help="Output sparse matrix (.mtx, rows=circ, cols=cells)",
+    ),
+    circ_index: Path = typer.Option(
+        ...,
+        help="Output circ index (rows, one circ_id per line)",
+    ),
+    cell_index: Path = typer.Option(
+        ...,
+        help="Output cell index (columns, one cell_id per line)",
+    ),
+    min_count_per_cell: int = typer.Option(
+        1,
+        help="Minimum total n_reads per cell to keep that column.",
+    ),
+) -> None:
+    """
+    Collect find_circ3 per-cell splice_sites.bed files into a circ × cell
+    MatrixMarket matrix + circ/cell index files.
+
+    This is the find_circ3 analogue of the CIRI-full `collect` command.
+    """
+    collect_find_circ3_matrix(
+        findcirc3_dir=str(findcirc3_dir),
         matrix_path=str(matrix),
         circ_index_path=str(circ_index),
         cell_index_path=str(cell_index),
@@ -438,7 +481,7 @@ def annotate_host_genes_cmd(
 def run_detector_cmd(
     detector: str = typer.Argument(
         ...,
-        help="Detector name (e.g. 'ciri-full', 'ciri2')",
+        help="Detector name (e.g. 'ciri-full', 'ciri2','find-circ3')",
     ),
     manifest: Path = typer.Option(
         ...,
