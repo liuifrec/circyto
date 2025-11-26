@@ -41,3 +41,8 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 circyto = ["**/*.txt", "**/*.sh"]
+[tool.pytest.ini_options]
+markers = [
+  "slow: slow tests that may take longer to run",
+  "integration: integration tests that require external tools (bowtie2, find-circ3, etc.)"
+]

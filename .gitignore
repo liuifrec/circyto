@@ -49,3 +49,16 @@ ref/
 tools/**/CIRI-full_test/
 work_smartseq2/
 work/
+
+# circyto auto generated outputs
+tests/*_manifest*/**
+tests/find_circ3_manifest*/**
+tests/circexplorer2_manifest*/**
+tests/**/ERR*/**
+work/**
+ref/star_index/**
+*.bam
+*.sam
+*.fastq
+*.fastq.gz
+*.mtx
