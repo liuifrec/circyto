@@ -2,16 +2,12 @@
   <img src="assets/circCyto_logo.png" alt="circyto logo" width="440">
 </p>
 
+
 <p align="center">
   <a href="https://github.com/liuifrec/circyto/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?label=CI&style=for-the-badge" alt="CI status">
+    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?label=CI&style=for-the-badge" alt="CI">
   </a>
-  <a href="https://github.com/liuifrec/circyto/releases">
-    <img src="https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag&style=for-the-badge" alt="Latest release">
-  </a>
-  <a href="https://pypi.org/project/circyto/">
-    <img src="https://img.shields.io/pypi/v/circyto?style=for-the-badge" alt="PyPI">
-  </a>
+  <img src="https://img.shields.io/badge/version-v0.8.0-blue?style=for-the-badge" alt="v0.8.0">
   <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/liuifrec/circyto?style=for-the-badge" alt="License">
   </a>
