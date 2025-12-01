@@ -1,32 +1,33 @@
-# circyto: Single-Cell circRNA Detection Suite
-
 <p align="center">
-  <img src="https://raw.githubusercontent.com/liuifrec/circyto/main/assets/circCyto_logo.png" alt="circyto logo" width="200">
+  <img src="https://raw.githubusercontent.com/liuifrec/circyto/main/assets/circCyto_logo.png"
+       alt="circyto logo" width="440" />
 </p>
 
+<h1 align="center">circyto: Single-Cell circRNA Detection Suite</h1>
+
 <p align="center">
-  <a href="https://github.com/liuifrec/circyto/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?label=CI&logo=github">
+  <a href="https://github.com/liuifrec/circyto/actions/workflows/ci.yml">
+    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?branch=main"
+         alt="CI status" />
   </a>
-  <a href="https://pypi.org/project/circyto/">
-    <img src="https://img.shields.io/pypi/v/circyto">
-  </a>
-  <img src="https://img.shields.io/pypi/pyversions/circyto">
-  <img src="https://img.shields.io/github/license/liuifrec/circyto">
-  <img src="https://img.shields.io/github/status/contexts/liuifrec/circyto/main">
+  <img src="https://img.shields.io/badge/python-3.10%20|%203.11%20|%203.12-blue"
+       alt="Supported Python versions" />
+  <img src="https://img.shields.io/badge/status-experimental-orange"
+       alt="Project status: experimental" />
 </p>
 
-`circyto` is a **multi-detector circRNA discovery pipeline for
-single‑cell datasets**, supporting:
+---
 
--   **CIRI‑full**
--   **find_circ3**
--   **CIRCexplorer2**
--   Multi-detector comparison & merging
--   Smart‑seq2 / 10x support
--   Matrix export (MatrixMarket + AnnData multimodal exporter)
--   Host‑gene annotation
--   Deterministic CI‑safe test datasets
+`circyto` is a multi-detector circRNA discovery pipeline for single-cell datasets, supporting:
+
+- **CIRI-full** (Smart-seq2 / full-length)
+- **find_circ3**
+- **CIRCexplorer2**
+- Multi-detector comparison & merging
+- Smart-seq2 / 10x support
+- Matrix export (MatrixMarket + AnnData multimodal exporter)
+- Host-gene annotation
+- Basic demo + integration tests for each detector
 
 ------------------------------------------------------------------------
 
