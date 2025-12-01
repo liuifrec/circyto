@@ -26,7 +26,7 @@ produces standardized outputs suitable for downstream single-cell analysis
 
 ---
 
-## ✨ Features (v0.8.x)
+## ✨ Features (v0.8.1)
 
 ### Core
 
@@ -57,12 +57,12 @@ FASTQ
 
 ### Multi-detector support
 
-| Detector           | Type                     | Status         | Notes                                           |
-|--------------------|--------------------------|----------------|------------------------------------------------|
-| **CIRI-full**      | Full-length detection    | ✔ Stable       | Best for Smart-seq2 / full-length short reads  |
-| **CIRI2**          | Short-read               | ✔ Supported    | Adapter included                               |
-| **find_circ3**     | Junction detector        | ⚗ Experimental | Validated on chr21 mini; Python 3 rewrite      |
-| **CIRCexplorer2**  | Splice junction          | In progress    | Next integration target                        |
+| Detector           | Type                      | Status                | Notes                                                      |
+|--------------------|---------------------------|-----------------------|-----------------------------------------------------------|
+| **CIRI-full**      | Full-length detection     | ✔ Stable              | Best for Smart-seq2 / full-length short reads             |
+| **CIRI2**          | Short-read detector       | ✔ Supported           | Adapter registered via unified detector engine            |
+| **find_circ3**     | Junction detector         | ✔ Stable (v0.8.1)     | New Python 3 engine + MatrixMarket collection path        |
+| **CIRCexplorer2**  | Splice junction detector  | ⚗ Experimental        | Engine + `collect-circexplorer2-matrix`; heavy tests skip |
 
 > Legacy **find_circ** has been removed in favor of **find_circ3**.
 
