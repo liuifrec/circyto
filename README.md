@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="assets/circyto-logo-dark.png" alt="circyto logo" width="440">
+  <img src="assets/circCyto_logo.png" alt="circyto logo" width="440">
 </p>
 
 <p align="center">
