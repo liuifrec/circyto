@@ -1,23 +1,21 @@
 # circyto: Single-Cell circRNA Detection Suite
 
-```{=html}
 <p align="center">
-```
-`<img src="https://raw.githubusercontent.com/liuifrec/circyto/main/assets/circCyto_logo.png" alt="circyto logo" width="200"/>`{=html}
-```{=html}
+  <img src="https://raw.githubusercontent.com/liuifrec/circyto/main/assets/circCyto_logo.png" alt="circyto logo" width="200">
 </p>
-```
-```{=html}
+
 <p align="center">
-```
-`<a href="https://github.com/your-org/circyto/actions">`{=html}`<img src="https://img.shields.io/github/actions/workflow/status/your-org/circyto/ci.yml?label=CI&logo=github">`{=html}`</a>`{=html}
-`<a href="https://pypi.org/project/circyto/">`{=html}`<img src="https://img.shields.io/pypi/v/circyto?color=blue&logo=pypi">`{=html}`</a>`{=html}
-`<img src="https://img.shields.io/badge/python-3.9_|_3.10_|_3.11_|_3.12-blue?logo=python">`{=html}
-`<img src="https://img.shields.io/github/license/your-org/circyto">`{=html}
-`<img src="https://img.shields.io/badge/status-active-success">`{=html}
-```{=html}
+  <a href="https://github.com/liuifrec/circyto/actions">
+    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?label=CI&logo=github">
+  </a>
+  <a href="https://pypi.org/project/circyto/">
+    <img src="https://img.shields.io/pypi/v/circyto">
+  </a>
+  <img src="https://img.shields.io/pypi/pyversions/circyto">
+  <img src="https://img.shields.io/github/license/liuifrec/circyto">
+  <img src="https://img.shields.io/github/status/contexts/liuifrec/circyto/main">
 </p>
-```
+
 `circyto` is a **multi-detector circRNA discovery pipeline for
 single‑cell datasets**, supporting:
 
