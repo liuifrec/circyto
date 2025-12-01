@@ -7,7 +7,7 @@
   <a href="https://github.com/liuifrec/circyto/actions">
     <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?label=CI&style=for-the-badge" alt="CI">
   </a>
-  <img src="https://img.shields.io/badge/version-v0.8.0-blue?style=for-the-badge" alt="v0.8.0">
+  <img src="https://img.shields.io/badge/version-v0.8.0-blue?style=for-the-badge" alt="v0.8.1">
   <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
     <img src="https://img.shields.io/github/license/liuifrec/circyto?style=for-the-badge" alt="License">
   </a>
