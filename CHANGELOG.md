@@ -1,4 +1,30 @@
 # 🧬 Changelog
+
+## [v0.8.1] - 2025-12-01
+
+### Added
+- Refactored the detector engine around `DetectorRunInputs` and `DetectorResult`, with explicit `extra` and `meta` dicts and clearer typing.
+- Extended `build_default_engines()` to register **CIRI-full**, **CIRI2**, **find_circ3**, and experimental **CIRCexplorer2** via a unified detector API.
+- Implemented `run_multidetector_pipeline()` returning a structured `summary` and `results` mapping, used by the smoke tests.
+- New **find_circ3** integration path:
+  - `circyto run-detector find-circ3` and `run-multidetector` support.
+  - `collect-find-circ3` pipeline and CLI wiring, generating a circ × cell MatrixMarket matrix plus circ/cell index files.
+  - chr21 Smart‑seq2 mini‑plate integration test (`test_find_circ3_integration.py`) validating non‑empty outputs.
+- New **CIRCexplorer2** collection:
+  - `collect_circexplorer2_matrix` pipeline with a basic unit test.
+  - CLI command `collect-circexplorer2-matrix` for collecting normalized CIRCexplorer2 outputs.
+- Added small pytest utilities and fixtures to support multi-detector tests (`test_run_multidetector*.py`, `test_multidetector_demo.py`).
+
+### Changed
+- Standardized `run-detector` and `run-multidetector` CLIs so that detectors are **positional** arguments and manifest / outdir / reference are handled via options.
+- `run-multidetector` now always creates a top‑level `summary.json` and returns the in‑memory summary to callers, making it easier to introspect results from Python.
+- Tightened defaults for `DetectorRunInputs.extra` (always a dict) and `DetectorResult.meta` (defaults to `{}`) to avoid `None` checks in downstream code.
+- Improved messages when required external tools (e.g., STAR, CIRI-full) or environment variables are missing, and made the CIRCexplorer2 integration test gracefully skip when `CIRCYTO_CIRCEXPLORER2_STAR_INDEX` is empty.
+
+### Known Issues
+- Full CIRCexplorer2 support is still **experimental** and heavy integration tests remain skipped unless a working STAR index and CIRCexplorer2 installation are configured.
+- Multi-detector comparison and visualization remain planned for a future `v0.9.x` release.
+
 ## [v0.8.0] - 2025-11-20
 
 ### Added
@@ -62,34 +88,23 @@ This release introduces the first major extension beyond single-detector workflo
 Run multiple detectors on the same manifest:
 
 ```bash
-circyto run-multidetector ciri-full ciri2 \
-  --manifest manifest.tsv \
-  --outdir work/multi \
-  --ref-fa ref.fa --gtf genes.gtf \
-  --threads 8 --parallel 1
-5. Utils
+circyto run-multidetector ciri-full ciri2   --manifest manifest.tsv   --outdir work/multi   --ref-fa ref.fa --gtf genes.gtf   --threads 8 --parallel 1
+```
 
-Added ensure_dir, read_tsv, write_tsv
+#### 5. Utils
+- Added `ensure_dir`, `read_tsv`, `write_tsv`.
+- Added `build_default_engines()` to enumerate detectors.
 
-Added build_default_engines() to enumerate detectors
+### 🐛 Fixes & Improvements
+- Improved adapter environment handling.
+- Path robustness in Codespaces.
+- Deterministic output directory naming.
+- Clearer detector availability messages.
 
-🐛 Fixes & Improvements
-
-Improved adapter environment handling
-
-Path robustness in Codespaces
-
-Deterministic output directory naming
-
-Clearer detector availability messages
-
-⚠ Known Issues
-
-CIRI-full requires --parallel 1 for stability on Codespaces
-
-CIRI2 strict filtering often eliminates marginal circRNAs
-
-Multi-detector merging not yet implemented — planned for v0.7.0
+### ⚠ Known Issues
+- CIRI-full requires `--parallel 1` for stability on Codespaces.
+- CIRI2 strict filtering often eliminates marginal circRNAs.
+- Multi-detector merging not yet implemented — planned for v0.7.0.
 
 ## [0.4.0] - 2025-11-13 (unreleased)
 ### Added
@@ -115,7 +130,6 @@ Multi-detector merging not yet implemented — planned for v0.7.0
 - MatrixMarket header uses `general` for `collect` outputs (compatible with Scanpy / scipy.io.mmread).
 
 ### TODO / Planned (0.4.x)
-
 - Add `circyto export-h5ad` command to export circRNA × cell matrices as `.h5ad` for direct use with Scanpy.
 - Normalize circRNA IDs to a consistent internal format: `chr:start|end|strand`.
 - Add initial support and documentation for additional detectors (CIRI-long, CIRCexplorer2, find_circ).
