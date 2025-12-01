@@ -62,3 +62,6 @@ ref/star_index/**
 *.fastq
 *.fastq.gz
 *.mtx
+back_spliced_junction.bed
+scripts/
+circyto/pipeline/detector_compare.py

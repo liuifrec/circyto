@@ -1,4 +1,3 @@
-# circyto/cli/circyto.py
 from __future__ import annotations
 
 from pathlib import Path
@@ -25,6 +24,7 @@ from circyto.pipeline.multidetector_collect import (
     write_matrix,
 )
 from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
+from circyto.pipeline.collect_circexplorer2 import collect_circexplorer2_matrix
 from circyto.utils import ensure_dir
 from circyto.detectors import build_default_engines
 
@@ -242,8 +242,6 @@ def collect_find_circ3_cmd(
     """
     Collect find_circ3 per-cell splice_sites.bed files into a circ × cell
     MatrixMarket matrix + circ/cell index files.
-
-    This is the find_circ3 analogue of the CIRI-full `collect` command.
     """
     collect_find_circ3_matrix(
         findcirc3_dir=str(findcirc3_dir),
@@ -252,6 +250,64 @@ def collect_find_circ3_cmd(
         cell_index_path=str(cell_index),
         min_count_per_cell=min_count_per_cell,
     )
+
+
+@app.command("collect-circexplorer2")
+def collect_circexplorer2_cmd(
+    circexplorer2_dir: Path = typer.Option(
+        ...,
+        exists=True,
+        help=(
+            "Directory with CIRCexplorer2 per-cell outputs "
+            "(<cell_id>/circularRNA_known.txt)."
+        ),
+    ),
+    matrix: Path = typer.Option(
+        ...,
+        help="Output sparse matrix (.mtx, rows=circ, cols=cells)",
+    ),
+    circ_index: Path = typer.Option(
+        ...,
+        help="Output circ index (rows, one circ_id per line)",
+    ),
+    cell_index: Path = typer.Option(
+        ...,
+        help="Output cell index (columns, one cell_id per line)",
+    ),
+    min_support: int = typer.Option(
+        1,
+        help="Minimum readNumber (support) per circRNA per cell.",
+    ),
+) -> None:
+    """
+    Collect CIRCexplorer2 per-cell circularRNA_known.txt files into a circ × cell
+    MatrixMarket matrix + circ/cell index files.
+    """
+    outdir = matrix.parent
+    outdir.mkdir(parents=True, exist_ok=True)
+
+    collect_circexplorer2_matrix(
+        indir=circexplorer2_dir,
+        outdir=outdir,
+        min_support=min_support,
+    )
+
+    # Move/rename default outputs to requested paths if needed
+    default_matrix = outdir / "circ_counts.mtx"
+    default_circ = outdir / "circ_index.txt"
+    default_cell = outdir / "cell_index.txt"
+
+    if default_matrix.exists() and matrix != default_matrix:
+        default_matrix.replace(matrix)
+    if default_circ.exists() and circ_index != default_circ:
+        default_circ.replace(circ_index)
+    if default_cell.exists() and cell_index != default_cell:
+        default_cell.replace(cell_index)
+
+
+# --------------------------------------------------------------------------------------
+# Conversion, one-shot make
+# --------------------------------------------------------------------------------------
 
 
 @app.command()
@@ -392,6 +448,7 @@ def make(
         h5ad=outdir / "circ.h5ad",
     )
 
+
 # --------------------------------------------------------------------------------------
 # Multimodal export and host-gene annotation
 # --------------------------------------------------------------------------------------
@@ -472,6 +529,7 @@ def annotate_host_genes_cmd(
         max_genes_per_circ=max_genes_per_circ,
     )
 
+
 # --------------------------------------------------------------------------------------
 # Detector API: single-detector and multi-detector runners
 # --------------------------------------------------------------------------------------
@@ -481,7 +539,7 @@ def annotate_host_genes_cmd(
 def run_detector_cmd(
     detector: str = typer.Argument(
         ...,
-        help="Detector name (e.g. 'ciri-full', 'ciri2','find-circ3')",
+        help="Detector name (e.g. 'ciri-full', 'ciri2', 'find-circ3', 'circexplorer2')",
     ),
     manifest: Path = typer.Option(
         ...,
@@ -566,6 +624,7 @@ def run_multidetector_cmd(
     )
 
     typer.echo(f"[run-multidetector] Completed. Summary at {outdir/'summary.json'}")
+
 
 # --------------------------------------------------------------------------------------
 # Multi-detector: merge, collect matrices, compare

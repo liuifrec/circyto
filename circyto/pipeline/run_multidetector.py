@@ -1,62 +1,112 @@
 # circyto/pipeline/run_multidetector.py
+
 from __future__ import annotations
+
 import json
 from pathlib import Path
-from typing import List, Dict
+from typing import Sequence
 
-from .run_detector import run_detector_manifest
-from circyto.detectors import build_default_engines
-from circyto.utils import ensure_dir
+from circyto.detectors import available_detectors
+from circyto.pipeline.run_detector import run_detector_manifest
 
 
 def run_multidetector_pipeline(
-    detectors: List[str],
+    detectors: Sequence[str],
     manifest: Path,
     outdir: Path,
-    ref_fa: Path | None,
-    gtf: Path | None,
-    threads: int = 8,
+    ref_fa: Path | None = None,
+    gtf: Path | None = None,
+    threads: int = 4,
     parallel: int = 1,
-) -> Dict[str, Dict]:
+) -> dict[str, list]:
+    """
+    Run multiple detectors over the same manifest.
 
+    Parameters
+    ----------
+    detectors
+        Iterable of detector names (e.g. ["ciri-full", "find-circ3", "circexplorer2"]).
+    manifest
+        Path to a manifest TSV with columns like: cell_id, r1, r2.
+    outdir
+        Root output directory. Per-detector subdirectories are created here.
+    ref_fa
+        Reference FASTA passed through to run_detector_manifest.
+    gtf
+        Optional GTF for detectors that need it.
+    threads
+        Number of threads per detector run (forwarded to the detector).
+    parallel
+        Max number of cells to process in parallel for each detector.
+
+    Returns
+    -------
+    dict[str, list]
+        Mapping from detector name to the list of DetectorResult objects
+        returned by run_detector_manifest for that detector.
+    """
     outdir = Path(outdir)
-    ensure_dir(outdir)
+    outdir.mkdir(parents=True, exist_ok=True)
 
-    engines = build_default_engines()
+    engines = available_detectors()
 
-    summary: Dict[str, Dict] = {}
+    # Validate requested detectors.
+    missing = [d for d in detectors if d not in engines]
+    if missing:
+        available = ", ".join(sorted(engines.keys()))
+        raise ValueError(
+            f"Detector(s) not available: {', '.join(missing)}. "
+            f"Available: {available}"
+        )
+
+    # What we return to callers/tests
+    result_map: dict[str, list] = {}
+
+    # What we serialize into summary.json (pure JSON-serializable)
+    summary_json: dict[str, dict] = {}
+    results_json: dict[str, list[dict]] = {}
 
     for det_name in detectors:
-        if det_name not in engines:
-            raise ValueError(f"Detector '{det_name}' not available. Available: {list(engines.keys())}")
+        det_engine = engines[det_name]
+        det_outdir = outdir / det_name
+        det_outdir.mkdir(parents=True, exist_ok=True)
 
-        det = engines[det_name]
-        print(f"[multidetector] >>> Running {det_name}")
-
-        det_out = outdir / det_name
-        ensure_dir(det_out)
-
-        results = run_detector_manifest(
-            detector=det,
+        detector_results = run_detector_manifest(
+            detector=det_engine,
             manifest=manifest,
-            outdir=det_out,
+            outdir=det_outdir,
             ref_fa=ref_fa,
             gtf=gtf,
             threads=threads,
             parallel=parallel,
         )
 
-        summary[det_name] = {
+        # Populate return object
+        result_map[det_name] = detector_results
+
+        # Build lightweight JSON view
+        results_json[det_name] = [
+            {
+                "cell_id": r.cell_id,
+                "tsv_path": str(getattr(r, "tsv_path", "")) if getattr(r, "tsv_path", None) else None,
+                "outdir": str(det_outdir),
+            }
+            for r in detector_results
+        ]
+
+        summary_json[det_name] = {
             "detector": det_name,
-            "n_cells": len(results),
-            "outdir": str(det_out),
+            "n_cells": len(detector_results),
+            "outdir": str(det_outdir),
         }
 
-    # ALWAYS write summary.json
+    payload = {
+        "summary": summary_json,
+        "results": results_json,
+    }
+
     summary_path = outdir / "summary.json"
     with summary_path.open("w") as f:
-        json.dump(summary, f, indent=2)
+        json.dump(payload, f, indent=2, sort_keys=True)
 
-    print(f"[multidetector] Summary written to {summary_path}")
-
-    return summary
+    return result_map
