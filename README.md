@@ -1,79 +1,126 @@
 <p align="center">
-  <img src="assets/circCyto_logo.png" alt="circyto logo" width="440">
+  <img src="assets/circyto_logo.png" width="440" alt="circyto logo">
 </p>
-
 
 <p align="center">
-  <a href="https://github.com/liuifrec/circyto/actions">
-    <img src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/ci.yml?label=CI&style=for-the-badge" alt="CI">
-  </a>
-  <img src="https://img.shields.io/badge/version-v0.8.0-blue?style=for-the-badge" alt="v0.8.1">
-  <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
-    <img src="https://img.shields.io/github/license/liuifrec/circyto?style=for-the-badge" alt="License">
-  </a>
+  <a href="https://github.com/liuifrec/circyto/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/liuifrec/circyto/tests.yml?branch=main"></a>
+  <a href="https://github.com/liuifrec/circyto/releases"><img alt="Release" src="https://img.shields.io/github/v/release/liuifrec/circyto?display_name=tag&sort=semver"></a>
+  <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/liuifrec/circyto"></a>
+  <a href="https://pypi.org/project/circyto/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
 </p>
-
----
 
 # circyto
 
-**circyto** is a unified Python CLI framework for **single-cell circRNA detection**,  
-**detector orchestration**, **matrix generation**, and **multimodal export**.
+**circyto** is a unified Python CLI framework for *single-cell circRNA detection*, *detector orchestration*, *matrix generation*, and *multimodal export*.
 
-It provides a clean, reproducible interface over multiple circRNA detectors and
-produces standardized outputs suitable for downstream single-cell analysis
-(**Scanpy, Seurat, scVI**, etc.).
+It provides a reproducible interface over multiple circRNA detectors and produces standardized outputs suitable for downstream single-cell analysis (Scanpy, Seurat, scVI, etc.).
 
 ---
 
-## ✨ Features (v0.8.1)
+## ✨ Features
 
 ### Core
-
 - Unified CLI for single-cell circRNA workflows
-- Detector drivers for:
-  - **CIRI-full** — short-read, full-length circRNA assembly
-  - **find_circ3** — modernized Python 3 rewrite of find_circ; junction detector
-- Manifest-driven batch execution for many cells / samples
-- Sparse **MatrixMarket circRNA × cell** export
-- **Host-gene annotation** using GTF
-- **Multimodal `.h5ad` export**  
-  - `.X` = mRNA  
-  - `obsm["X_circ"]` = circRNA counts  
-  - `uns["circ"]` = circRNA metadata (including feature table & host-gene map)
+- Detector runners for:
+  - **CIRI-full** — full-length circRNA detection (Smart-seq2 / full-length short reads)
+  - **find-circ3** — modernized Python 3 rewrite of `find_circ` (junction/anchor-based)
+- Manifest-driven batch execution (many cells / samples)
+- Sparse MatrixMarket circRNA × cell export
+- Host-gene annotation using GTF
+- Multimodal export to `.h5ad`:
+  - `.X` = mRNA (from an existing AnnData)
+  - `obsm["X_circ"]` = circRNA counts
+  - `uns["circ"]` = circRNA metadata (feature table, indices, host-gene map)
 
 ### Pipeline overview
 
-```text
+```
 FASTQ
-  └─> circyto run-detector / run-manifest
+  └─> circyto run-batch / run-detector / run-multidetector
          └─ per-cell circRNA calls
-              └─> circyto collect
-                    └─ circ_matrix.mtx  (+ circ_index / cell_index)
+              └─> circyto collect-matrix
+                    └─ circ_counts.mtx  (+ circ_index / cell_index)
                           └─> circyto annotate-host-genes
                                   └─> circyto export-multimodal
                                           └─ AnnData with mRNA + circRNA
 ```
 
-### Multi-detector support
+---
 
-| Detector           | Type                      | Status                | Notes                                                      |
-|--------------------|---------------------------|-----------------------|-----------------------------------------------------------|
-| **CIRI-full**      | Full-length detection     | ✔ Stable              | Best for Smart-seq2 / full-length short reads             |
-| **CIRI2**          | Short-read detector       | ✔ Supported           | Adapter registered via unified detector engine            |
-| **find_circ3**     | Junction detector         | ✔ Stable (v0.8.1)     | New Python 3 engine + MatrixMarket collection path        |
-| **CIRCexplorer2**  | Splice junction detector  | ⚗ Experimental        | Engine + `collect-circexplorer2-matrix`; heavy tests skip |
+## ✅ Command-line “truth table” (current interface)
 
-> Legacy **find_circ** has been removed in favor of **find_circ3**.
+The most common source of confusion is **where the detector name and outdir go**. Here’s the canonical map:
+
+### Recommended entry point: `run-batch` (single detector)
+- **Detector is a flag** (`--detector`)
+- **Output directory is a flag** (`--outdir`)
+
+```bash
+circyto run-batch \
+  --detector <DETECTOR> \
+  --manifest manifest.tsv \
+  --outdir work/<run_name> \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 8 \
+  --parallel 4
+```
+
+### `run-detector` (single detector)
+- **Detector is positional** (comes immediately after `run-detector`)
+- **Output directory is a flag** (`--outdir`)
+
+```bash
+circyto run-detector <DETECTOR> \
+  --manifest manifest.tsv \
+  --outdir work/<run_name> \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 8
+```
+
+> If you want “cells in parallel”, prefer `run-batch`, which exposes `--parallel` consistently.
+
+### `run-multidetector` (multiple detectors)
+- **Detectors are positional**
+- **OUTDIR is positional** (the last required positional argument)
+- Options can appear anywhere, but putting OUTDIR early avoids mistakes.
+
+```bash
+circyto run-multidetector \
+  <DETECTOR_A> <DETECTOR_B> [<DETECTOR_C> ...] \
+  work/<run_name> \
+  --manifest manifest.tsv \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 8 \
+  --parallel 2
+```
+
+### `collect-matrix` (unified matrix collector)
+- Uses a **detector flag** (`--detector`)
+- Uses **explicit output file paths** (matrix + index files)
+
+```bash
+circyto collect-matrix \
+  --detector <DETECTOR> \
+  --indir work/<run_name> \
+  --matrix work/<run_name>_matrix/circ_counts.mtx \
+  --circ-index work/<run_name>_matrix/circ_index.txt \
+  --cell-index work/<run_name>_matrix/cell_index.txt
+```
 
 ---
 
-## 🚀 Quick Start
+## 🚀 Quick start (bundled chr21 mini example)
 
-### 1. Run find_circ3 on the bundled chr21 mini example
+This repo includes a small chr21 reference + mini manifests (`manifest.tsv`, `manifest_2.tsv`) for smoke testing.
+
+### 1) Run **find-circ3** on the bundled mini manifest (recommended: `run-batch`)
 
 ```bash
-circyto run-detector find-circ3 \
+circyto run-batch \
+  --detector find-circ3 \
   --manifest manifest_2.tsv \
   --outdir work/find_circ3_chr21 \
   --ref-fa ref/chr21.fa \
@@ -81,140 +128,141 @@ circyto run-detector find-circ3 \
   --parallel 2
 ```
 
-### 2. Collect circRNA counts
+### 2) Collect a circRNA × cell matrix
 
 ```bash
-circyto collect-find-circ3 \
+mkdir -p work/find_circ3_chr21_matrix
+
+circyto collect-matrix \
+  --detector find-circ3 \
   --indir work/find_circ3_chr21 \
-  --outdir work/find_circ3_chr21_matrix
-```
-
-### 3. Annotate host genes
-
-```bash
-circyto annotate-host-genes \
-  --circ-tsv circ_feature_table.tsv \
-  --gtf Homo_sapiens.gtf \
-  --out circ_feature_table_annotated.tsv
-```
-
-### 4. Export multimodal AnnData
-
-```bash
-circyto export-multimodal \
-  --rna-h5ad rna.h5ad \
-  --circ-mtx circ_counts.mtx \
-  --circ-index circ_index.txt \
-  --cell-index cell_index.txt \
-  --circ-features circ_feature_table.tsv \
-  --out combined_multimodal.h5ad
+  --matrix work/find_circ3_chr21_matrix/circ_counts.mtx \
+  --circ-index work/find_circ3_chr21_matrix/circ_index.txt \
+  --cell-index work/find_circ3_chr21_matrix/cell_index.txt
 ```
 
 ---
 
-## 🧪 Testing
+## 🧪 Golden path: 16-cell chr21 test (CIRI-full)
 
-### Unit tests
+This is the recommended “sanity check” after installation. It runs a small Smart-seq2 subset on chr21 and produces a small circRNA × cell matrix.
 
-```bash
-pytest -q
-```
-
-### Integration tests (detectors)
-
-Run all integration tests:
+### 1) Run CIRI-full (manifest → per-cell calls)
 
 ```bash
-pytest -m "integration"
-```
-
-Skip heavy tests (e.g. on laptops / CI):
-
-```bash
-export CIRCYTO_SKIP_INTEGRATION=1
-```
-
----
-
-## 🔬 Example: 16-cell chr21 Smart-seq2 test (CIRI-full)
-
-This is a minimal integration test for a 16-cell Smart-seq2 subset mapped to
-**chr21** using **CIRI-full** via the manifest interface.
-
-1. **Prepare reference and manifest**
-
-   - Place `chr21.fa` under `ref/` (e.g. `ref/chr21.fa`)
-   - Use the provided `manifest_2.tsv` (16 Smart-seq2 cells)
-
-2. **Run CIRI-full over the 16-cell manifest**
-
-```bash
-circyto run-manifest \
-  --manifest manifest_2.tsv \
+circyto run-batch \
   --detector ciri-full \
+  --manifest manifest_2.tsv \
+  --outdir work/ciri_full_chr21_16cells \
   --ref-fa ref/chr21.fa \
-  --outdir work/cirifull_chr21_manifest2 \
-  --threads 8 \
-  --parallel 4
+  --gtf ref/chr21.gtf \
+  --threads 4 \
+  --parallel 2
 ```
 
-3. **Collect a circRNA × cell matrix**
+### 2) Collect the MatrixMarket matrix
 
 ```bash
-circyto collect \
-  --manifest manifest_2.tsv \
+mkdir -p work/ciri_full_chr21_16cells_matrix
+
+circyto collect-matrix \
   --detector ciri-full \
-  --indir work/cirifull_chr21_manifest2 \
-  --outdir work/cirifull_chr21_manifest2_matrix
+  --indir work/ciri_full_chr21_16cells \
+  --matrix work/ciri_full_chr21_16cells_matrix/circ_counts.mtx \
+  --circ-index work/ciri_full_chr21_16cells_matrix/circ_index.txt \
+  --cell-index work/ciri_full_chr21_16cells_matrix/cell_index.txt
 ```
 
-Expected outcome (current v0.8.x behavior):
+Expected outcome:
+- A small sparse MatrixMarket matrix with non-zero entries
+- `cell_index.txt` matches the cell IDs in `manifest_2.tsv`
+- `circ_index.txt` contains circ loci in a consistent ID format
 
-- A sparse MatrixMarket matrix of shape **≈12 × 16** with non-zero entries  
-- Matching cell indices between `manifest_2.tsv` and `cell_index.txt`  
-- A `circ_feature_table.tsv` containing coordinates and strand information for
-  the detected circRNAs
+---
 
-This 16-cell chr21 run is the recommended **sanity check** after installation
-to confirm that CIRI-full integration, collection, and indexing are working.
+## 🔬 Multi-detector run + merging/comparison (chr21 example)
+
+Run two detectors on the same manifest:
+
+```bash
+circyto run-multidetector \
+  ciri-full find-circ3 \
+  work/multidetector_chr21 \
+  --manifest manifest_2.tsv \
+  --ref-fa ref/chr21.fa \
+  --gtf ref/chr21.gtf \
+  --threads 4 \
+  --parallel 2
+```
+
+Then:
+- `circyto merge-detectors --help`
+- `circyto compare-detectors --help`
+- `circyto collect-multidetector --help`
+
+(Those subcommands evolve fastest; the `--help` output is always the source of truth.)
 
 ---
 
 ## 📦 Installation
 
 ### System dependencies
-
-- Python **3.10+**
+- Python 3.10+
 - `bowtie2`, `samtools`
-- Detector binaries as needed (e.g. CIRI-full JAR, `find-circ3`)
+- Detector binaries as needed:
+  - **CIRI-full** JAR in `tools/` (see `tools/` layout)
+  - **find-circ3** CLI installed (see below)
 
-### From source (recommended for now)
-
+### From source (recommended)
 ```bash
 git clone https://github.com/liuifrec/circyto
 cd circyto
 pip install -e .
 ```
 
-> A PyPI package is planned for the v1.0 release. Until then, please install
-> from source as above.
+### Install find-circ3 (recommended during development)
+```bash
+git clone https://github.com/liuifrec/find_circ3.git
+cd find_circ3
+pip install -e .
+find-circ3 --help
+```
+
+---
+
+## 🧫 Testing
+
+### Unit tests
+```bash
+pytest -q
+```
+
+### Integration tests (detectors)
+Run all integration tests:
+```bash
+pytest -m "integration"
+```
+
+Skip heavy tests (e.g. on laptops / CI):
+```bash
+export CIRCYTO_SKIP_INTEGRATION=1
+```
 
 ---
 
 ## 🗺️ Roadmap
 
-See [`ROADMAP.md`](ROADMAP.md) for details.
+See `ROADMAP.md`.
 
-- **v0.8.x** – CIRI-full + find_circ3 integration, multimodal export
-- **v0.9** – Multi-detector comparison + CIRCexplorer2 integration
-- **v1.0** – PyPI release, docs site, deterministic test datasets
+Planned / under consideration for 2026 integration (STAR-based detectors):
+- DCC
+- circhunter
+- CIRI3
 
 ---
 
-## 📚 Citation
+## Citation
 
-A methods manuscript is under preparation.  
-In the meantime, please cite this repository:
+A methods manuscript is under preparation. In the meantime, please cite this repository:
 
-> Liu, Y.-C. *et al.* “circyto: a unified CLI for single-cell circRNA detection and multimodal matrices.”  
-> GitHub repository: https://github.com/liuifrec/circyto
+> Liu, Y.-C. et al. “circyto: a unified CLI for single-cell circRNA detection and multimodal matrices.” GitHub repository: https://github.com/liuifrec/circyto

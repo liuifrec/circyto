@@ -113,26 +113,41 @@ BEGIN {
 NR==1 {
   # header mapping
   for (i=1; i<=NF; i++) {
-    key=$i
-    gsub(/[^A-Za-z0-9_]/,"",key)
-    key=tolower(key)
-    h[key]=i
+    key = $i
+    gsub(/[^A-Za-z0-9_]/, "", key)
+    key = tolower(key)
+    h[key] = i
   }
   next
 }
 {
-  chr   = (h["chr"] ? $h["chr"] : $2)
-  start = (h["circrnastart"] ? $h["circrnastart"] : (h["start"] ? $h["start"] : $3))
-  end   = (h["circrnaend"]   ? $h["circrnaend"]   : (h["end"]   ? $h["end"]   : $4))
-  strand= (h["strand"] ? $h["strand"] : "+")
-  supp  = 1
-  if (h["junctionreads"]) supp=$h["junctionreads"]
-  else if (h["readnum"])  supp=$h["readnum"]
-  else if (h["support"])  supp=$h["support"]
+  # chr
+  chr = (h["chr"] ? $h["chr"] : $2)
 
-  if (h["circrnaid"]) cid=$h["circrnaid"];
-  else if (h["circrna_id"]) cid=$h["circrna_id"];
-  else cid=chr ":" start "|" end "|" strand
+  # start: prefer circRNA_start, then circrnastart, then generic start, else 3rd column
+  start = (h["circrna_start"] ? $h["circrna_start"] :
+           (h["circrnastart"] ? $h["circrnastart"] :
+           (h["start"] ? $h["start"] : $3)))
+
+  # end: prefer circRNA_end, then circrnaend, then generic end, else 4th column
+  end = (h["circrna_end"] ? $h["circrna_end"] :
+         (h["circrnaend"] ? $h["circrnaend"] :
+         (h["end"] ? $h["end"] : $4)))
+
+  # strand
+  strand = (h["strand"] ? $h["strand"] : "+")
+
+  # support: prefer junction_reads, then junctionreads, then other fallbacks
+  supp = 1
+  if (h["junction_reads"])      supp = $h["junction_reads"]
+  else if (h["junctionreads"])  supp = $h["junctionreads"]
+  else if (h["readnum"])        supp = $h["readnum"]
+  else if (h["support"])        supp = $h["support"]
+
+  # circ_id: prefer circRNA_ID (with underscore), then legacy circrnaid, then synthesize
+  if (h["circrna_id"])          cid = $h["circrna_id"]
+  else if (h["circrnaid"])      cid = $h["circrnaid"]
+  else                          cid = chr ":" start "|" end "|" strand
 
   print cid, chr, start, end, strand, supp
 }

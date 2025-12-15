@@ -10,6 +10,24 @@ from circyto.detectors import available_detectors
 from circyto.pipeline.run_detector import run_detector_manifest
 
 
+def _flatten_results(detector_results):
+    """
+    Normalize detector_results into a flat List[DetectorResult].
+
+    Some engines may (by mistake) return a List[List[DetectorResult]].
+    Others correctly return List[DetectorResult].
+
+    This helper makes both cases consistent.
+    """
+    flat = []
+    for r in detector_results:
+        if isinstance(r, (list, tuple)):
+            flat.extend(r)
+        else:
+            flat.append(r)
+    return flat
+
+
 def run_multidetector_pipeline(
     detectors: Sequence[str],
     manifest: Path,
@@ -64,14 +82,15 @@ def run_multidetector_pipeline(
 
     # What we serialize into summary.json (pure JSON-serializable)
     summary_json: dict[str, dict] = {}
-    results_json: dict[str, list[dict]] = {}
+    results_json: dict[str, list] = {}
 
     for det_name in detectors:
         det_engine = engines[det_name]
         det_outdir = outdir / det_name
         det_outdir.mkdir(parents=True, exist_ok=True)
 
-        detector_results = run_detector_manifest(
+        # Use the standard manifest runner (handles threading/parallel)
+        raw_results = run_detector_manifest(
             detector=det_engine,
             manifest=manifest,
             outdir=det_outdir,
@@ -80,6 +99,9 @@ def run_multidetector_pipeline(
             threads=threads,
             parallel=parallel,
         )
+
+        # Normalize to a flat list of DetectorResult
+        detector_results = _flatten_results(raw_results)
 
         # Populate return object
         result_map[det_name] = detector_results

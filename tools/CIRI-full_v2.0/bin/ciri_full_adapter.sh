@@ -128,23 +128,53 @@ echo ">>> Using output: ${MAIN_TXT}" | tee -a "${LOG}"
 
 # --- Normalize -> OUT_TSV
 awk -v OFS='\t' '
-BEGIN { print "circ_id","chr","start","end","strand","support" }
+BEGIN {
+  print "circ_id","chr","start","end","strand","support"
+}
 NR==1 {
-  for(i=1;i<=NF;i++){
-    k=$i; gsub(/[^A-Za-z0-9_]/,"",k); k=tolower(k); h[k]=i
+  # Build header map: lowercase, keep underscores, strip other punctuation
+  for (i=1; i<=NF; i++) {
+    key = $i
+    gsub(/[^A-Za-z0-9_]/, "", key)
+    key = tolower(key)
+    h[key] = i
   }
   next
 }
 {
-  chr   = (h["chr"] ? $h["chr"] : (h["chrom"] ? $h["chrom"] : $1))
-  start = (h["circrnastart"] ? $h["circrnastart"] : (h["start"] ? $h["start"] : $2))
-  end   = (h["circrnaend"]   ? $h["circrnaend"]   : (h["end"]   ? $h["end"]   : $3))
-  strand= (h["strand"] ? $h["strand"] : (h["str"] ? $h["str"] : "+"))
-  supp  = 1
-  if (h["junctionreads"]) supp=$h["junctionreads"]
-  else if (h["readnum"])  supp=$h["readnum"]
-  else if (h["support"])  supp=$h["support"]
-  if (h["circrnaid"]) cid=$h["circrnaid"]; else cid=chr ":" start "|" end "|" strand
+  # chr
+  chr = (h["chr"] ? $h["chr"] :
+         (h["chrom"] ? $h["chrom"] :
+          $2))
+
+  # start: prefer circRNA_start, then legacy circrnastart, then generic start, then 3rd column
+  start = (h["circrna_start"] ? $h["circrna_start"] :
+           (h["circrnastart"] ? $h["circrnastart"] :
+           (h["start"] ? $h["start"] :
+            $3)))
+
+  # end: prefer circRNA_end, then legacy circrnaend, then generic end, then 4th column
+  end = (h["circrna_end"] ? $h["circrna_end"] :
+         (h["circrnaend"] ? $h["circrnaend"] :
+         (h["end"] ? $h["end"] :
+          $4)))
+
+  # strand
+  strand = (h["strand"] ? $h["strand"] :
+            (h["str"] ? $h["str"] : "+"))
+
+  # support: prefer junction_reads (with underscore), then junctionreads, then other fallbacks
+  supp = 1
+  if (h["junction_reads"])      supp = $h["junction_reads"]
+  else if (h["junctionreads"])  supp = $h["junctionreads"]
+  else if (h["readnum"])        supp = $h["readnum"]
+  else if (h["support"])        supp = $h["support"]
+
+  # circ_id: prefer circRNA_ID; fall back to old key; last resort synthesize from coords
+  if (h["circrna_id"])          cid = $h["circrna_id"]
+  else if (h["circrnaid"])      cid = $h["circrnaid"]
+  else                          cid = chr ":" start "|" end "|" strand
+
   print cid, chr, start, end, strand, supp
 }
 ' "${MAIN_TXT}" > "${OUT_TSV}"

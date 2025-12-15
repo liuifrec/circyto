@@ -8,19 +8,61 @@ import pandas as pd
 
 def _parse_splice_sites(path: Path, cell_id: str) -> pd.DataFrame:
     """
-    Parse a find_circ3 splice_sites.bed file and add circ_id + cell_id.
+    Parse a find_circ / find_circ3 splice_sites.bed file and return filtered circ calls.
 
-    Assumes 18-column legacy format:
-      chrom, start, end, name, n_reads, strand,
-      bridge_reads, uniq_bridges,
-      mapq1, mapq2,
-      sample,
-      n_uniq_anchors,
-      flag1, flag2, flag3, flag4,
-      splice_signal,
-      tags
+    Expected (legacy) format: at least 18 columns, roughly:
+
+      0  chrom
+      1  start
+      2  end
+      3  name
+      4  n_reads
+      5  strand
+      6  bridge_reads
+      7  uniq_bridges
+      8  mapq1
+      9  mapq2
+      10 sample
+      11 overhang
+      12 insert
+      13 intron
+      14 anchor_overlap
+      15 anchor_seq
+      16 match_type
+      17 flags  (comma-separated tags: CIRCULAR, CANONICAL, UNAMBIGUOUS_BP, NO_UNIQ_BRIDGES,
+                 PERFECT_EXT, GOOD_EXT, etc.)
+
+    We implement a filtering scheme closely matching the original find_circ recommendations:
+
+      - flags contains "CIRCULAR"
+      - flags contains "UNAMBIGUOUS_BP"
+      - flags contains "CANONICAL" (GT-AG splice signal)
+      - flags contains "PERFECT_EXT" OR "GOOD_EXT" (good extension)
+      - flags does NOT contain "NO_UNIQ_BRIDGES"
+      - uniq_bridges >= 1
+
+    The returned DataFrame has columns: circ_id, cell_id, support
+    where support = uniq_bridges (clipped at >=1).
     """
-    cols = [
+    path = Path(path)
+    if not path.exists() or path.stat().st_size == 0:
+        return pd.DataFrame(columns=["circ_id", "cell_id", "support"])
+
+    df = pd.read_csv(
+        path,
+        sep="\t",
+        header=None,
+        comment="#",
+        dtype=str,
+    )
+
+    if df.empty or df.shape[1] < 18:
+        # Not enough columns to be a valid find_circ output
+        return pd.DataFrame(columns=["circ_id", "cell_id", "support"])
+
+    # Only keep the first 18 columns; extra columns (if any) are ignored.
+    df = df.iloc[:, :18]
+    df.columns = [
         "chrom",
         "start",
         "end",
@@ -32,24 +74,46 @@ def _parse_splice_sites(path: Path, cell_id: str) -> pd.DataFrame:
         "mapq1",
         "mapq2",
         "sample",
-        "n_uniq_anchors",
-        "flag1",
-        "flag2",
-        "flag3",
-        "flag4",
-        "splice_signal",
-        "tags",
+        "overhang",
+        "insert",
+        "intron",
+        "anchor_overlap",
+        "anchor_seq",
+        "match_type",
+        "flags",
     ]
-    df = pd.read_csv(
-        path,
-        sep="\t",
-        header=None,
-        names=cols,
-        dtype={"chrom": str},
-    )
-    df["cell_id"] = cell_id
 
-    # Standard circ_id format for circyto: chr:start|end|strand
+    # Convert numeric fields
+    for col in ("n_reads", "bridge_reads", "uniq_bridges"):
+        df[col] = pd.to_numeric(df[col], errors="coerce").fillna(0).astype(int)
+
+    flags = df["flags"].astype(str)
+
+    # Faithful-ish find_circ-style filters:
+    #  - CIRCULAR            (back-splice candidate)
+    #  - UNAMBIGUOUS_BP      (unique breakpoint)
+    #  - CANONICAL           (GT-AG splice)
+    #  - PERFECT_EXT/GOOD_EXT (good extension)
+    #  - NOT NO_UNIQ_BRIDGES (require fully unique bridging reads)
+    mask = (
+        flags.str.contains("CIRCULAR")
+        & flags.str.contains("UNAMBIGUOUS_BP")
+        & flags.str.contains("CANONICAL")
+        & (flags.str.contains("PERFECT_EXT") | flags.str.contains("GOOD_EXT"))
+        & ~flags.str.contains("NO_UNIQ_BRIDGES")
+    )
+
+    df = df[mask]
+
+    # Require at least one uniquely-bridging read
+    df = df[df["uniq_bridges"] >= 1]
+
+    if df.empty:
+        return pd.DataFrame(columns=["circ_id", "cell_id", "support"])
+
+    # Build a stable circ_id = chrom:start|end|strand
+    # Treat '.' strand as '+' to avoid weirdness
+    strand = df["strand"].replace({".": "+"}).fillna("+")
     df["circ_id"] = (
         df["chrom"].astype(str)
         + ":"
@@ -57,21 +121,28 @@ def _parse_splice_sites(path: Path, cell_id: str) -> pd.DataFrame:
         + "|"
         + df["end"].astype(str)
         + "|"
-        + df["strand"].astype(str)
+        + strand.astype(str)
     )
-    return df
+
+    df["cell_id"] = cell_id
+    # Use uniq_bridges as support (clipped at >=1)
+    df["support"] = df["uniq_bridges"].clip(lower=1)
+
+    return df[["circ_id", "cell_id", "support"]]
 
 
 def _write_matrix_market(df: pd.DataFrame, matrix_path: Path) -> None:
     """
-    Write a dense circ x cell integer DataFrame to MatrixMarket (.mtx) in
-    coordinate format with 1-based indexing.
+    Write a dense pandas DataFrame to a MatrixMarket coordinate integer file.
+
+    Rows = circ_ids (index)
+    Cols = cell_ids (columns)
     """
     matrix_path = Path(matrix_path)
     n_rows, n_cols = df.shape
     values = df.values
 
-    # Count non-zeros
+    # Number of non-zero entries
     nnz = int((values != 0).sum())
 
     with matrix_path.open("w") as f:
@@ -83,7 +154,7 @@ def _write_matrix_market(df: pd.DataFrame, matrix_path: Path) -> None:
                 val = int(values[i, j])
                 if val != 0:
                     # MatrixMarket is 1-based
-                    f.write(f"{i+1} {j+1} {val}\n")
+                    f.write(f"{i + 1} {j + 1} {val}\n")
 
 
 def collect_find_circ3_matrix(
@@ -94,71 +165,98 @@ def collect_find_circ3_matrix(
     min_count_per_cell: int = 1,
 ) -> None:
     """
-    Collect find_circ3 per-cell *_splice_sites.bed files into a circ x cell
-    MatrixMarket matrix + circ/cell index text files.
+    Collect find_circ / find_circ3 per-cell *_splice_sites.bed into a circ x cell matrix.
 
-    Expected layout under findcirc3_dir:
+    Expected directory layout:
+
         <findcirc3_dir>/
           <cell_id>/
             <cell_id>_splice_sites.bed
             ...
 
-    Output:
-        - matrix_path: MatrixMarket .mtx (rows = circ_id, cols = cell_id)
-        - circ_index_path: text file (one circ_id per line)
-        - cell_index_path: text file (one cell_id per line)
+    Parameters
+    ----------
+    findcirc3_dir
+        Root directory containing per-cell find_circ3 outputs.
+    matrix_path
+        Output MatrixMarket (.mtx) path.
+    circ_index_path
+        Output circ index (one circ_id per line).
+    cell_index_path
+        Output cell index (one cell_id per line).
+    min_count_per_cell
+        Minimum total counts (sum over circRNAs) per cell to keep that cell.
     """
-    root = Path(findcirc3_dir).resolve()
-    cell_dirs = [p for p in root.iterdir() if p.is_dir()]
+    findcirc3_dir = Path(findcirc3_dir)
+    if not findcirc3_dir.exists():
+        raise FileNotFoundError(f"findcirc3_dir does not exist: {findcirc3_dir}")
 
-    all_dfs: List[pd.DataFrame] = []
+    all_rows: List[pd.DataFrame] = []
 
-    for cdir in sorted(cell_dirs):
-        cell_id = cdir.name
-        bed = cdir / f"{cell_id}_splice_sites.bed"
-        if not bed.exists():
-            print(f"[collect_find_circ3] WARNING: missing {bed}, skipping")
+    # Discover per-cell subdirectories
+    for sub in sorted(findcirc3_dir.iterdir()):
+        if not sub.is_dir():
+            continue
+        cell_id = sub.name
+        bed_path = sub / f"{cell_id}_splice_sites.bed"
+        if not bed_path.exists():
             continue
 
-        df = _parse_splice_sites(bed, cell_id)
-        all_dfs.append(df)
+        df = _parse_splice_sites(bed_path, cell_id)
+        if not df.empty:
+            all_rows.append(df)
 
-    if not all_dfs:
-        raise SystemExit("[collect_find_circ3] No splice_sites.bed files found.")
-
-    df_all = pd.concat(all_dfs, ignore_index=True)
-
-    # Build circ x cell counts: sum n_reads per circ_id x cell_id
-    counts_df = (
-        df_all.groupby(["circ_id", "cell_id"])["n_reads"]
-        .sum()
-        .reset_index()
-        .pivot(index="circ_id", columns="cell_id", values="n_reads")
-        .fillna(0)
-        .astype(int)
-    )
-
-    # Apply per-cell filtering if requested
-    if min_count_per_cell > 1:
-        col_sums = counts_df.sum(axis=0)
-        keep_cols = col_sums[col_sums >= min_count_per_cell].index
-        counts_df = counts_df.loc[:, keep_cols]
-
-    # Sort circ_ids and cell_ids for deterministic ordering
-    circ_ids = sorted(counts_df.index)
-    cell_ids = sorted(counts_df.columns)
-
-    counts_df = counts_df.loc[circ_ids, cell_ids]
-
-    # Write index files
+    matrix_path = Path(matrix_path)
     circ_index_path = Path(circ_index_path)
     cell_index_path = Path(cell_index_path)
 
-    circ_index_path.write_text("\n".join(circ_ids) + "\n")
-    cell_index_path.write_text("\n".join(cell_ids) + "\n")
+    if not all_rows:
+        # No circRNAs survived the filters; write a clean empty matrix.
+        matrix_path.write_text(
+            "%%MatrixMarket matrix coordinate integer general\n"
+            "% Generated by circyto.collect_find_circ3\n"
+            "0 0 0\n"
+        )
+        circ_index_path.write_text("")
+        cell_index_path.write_text("")
+        print(f"[collect_find_circ3] No circRNAs found in {findcirc3_dir}")
+        return
+
+    all_df = pd.concat(all_rows, ignore_index=True)
+
+    # Stable, deterministic ordering
+    circ_ids = sorted(all_df["circ_id"].unique())
+    cell_ids = sorted(all_df["cell_id"].unique())
+
+    # Build circ x cell matrix: support = sum(uniq_bridges) per circ/cell
+    counts_df = (
+        all_df.groupby(["circ_id", "cell_id"])["support"]
+        .sum()
+        .unstack(fill_value=0)
+        .reindex(index=circ_ids, columns=cell_ids, fill_value=0)
+    )
+
+    # Filter cells by total counts
+    cell_totals = counts_df.sum(axis=0)
+    keep_cells = cell_totals >= min_count_per_cell
+    counts_df = counts_df.loc[:, keep_cells]
+    cell_ids = [cid for cid in cell_ids if keep_cells.get(cid, False)]
+
+    # Drop circRNAs with zero counts across kept cells
+    circ_totals = counts_df.sum(axis=1)
+    keep_circ = circ_totals > 0
+    counts_df = counts_df.loc[keep_circ, :]
+    circ_ids = [cid for cid, ok in zip(circ_ids, keep_circ) if ok]
+
+    # Final alignment of axes
+    counts_df = counts_df.loc[circ_ids, cell_ids]
+
+    # Write indices
+    circ_index_path.write_text("\n".join(circ_ids) + ("\n" if circ_ids else ""))
+    cell_index_path.write_text("\n".join(cell_ids) + ("\n" if cell_ids else ""))
 
     # Write MatrixMarket
-    _write_matrix_market(counts_df, Path(matrix_path))
+    _write_matrix_market(counts_df, matrix_path)
 
     print(f"[collect_find_circ3] Wrote matrix: {matrix_path}")
     print(f"[collect_find_circ3] Wrote circ index: {circ_index_path}")

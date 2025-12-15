@@ -36,7 +36,7 @@ def run_find_circ3(
     outdir_root: str,
     threads: int = 4,
     extra_args: Optional[list[str]] = None,
-) -> None:
+) -> Path:
     """
     Run the full find_circ3 short-read pipeline for a single sample,
     consistent with the updated find_circ3 README:
@@ -62,6 +62,11 @@ def run_find_circ3(
         Number of threads for bowtie2.
     extra_args : list[str] | None
         Extra CLI arguments to append to `find-circ3 call` if needed.
+
+    Returns
+    -------
+    Path
+        Path to the final splice_sites BED file.
     """
     cell_id = str(sample["cell_id"])
     fq1 = str(sample["r1"])
@@ -133,17 +138,17 @@ def run_find_circ3(
     # bowtie2 -q -U sample_anchors.fastq -x genome_index --reorder --mm --very-sensitive \
     #   --score-min C,-15,0 2> sample_secondpass.log > sample_anchors.sam
     cmd_anchor_align = (
-    f"bowtie2 "
-    f"-q "
-    f"-U {anchors_fq} "
-    f"-x {bowtie2_index} "
-    f"--reorder "
-    f"--mm "
-    f"--very-sensitive "
-    f"--score-min C,-15,0 "
-    f"-p {threads} "
-    f"2> {outdir / (cell_id + '_secondpass.log')} "
-    f"> {anchors_sam}"
+        f"bowtie2 "
+        f"-q "
+        f"-U {anchors_fq} "
+        f"-x {bowtie2_index} "
+        f"--reorder "
+        f"--mm "
+        f"--very-sensitive "
+        f"--score-min C,-15,0 "
+        f"-p {threads} "
+        f"2> {outdir / (cell_id + '_secondpass.log')} "
+        f"> {anchors_sam}"
     )
     _run(cmd_anchor_align, shell=True)
 
@@ -161,6 +166,7 @@ def run_find_circ3(
     #   --stats sample.log \
     #   --reads sample_reads.fa \
     #   > sample_splice_sites.bed
+    # Minimal, tested-good CLI based on standalone find-circ3 tests
     call_cmd = [
         "find-circ3",
         "call",
@@ -173,20 +179,16 @@ def run_find_circ3(
         f"{cell_id}_",
         "--anchor",
         "20",
-        "--min-uniq-qual",
-        "2",
-        "--max-mismatches",
-        "2",
-        "--margin",
-        "5",
-        "--strandpref",
-        "--stats",
-        str(outdir / f"{cell_id}_find_circ3.log"),
-        "--reads",
-        str(outdir / f"{cell_id}_supporting_reads.fa"),
     ]
+
+    # Allow the detector interface to inject extra options if needed
     if extra_args:
         call_cmd.extend(extra_args)
 
     call_cmd_str = " ".join(call_cmd) + f" > {splice_sites_bed}"
     _run(call_cmd_str, shell=True)
+
+    return splice_sites_bed
+
+
+
