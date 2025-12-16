@@ -4,7 +4,8 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "circyto"
-version = "0.8.0"
+version = "0.8.1"
+
 description = "A Python CLI toolkit for single-cell circRNA detection, merging, and conversion."
 readme = "README.md"
 requires-python = ">=3.9"
