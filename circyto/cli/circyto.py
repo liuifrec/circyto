@@ -1,7 +1,8 @@
 from __future__ import annotations
 
+import shutil
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import typer
 from rich.console import Console
@@ -19,31 +20,104 @@ from circyto.pipeline.run_detector import run_detector_manifest
 from circyto.pipeline.run_multidetector import run_multidetector_pipeline
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
 from circyto.pipeline.compare_detectors import compare_detectors as _compare_detectors
-from circyto.pipeline.multidetector_collect import (
-    build_detector_matrix,
-    write_matrix,
-)
 from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
 from circyto.pipeline.collect_circexplorer2_matrix import (
     collect_circexplorer2_matrix as collect_circexplorer2_matrix_from_dir,
 )
-from circyto.utils import ensure_dir
 from circyto.detectors import build_default_engines
 
 app = typer.Typer(
     add_completion=False,
     help=(
         "circyto — CLI toolkit for single-cell circRNA detection and integration.\n\n"
+        "Conventions (locked):\n"
+        "  - Output directories use:  --outdir / -o\n"
+        "  - Input directories use:   --indir\n"
+        "  - Most commands accept either:\n"
+        "        COMMAND INDIR OUTDIR\n"
+        "    or  COMMAND --indir INDIR --outdir OUTDIR\n"
+        "  - Collectors default to writing:\n"
+        "        OUTDIR/circ_counts.mtx\n"
+        "        OUTDIR/circ_index.txt\n"
+        "        OUTDIR/cell_index.txt\n\n"
         "Includes:\n"
-        "  [LEGACY] CIRI-full wrappers (prepare/run/run-manifest/collect/make)\n"
-        "  [NEW]    Detector-API runners (run-detector / run-batch / run-multidetector)\n"
-        "  [MATRIX] collect-matrix, collect-find-circ3, collect-circexplorer2,\n"
-        "           collect-multidetector\n"
-        "  [IO]     export-multimodal, annotate-host-genes, convert\n"
-        "  [COMPARE] merge-detectors, compare-detectors\n"
+        "  [LEGACY] CIRI-full wrappers (prepare/run/run-manifest/make)\n"
+        "  [RUN]    run-detector / run-batch / run-multidetector\n"
+        "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
+        "  [MERGE]  merge-detectors\n"
+        "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
     ),
 )
 console = Console()
+
+
+# --------------------------------------------------------------------------------------
+# Helpers: consistent INDIR/OUTDIR + default output naming
+# --------------------------------------------------------------------------------------
+
+
+def _pick_one(
+    pos: Optional[Path],
+    opt: Optional[Path],
+    *,
+    name: str,
+    allow_both_equal: bool = True,
+) -> Optional[Path]:
+    if pos is None and opt is None:
+        return None
+    if pos is not None and opt is not None:
+        if allow_both_equal and pos == opt:
+            return pos
+        raise typer.BadParameter(f"Provide {name} positionally OR via option, not both.")
+    return pos if pos is not None else opt
+
+
+def _auto_outdir(*parts: str) -> Path:
+    safe = "_".join([p for p in parts if p]).replace("/", "_").replace(" ", "_")
+    return Path("work") / safe
+
+
+def _default_matrix_paths(outdir: Path) -> Tuple[Path, Path, Path]:
+    return (
+        outdir / "circ_counts.mtx",
+        outdir / "circ_index.txt",
+        outdir / "cell_index.txt",
+    )
+
+
+def _resolve_collect_paths(
+    outdir: Optional[Path],
+    matrix: Optional[Path],
+    circ_index: Optional[Path],
+    cell_index: Optional[Path],
+) -> Tuple[Optional[Path], Optional[Path], Optional[Path], Optional[Path]]:
+    """
+    If outdir is provided, fill in default matrix/index paths unless explicitly set.
+    Returns (outdir, matrix, circ_index, cell_index).
+    """
+    if outdir is None:
+        return (None, matrix, circ_index, cell_index)
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    dmat, dcirc, dcell = _default_matrix_paths(outdir)
+    if matrix is None:
+        matrix = dmat
+    if circ_index is None:
+        circ_index = dcirc
+    if cell_index is None:
+        cell_index = dcell
+    return (outdir, matrix, circ_index, cell_index)
+
+
+def _require_paths(*paths: Optional[Path], names: List[str]) -> None:
+    missing = [n for p, n in zip(paths, names) if p is None]
+    if missing:
+        raise typer.BadParameter(
+            "Missing required outputs: "
+            + ", ".join(missing)
+            + ". Provide --outdir/-o or explicit --matrix/--circ-index/--cell-index."
+        )
+
 
 # --------------------------------------------------------------------------------------
 # LEGACY 10x / CIRI-full pipeline commands (kept for backwards compatibility)
@@ -52,37 +126,15 @@ console = Console()
 
 @app.command()
 def prepare(
-    bam: Path = typer.Option(
-        ...,
-        exists=True,
-        help="10x-style BAM with CB/UB tags",
-    ),
-    outdir: Path = typer.Option(
-        ...,
-        help="[LEGACY] Output directory for per-cell FASTQs",
-    ),
-    whitelist: Optional[Path] = typer.Option(
-        None,
-        help="[LEGACY] Optional whitelist of barcodes (gz/tsv)",
-    ),
-    chemistry: str = typer.Option(
-        "tenx-3p",
-        help="[LEGACY] Library type: tenx-3p or tenx-5p",
-    ),
-    batch_size: int = typer.Option(
-        100,
-        help="[LEGACY] Cells per FASTQ batch",
-    ),
-    min_reads_per_cell: int = typer.Option(
-        200,
-        help="[LEGACY] Discard cells with < N reads",
-    ),
+    bam: Path = typer.Option(..., exists=True, help="10x-style BAM with CB/UB tags"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="[LEGACY] Output directory"),
+    whitelist: Optional[Path] = typer.Option(None, help="[LEGACY] Optional whitelist"),
+    chemistry: str = typer.Option("tenx-3p", help="[LEGACY] tenx-3p or tenx-5p"),
+    batch_size: int = typer.Option(100, help="[LEGACY] Cells per FASTQ batch"),
+    min_reads_per_cell: int = typer.Option(200, help="[LEGACY] Discard cells with < N reads"),
 ) -> None:
     """
     [LEGACY] Extract per-cell FASTQs from a 10x-style BAM.
-
-    This helper is kept for backwards compatibility. New workflows should usually
-    go through detector-API commands (run-detector / run-batch) instead.
     """
     extract_per_cell_fastq(
         bam=bam,
@@ -96,44 +148,15 @@ def prepare(
 
 @app.command()
 def run(
-    fastq_dir: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] Directory of FASTQ batches (from `prepare`)",
-    ),
-    outdir: Path = typer.Option(
-        ...,
-        help="[LEGACY] Output directory for CIRI-full results",
-    ),
-    cmd_template: str = typer.Option(
-        ...,
-        help=(
-            "[LEGACY] CIRI-full command template; uses placeholders:\n"
-            "  {ref_fa}, {gtf}, {r1}, {r2}, {out_tsv}\n"
-            "Example:\n"
-            "  'bash -lc \"export R1={r1} R2={r2} REF_FA={ref_fa} GTF={gtf} "
-            "OUT_TSV={out_tsv} ; tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh\"'"
-        ),
-    ),
-    ref_fa: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] Reference FASTA",
-    ),
-    gtf: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] GTF/GFF annotation",
-    ),
-    threads: int = typer.Option(
-        8,
-        help="[LEGACY] Number of batches to run in parallel",
-    ),
+    fastq_dir: Path = typer.Option(..., exists=True, help="[LEGACY] FASTQ batches dir"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="[LEGACY] Output directory"),
+    cmd_template: str = typer.Option(..., help="[LEGACY] CIRI-full command template"),
+    ref_fa: Path = typer.Option(..., exists=True, help="[LEGACY] Reference FASTA"),
+    gtf: Path = typer.Option(..., exists=True, help="[LEGACY] GTF/GFF annotation"),
+    threads: int = typer.Option(8, help="[LEGACY] Number of batches to run in parallel"),
 ) -> None:
     """
     [LEGACY] Run CIRI-full over batched FASTQs using a shell command template.
-
-    New workflows should prefer `run-detector ciri-full` / `run-batch --detector ciri-full`.
     """
     run_cirifull_over_fastqs(
         fastq_dir=fastq_dir,
@@ -147,58 +170,19 @@ def run(
 
 @app.command("run-manifest")
 def run_manifest(
-    manifest: Path = typer.Option(
-        ...,
-        exists=True,
-        help="TSV with columns: cell_id, r1, [r2]",
-    ),
-    outdir: Path = typer.Option(
-        ...,
-        help="[LEGACY] Output directory for CIRI-full results",
-    ),
-    cmd_template: str = typer.Option(
-        ...,
-        help=(
-            "[LEGACY] CIRI-full command template. Valid placeholders:\n"
-            "  {ref_fa}  reference FASTA path\n"
-            "  {gtf}     GTF/GFF annotation path\n"
-            "  {r1}      read 1 FASTQ\n"
-            "  {r2}      read 2 FASTQ (empty if missing)\n"
-            "  {out_tsv} per-cell output TSV path\n"
-        ),
-    ),
-    ref_fa: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] Reference FASTA",
-    ),
-    gtf: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] GTF/GFF annotation",
-    ),
-    threads: int = typer.Option(
-        8,
-        help="[LEGACY] Number of cells to run in parallel",
-    ),
+    manifest: Path = typer.Option(..., exists=True, help="TSV: cell_id, r1, [r2]"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="[LEGACY] Output directory"),
+    cmd_template: str = typer.Option(..., help="[LEGACY] CIRI-full command template"),
+    ref_fa: Path = typer.Option(..., exists=True, help="[LEGACY] Reference FASTA"),
+    gtf: Path = typer.Option(..., exists=True, help="[LEGACY] GTF/GFF annotation"),
+    threads: int = typer.Option(8, help="[LEGACY] Number of cells to run in parallel"),
 ) -> None:
     """
     [LEGACY] Run CIRI-full over a plate/full-length manifest using a shell template.
-
-    This command exists for backwards compatibility and for complex shell-based
-    CIRI-full setups. For new work, prefer:
-
-        circyto run-batch --detector ciri-full --manifest ...
-
-    or:
-
-        circyto run-detector ciri-full --manifest ...
-
-    which use the detector API instead of a raw shell template.
     """
     console.print(
         "[yellow][LEGACY][/yellow] `run-manifest` uses a CIRI-full shell template.\n"
-        "New projects should consider `run-batch --detector ciri-full` instead."
+        "Prefer `run-detector` / `run-batch` for new workflows."
     )
     run_cirifull_with_manifest(
         manifest=manifest,
@@ -210,135 +194,220 @@ def run_manifest(
     )
 
 
+# --------------------------------------------------------------------------------------
+# Collectors (now consistent): accept INDIR OUTDIR OR --indir/--outdir OR explicit file paths
+# --------------------------------------------------------------------------------------
+
+
 @app.command()
 def collect(
-    cirifull_dir: Path = typer.Option(
-        ...,
+    indir_pos: Optional[Path] = typer.Argument(
+        None, metavar="INDIR", help="[LEGACY] CIRI-full per-cell outputs dir (*.tsv)"
+    ),
+    outdir_pos: Optional[Path] = typer.Argument(
+        None, metavar="OUTDIR", help="Output directory (defaults to work/...)"
+    ),
+    cirifull_dir: Optional[Path] = typer.Option(
+        None,
+        "--cirifull-dir",
+        "--indir",
         exists=True,
         help="[LEGACY] Directory with CIRI-full per-cell outputs (*.tsv)",
     ),
-    matrix: Path = typer.Option(
-        ...,
-        help="Output sparse matrix (.mtx, rows=circ, cols=cells)",
+    outdir_opt: Optional[Path] = typer.Option(
+        None, "--outdir", "-o", help="Output directory (writes circ_counts.mtx + indexes)"
     ),
-    circ_index: Path = typer.Option(
-        ...,
-        help="Output circ index (rows)",
+    matrix: Optional[Path] = typer.Option(
+        None, "--matrix", help="Output sparse matrix (.mtx). Optional if --outdir is used."
     ),
-    cell_index: Path = typer.Option(
-        ...,
-        help="Output cell index (columns)",
+    circ_index: Optional[Path] = typer.Option(
+        None, "--circ-index", help="Output circ index. Optional if --outdir is used."
+    ),
+    cell_index: Optional[Path] = typer.Option(
+        None, "--cell-index", help="Output cell index. Optional if --outdir is used."
     ),
     min_count_per_cell: int = typer.Option(
-        1,
-        help="Drop cells with total circ counts < threshold",
+        1, "--min-count-per-cell", help="Drop cells with total circ counts < threshold"
     ),
 ) -> None:
     """
     [LEGACY] Collect CIRI-full per-cell TSVs into a circ × cell MatrixMarket matrix.
 
-    New code should prefer `collect-matrix --detector ciri-full` as the unified collector.
+    Consistent usage:
+      circyto collect INDIR OUTDIR
+      circyto collect --indir INDIR --outdir OUTDIR
     """
+    indir = _pick_one(indir_pos, cirifull_dir, name="INDIR/--cirifull-dir/--indir")
+    if indir is None:
+        raise typer.BadParameter("Provide INDIR positionally or via --cirifull-dir/--indir.")
+    if not indir.exists():
+        raise typer.BadParameter(f"INDIR does not exist: {indir}")
+
+    outdir = _pick_one(outdir_pos, outdir_opt, name="OUTDIR/--outdir")
+    if outdir is None and (matrix is None or circ_index is None or cell_index is None):
+        outdir = _auto_outdir("collect_ciri-full", indir.name)
+
+    outdir, matrix, circ_index, cell_index = _resolve_collect_paths(
+        outdir, matrix, circ_index, cell_index
+    )
+    _require_paths(matrix, circ_index, cell_index, names=["--matrix", "--circ-index", "--cell-index"])
+
+    assert matrix and circ_index and cell_index
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    circ_index.parent.mkdir(parents=True, exist_ok=True)
+    cell_index.parent.mkdir(parents=True, exist_ok=True)
+
     collect_matrix(
-        cirifull_dir=str(cirifull_dir),
+        cirifull_dir=str(indir),
         matrix_path=str(matrix),
         circ_index_path=str(circ_index),
         cell_index_path=str(cell_index),
         min_count_per_cell=min_count_per_cell,
     )
+    console.print(f"[bold cyan][collect][/bold cyan] Wrote: {matrix} {circ_index} {cell_index}")
 
 
 @app.command("collect-find-circ3")
 def collect_find_circ3_cmd(
-    findcirc3_dir: Path = typer.Option(
-        ...,
+    indir_pos: Optional[Path] = typer.Argument(
+        None, metavar="INDIR", help="find_circ3 outputs dir (<cell>/<cell>_splice_sites.bed)"
+    ),
+    outdir_pos: Optional[Path] = typer.Argument(
+        None, metavar="OUTDIR", help="Output directory (defaults to work/...)"
+    ),
+    findcirc3_dir: Optional[Path] = typer.Option(
+        None,
+        "--findcirc3-dir",
+        "--indir",
         exists=True,
-        help=(
-            "Directory with find_circ3 per-cell outputs "
-            "(<cell_id>/<cell_id>_splice_sites.bed)."
-        ),
+        help="Directory with find_circ3 per-cell outputs (<cell>/<cell>_splice_sites.bed).",
     ),
-    matrix: Path = typer.Option(
-        ...,
-        help="Output sparse matrix (.mtx, rows=circ, cols=cells)",
+    outdir_opt: Optional[Path] = typer.Option(
+        None, "--outdir", "-o", help="Output directory (writes circ_counts.mtx + indexes)"
     ),
-    circ_index: Path = typer.Option(
-        ...,
-        help="Output circ index (rows, one circ_id per line)",
-    ),
-    cell_index: Path = typer.Option(
-        ...,
-        help="Output cell index (columns, one cell_id per line)",
-    ),
+    matrix: Optional[Path] = typer.Option(None, "--matrix"),
+    circ_index: Optional[Path] = typer.Option(None, "--circ-index"),
+    cell_index: Optional[Path] = typer.Option(None, "--cell-index"),
     min_count_per_cell: int = typer.Option(
-        1,
-        help="Minimum total n_reads per cell to keep that column.",
+        1, "--min-count-per-cell", help="Minimum total n_reads per cell to keep that column."
     ),
 ) -> None:
     """
-    Collect find_circ3 per-cell splice_sites.bed files into a circ × cell
-    MatrixMarket matrix + circ/cell index files.
+    Collect find_circ3 per-cell splice_sites.bed into circ × cell matrix.
+
+    Consistent usage:
+      circyto collect-find-circ3 INDIR OUTDIR
+      circyto collect-find-circ3 --indir INDIR --outdir OUTDIR
     """
+    indir = _pick_one(indir_pos, findcirc3_dir, name="INDIR/--findcirc3-dir/--indir")
+    if indir is None:
+        raise typer.BadParameter("Provide INDIR positionally or via --findcirc3-dir/--indir.")
+    if not indir.exists():
+        raise typer.BadParameter(f"INDIR does not exist: {indir}")
+
+    outdir = _pick_one(outdir_pos, outdir_opt, name="OUTDIR/--outdir")
+    if outdir is None and (matrix is None or circ_index is None or cell_index is None):
+        outdir = _auto_outdir("collect_find-circ3", indir.name)
+
+    outdir, matrix, circ_index, cell_index = _resolve_collect_paths(
+        outdir, matrix, circ_index, cell_index
+    )
+    _require_paths(matrix, circ_index, cell_index, names=["--matrix", "--circ-index", "--cell-index"])
+
+    assert matrix and circ_index and cell_index
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    circ_index.parent.mkdir(parents=True, exist_ok=True)
+    cell_index.parent.mkdir(parents=True, exist_ok=True)
+
     collect_find_circ3_matrix(
-        findcirc3_dir=str(findcirc3_dir),
+        findcirc3_dir=str(indir),
         matrix_path=str(matrix),
         circ_index_path=str(circ_index),
         cell_index_path=str(cell_index),
         min_count_per_cell=min_count_per_cell,
+    )
+    console.print(
+        f"[bold cyan][collect-find-circ3][/bold cyan] Wrote: {matrix} {circ_index} {cell_index}"
     )
 
 
 @app.command("collect-circexplorer2")
 def collect_circexplorer2_cmd(
-    circexplorer2_dir: Path = typer.Option(
-        ...,
+    indir_pos: Optional[Path] = typer.Argument(
+        None, metavar="INDIR", help="CIRCexplorer2 outputs dir (<cell>/circularRNA_known.txt)"
+    ),
+    outdir_pos: Optional[Path] = typer.Argument(
+        None, metavar="OUTDIR", help="Output directory (defaults to work/...)"
+    ),
+    circexplorer2_dir: Optional[Path] = typer.Option(
+        None,
+        "--circexplorer2-dir",
+        "--indir",
         exists=True,
-        help=(
-            "Directory with CIRCexplorer2 per-cell outputs "
-            "(<cell_id>/circularRNA_known.txt)."
-        ),
+        help="Directory with CIRCexplorer2 per-cell outputs (<cell>/circularRNA_known.txt).",
     ),
-    matrix: Path = typer.Option(
-        ...,
-        help="Output sparse matrix (.mtx, rows=circ, cols=cells)",
+    outdir_opt: Optional[Path] = typer.Option(
+        None, "--outdir", "-o", help="Output directory (writes circ_counts.mtx + indexes)"
     ),
-    circ_index: Path = typer.Option(
-        ...,
-        help="Output circ index (rows, one circ_id per line)",
-    ),
-    cell_index: Path = typer.Option(
-        ...,
-        help="Output cell index (columns, one cell_id per line)",
-    ),
+    matrix: Optional[Path] = typer.Option(None, "--matrix"),
+    circ_index: Optional[Path] = typer.Option(None, "--circ-index"),
+    cell_index: Optional[Path] = typer.Option(None, "--cell-index"),
     min_support: int = typer.Option(
-        1,
-        help="Minimum readNumber (support) per circRNA per cell.",
+        1, "--min-support", help="Minimum readNumber (support) per circRNA per cell."
     ),
 ) -> None:
     """
-    Collect CIRCexplorer2 per-cell circularRNA_known.txt files into a circ × cell
-    MatrixMarket matrix + circ/cell index files.
+    Collect CIRCexplorer2 outputs into circ × cell matrix.
+
+    Consistent usage:
+      circyto collect-circexplorer2 INDIR OUTDIR
+      circyto collect-circexplorer2 --indir INDIR --outdir OUTDIR
     """
-    outdir = matrix.parent
+    indir = _pick_one(indir_pos, circexplorer2_dir, name="INDIR/--circexplorer2-dir/--indir")
+    if indir is None:
+        raise typer.BadParameter("Provide INDIR positionally or via --circexplorer2-dir/--indir.")
+    if not indir.exists():
+        raise typer.BadParameter(f"INDIR does not exist: {indir}")
+
+    outdir = _pick_one(outdir_pos, outdir_opt, name="OUTDIR/--outdir")
+    if outdir is None and (matrix is None or circ_index is None or cell_index is None):
+        outdir = _auto_outdir("collect_circexplorer2", indir.name)
+
+    outdir, matrix, circ_index, cell_index = _resolve_collect_paths(
+        outdir, matrix, circ_index, cell_index
+    )
+    _require_paths(matrix, circ_index, cell_index, names=["--matrix", "--circ-index", "--cell-index"])
+
+    assert outdir and matrix and circ_index and cell_index
     outdir.mkdir(parents=True, exist_ok=True)
 
-    collect_circexplorer2_matrix_from_dir(
-        indir=circexplorer2_dir,
-        outdir=outdir,
-        min_support=min_support,
-    )
+    # Write defaults into a temp folder to avoid collisions, then rename/move to requested paths.
+    tmp = outdir / "_tmp_circexplorer2_collect"
+    if tmp.exists():
+        shutil.rmtree(tmp)
+    tmp.mkdir(parents=True, exist_ok=True)
 
-    # Move/rename default outputs to requested paths if needed
-    default_matrix = outdir / "circ_counts.mtx"
-    default_circ = outdir / "circ_index.txt"
-    default_cell = outdir / "cell_index.txt"
+    collect_circexplorer2_matrix_from_dir(indir=indir, outdir=tmp, min_support=min_support)
 
-    if default_matrix.exists() and matrix != default_matrix:
+    default_matrix = tmp / "circ_counts.mtx"
+    default_circ = tmp / "circ_index.txt"
+    default_cell = tmp / "cell_index.txt"
+
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    circ_index.parent.mkdir(parents=True, exist_ok=True)
+    cell_index.parent.mkdir(parents=True, exist_ok=True)
+
+    if default_matrix.exists():
         default_matrix.replace(matrix)
-    if default_circ.exists() and circ_index != default_circ:
+    if default_circ.exists():
         default_circ.replace(circ_index)
-    if default_cell.exists() and cell_index != default_cell:
+    if default_cell.exists():
         default_cell.replace(cell_index)
+
+    shutil.rmtree(tmp, ignore_errors=True)
+    console.print(
+        f"[bold cyan][collect-circexplorer2][/bold cyan] Wrote: {matrix} {circ_index} {cell_index}"
+    )
 
 
 # --------------------------------------------------------------------------------------
@@ -348,29 +417,11 @@ def collect_circexplorer2_cmd(
 
 @app.command()
 def convert(
-    matrix: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Sparse matrix .mtx (rows=circ, cols=cells)",
-    ),
-    circ_index: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Text file of circ IDs (one per line)",
-    ),
-    cell_index: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Text file of cell barcodes",
-    ),
-    loom: Optional[Path] = typer.Option(
-        None,
-        help="Optional path to write .loom",
-    ),
-    h5ad: Optional[Path] = typer.Option(
-        None,
-        help="Optional path to write .h5ad",
-    ),
+    matrix: Path = typer.Option(..., exists=True, help="Sparse matrix .mtx (rows=circ, cols=cells)"),
+    circ_index: Path = typer.Option(..., exists=True, help="Text file of circ IDs (one per line)"),
+    cell_index: Path = typer.Option(..., exists=True, help="Text file of cell IDs (one per line)"),
+    loom: Optional[Path] = typer.Option(None, help="Optional path to write .loom"),
+    h5ad: Optional[Path] = typer.Option(None, help="Optional path to write .h5ad"),
 ) -> None:
     """
     Convert circ × cell matrix and index files to loom/h5ad.
@@ -386,53 +437,18 @@ def convert(
 
 @app.command()
 def make(
-    outdir: Path = typer.Option(
-        ...,
-        help="[LEGACY] Work output directory",
-    ),
-    cmd_template: str = typer.Option(
-        ...,
-        help="[LEGACY] CIRI-full command template (see run-manifest help for placeholders)",
-    ),
-    ref_fa: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] Reference FASTA",
-    ),
-    gtf: Path = typer.Option(
-        ...,
-        exists=True,
-        help="[LEGACY] GTF/GFF annotation",
-    ),
-    manifest: Optional[Path] = typer.Option(
-        None,
-        help="[LEGACY] Plate-style TSV listing cells and FASTQs",
-    ),
-    bam: Optional[Path] = typer.Option(
-        None,
-        exists=True,
-        help="[LEGACY] 10x-style BAM with CB/UB tags",
-    ),
-    whitelist: Optional[Path] = typer.Option(
-        None,
-        help="[LEGACY] Optional barcode whitelist (gz/tsv) for 10x path",
-    ),
-    chemistry: str = typer.Option(
-        "tenx-3p",
-        help="[LEGACY] tenx-3p or tenx-5p (for 10x path)",
-    ),
-    threads: int = typer.Option(
-        8,
-        help="[LEGACY] Number of cells/batches to run in parallel",
-    ),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="[LEGACY] Work output directory"),
+    cmd_template: str = typer.Option(..., help="[LEGACY] CIRI-full command template"),
+    ref_fa: Path = typer.Option(..., exists=True, help="[LEGACY] Reference FASTA"),
+    gtf: Path = typer.Option(..., exists=True, help="[LEGACY] GTF/GFF annotation"),
+    manifest: Optional[Path] = typer.Option(None, help="[LEGACY] Plate-style TSV listing cells and FASTQs"),
+    bam: Optional[Path] = typer.Option(None, exists=True, help="[LEGACY] 10x-style BAM with CB/UB tags"),
+    whitelist: Optional[Path] = typer.Option(None, help="[LEGACY] Optional barcode whitelist"),
+    chemistry: str = typer.Option("tenx-3p", help="[LEGACY] tenx-3p or tenx-5p"),
+    threads: int = typer.Option(8, help="[LEGACY] Number of cells/batches to run in parallel"),
 ) -> None:
     """
     [LEGACY] Convenience wrapper combining CIRI-full calling + collect + convert.
-
-    - Plate path: --manifest
-    - 10x path:   --bam (+ whitelist / chemistry)
-
-    Writes circ_counts.mtx, circ_index.txt, cell_index.txt, and circ.h5ad into outdir.
     """
     if manifest:
         ciri_dir = outdir / "cirifull_out"
@@ -492,34 +508,12 @@ def make(
 
 @app.command("export-multimodal")
 def export_multimodal_cmd(
-    genes_h5ad: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Base gene-expression .h5ad",
-    ),
-    circ_matrix: Path = typer.Option(
-        ...,
-        exists=True,
-        help="circRNA MatrixMarket .mtx",
-    ),
-    circ_index: Path = typer.Option(
-        ...,
-        exists=True,
-        help="circRNA index (rows)",
-    ),
-    cell_index: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Cell index (columns)",
-    ),
-    out: Path = typer.Option(
-        ...,
-        help="Output multimodal .h5ad",
-    ),
-    circ_feature_table: Optional[Path] = typer.Option(
-        None,
-        help="Optional circ_feature_table.tsv with host-gene annotations",
-    ),
+    genes_h5ad: Path = typer.Option(..., exists=True, help="Base gene-expression .h5ad"),
+    circ_matrix: Path = typer.Option(..., exists=True, help="circRNA MatrixMarket .mtx"),
+    circ_index: Path = typer.Option(..., exists=True, help="circRNA index (rows)"),
+    cell_index: Path = typer.Option(..., exists=True, help="Cell index (columns)"),
+    out: Path = typer.Option(..., help="Output multimodal .h5ad"),
+    circ_feature_table: Optional[Path] = typer.Option(None, help="Optional circ_feature_table.tsv"),
 ) -> None:
     """
     Attach circRNA counts as obsm['X_circ'] to an existing gene-expression AnnData.
@@ -536,24 +530,10 @@ def export_multimodal_cmd(
 
 @app.command("annotate-host-genes")
 def annotate_host_genes_cmd(
-    circ_feature_table: Path = typer.Option(
-        ...,
-        exists=True,
-        help="circ_feature_table.tsv from `circyto collect` or collect-matrix",
-    ),
-    gtf: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Reference GTF used for circ calling",
-    ),
-    out: Optional[Path] = typer.Option(
-        None,
-        help="Output TSV (default: overwrite circ_feature_table)",
-    ),
-    max_genes_per_circ: int = typer.Option(
-        5,
-        help="Maximum number of host genes to record per circRNA",
-    ),
+    circ_feature_table: Path = typer.Option(..., exists=True, help="circ_feature_table.tsv"),
+    gtf: Path = typer.Option(..., exists=True, help="Reference GTF used for circ calling"),
+    out: Optional[Path] = typer.Option(None, help="Output TSV (default: overwrite circ_feature_table)"),
+    max_genes_per_circ: int = typer.Option(5, help="Maximum number of host genes to record per circRNA"),
 ) -> None:
     """
     Annotate circRNAs with host gene(s) using a reference GTF.
@@ -567,47 +547,20 @@ def annotate_host_genes_cmd(
 
 
 # --------------------------------------------------------------------------------------
-# Detector API: single-detector and NEW unified batch runner
+# Detector API runners (consistent): --outdir everywhere; detector can be arg OR --detector
 # --------------------------------------------------------------------------------------
 
 
-@app.command("run-detector")
-def run_detector_cmd(
-    detector: str = typer.Argument(
-        ...,
-        help="Detector name (e.g. 'ciri-full', 'ciri2', 'find-circ3', 'circexplorer2')",
-    ),
-    manifest: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Manifest TSV (columns: cell_id, r1, [r2])",
-    ),
-    outdir: Path = typer.Option(
-        ...,
-        help="Output directory for per-cell TSVs",
-    ),
-    ref_fa: Optional[Path] = typer.Option(
-        None,
-        help="Reference FASTA (required for most detectors)",
-    ),
-    gtf: Optional[Path] = typer.Option(
-        None,
-        help="Annotation GTF/GFF (required for most detectors)",
-    ),
-    threads: int = typer.Option(
-        8,
-        help="Threads per detector process",
-    ),
-    parallel: int = typer.Option(
-        4,
-        help="Number of cells to run in parallel",
-    ),
+def _run_detector_impl(
+    *,
+    detector: str,
+    manifest: Path,
+    outdir: Path,
+    ref_fa: Optional[Path],
+    gtf: Optional[Path],
+    threads: int,
+    parallel: int,
 ) -> None:
-    """
-    Run a single detector over a manifest using the detector API.
-
-    This is the preferred interface for new workflows (single-detector).
-    """
     engines = build_default_engines()
     if detector not in engines:
         available = ", ".join(sorted(engines.keys()))
@@ -615,7 +568,7 @@ def run_detector_cmd(
 
     det_engine = engines[detector]
     console.print(
-        f"[bold cyan][circyto][/bold cyan] Running detector '{det_engine.name}' "
+        f"[bold cyan][circyto][/bold cyan] Running detector='{det_engine.name}' "
         f"(version={det_engine.version()})"
     )
 
@@ -636,66 +589,42 @@ def run_detector_cmd(
     )
 
 
-@app.command("run-batch")
-def run_batch_cmd(
-    detector: str = typer.Option(
-        ...,
-        "--detector",
-        "-d",
-        help="Detector name (e.g. 'ciri-full', 'find-circ3', 'circexplorer2')",
+@app.command("run-detector")
+def run_detector_cmd(
+    detector_pos: Optional[str] = typer.Argument(
+        None, metavar="DETECTOR", help="Detector name (e.g. ciri-full, find-circ3, circexplorer2)"
     ),
-    manifest: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Manifest TSV (columns: cell_id, r1, [r2])",
+    detector_opt: Optional[str] = typer.Option(
+        None, "--detector", "-d", help="Detector name (alias of positional DETECTOR; e.g. circexplorer2)"
     ),
-    outdir: Path = typer.Option(
-        ...,
-        help="Output directory for per-cell detector outputs",
+    manifest: Path = typer.Option(..., exists=True, help="Manifest TSV (cell_id, r1, [r2])"),
+    outdir: Optional[Path] = typer.Option(
+        None, "--outdir", "-o", help="Output directory for per-cell detector outputs"
     ),
-    ref_fa: Optional[Path] = typer.Option(
-        None,
-        help="Reference FASTA (required for most detectors)",
-    ),
-    gtf: Optional[Path] = typer.Option(
-        None,
-        help="Annotation GTF/GFF (required for most detectors)",
-    ),
-    threads: int = typer.Option(
-        8,
-        help="Threads per detector process",
-    ),
-    parallel: int = typer.Option(
-        4,
-        help="Number of cells to run in parallel",
-    ),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA"),
+    gtf: Optional[Path] = typer.Option(None, "--gtf", help="Annotation GTF/GFF"),
+    threads: int = typer.Option(8, "--threads", help="Threads per detector process"),
+    parallel: int = typer.Option(4, "--parallel", help="Number of cells to run in parallel"),
 ) -> None:
     """
-    Unified batch runner for any detector.
+    Run a single detector over a manifest using the detector API.
 
-    This is the RECOMMENDED entry point for multi-cell runs.
-
-        circyto run-batch --detector ciri-full --manifest manifest.tsv --outdir out/ ...
-
-    is equivalent to:
-
-        circyto run-detector ciri-full --manifest manifest.tsv --outdir out/ ...
+    Examples:
+      circyto run-detector find-circ3 --manifest m.tsv --outdir out/ --ref-fa ref.fa
+      circyto run-detector --detector find-circ3 --manifest m.tsv --outdir out/ --ref-fa ref.fa
     """
-    engines = build_default_engines()
-    if detector not in engines:
-        available = ", ".join(sorted(engines.keys()))
-        raise typer.Exit(f"Detector '{detector}' not available. Available: {available}")
+    detector = detector_pos or detector_opt
+    if detector_pos and detector_opt and detector_pos != detector_opt:
+        raise typer.BadParameter("Provide DETECTOR positionally OR via --detector, not both.")
+    if detector is None:
+        raise typer.BadParameter("Missing detector. Provide DETECTOR or --detector/-d.")
 
-    det_engine = engines[detector]
-    console.print(
-        f"[bold cyan][circyto][/bold cyan] [run-batch] detector='{det_engine.name}' "
-        f"(version={det_engine.version()})"
-    )
+    if outdir is None:
+        outdir = _auto_outdir("run-detector", detector, manifest.stem)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
 
-    outdir.mkdir(parents=True, exist_ok=True)
-
-    results = run_detector_manifest(
-        detector=det_engine,
+    _run_detector_impl(
+        detector=detector,
         manifest=manifest,
         outdir=outdir,
         ref_fa=ref_fa,
@@ -704,33 +633,60 @@ def run_batch_cmd(
         parallel=parallel,
     )
 
-    console.print(
-        f"[bold cyan][circyto][/bold cyan] [run-batch] Completed {len(results)} jobs into {outdir}"
+
+@app.command("run-batch")
+def run_batch_cmd(
+    detector: str = typer.Option(..., "--detector", "-d", help="Detector name"),
+    manifest: Path = typer.Option(..., exists=True, help="Manifest TSV (cell_id, r1, [r2])"),
+    outdir: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Output directory"),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA"),
+    gtf: Optional[Path] = typer.Option(None, "--gtf", help="Annotation GTF/GFF"),
+    threads: int = typer.Option(8, "--threads", help="Threads per detector process"),
+    parallel: int = typer.Option(4, "--parallel", help="Number of cells to run in parallel"),
+) -> None:
+    """
+    Unified batch runner for any detector.
+
+    NOTE: This is effectively an alias of run-detector with a strict `--detector`.
+    """
+    if outdir is None:
+        outdir = _auto_outdir("run-batch", detector, manifest.stem)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
+    _run_detector_impl(
+        detector=detector,
+        manifest=manifest,
+        outdir=outdir,
+        ref_fa=ref_fa,
+        gtf=gtf,
+        threads=threads,
+        parallel=parallel,
     )
 
 
 @app.command("run-multidetector")
 def run_multidetector_cmd(
     detectors: List[str] = typer.Argument(..., help="List of detectors to run"),
-    manifest: Path = typer.Option(..., exists=True, dir_okay=False),
-    outdir: Path = typer.Argument(...),
-    ref_fa: Optional[Path] = typer.Option(None),
-    gtf: Optional[Path] = typer.Option(None),
-    threads: int = typer.Option(8),
-    parallel: int = typer.Option(1),
+    manifest: Path = typer.Option(..., exists=True, dir_okay=False, help="Manifest TSV"),
+    outdir: Optional[Path] = typer.Option(
+        None, "--outdir", "-o", help="Output directory for multi-detector run"
+    ),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA"),
+    gtf: Optional[Path] = typer.Option(None, "--gtf", help="Annotation GTF/GFF"),
+    threads: int = typer.Option(8, "--threads"),
+    parallel: int = typer.Option(1, "--parallel"),
 ) -> None:
     """
     Run multiple detectors on the same manifest.
 
-    Example:
-
-        circyto run-multidetector ciri-full find-circ3 \\
-          --manifest manifest.tsv \\
-          --ref-fa ref.fa --gtf ref.gtf \\
-          out/multidetector_run
+    Consistent usage:
+      circyto run-multidetector ciri-full find-circ3 --manifest m.tsv --outdir out/
     """
-    outdir.mkdir(parents=True, exist_ok=True)
+    if outdir is None:
+        outdir = _auto_outdir("run-multidetector", manifest.stem)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
 
+    outdir.mkdir(parents=True, exist_ok=True)
     run_multidetector_pipeline(
         detectors=detectors,
         manifest=manifest,
@@ -740,12 +696,11 @@ def run_multidetector_cmd(
         threads=threads,
         parallel=parallel,
     )
-
     typer.echo(f"[run-multidetector] Completed. Summary at {outdir/'summary.json'}")
 
 
 # --------------------------------------------------------------------------------------
-# Multi-detector: merge, collect matrices, compare
+# Unified matrix collector (consistent): --detector --indir --outdir
 # --------------------------------------------------------------------------------------
 
 
@@ -755,40 +710,34 @@ def collect_matrix_cmd(
         ...,
         "--detector",
         "-d",
-        help="Detector name for matrix collection (e.g. 'ciri-full', 'find-circ3', 'circexplorer2')",
+        help="Detector name (ciri-full, find-circ3, circexplorer2)",
     ),
-    indir: Path = typer.Option(
-        ...,
-        exists=True,
-        help="Directory with per-cell outputs for the detector",
+    indir: Path = typer.Option(..., "--indir", exists=True, help="Directory with per-cell outputs"),
+    outdir: Optional[Path] = typer.Option(
+        None, "--outdir", "-o", help="Output directory (writes circ_counts.mtx + indexes)"
     ),
-    matrix: Path = typer.Option(
-        ...,
-        help="Output sparse matrix (.mtx, rows=circ, cols=cells)",
-    ),
-    circ_index: Path = typer.Option(
-        ...,
-        help="Output circ index (rows, one circ_id per line)",
-    ),
-    cell_index: Path = typer.Option(
-        ...,
-        help="Output cell index (columns, one cell_id per line)",
-    ),
-    min_count_per_cell: int = typer.Option(
-        1,
-        help="Minimum total counts per cell to keep that cell.",
-    ),
+    matrix: Optional[Path] = typer.Option(None, "--matrix"),
+    circ_index: Optional[Path] = typer.Option(None, "--circ-index"),
+    cell_index: Optional[Path] = typer.Option(None, "--cell-index"),
+    min_count_per_cell: int = typer.Option(1, "--min-count-per-cell"),
 ) -> None:
     """
     Unified matrix collector.
 
-    Dispatches to the appropriate collector based on --detector:
-
-      - ciri-full      → legacy `collect` (CIRI-full TSVs)
-      - find-circ3     → `collect-find-circ3`
-      - circexplorer2  → `collect-circexplorer2`
+    Preferred usage:
+      circyto collect-matrix -d find-circ3 --indir work/.../find-circ3 --outdir out/
     """
     detector = detector.lower()
+    if outdir is None and (matrix is None or circ_index is None or cell_index is None):
+        outdir = _auto_outdir("collect-matrix", detector, indir.name)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
+    outdir, matrix, circ_index, cell_index = _resolve_collect_paths(
+        outdir, matrix, circ_index, cell_index
+    )
+    _require_paths(matrix, circ_index, cell_index, names=["--matrix", "--circ-index", "--cell-index"])
+    assert matrix and circ_index and cell_index
+
     if detector == "ciri-full":
         collect_matrix(
             cirifull_dir=str(indir),
@@ -806,50 +755,58 @@ def collect_matrix_cmd(
             min_count_per_cell=min_count_per_cell,
         )
     elif detector == "circexplorer2":
-        outdir = matrix.parent
-        outdir.mkdir(parents=True, exist_ok=True)
-        collect_circexplorer2_matrix_from_dir(
-            indir=indir,
-            outdir=outdir,
-            min_support=min_count_per_cell,
-        )
-        default_matrix = outdir / "circ_counts.mtx"
-        default_circ = outdir / "circ_index.txt"
-        default_cell = outdir / "cell_index.txt"
-        if default_matrix.exists() and matrix != default_matrix:
-            default_matrix.replace(matrix)
-        if default_circ.exists() and circ_index != default_circ:
-            default_circ.replace(circ_index)
-        if default_cell.exists() and cell_index != default_cell:
-            default_cell.replace(cell_index)
+        # Use temp dir to avoid default-name collisions.
+        tmp = matrix.parent / "_tmp_collect_matrix_circexplorer2"
+        if tmp.exists():
+            shutil.rmtree(tmp)
+        tmp.mkdir(parents=True, exist_ok=True)
+        collect_circexplorer2_matrix_from_dir(indir=indir, outdir=tmp, min_support=min_count_per_cell)
+
+        dm = tmp / "circ_counts.mtx"
+        dc = tmp / "circ_index.txt"
+        dl = tmp / "cell_index.txt"
+        if dm.exists():
+            dm.replace(matrix)
+        if dc.exists():
+            dc.replace(circ_index)
+        if dl.exists():
+            dl.replace(cell_index)
+        shutil.rmtree(tmp, ignore_errors=True)
     else:
         raise typer.Exit(
             f"Unknown detector '{detector}' for collect-matrix. "
             "Supported: ciri-full, find-circ3, circexplorer2."
         )
 
+    console.print(f"[bold cyan][collect-matrix][/bold cyan] Wrote: {matrix} {circ_index} {cell_index}")
+
+
+# --------------------------------------------------------------------------------------
+# Multi-detector: merge, compare (consistent): accept positional OR --indir/--outdir
+# --------------------------------------------------------------------------------------
+
 
 @app.command("merge-detectors")
 def merge_detectors_cmd(
-    indir: Path = typer.Argument(
-        ...,
-        exists=True,
-        help="Output dir from `run-multidetector` (must contain summary.json)",
-    ),
-    outdir: Path = typer.Argument(
-        ...,
-        help="Output directory for merged TSVs (union/long) and metadata",
-    ),
+    indir_pos: Optional[Path] = typer.Argument(None, metavar="INDIR", help="Output dir from run-multidetector"),
+    outdir_pos: Optional[Path] = typer.Argument(None, metavar="OUTDIR", help="Output directory for merged tables"),
+    indir_opt: Optional[Path] = typer.Option(None, "--indir", exists=True, help="Input directory (alias)"),
+    outdir_opt: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Output directory (alias)"),
 ) -> None:
     """
-    Merge per-detector per-cell TSVs into union and long-format tables.
-
-    Produces:
-
-      - circ_union.tsv        (one row per circRNA, per-detector support columns)
-      - circ_by_detector.tsv  (long-form circ × detector × cell)
-      - metadata.json         (basic bookkeeping)
+    Merge per-detector per-cell TSVs into union + long-format tables.
     """
+    indir = _pick_one(indir_pos, indir_opt, name="INDIR/--indir")
+    if indir is None:
+        raise typer.BadParameter("Provide INDIR positionally or via --indir.")
+    if not indir.exists():
+        raise typer.BadParameter(f"INDIR does not exist: {indir}")
+
+    outdir = _pick_one(outdir_pos, outdir_opt, name="OUTDIR/--outdir")
+    if outdir is None:
+        outdir = _auto_outdir("merge-detectors", indir.name)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
     outdir.mkdir(parents=True, exist_ok=True)
     res = _merge_detectors(indir=indir, outdir=outdir)
 
@@ -867,38 +824,66 @@ def merge_detectors_cmd(
     console.print(msg)
 
 
+@app.command("compare-ids")
+def compare_ids_cmd(
+    a: Path = typer.Option(..., "--a", help="circ_index.txt or TSV with circ_id column"),
+    b: Path = typer.Option(..., "--b", help="circ_index.txt or TSV with circ_id column"),
+    window: int = typer.Option(5, "--window", help="Fuzzy window in bp (±window)"),
+    col: str = typer.Option("circ_id", "--col", help="TSV column name for circ_id"),
+) -> None:
+    """
+    Compare two circ ID lists (exact + fuzzy ±window bp).
+
+    This is the “sanity compare” tool you used for CIRI vs find-circ3.
+    """
+    from circyto.analysis.compare_detectors import load_keys, fuzzy_hits, fuzzy_jaccard
+
+    A = load_keys(a, col=col)
+    B = load_keys(b, col=col)
+
+    exact_i = len(A & B)
+    exact_u = len(A) + len(B) - exact_i
+
+    ha = fuzzy_hits(A, B, window=window)
+    hb = fuzzy_hits(B, A, window=window)
+    fj = fuzzy_jaccard(A, B, window=window)
+
+    typer.echo(f"A: {len(A)}")
+    typer.echo(f"B: {len(B)}")
+    typer.echo(f"Exact intersect: {exact_i}")
+    typer.echo(f"Exact Jaccard:   {exact_i/exact_u if exact_u else 0.0:.6f}")
+    typer.echo(f"Fuzzy hits A→B (±{window}): {ha}")
+    typer.echo(f"Fuzzy hits B→A (±{window}): {hb}")
+    typer.echo(f"Fuzzy Jaccard (sym): {fj:.6f}")
+
+
 @app.command("collect-multidetector")
 def collect_multidetector_cmd(
-    multi_out: Path = typer.Argument(
-        ...,
-        exists=True,
-        help="Output dir from `run-multidetector` (per-detector subdirs with TSVs)",
+    indir_pos: Optional[Path] = typer.Argument(
+        None, metavar="INDIR", help="Output dir from run-multidetector (contains summary.json)"
+    ),
+    indir_opt: Optional[Path] = typer.Option(
+        None, "--indir", exists=True, help="Input directory (alias of positional INDIR)"
     ),
 ) -> None:
     """
-    Build per-detector circRNA sparse matrices from multi-detector outputs.
-
-    For each detector listed in multi_out/summary.json, writes:
-
-      multi_out/matrices/<detector>.mtx
-      multi_out/matrices/<detector>.circ.txt
-      multi_out/matrices/<detector>.cell.txt
-
-    Uses detector-specific collectors:
-      - ciri-full      → legacy CIRI-full collector
-      - find-circ3     → find_circ3 splice_sites.bed collector
-      - circexplorer2  → CIRCexplorer2 circularRNA_known.txt collector
+    Build per-detector circRNA matrices from a multi-detector run into:
+      INDIR/matrices/<detector>.mtx
+      INDIR/matrices/<detector>.circ.txt
+      INDIR/matrices/<detector>.cell.txt
     """
-    import json  # at top of file is also fine; here is okay too.
+    import json
 
-    console = Console()
-    multi_out = Path(multi_out)
+    multi_out = _pick_one(indir_pos, indir_opt, name="INDIR/--indir")
+    if multi_out is None:
+        raise typer.BadParameter("Provide INDIR positionally or via --indir.")
+    if not multi_out.exists():
+        raise typer.BadParameter(f"INDIR does not exist: {multi_out}")
+
     summary_path = multi_out / "summary.json"
-
     if not summary_path.exists():
         raise typer.Exit(
-            f"No summary.json found in {multi_out}. "
-            "Run `circyto run-multidetector` first."
+            f"No summary.json found in {multi_out}. Run `circyto run-multidetector` first."
         )
 
     with summary_path.open() as f:
@@ -911,20 +896,17 @@ def collect_multidetector_cmd(
     matrices_dir = multi_out / "matrices"
     matrices_dir.mkdir(parents=True, exist_ok=True)
 
-    # Fixed default for now (same as other collectors)
     min_count_per_cell = 1
 
-    for det_name, det_results in results.items():
+    for det_name in results.keys():
         console.print(
-            f"[bold cyan][collect-multidetector][/bold cyan] "
-            f"Building matrix for detector {det_name}"
+            f"[bold cyan][collect-multidetector][/bold cyan] Building matrix for detector {det_name}"
         )
 
         det_outdir = multi_out / det_name
         if not det_outdir.exists():
             console.print(
-                f"[yellow][collect-multidetector][/yellow] "
-                f"Detector dir missing for {det_name}: {det_outdir} (skipping)"
+                f"[yellow][collect-multidetector][/yellow] Missing detector dir: {det_outdir} (skipping)"
             )
             continue
 
@@ -934,7 +916,6 @@ def collect_multidetector_cmd(
         cell_index_path = matrices_dir / f"{det_name}.cell.txt"
 
         if det_name == "ciri-full":
-            # legacy CIRI-full TSV collector
             collect_matrix(
                 cirifull_dir=str(det_outdir),
                 matrix_path=str(matrix_path),
@@ -944,7 +925,6 @@ def collect_multidetector_cmd(
             )
 
         elif det_name == "find-circ3":
-            # per-cell <cell_id>/<cell_id>_splice_sites.bed
             collect_find_circ3_matrix(
                 findcirc3_dir=str(det_outdir),
                 matrix_path=str(matrix_path),
@@ -954,50 +934,69 @@ def collect_multidetector_cmd(
             )
 
         elif det_name == "circexplorer2":
-            collect_circexplorer2_matrix(
-                circexplorer2_dir=str(det_outdir),
-                matrix_path=str(matrix_path),
-                circ_index_path=str(circ_index_path),
-                cell_index_path=str(cell_index_path),
-                min_count_per_cell=min_count_per_cell,
+            # Important: circexplorer2 collector writes fixed filenames;
+            # use a per-detector temp directory to avoid collisions.
+            tmp = matrices_dir / f"_tmp_{det_name}"
+            if tmp.exists():
+                shutil.rmtree(tmp)
+            tmp.mkdir(parents=True, exist_ok=True)
+
+            collect_circexplorer2_matrix_from_dir(
+                indir=det_outdir,
+                outdir=tmp,
+                min_support=min_count_per_cell,
             )
+
+            dm = tmp / "circ_counts.mtx"
+            dc = tmp / "circ_index.txt"
+            dl = tmp / "cell_index.txt"
+            if dm.exists():
+                dm.replace(matrix_path)
+            if dc.exists():
+                dc.replace(circ_index_path)
+            if dl.exists():
+                dl.replace(cell_index_path)
+
+            shutil.rmtree(tmp, ignore_errors=True)
 
         else:
             console.print(
-                f"[yellow][collect-multidetector][/yellow] "
-                f"No collector wired for detector {det_name}; skipping."
+                f"[yellow][collect-multidetector][/yellow] No collector wired for {det_name}; skipping."
             )
             continue
 
         console.print(
-            f"[bold cyan][collect-multidetector][/bold cyan] "
-            f"Wrote {matrix_path.name} "
+            f"[bold cyan][collect-multidetector][/bold cyan] Wrote {matrix_path.name} "
             f"(circ_index={circ_index_path.name}, cell_index={cell_index_path.name})"
         )
 
 
-
 @app.command("compare-detectors")
-def compare_detectors_cmd(
-    indir: Path = typer.Argument(
-        ...,
-        exists=True,
-        help="Directory containing circ_union.tsv (output of `merge-detectors`)",
-    ),
-    outdir: Path = typer.Argument(
-        ...,
-        help="Output directory for Jaccard matrix, summary, metadata",
-    ),
+def compare_detectors_merged_cmd(
+    indir_pos: Optional[Path] = typer.Argument(None, metavar="INDIR", help="Directory containing circ_union.tsv"),
+    outdir_pos: Optional[Path] = typer.Argument(None, metavar="OUTDIR", help="Output directory for compare outputs"),
+    indir_opt: Optional[Path] = typer.Option(None, "--indir", exists=True, help="Input directory (alias)"),
+    outdir_opt: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Output directory (alias)"),
 ) -> None:
     """
-    Compare detectors using a merged circ_union.tsv.
+    Compare detectors using a merged circ_union.tsv (output of merge-detectors).
 
     Produces:
-
-      - jaccard.tsv           (detector × detector Jaccard similarity)
-      - detector_summary.tsv  (per-detector stats)
+      - jaccard.tsv
+      - detector_summary.tsv
       - compare_metadata.json
     """
+    indir = _pick_one(indir_pos, indir_opt, name="INDIR/--indir")
+    if indir is None:
+        raise typer.BadParameter("Provide INDIR positionally or via --indir.")
+    if not indir.exists():
+        raise typer.BadParameter(f"INDIR does not exist: {indir}")
+
+    outdir = _pick_one(outdir_pos, outdir_opt, name="OUTDIR/--outdir")
+    if outdir is None:
+        outdir = _auto_outdir("compare-detectors", indir.name)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
     outdir.mkdir(parents=True, exist_ok=True)
     res = _compare_detectors(indir=indir, outdir=outdir)
 
