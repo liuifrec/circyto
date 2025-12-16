@@ -9,7 +9,9 @@
   <a href="https://github.com/liuifrec/circyto/releases">
   <img alt="Release" src="https://img.shields.io/github/v/tag/liuifrec/circyto?sort=semver">
   </a>
-  <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE"><img alt="License" src="https://img.shields.io/github/license/liuifrec/circyto"></a>
+  <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
+  <img alt="License" src="https://img.shields.io/github/license/liuifrec/circyto?cacheSeconds=3600&v=2">
+  </a>
   <a href="https://pypi.org/project/circyto/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
 </p>
 
