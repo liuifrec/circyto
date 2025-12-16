@@ -4,14 +4,12 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "circyto"
-version = "0.8.1"
-
-description = "A Python CLI toolkit for single-cell circRNA detection, merging, and conversion."
+version = "0.8.2"
+description = "A Python CLI toolkit for single-cell circRNA detection, detector orchestration, matrix generation, and multimodal export."
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [{ name = "James Liu" }]
 license = { text = "MIT" }
-
 
 dependencies = [
   "typer>=0.9,<1.0",
@@ -33,7 +31,6 @@ circyto = "circyto.cli.circyto:app"
 Homepage = "https://github.com/liuifrec/circyto"
 Issues   = "https://github.com/liuifrec/circyto/issues"
 
-# ---- limit package discovery to the actual code ----
 [tool.setuptools.packages.find]
 include = ["circyto", "circyto.*"]
 exclude = ["tests*", "fastq*", "ref*", "assets*", "work_*", "data*", ".github*"]
@@ -43,6 +40,7 @@ include-package-data = true
 
 [tool.setuptools.package-data]
 circyto = ["**/*.txt", "**/*.sh"]
+
 [tool.pytest.ini_options]
 markers = [
   "slow: slow tests that may take longer to run",
