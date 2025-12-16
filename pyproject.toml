@@ -10,7 +10,8 @@ description = "A Python CLI toolkit for single-cell circRNA detection, merging, 
 readme = "README.md"
 requires-python = ">=3.9"
 authors = [{ name = "James Liu" }]
-license = "MIT"
+license = { text = "MIT" }
+
 
 dependencies = [
   "typer>=0.9,<1.0",
