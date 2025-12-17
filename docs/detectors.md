@@ -1,36 +1,116 @@
-
 # Detectors
 
-`circyto` is designed to work with multiple circRNA detectors through small, focused adapter scripts. The goal is to provide a consistent CLI and output schema across tools.
+This page explains which detectors circyto can orchestrate, what each one needs, and when to choose which.
 
-## Detector comparison
+> Planned: `circyto detectors` will print a live, authoritative list. Until then, this doc is the reference.
 
-| Detector        | Input type              | Reference needed                   | Output granularity        | Strengths                                                     | Limitations / Notes                                           | circyto support level |
-|----------------|-------------------------|------------------------------------|---------------------------|----------------------------------------------------------------|---------------------------------------------------------------|------------------------|
-| **CIRI-full**  | Paired-end FASTQ        | Genome FASTA + BWA index + GTF     | Full-length circRNA + AS  | Full-length reconstruction, integrates RO/AS, detailed output | Heavy, multi-stage pipeline; requires good reference indices | ✅ Fully integrated (chr21 Smart-seq2 example) |
-| **CIRI-long**  | Long-read FASTQ (ONT)   | Genome FASTA + minimap2 index      | Full-length circRNA       | Designed for long-read; captures complex isoforms             | Long-read only; runtime and memory depend on read length     | 🔜 Planned integration |
-| **CIRCexplorer2** | BAM (spliced align.) | Genome FASTA + annotation          | Back-splice junctions     | Widely used; works from alignment BAMs                        | No full-length reconstruction; depends on upstream aligner   | 🔜 Planned integration |
-| **find_circ**  | FASTQ (or BAM)          | Genome FASTA + BWA index           | Back-splice junctions     | Simple, fast; classic circRNA detector                        | Older; higher FP rate; no full-length info                   | 🔜 Planned integration |
-| **circRNA_finder** (optional) | BAM    | Genome FASTA                       | Back-splice junctions     | Works directly on STAR outputs                                | STAR-specific; less widely maintained                        | ❓ Maybe (low priority) |
+---
 
-Support levels:
+## Detector summary
 
-- ✅ Fully integrated: wired through `run`/`run-manifest` + `collect` and tested end-to-end.
-- 🔜 Planned: interface design ready; implementation pending.
-- ❓ Maybe: candidate for future integration depending on demand.
+### `find-circ3`
 
-## Adapter philosophy
+**Best for**
+- quick smoke testing
+- junction/anchor-based circRNA detection workflows
 
-Each detector is wrapped by a small adapter that is responsible for:
+**External requirements**
+- `bowtie2`
+- `samtools`
+- `find-circ3` CLI installed and available on `PATH`
 
-- Mapping manifest columns (R1/R2/BAM) to detector CLI arguments
-- Handling compression/decompression
-- Managing per-cell working directories
-- Normalizing detector output to a common TSV schema:
-
-```text
-circ_id    chr    start    end    strand    support
+**Typical run**
+```bash
+circyto run-batch \
+  --detector find-circ3 \
+  --manifest manifest.tsv \
+  --outdir work/find_circ3_run \
+  --ref-fa ref/genome.fa \
+  --threads 8 \
+  --parallel 4
 ```
 
-Upstream complexity stays inside the detector; `circyto` focuses on orchestration and harmonization.
+Notes:
+- A GTF is not required for the detector call itself.
+- You may still want a GTF later for host-gene annotation (`annotate-host-genes`).
 
+---
+
+### `ciri-full`
+
+**Best for**
+- full-length short-read protocols (e.g., Smart-seq2-like data)
+- workflows where you want CIRI-full’s reconstruction/quantification behavior
+
+**External requirements**
+- `bwa`
+- `java` (JRE)
+- the CIRI-full JAR placed in `tools/` per this repo’s `tools/` layout
+
+**Typical run**
+```bash
+circyto run-batch \
+  --detector ciri-full \
+  --manifest manifest.tsv \
+  --outdir work/ciri_full_run \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 8 \
+  --parallel 4
+```
+
+Notes:
+- CIRI-full’s own documentation indicates it is Java-based and requires `bwa` for generating SAM inputs. It bundles CIRI2 and CIRI-AS as part of the CIRI-full software package.
+- If you do not have a GTF, you can still run on a reference FASTA, but downstream annotation will be limited.
+
+---
+
+## STAR-based detectors (future)
+
+STAR-based detectors are planned/under consideration and will be treated as **optional integrations** (because STAR is a large external dependency).
+
+Examples discussed for future integration:
+- DCC
+- circhunter
+- CIRI3
+
+---
+
+## Planned UX: `circyto detectors`
+
+Proposed output (example):
+
+```text
+$ circyto detectors
+
+NAME        TYPE        NEEDS                     NOTES
+find-circ3   CLI tool    bowtie2, samtools         good first-run smoke test
+ciri-full    JAR tool    bwa, java                 requires tools/CIRI-full*.jar
+```
+
+Optional flags under consideration:
+- `--json` for tooling
+- `--verbose` to show expected output layout and required inputs
+
+---
+
+## Planned UX: `circyto doctor`
+
+Proposed checks:
+- detect executables on PATH: `bowtie2`, `samtools`, `bwa`, `java`, `STAR` (optional)
+- detect the presence of required detector assets under `tools/`
+- print one actionable line per missing dependency
+
+Example:
+
+```text
+$ circyto doctor
+
+[OK] python: 3.11.7
+[OK] bowtie2: /usr/bin/bowtie2
+[OK] samtools: /usr/bin/samtools
+[MISSING] bwa: not found on PATH (needed for ciri-full)
+[OK] java: 17.0.10
+[WARN] STAR: not found (only needed for STAR-based detectors)
+[WARN] tools/: CIRI-full jar not found (needed for ciri-full)
+```

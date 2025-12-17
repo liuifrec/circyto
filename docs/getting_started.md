@@ -1,83 +1,154 @@
 # Getting started
 
-## Installation
+This guide is the canonical “how do I run this without surprises?” workflow reference.
 
-Clone and install in editable mode:
+If you only want a minimal smoke test, see the README.
 
-```bash
-git clone https://github.com/liuifrec/circyto.git
-cd circyto
-pip install -e .
-```
+---
 
-Optional extras for detector-specific helpers:
+## Quick checklist
 
-```bash
-pip install -e .[detectors]
-```
+Before you start:
 
-Ensure external dependencies are installed for your chosen detector(s), e.g.:
+- You have **Python 3.10+**
+- You installed `circyto` (`pip install -e .` from the repo)
+- You installed **at least one detector**:
+  - `find-circ3` (recommended for a first run), or
+  - CIRI-full (requires Java + bwa + a JAR)
 
-- CIRI-full: Java, BWA, samtools
-- Future detectors: minimap2, STAR, etc.
+If your first run fails with `command not found`, skip ahead to **External dependencies**.
 
-## Basic workflow
+---
 
-The typical `circyto` workflow is:
+## Concepts
 
-1. Prepare a manifest of cells and their FASTQs/BAMs
-2. Run a detector via `circyto run` or `circyto run-manifest`
-3. Normalize detector output into TSV per cell
-4. Use `circyto collect` to build a circRNA × cell matrix
-5. Load the matrix into Scanpy / Seurat / ML pipelines
+### What is a “detector”?
 
-## Manifest format
+A detector is the underlying circRNA calling tool (e.g., CIRI-full, find-circ3). `circyto`:
 
-A minimal manifest (tab-separated) looks like:
+- runs the detector per-cell (or per-sample)
+- normalizes output locations and naming
+- provides standardized collectors to build a circRNA × cell matrix
 
-```tsv
-cell_id    r1    r2
-cellA      fastq/cellA_R1.fastq.gz  fastq/cellA_R2.fastq.gz
-cellB      fastq/cellB_R1.fastq.gz  fastq/cellB_R2.fastq.gz
-```
+### What is a “manifest”?
 
-For single-end data, you can leave the `r2` column empty or omit it, depending on the detector adapter.
+A manifest is a TSV file listing your samples/cells and their FASTQ paths (plus any required metadata).
 
-## Running a detector (CIRI-full example)
+Instead of describing the schema in prose (which drifts), **use the repo examples as templates**:
 
-```bash
-circyto run-manifest   --manifest manifest.tsv   --outdir work/ciri_full   --ref-fa ref/hg38.fa   --gtf ref/hg38.gtf   --cmd-template 'bash -lc "
-    export R1={r1} R2={r2} REF_FA={ref_fa} GTF={gtf} OUT_TSV={out_tsv} THREADS=8 ;
-    tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh
-  "'
-```
+- `manifest.tsv`
+- `manifest_2.tsv`
 
-This produces one normalized TSV per cell under `work/ciri_full/`.
+When you create your own manifest, start by copying one of these files and replacing the FASTQ paths.
 
-## Building a matrix
+---
 
-```bash
-circyto collect   --cirifull-dir work/ciri_full   --matrix circ.mtx   --circ-index circ_ids.txt   --cell-index cell_ids.txt
-```
+## External dependencies
 
-You can then load this into Scanpy:
+Circyto orchestrates detectors, but many detectors rely on standard bioinformatics executables being available on your `PATH`.
 
-```python
-import scanpy as sc
+### Common executables
 
-adata = sc.read_mtx("circ.mtx").T
-adata.obs_names = open("cell_ids.txt").read().split()
-adata.var_names = open("circ_ids.txt").read().split()
+- `bowtie2` and `samtools` (required for find-circ3 workflows)
+- `bwa` and `java` (required for CIRI-full workflows)
+- `STAR` (optional; relevant only for future STAR-based detectors)
 
-## Multimodal export (mRNA + circRNA)
+> Planned: `circyto doctor` will check these for you and print a clear report. Until then, you can manually verify with:
+>
+> ```bash
+> command -v bowtie2 samtools bwa java
+> ```
 
-If you have a standard Scanpy `.h5ad` with gene expression, and a circRNA × cell
-matrix built by `circyto collect`, you can combine them:
+---
+
+## Workflow 1: run a detector on many cells (recommended: `run-batch`)
+
+`run-batch` is the recommended entry point for most users because it makes parallelism explicit and keeps arguments uniform.
+
+### Example: find-circ3 on the bundled chr21 manifest
 
 ```bash
-circyto export-multimodal \
-  --genes-h5ad genes.h5ad \
-  --circ-matrix work_smartseq2/circ_chr21_all.mtx \
-  --circ-index work_smartseq2/circ_chr21_all_ids.txt \
-  --cell-index work_smartseq2/cell_chr21_all_ids.txt \
-  --out multimodal_circ_genes.h5ad
+circyto run-batch \
+  --detector find-circ3 \
+  --manifest manifest_2.tsv \
+  --outdir work/find_circ3_chr21 \
+  --ref-fa ref/chr21.fa \
+  --threads 4 \
+  --parallel 2
+```
+
+What you should see:
+
+- an output directory under `work/find_circ3_chr21/`
+- per-cell subdirectories and detector outputs (layout varies by detector)
+
+If this fails:
+- confirm `find-circ3 --help` works
+- confirm `bowtie2` and `samtools` are on your PATH
+
+---
+
+## Workflow 2: collect a circRNA × cell matrix
+
+Once you have per-cell calls, build a single sparse matrix:
+
+```bash
+mkdir -p work/find_circ3_chr21_matrix
+
+circyto collect-matrix \
+  --detector find-circ3 \
+  --indir work/find_circ3_chr21 \
+  --matrix work/find_circ3_chr21_matrix/circ_counts.mtx \
+  --circ-index work/find_circ3_chr21_matrix/circ_index.txt \
+  --cell-index work/find_circ3_chr21_matrix/cell_index.txt
+```
+
+Artifacts:
+
+- `circ_counts.mtx` – sparse MatrixMarket counts
+- `circ_index.txt` – circ feature IDs (row index)
+- `cell_index.txt` – cell IDs (column index)
+
+---
+
+## Workflow 3: host-gene annotation and multimodal export (optional)
+
+Circyto also supports:
+
+- `annotate-host-genes` to map circ features to host genes using a GTF
+- `export-multimodal` to create an `.h5ad` that combines:
+  - existing mRNA expression (`.X`)
+  - circRNA counts (in `obsm["X_circ"]`)
+  - circ feature metadata (in `uns["circ"]`)
+
+Because these commands evolve, rely on `--help` for exact flags:
+
+```bash
+circyto annotate-host-genes --help
+circyto export-multimodal --help
+```
+
+---
+
+## Workflow 4: multi-detector runs (optional)
+
+If you want to run multiple detectors on the same manifest:
+
+```bash
+circyto run-multidetector \
+  ciri-full find-circ3 \
+  work/multidetector_chr21 \
+  --manifest manifest_2.tsv \
+  --ref-fa ref/chr21.fa \
+  --gtf ref/chr21.gtf \
+  --threads 4 \
+  --parallel 2
+```
+
+Then explore:
+
+```bash
+circyto merge-detectors --help
+circyto compare-detectors --help
+circyto collect-multidetector --help
+```

@@ -1,111 +1,90 @@
-# circyto Roadmap
+# Circyto roadmap
 
-This document describes the planned development trajectory of **circyto**, a Python CLI toolkit
-for single-cell circRNA detection, integration, and detector comparison.
+This document is **not a tutorial**. It describes the product strategy, major milestones, and the “why” behind planned changes.
 
-The roadmap emphasizes **stability, reproducibility, and scientific credibility** over rapid
-feature expansion.
+For step-by-step usage, see `docs/getting_started.md`.
 
 ---
 
-## Current Status
+## North star
 
-**Latest stable version:** v0.8.2  
-**Development phase:** Stabilized core, validated detector comparison
-
-As of v0.8.x, circyto provides:
-
-- Unified and locked CLI semantics
-- Multi-detector execution (`run-detector`, `run-multidetector`)
-- Per-detector and unified matrix collection
-- Detector comparison with exact and fuzzy circRNA recovery
-- Regression-tested recovery of CIRI-full calls by find-circ3
-- AnnData multimodal export (`obsm["X_circ"]`)
-- Fully passing test suite (unit + integration + regression)
-
-No breaking CLI or data-format changes are planned within the v0.8 series.
+**A new user can go from “I have FASTQs” → “I have a circRNA × cell matrix”** without reading developer logs, spelunking through source code, or guessing CLI conventions.
 
 ---
 
-## Versioning Policy
+## Guiding principles
 
-- **v0.8.x**: Stability and reproducibility
-  - No breaking changes
-  - No semantic drift in CLI behavior
-  - Documentation, metadata, and ergonomics only
-- **v0.9.0**: Scientific feature upgrade
-  - New circRNA identity model
-  - Enhanced detector comparison metrics
-  - Publication-ready outputs
+1. **One golden path**  
+   README stays short and points to the right doc pages. Detailed workflows live in `docs/`.
 
----
+2. **Explicitness beats cleverness**  
+   Prefer explicit subcommands (`circyto detectors`, `circyto doctor`) over help text that Typer can’t express well.
 
-## Roadmap Overview
+3. **Reproducibility is a feature**  
+   Every run is manifest-driven, path-explicit, and produces standardized outputs that can be post-processed consistently.
 
-### v0.8.x — Stabilization & Trust (Now → Early 2026)
-
-**Primary goal:** Make circyto boring, predictable, and reviewer-proof.
-
-#### Scope
-- Lock all CLI commands and flags
-- Ensure README and examples exactly match tested behavior
-- Improve discoverability and diagnostics without changing results
-
-#### Planned Additions
-- `circyto version`
-- `circyto doctor`
-- Embedded metadata in outputs
-- Expanded documentation
-
-#### Non-Goals
-- No new detectors
-- No changes to circRNA definition or matching logic
-- No changes to matrix formats or AnnData layout
+4. **Detector integration is modular**  
+   Detectors have different external dependencies. Circyto should report what is missing up front and keep the orchestration layer stable.
 
 ---
 
-### v0.9.0 — Scientific Upgrade Release (Target: Spring 2026)
+## Milestones
 
-**Primary goal:** Elevate circyto from a pipeline to a scientific framework.
+### v0.8.x — “Docs + usability to 100%” (current priority)
 
-#### 1. CircRNA Identity Model
-Formal detector-agnostic circRNA identity with exact and fuzzy equivalence modes.
+**Goals**
+- README becomes a single “golden path” entry point (install → minimal example → next steps).
+- Introduce `docs/` pages that are the canonical reference for workflows and CLI semantics.
+- Reduce user-facing friction caused by external dependencies and hidden detector lists.
 
-#### 2. Advanced Detector Comparison
-Recall, recovery rates, asymmetric matching, consensus circRNAs.
-
-#### 3. Multimodal Integration Enhancements
-Richer circRNA metadata and structured AnnData storage.
-
-#### 4. Publication-Ready Reporting
-Tables, plots, and supplementary-material–ready outputs.
-
----
-
-## Tentative Timeline
-
-| Period | Focus |
-|------|------|
-| Now → Dec | v0.8.2 stabilization |
-| Jan | Diagnostics and documentation |
-| Feb | Metadata & reproducibility |
-| Mar–Apr | CircRNA identity model |
-| Apr–May | Detector comparison upgrade |
-| May–Jun | v0.9.0 release |
+**Deliverables**
+- `circyto detectors`: list detectors and their short descriptions + required external tools.
+- `circyto doctor`: validate external dependencies (bwa/bowtie2/samtools/java; STAR optional) and print actionable messages.
+- Move detailed workflows and edge cases into:
+  - `docs/getting_started.md`
+  - `docs/cli_policy.md`
+  - `docs/detectors.md`
+- CI hygiene: workflows run on **PRs** and **manual dispatch**, not on every push (avoid noisy notifications).
 
 ---
 
-## Design Principles
+### v0.9.0 — “Detector plugin ergonomics”
 
-1. Stability before features  
-2. Explicit semantics  
-3. Regression tests as scientific claims  
-4. Detector-agnostic core  
-5. Publication-oriented outputs  
+**Goals**
+- Make it easier to add detectors without touching unrelated code.
+- Strengthen validation around input formats (manifest schema, reference files, etc.).
+
+**Possible deliverables**
+- A more explicit detector registration / metadata model (name, version, dependencies, capabilities).
+- Structured output for `circyto detectors --json` to support tooling.
+- Compatibility checks between detector outputs and downstream collectors.
 
 ---
 
-## Long-Term Vision
+### v1.0.0 — “Stable contract”
 
-circyto aims to become a reference framework for circRNA detector benchmarking
-and multimodal circRNA analysis in single-cell genomics.
+**Goals**
+- Freeze a stable CLI contract and output schema that downstream tooling can rely on.
+- Clearly version and document backward-incompatible changes.
+
+**Possible deliverables**
+- “Stable interface” guarantee for core commands:
+  - `run-batch`, `run-detector`, `run-multidetector`
+  - `collect-matrix`
+  - multimodal export path (`annotate-host-genes`, `export-multimodal`)
+- Versioned schemas for:
+  - per-cell detector outputs
+  - matrix artifacts (`circ_counts.mtx`, index files, metadata)
+
+---
+
+## Future / under consideration
+
+STAR-based detectors are planned/under consideration for integration (e.g., DCC, circhunter, CIRI3). These will likely be gated behind optional dependencies and may arrive after the usability milestone.
+
+---
+
+## Release & maintenance notes (process)
+
+- Keep git tags, `pyproject.toml` version, and GitHub releases aligned.
+- Prefer short, actionable changelog entries aimed at users (not only developers).
