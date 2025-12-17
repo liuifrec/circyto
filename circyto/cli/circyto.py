@@ -25,6 +25,8 @@ from circyto.pipeline.collect_circexplorer2_matrix import (
     collect_circexplorer2_matrix as collect_circexplorer2_matrix_from_dir,
 )
 from circyto.detectors import build_default_engines
+from circyto.cli.doctor import doctor_app
+from circyto.cli.detectors import detectors_app
 
 app = typer.Typer(
     add_completion=False,
@@ -50,6 +52,8 @@ app = typer.Typer(
 )
 console = Console()
 
+app.add_typer(doctor_app, name="doctor")
+app.add_typer(detectors_app, name="detectors")
 
 # --------------------------------------------------------------------------------------
 # Helpers: consistent INDIR/OUTDIR + default output naming
