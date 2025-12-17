@@ -77,6 +77,17 @@ You also need `bwa` and a Java runtime.
 See: `docs/detectors.md#ciri-full`.
 
 ---
+## Quick check (recommended)
+
+After installation, verify your environment and detector availability:
+
+```bash
+circyto doctor
+circyto detectors
+```
+
+-circyto doctor checks required external dependencies.
+-circyto detectors shows which detectors are ready to run.
 
 ## Minimal example (bundled chr21 smoke test)
 
