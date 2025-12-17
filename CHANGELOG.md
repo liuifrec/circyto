@@ -5,6 +5,9 @@ All notable changes to **circyto** will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic-ish versioning.
 
 ---
+## [0.8.3] – 2025-12-17
+- Add `circyto doctor` to validate external dependencies and report detector readiness.
+- Add `circyto detectors` to list detectors with status and dependency requirements.
 
 ## [0.8.2] – 2025-12-16
 
