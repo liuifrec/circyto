@@ -6,8 +6,10 @@
   <a href="https://github.com/liuifrec/circyto/releases">
   <img alt="Release" src="https://img.shields.io/github/v/tag/liuifrec/circyto?sort=semver">
   </a>
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
-[![Python](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/)
+  <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
+  <img alt="License" src="https://img.shields.io/github/license/liuifrec/circyto?cacheSeconds=3600&v=2">
+  </a>
+  <a href="https://pypi.org/project/circyto/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
 </p>
 
 ## circyto
