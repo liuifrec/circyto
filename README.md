@@ -86,8 +86,8 @@ circyto doctor
 circyto detectors
 ```
 
-- circyto doctor checks required external dependencies.
-- circyto detectors shows which detectors are ready to run.
+- **circyto doctor** checks required external dependencies.
+- **circyto detectors** shows which detectors are ready to run.
 
 ## Minimal example (bundled chr21 smoke test)
 
