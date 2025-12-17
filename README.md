@@ -15,7 +15,7 @@
 ## circyto
 
 
-A unified CLI framework for **single-cell circRNA detection**, detector orchestration, **circRNA × cell matrix generation**, and **multimodal export**.
+A single-cell circRNA detection CLI to orchestrate detectors, build circRNA×cell matrices, and export multimodal AnnData.
 
 ---
 
