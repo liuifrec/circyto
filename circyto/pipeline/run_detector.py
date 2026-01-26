@@ -15,19 +15,26 @@ def ensure_dir(path: Path) -> None:
     """
     path.mkdir(parents=True, exist_ok=True)
 
+def read_manifest(path: Path):
+    import csv
+    from pathlib import Path
 
-def read_manifest(path: Path) -> List[tuple[str, Path, Optional[Path]]]:
-    """
-    Simple manifest reader.
-    Expected columns: cell_id, r1, r2 (optional)
-    """
     rows = []
     with path.open() as f:
         rd = csv.DictReader(f, delimiter="\t")
         for r in rd:
             cell = r["cell_id"]
-            r1 = Path(r["r1"])
-            r2 = Path(r["r2"]) if "r2" in r and r["r2"] else None
+
+            # Backward + forward compatible columns
+            r1_key = "r1" if "r1" in r else ("read1" if "read1" in r else None)
+            r2_key = "r2" if "r2" in r else ("read2" if "read2" in r else None)
+
+            if r1_key is None:
+                raise KeyError(f"Manifest missing r1/read1 column: {path}")
+
+            r1 = Path(r[r1_key])
+            r2 = Path(r[r2_key]) if (r2_key and r.get(r2_key)) else None
+
             rows.append((cell, r1, r2))
     return rows
 

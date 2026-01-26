@@ -65,3 +65,5 @@ ref/star_index/**
 back_spliced_junction.bed
 scripts/
 circyto/pipeline/detector_compare.py
+testdata/**/*.fastq.gz
+testdata/**/*.fq.gz

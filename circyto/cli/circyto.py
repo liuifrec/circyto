@@ -6,6 +6,8 @@ from typing import List, Optional, Tuple
 
 import typer
 from rich.console import Console
+from circyto.cli.demux import demux_app
+from circyto.cli.manifest import manifest_app
 
 from circyto.pipeline.prepare import extract_per_cell_fastq
 from circyto.pipeline.run_cirifull import (
@@ -54,6 +56,9 @@ console = Console()
 
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(detectors_app, name="detectors")
+
+app.add_typer(demux_app, name="demux")
+app.add_typer(manifest_app, name="manifest")
 
 # --------------------------------------------------------------------------------------
 # Helpers: consistent INDIR/OUTDIR + default output naming
