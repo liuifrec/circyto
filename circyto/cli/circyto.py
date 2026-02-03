@@ -29,6 +29,7 @@ from circyto.pipeline.collect_circexplorer2_matrix import (
 from circyto.detectors import build_default_engines
 from circyto.cli.doctor import doctor_app
 from circyto.cli.detectors import detectors_app
+from circyto.cli.smoke import smoke_app
 
 app = typer.Typer(
     add_completion=False,
@@ -59,7 +60,7 @@ app.add_typer(detectors_app, name="detectors")
 
 app.add_typer(demux_app, name="demux")
 app.add_typer(manifest_app, name="manifest")
-
+app.add_typer(smoke_app, name="smoke")
 # --------------------------------------------------------------------------------------
 # Helpers: consistent INDIR/OUTDIR + default output naming
 # --------------------------------------------------------------------------------------

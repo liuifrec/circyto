@@ -1,10 +1,9 @@
 # circyto/pipeline/run_detector.py
 from __future__ import annotations
 
-import csv
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional, Tuple
 
 from circyto.detectors import DetectorBase, DetectorRunInputs, DetectorResult
 
@@ -15,28 +14,60 @@ def ensure_dir(path: Path) -> None:
     """
     path.mkdir(parents=True, exist_ok=True)
 
-def read_manifest(path: Path):
+def _pick_col(row: dict, keys: Tuple[str, ...]) -> Optional[str]:
+    for k in keys:
+        if k in row and row.get(k) not in (None, ""):
+            return k
+    return None
+
+
+def read_manifest(path: Path) -> List[Tuple[str, Path, Optional[Path]]]:
+    """
+    Read manifest rows as: (cell_id, r1_path, r2_path_or_None).
+
+    Supports:
+      - legacy:  cell_id, r1, r2
+      - v1:      cell_id, read1, read2, (plus extra columns)
+
+    Notes:
+      - We intentionally do NOT require r2 (some platforms may be single-end).
+      - We do NOT force paths to exist here (HPC/remote mounts can be validated elsewhere).
+    """
     import csv
-    from pathlib import Path
 
-    rows = []
-    with path.open() as f:
+    if not path.exists():
+        raise FileNotFoundError(f"Manifest not found: {path}")
+
+    rows: List[Tuple[str, Path, Optional[Path]]] = []
+    with path.open("r", newline="") as f:
         rd = csv.DictReader(f, delimiter="\t")
-        for r in rd:
-            cell = r["cell_id"]
+        if rd.fieldnames is None:
+            raise ValueError(f"Manifest has no header row: {path}")
 
-            # Backward + forward compatible columns
-            r1_key = "r1" if "r1" in r else ("read1" if "read1" in r else None)
-            r2_key = "r2" if "r2" in r else ("read2" if "read2" in r else None)
+        # Normalize header expectation
+        if "cell_id" not in rd.fieldnames:
+            raise KeyError(f"Manifest missing required column 'cell_id': {path}")
+
+        for i, r in enumerate(rd, start=2):  # header is line 1
+            cell = (r.get("cell_id") or "").strip()
+            if not cell:
+                raise ValueError(f"Empty cell_id at {path}:{i}")
+
+            r1_key = _pick_col(r, ("r1", "read1"))
+            r2_key = _pick_col(r, ("r2", "read2"))
 
             if r1_key is None:
-                raise KeyError(f"Manifest missing r1/read1 column: {path}")
+                raise KeyError(f"Manifest missing r1/read1 for cell_id={cell} at {path}:{i}")
 
-            r1 = Path(r[r1_key])
-            r2 = Path(r[r2_key]) if (r2_key and r.get(r2_key)) else None
+            r1 = Path(str(r[r1_key]).strip())
+            r2 = Path(str(r[r2_key]).strip()) if r2_key else None
 
             rows.append((cell, r1, r2))
+
+    if not rows:
+        raise ValueError(f"Manifest contains 0 data rows: {path}")
     return rows
+ 
 
 
 def run_detector_manifest(
