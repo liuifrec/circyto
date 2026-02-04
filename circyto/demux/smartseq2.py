@@ -1,4 +1,5 @@
 from __future__ import annotations
+from circyto.manifest.v1 import ManifestRow, write_manifest_tsv
 
 from dataclasses import dataclass
 from pathlib import Path
@@ -189,5 +190,37 @@ def demux_smartseq2_pooled(p: SmartSeq2DemuxParams) -> Dict[str, Dict[str, int]]
     }
     with (p.outdir / "demux_report.json").open("w", encoding="utf-8") as f:
         json.dump(report, f, indent=2)
+    # ------------------------------------------------------------
+    # Manifest v1 (locked): always emit manifest.tsv for downstream
+    # ------------------------------------------------------------
+    rows = []
+    for cell_id, s in stats.items():
+        n = int(s.get("n_reads", 0))
+        r1_path = (out_fastq / f"{cell_id}_R1.fastq.gz").resolve()
+        r2_path = (out_fastq / f"{cell_id}_R2.fastq.gz").resolve()
+
+        # Skip empty / missing / zero-sized outputs (keeps manifest clean)
+        if n <= 0:
+            continue
+        if (not r1_path.exists()) or (not r2_path.exists()):
+            continue
+        if r1_path.stat().st_size == 0 or r2_path.stat().st_size == 0:
+            continue
+
+        rows.append(
+            ManifestRow(
+                cell_id=cell_id,
+                platform="smartseq2",
+                read1=str(r1_path),
+                read2=str(r2_path),
+                bam="",
+                library_id=p.library_id,
+                n_input_reads=n,
+                extra={},
+            )
+        )
+
+    # IMPORTANT: still writes header even if rows==[]
+    write_manifest_tsv(rows, p.manifest_path)
 
     return stats

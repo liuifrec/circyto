@@ -11,9 +11,6 @@
 ├── LICENSE
 ├── README.md
 ├── ROADMAP.md
-├── _cli_circyto_py_head.txt
-├── _cli_dir_ls.txt
-├── _cli_wiring_rg.txt
 ├── _repo_tree_L4.txt
 ├── assets
 │   └── circCyto_logo.png
@@ -283,4 +280,4 @@
         │   └── tmp2.sh
         └── ERR2139559.tsv
 
-52 directories, 232 files
+52 directories, 229 files

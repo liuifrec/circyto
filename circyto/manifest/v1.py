@@ -76,8 +76,15 @@ def validate_manifest_tsv(path: Path, strict: bool = False) -> Tuple[bool, List[
     with path.open("r", encoding="utf-8", newline="") as f:
         r = csv.DictReader(f, delimiter="\t")
         header = r.fieldnames or []
+        # Backward compatibility: legacy manifests used r1/r2 instead of read1/read2
+        header_norm = list(header)
+        if "read1" not in header_norm and "r1" in header_norm:
+            header_norm.append("read1")
+        if "read2" not in header_norm and "r2" in header_norm:
+            header_norm.append("read2")
+
         for col in REQUIRED_COLUMNS:
-            if col not in header:
+            if col not in header_norm:
                 errors.append(f"Missing required column: {col}")
         if errors:
             return False, errors, summary
@@ -110,8 +117,9 @@ def validate_manifest_tsv(path: Path, strict: bool = False) -> Tuple[bool, List[
             except Exception:
                 errors.append(f"Line {i}: n_input_reads is not an int: {n_input_reads}")
 
-            read1 = (row.get("read1") or "").strip()
-            read2 = (row.get("read2") or "").strip()
+            read1 = (row.get("read1") or row.get("r1") or "").strip()
+            read2 = (row.get("read2") or row.get("r2") or "").strip()
+
             bam = (row.get("bam") or "").strip()
 
             fastq_mode = bool(read1)

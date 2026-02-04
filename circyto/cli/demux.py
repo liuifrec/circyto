@@ -4,7 +4,6 @@ from pathlib import Path
 import typer
 
 from circyto.demux.smartseq2 import SmartSeq2DemuxParams, demux_smartseq2_pooled
-from circyto.manifest.v1 import ManifestRow, write_manifest_tsv
 
 demux_app = typer.Typer(help="Resolve pooled reads into cell-resolved inputs and emit a manifest.")
 
@@ -45,25 +44,6 @@ def smartseq2(
     )
 
     stats = demux_smartseq2_pooled(params)
-
-    rows = []
-    for cell_id, s in stats.items():
-        r1_path = (outdir / "fastq" / f"{cell_id}_R1.fastq.gz").resolve()
-        r2_path = (outdir / "fastq" / f"{cell_id}_R2.fastq.gz").resolve()
-        rows.append(
-            ManifestRow(
-                cell_id=cell_id,
-                platform="smartseq2",
-                read1=str(r1_path),
-                read2=str(r2_path),
-                bam="",
-                library_id=library_id,
-                n_input_reads=int(s.get("n_reads", 0)),
-                extra={},
-            )
-        )
-
-    write_manifest_tsv(rows, manifest_path)
-    typer.echo(f"Demux complete: cells={len(rows)}")
+    typer.echo(f"Demux complete: cells={len(stats)}")
     typer.echo(f"Manifest: {manifest_path}")
     typer.echo(f"Report:   {outdir / 'demux_report.json'}")
