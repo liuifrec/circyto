@@ -38,7 +38,7 @@ echo "OUT_TSV=${OUT_TSV}" | tee -a "${LOG}"
 echo "THREADS=${THREADS}" | tee -a "${LOG}"
 
 # --- sanity: perl & bwa
-for bin in perl bwa samtools; do
+for bin in perl bwa samtools zcat; do
   if ! command -v "$bin" >/dev/null 2>&1; then
     echo "ERROR: '$bin' not found in PATH" | tee -a "${LOG}"
     exit 2
@@ -60,14 +60,28 @@ R2_IN="${R2}"
 
 if [[ "${R1}" == *.gz ]]; then
   R1_IN="${TMP_INDIR}/R1.fq"
-  zcat "${R1}" > "${R1_IN}"
+  echo ">>> zcat+sanitize R1 -> ${R1_IN}" | tee -a "${LOG}"
+  zcat "${R1}" | awk '
+    NR%4==1 { $1=substr($1,1); print $1; next }   # keep only first token (no spaces)
+    NR%4==3 { print "+"; next }                   # bare plus
+    { print }
+  ' > "${R1_IN}"
+
   if [[ -n "${R2}" ]]; then
     R2_IN="${TMP_INDIR}/R2.fq"
-    zcat "${R2}" > "${R2_IN}"
+    echo ">>> zcat+sanitize R2 -> ${R2_IN}" | tee -a "${LOG}"
+    zcat "${R2}" | awk '
+      NR%4==1 { $1=substr($1,1); print $1; next }
+      NR%4==3 { print "+"; next }
+      { print }
+    ' > "${R2_IN}"
   fi
 fi
 
 SAM="${RUN_DIR}/${OUT_BASENAME}.sam"
+
+echo ">>> bwa inputs: R1_IN=${R1_IN}" | tee -a "${LOG}"
+[[ -n "${R2_IN}" ]] && echo ">>> bwa inputs: R2_IN=${R2_IN}" | tee -a "${LOG}"
 
 echo ">>> running bwa mem" | tee -a "${LOG}"
 if [[ -n "${R2_IN}" ]]; then
