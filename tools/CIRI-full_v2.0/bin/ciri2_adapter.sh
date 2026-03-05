@@ -18,7 +18,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 CIRI2_DIR="${ROOT_DIR}/CIRI_v2.0.6"
 CIRI2_PL="${CIRI2_DIR}/CIRI2.pl"
 
-if [[ ! -x "${CIRI2_PL}" && ! -f "${CIRI2_PL}" ]]; then
+if [[ ! -f "${CIRI2_PL}" ]]; then
   echo "ERROR: CIRI2.pl not found at ${CIRI2_PL}" >&2
   exit 2
 fi
@@ -38,12 +38,15 @@ echo "OUT_TSV=${OUT_TSV}" | tee -a "${LOG}"
 echo "THREADS=${THREADS}" | tee -a "${LOG}"
 
 # --- sanity: perl & bwa
-for bin in perl bwa samtools zcat; do
+for bin in perl bwa samtools zcat awk; do
   if ! command -v "$bin" >/dev/null 2>&1; then
     echo "ERROR: '$bin' not found in PATH" | tee -a "${LOG}"
     exit 2
   fi
 done
+
+[[ -s "${REF_FA}" ]] || { echo "ERROR: missing REF_FA: ${REF_FA}" | tee -a "${LOG}"; exit 2; }
+[[ -s "${GTF}"    ]] || { echo "ERROR: missing GTF: ${GTF}" | tee -a "${LOG}"; exit 2; }
 
 # ensure index exists (bwa index will no-op if already built)
 if [[ ! -s "${REF_FA}.bwt" ]]; then
@@ -51,31 +54,32 @@ if [[ ! -s "${REF_FA}.bwt" ]]; then
   bwa index "${REF_FA}" >> "${LOG}" 2>&1
 fi
 
-# decompress FASTQ if needed
+# decompress FASTQ if needed (keep under OUT_DIR, not /tmp)
 TMP_INDIR="$(mktemp -d -p "${OUT_DIR}" "${OUT_BASENAME}.ciri2_input.XXXX")"
 trap 'rm -rf "${TMP_INDIR}" 2>/dev/null || true' EXIT
 
 R1_IN="${R1}"
 R2_IN="${R2}"
 
+# Decompress + sanitize independently for each mate (robust if only one is .gz)
 if [[ "${R1}" == *.gz ]]; then
   R1_IN="${TMP_INDIR}/R1.fq"
   echo ">>> zcat+sanitize R1 -> ${R1_IN}" | tee -a "${LOG}"
   zcat "${R1}" | awk '
-    NR%4==1 { $1=substr($1,1); print $1; next }   # keep only first token (no spaces)
-    NR%4==3 { print "+"; next }                   # bare plus
+    NR%4==1 { print $1; next }   # keep only first token (no spaces)
+    NR%4==3 { print "+"; next } # bare plus
     { print }
   ' > "${R1_IN}"
+fi
 
-  if [[ -n "${R2}" ]]; then
-    R2_IN="${TMP_INDIR}/R2.fq"
-    echo ">>> zcat+sanitize R2 -> ${R2_IN}" | tee -a "${LOG}"
-    zcat "${R2}" | awk '
-      NR%4==1 { $1=substr($1,1); print $1; next }
-      NR%4==3 { print "+"; next }
-      { print }
-    ' > "${R2_IN}"
-  fi
+if [[ -n "${R2}" && "${R2}" == *.gz ]]; then
+  R2_IN="${TMP_INDIR}/R2.fq"
+  echo ">>> zcat+sanitize R2 -> ${R2_IN}" | tee -a "${LOG}"
+  zcat "${R2}" | awk '
+    NR%4==1 { print $1; next }
+    NR%4==3 { print "+"; next }
+    { print }
+  ' > "${R2_IN}"
 fi
 
 SAM="${RUN_DIR}/${OUT_BASENAME}.sam"
@@ -90,22 +94,32 @@ else
   bwa mem -T 19 -t "${THREADS}" "${REF_FA}" "${R1_IN}" > "${SAM}" 2>> "${LOG}"
 fi
 
+# --- Make SAM CIRI2-friendly ---
+# CIRI2 may abort during internal splitting when chunks start with @PG/@SQ headers.
+# Strip headers so CIRI2 sees alignments only.
+SAM_NOHDR="${RUN_DIR}/${OUT_BASENAME}.nohdr.sam"
+echo ">>> stripping SAM header -> ${SAM_NOHDR}" | tee -a "${LOG}"
+samtools view "${SAM}" > "${SAM_NOHDR}" 2>> "${LOG}"
+SAM="${SAM_NOHDR}"
+
 # --- CIRI2 flags
-# default: low/zero stringency (-0); allow override via CIRI2_FLAGS
 CIRI2_FLAGS_DEFAULT="-0"
 CIRI2_FLAGS="${CIRI2_FLAGS:-${CIRI2_FLAGS_DEFAULT}}"
+
+# Force CIRI2 single-thread by default (avoids fragile split-SAM logic)
+CIRI2_THREADS="${CIRI2_THREADS:-1}"
 
 OUT_TXT="${RUN_DIR}/${OUT_BASENAME}.ciri2.txt"
 
 echo ">>> running CIRI2.pl on ${SAM}" | tee -a "${LOG}"
-echo "    perl ${CIRI2_PL} -I ${SAM} -O ${OUT_TXT} -F ${REF_FA} -A ${GTF} -T ${THREADS} ${CIRI2_FLAGS}" | tee -a "${LOG}"
+echo "    perl ${CIRI2_PL} -I ${SAM} -O ${OUT_TXT} -F ${REF_FA} -A ${GTF} -T ${CIRI2_THREADS} ${CIRI2_FLAGS}" | tee -a "${LOG}"
 
 if ! perl "${CIRI2_PL}" \
     -I "${SAM}" \
     -O "${OUT_TXT}" \
     -F "${REF_FA}" \
     -A "${GTF}" \
-    -T "${THREADS}" \
+    -T "${CIRI2_THREADS}" \
     ${CIRI2_FLAGS} >> "${LOG}" 2>&1; then
   echo "ERROR: CIRI2.pl failed; see ${LOG}" >&2
   exit 2
@@ -135,30 +149,24 @@ NR==1 {
   next
 }
 {
-  # chr
   chr = (h["chr"] ? $h["chr"] : $2)
 
-  # start: prefer circRNA_start, then circrnastart, then generic start, else 3rd column
   start = (h["circrna_start"] ? $h["circrna_start"] :
            (h["circrnastart"] ? $h["circrnastart"] :
            (h["start"] ? $h["start"] : $3)))
 
-  # end: prefer circRNA_end, then circrnaend, then generic end, else 4th column
   end = (h["circrna_end"] ? $h["circrna_end"] :
          (h["circrnaend"] ? $h["circrnaend"] :
          (h["end"] ? $h["end"] : $4)))
 
-  # strand
   strand = (h["strand"] ? $h["strand"] : "+")
 
-  # support: prefer junction_reads, then junctionreads, then other fallbacks
   supp = 1
   if (h["junction_reads"])      supp = $h["junction_reads"]
   else if (h["junctionreads"])  supp = $h["junctionreads"]
   else if (h["readnum"])        supp = $h["readnum"]
   else if (h["support"])        supp = $h["support"]
 
-  # circ_id: prefer circRNA_ID (with underscore), then legacy circrnaid, then synthesize
   if (h["circrna_id"])          cid = $h["circrna_id"]
   else if (h["circrnaid"])      cid = $h["circrnaid"]
   else                          cid = chr ":" start "|" end "|" strand
