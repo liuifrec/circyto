@@ -69,6 +69,20 @@ def _fastq_iter(handle):
             return
         yield h.rstrip("\n"), seq.rstrip("\n"), plus.rstrip("\n"), qual.rstrip("\n")
 
+def _sanitize_header(h: str) -> str:
+    """
+    Normalize FASTQ header to avoid tool bugs with spaces/extra fields.
+    Keep only the first token and ensure leading '@'.
+    """
+    h = h.strip()
+    tok = h.split()[0] if h else ""
+    if not tok.startswith("@"):
+        tok = "@" + tok.lstrip("@")
+    return tok
+
+def _sanitize_plus() -> str:
+    # Always write bare '+' (FASTQ spec allows it)
+    return "+"
 
 def _trim(seq: str, qual: str, cut_start: int, cut_len: int) -> Tuple[str, str]:
     if cut_len <= 0:
@@ -146,13 +160,13 @@ def demux_smartseq2_pooled(p: SmartSeq2DemuxParams) -> Dict[str, Dict[str, int]]
 
             if cell_id is None:
                 unknown += 1
-                unknown_r1.write(f"{h1}\n{s1}\n{pl1}\n{q1}\n")
-                unknown_r2.write(f"{h2}\n{s2}\n{pl2}\n{q2}\n")
+                unknown_r1.write(f"{_sanitize_header(h1)}\n{s1}\n{_sanitize_plus()}\n{q1}\n")
+                unknown_r2.write(f"{_sanitize_header(h2)}\n{s2}\n{_sanitize_plus()}\n{q2}\n")
                 continue
 
             w1, w2 = get_writer(cell_id)
-            w1.write(f"{h1}\n{s1}\n{pl1}\n{q1}\n")
-            w2.write(f"{h2}\n{s2}\n{pl2}\n{q2}\n")
+            w1.write(f"{_sanitize_header(h1)}\n{s1}\n{_sanitize_plus()}\n{q1}\n")
+            w2.write(f"{_sanitize_header(h2)}\n{s2}\n{_sanitize_plus()}\n{q2}\n")
             stats[cell_id]["n_reads"] += 1
             assigned += 1
 
