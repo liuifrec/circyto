@@ -103,9 +103,17 @@ def test_smoke_smartseq2_cli_wiring(tmp_path: Path, monkeypatch: pytest.MonkeyPa
         assert Path(manifest).exists()
         out = Path(outdir)
         out.mkdir(parents=True, exist_ok=True)
-        # create dummy per-cell outputs (collector will be patched anyway)
-        (out / "sc01").mkdir(parents=True, exist_ok=True)
-        (out / "sc02").mkdir(parents=True, exist_ok=True)
+        # create dummy per-cell outputs so smoke's detector-output guard passes
+        (out / "sc01.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\n"
+            "circ1\tchr21\t1\t10\t+\t1\n",
+            encoding="utf-8",
+        )
+        (out / "sc02.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\n"
+            "circ2\tchr21\t11\t20\t-\t1\n",
+            encoding="utf-8",
+        )
 
     monkeypatch.setattr("circyto.cli.smoke.run_detector_manifest", fake_run_detector_manifest, raising=True)
 

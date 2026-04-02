@@ -52,6 +52,11 @@ echo "GTF=${GTF}" | tee -a "${LOG}"
 echo "OUT_DIR=${OUT_DIR} OUT_BASENAME=${OUT_BASENAME} THREADS=${THREADS}" | tee -a "${LOG}"
 [[ -n "${CIRI_EXTRA_FLAGS}" ]] && echo "CIRI_EXTRA_FLAGS=${CIRI_EXTRA_FLAGS}" | tee -a "${LOG}"
 
+if [[ -z "${R2}" ]]; then
+  echo "ERROR: bundled CIRI-full Java Pipeline is paired-end only; R2 is required." | tee -a "${LOG}"
+  exit 2
+fi
+
 RUN_DIR="${OUT_DIR}/${OUT_BASENAME}.ciri_full_run"
 rm -rf "${RUN_DIR}" 2>/dev/null || true
 # DO NOT mkdir RUN_DIR; the jar creates it.

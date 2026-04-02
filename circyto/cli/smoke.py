@@ -18,6 +18,43 @@ smoke_app = typer.Typer(help="One-command smoke tests (public data / dev).")
 console = Console()
 
 
+def _detector_output_has_calls(path: Path, detector_name: str) -> bool:
+    if not path.exists() or path.stat().st_size == 0:
+        return False
+
+    text = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    if detector_name in {"ciri-full", "ciri2"}:
+        data_lines = [line for line in text[1:] if line.strip()]
+        return len(data_lines) > 0
+
+    data_lines = [line for line in text if line.strip() and not line.startswith("#")]
+    return len(data_lines) > 0
+
+
+def _assert_detector_outputs_nonempty(run_dir: Path, detector_name: str) -> None:
+    if detector_name == "find-circ3":
+        output_paths = sorted(run_dir.glob("*/*_splice_sites.bed"))
+    else:
+        output_paths = sorted(run_dir.glob("*.tsv"))
+
+    if not output_paths:
+        raise RuntimeError(
+            f"Detector stage completed without producing per-cell outputs under {run_dir}."
+        )
+
+    nonempty = [p for p in output_paths if _detector_output_has_calls(p, detector_name)]
+    if nonempty:
+        console.print(
+            f"[green]Detector outputs with calls[/green]: {len(nonempty)}/{len(output_paths)}"
+        )
+        return
+
+    raise RuntimeError(
+        f"Detector stage produced only empty outputs under {run_dir}. "
+        "Refusing to continue to an all-zero matrix."
+    )
+
+
 @smoke_app.command("smartseq2")
 def smoke_smartseq2(
     r1: Path = typer.Option(..., "--r1", help="Pooled R1 fastq(.gz)"),
@@ -112,6 +149,7 @@ def smoke_smartseq2(
         threads=threads,
         parallel=parallel,
     )
+    _assert_detector_outputs_nonempty(run_dir, det_engine.name)
     console.print(f"[green]Run complete[/green]: detector={det_engine.name}")
 
     # 3) COLLECT MATRIX

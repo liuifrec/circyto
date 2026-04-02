@@ -103,8 +103,17 @@ samtools view "${SAM}" > "${SAM_NOHDR}" 2>> "${LOG}"
 SAM="${SAM_NOHDR}"
 
 # --- CIRI2 flags
-CIRI2_FLAGS_DEFAULT="-0"
+if [[ -n "${R2_IN}" ]]; then
+  CIRI2_FLAGS_DEFAULT="-0"
+  READ_LAYOUT="paired-end"
+else
+  # CIRI2's manual recommends -U for single-end input.
+  CIRI2_FLAGS_DEFAULT="-0 -U 15"
+  READ_LAYOUT="single-end"
+fi
 CIRI2_FLAGS="${CIRI2_FLAGS:-${CIRI2_FLAGS_DEFAULT}}"
+echo ">>> read layout: ${READ_LAYOUT}" | tee -a "${LOG}"
+echo ">>> CIRI2 flags: ${CIRI2_FLAGS}" | tee -a "${LOG}"
 
 # Force CIRI2 single-thread by default (avoids fragile split-SAM logic)
 CIRI2_THREADS="${CIRI2_THREADS:-1}"

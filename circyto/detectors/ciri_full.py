@@ -101,6 +101,11 @@ class CiriFullDetector(DetectorBase):
 
         if r1 is None:
             raise ValueError("CiriFullDetector requires R1 FASTQ")
+        if r2 is None:
+            raise ValueError(
+                "CIRI-full Pipeline requires paired-end FASTQ input. "
+                "This manifest row is single-end (read2/r2 missing)."
+            )
 
         out_tsv = outdir / f"{cell_id}.tsv"
         run_dir = outdir / f"{cell_id}.ciri_full_run"

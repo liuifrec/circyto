@@ -95,6 +95,8 @@ class Ciri2Detector(DetectorBase):
             "GTF": str(inputs.gtf),
             "OUT_TSV": str(out_tsv),
             "THREADS": str(threads),
+            # CIRI2's manual recommends an explicit -U threshold for SE data.
+            "CIRI2_FLAGS": "-0 -U 15" if inputs.r2 is None else "-0",
         }
 
         real_env = os.environ.copy()

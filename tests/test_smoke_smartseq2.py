@@ -66,7 +66,17 @@ def test_smoke_smartseq2_wiring(monkeypatch, tmp_path: Path, detector: str):
     def fake_run_detector_manifest(*, detector, manifest, outdir, ref_fa, gtf, threads, parallel):
         assert hasattr(detector, "name")
         assert Path(manifest).exists()
-        Path(outdir).mkdir(parents=True, exist_ok=True)
+        out = Path(outdir)
+        out.mkdir(parents=True, exist_ok=True)
+        if detector.name == "find-circ3":
+            det_dir = out / "sc01"
+            det_dir.mkdir(parents=True, exist_ok=True)
+            (det_dir / "sc01_splice_sites.bed").write_text("chr21\t1\t10\n")
+        else:
+            (out / "sc01.tsv").write_text(
+                "circ_id\tchr\tstart\tend\tstrand\tsupport\n"
+                "circ1\tchr21\t1\t10\t+\t1\n"
+            )
 
     monkeypatch.setattr("circyto.cli.smoke.run_detector_manifest", fake_run_detector_manifest)
 
