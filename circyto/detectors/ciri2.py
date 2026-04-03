@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import gzip
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -13,6 +14,19 @@ from .base import DetectorBase, DetectorRunInputs, DetectorResult
 # NOTE: this matches your current codespace layout:
 # tools/CIRI-full_v2.0/bin/ciri2_adapter.sh
 CIRI2_ADAPTER_DEFAULT = Path("tools/CIRI-full_v2.0/bin/ciri2_adapter.sh")
+
+
+def _infer_fastq_read_length(path: Path) -> Optional[int]:
+    opener = gzip.open if path.suffix == ".gz" else open
+    try:
+        with opener(path, "rt", encoding="utf-8", errors="replace") as handle:
+            handle.readline()
+            seq = handle.readline().rstrip("\n")
+            if not seq:
+                return None
+            return len(seq)
+    except OSError:
+        return None
 
 
 @dataclass
@@ -98,6 +112,13 @@ class Ciri2Detector(DetectorBase):
             # CIRI2's manual recommends an explicit -U threshold for SE data.
             "CIRI2_FLAGS": "-0 -U 15" if inputs.r2 is None else "-0",
         }
+        read_length = _infer_fastq_read_length(inputs.r1) if inputs.r1 is not None else None
+        if inputs.r2 is None and read_length is not None and read_length < 60:
+            # CIRI2's bundled manual recommends more permissive BWA-MEM settings
+            # for short single-end reads to recover junction evidence.
+            env["CIRI2_BWA_MEM_FLAGS"] = "-k 15 -T 15"
+        else:
+            env["CIRI2_BWA_MEM_FLAGS"] = "-T 19"
 
         real_env = os.environ.copy()
         real_env.update({k: str(v) for k, v in env.items()})
@@ -128,5 +149,10 @@ class Ciri2Detector(DetectorBase):
             tsv_path=out_tsv,
             run_dir=run_dir,
             log_path=log_path,
-            meta={"threads": threads},
+            meta={
+                "threads": threads,
+                "read_length": read_length,
+                "bwa_mem_flags": env["CIRI2_BWA_MEM_FLAGS"],
+                "ciri2_flags": env["CIRI2_FLAGS"],
+            },
         )

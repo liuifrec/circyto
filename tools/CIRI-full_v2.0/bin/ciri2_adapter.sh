@@ -7,6 +7,7 @@ R1="${R1:?}"; R2="${R2:-}"
 REF_FA="${REF_FA:?}"; GTF="${GTF:?}"
 OUT_TSV="${OUT_TSV:?}"
 THREADS="${THREADS:-4}"
+BWA_MEM_FLAGS="${CIRI2_BWA_MEM_FLAGS:-}"
 
 OUT_PREFIX="${OUT_TSV%.tsv}"
 OUT_DIR="$(dirname "${OUT_PREFIX}")"
@@ -36,6 +37,7 @@ echo "REF_FA=${REF_FA}" | tee -a "${LOG}"
 echo "GTF=${GTF}" | tee -a "${LOG}"
 echo "OUT_TSV=${OUT_TSV}" | tee -a "${LOG}"
 echo "THREADS=${THREADS}" | tee -a "${LOG}"
+[[ -n "${BWA_MEM_FLAGS}" ]] && echo "BWA_MEM_FLAGS=${BWA_MEM_FLAGS}" | tee -a "${LOG}"
 
 # --- sanity: perl & bwa
 for bin in perl bwa samtools zcat awk; do
@@ -87,20 +89,24 @@ SAM="${RUN_DIR}/${OUT_BASENAME}.sam"
 echo ">>> bwa inputs: R1_IN=${R1_IN}" | tee -a "${LOG}"
 [[ -n "${R2_IN}" ]] && echo ">>> bwa inputs: R2_IN=${R2_IN}" | tee -a "${LOG}"
 
-echo ">>> running bwa mem" | tee -a "${LOG}"
-if [[ -n "${R2_IN}" ]]; then
-  bwa mem -T 19 -t "${THREADS}" "${REF_FA}" "${R1_IN}" "${R2_IN}" > "${SAM}" 2>> "${LOG}"
-else
-  bwa mem -T 19 -t "${THREADS}" "${REF_FA}" "${R1_IN}" > "${SAM}" 2>> "${LOG}"
+if [[ -z "${BWA_MEM_FLAGS}" ]]; then
+  BWA_MEM_FLAGS="-T 19"
 fi
 
-# --- Make SAM CIRI2-friendly ---
-# CIRI2 may abort during internal splitting when chunks start with @PG/@SQ headers.
-# Strip headers so CIRI2 sees alignments only.
-SAM_NOHDR="${RUN_DIR}/${OUT_BASENAME}.nohdr.sam"
-echo ">>> stripping SAM header -> ${SAM_NOHDR}" | tee -a "${LOG}"
-samtools view "${SAM}" > "${SAM_NOHDR}" 2>> "${LOG}"
-SAM="${SAM_NOHDR}"
+echo ">>> running bwa mem" | tee -a "${LOG}"
+if [[ -n "${R2_IN}" ]]; then
+  echo "    bwa mem ${BWA_MEM_FLAGS} -t ${THREADS} ${REF_FA} ${R1_IN} ${R2_IN}" | tee -a "${LOG}"
+else
+  echo "    bwa mem ${BWA_MEM_FLAGS} -t ${THREADS} ${REF_FA} ${R1_IN}" | tee -a "${LOG}"
+fi
+if [[ -n "${R2_IN}" ]]; then
+  bwa mem ${BWA_MEM_FLAGS} -t "${THREADS}" "${REF_FA}" "${R1_IN}" "${R2_IN}" > "${SAM}" 2>> "${LOG}"
+else
+  bwa mem ${BWA_MEM_FLAGS} -t "${THREADS}" "${REF_FA}" "${R1_IN}" > "${SAM}" 2>> "${LOG}"
+fi
+
+# Keep the original BWA-MEM SAM intact. The bundled CIRI2 manual explicitly
+# warns against sorting/filtering/post-processing the SAM before detection.
 
 # --- CIRI2 flags
 if [[ -n "${R2_IN}" ]]; then
