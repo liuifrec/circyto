@@ -2,6 +2,7 @@ from __future__ import annotations
 from circyto.manifest.v1 import ManifestRow, write_manifest_tsv
 
 from dataclasses import dataclass
+from itertools import zip_longest
 from pathlib import Path
 from typing import Dict, Optional, Tuple
 import gzip
@@ -23,7 +24,7 @@ def load_barcodes_tsv(path: Path) -> Dict[str, str]:
     """
     m: Dict[str, str] = {}
     with _open_text_maybe_gz(path, "rt") as f:
-        for line in f:
+        for line_no, line in enumerate(f, start=1):
             line = line.strip()
             if not line:
                 continue
@@ -33,7 +34,15 @@ def load_barcodes_tsv(path: Path) -> Dict[str, str]:
                 cell_id = bc
             else:
                 cell_id, bc = parts[0], parts[1]
+            if not bc:
+                raise ValueError(f"Empty barcode at {path}:{line_no}")
+            if bc in m and m[bc] != cell_id:
+                raise ValueError(
+                    f"Duplicate barcode '{bc}' mapped to multiple cell IDs in {path}:{line_no}"
+                )
             m[bc] = cell_id
+    if not m:
+        raise ValueError(f"No barcodes found in {path}")
     return m
 
 
@@ -129,52 +138,63 @@ def demux_smartseq2_pooled(p: SmartSeq2DemuxParams) -> Dict[str, Dict[str, int]]
     total_seen = 0
     assigned = 0
     unknown = 0
+    short_barcode_reads = 0
 
-    with _open_text_maybe_gz(p.r1, "rt") as f1, _open_text_maybe_gz(p.r2, "rt") as f2:
-        it1 = _fastq_iter(f1)
-        it2 = _fastq_iter(f2)
+    try:
+        with _open_text_maybe_gz(p.r1, "rt") as f1, _open_text_maybe_gz(p.r2, "rt") as f2:
+            it1 = _fastq_iter(f1)
+            it2 = _fastq_iter(f2)
 
-        for rec1, rec2 in zip(it1, it2):
-            total_seen += 1
-            if p.limit_reads and total_seen > p.limit_reads:
-                break
+            for rec_no, pair in enumerate(zip_longest(it1, it2), start=1):
+                rec1, rec2 = pair
+                if rec1 is None or rec2 is None:
+                    raise ValueError(
+                        f"FASTQ mate files ended at different lengths near read {rec_no}: "
+                        f"R1={p.r1} R2={p.r2}"
+                    )
 
-            h1, s1, pl1, q1 = rec1
-            h2, s2, pl2, q2 = rec2
+                total_seen += 1
+                if p.limit_reads and total_seen > p.limit_reads:
+                    break
 
-            seq_bc = s1 if p.barcode_read.upper() == "R1" else s2
-            bc = seq_bc[p.barcode_start : p.barcode_start + p.barcode_length]
-            cell_id = barcode_to_cell.get(bc)
+                h1, s1, pl1, q1 = rec1
+                h2, s2, pl2, q2 = rec2
 
-            if p.trim_barcode:
-                if p.barcode_read.upper() == "R1":
-                    s1, q1 = _trim(s1, q1, p.barcode_start, p.barcode_length)
-                else:
-                    s2, q2 = _trim(s2, q2, p.barcode_start, p.barcode_length)
+                seq_bc = s1 if p.barcode_read.upper() == "R1" else s2
+                bc = seq_bc[p.barcode_start : p.barcode_start + p.barcode_length]
+                if len(bc) < p.barcode_length:
+                    short_barcode_reads += 1
+                cell_id = barcode_to_cell.get(bc)
 
-            if p.umi_start is not None and p.umi_length is not None and p.trim_umi:
-                if p.barcode_read.upper() == "R1":
-                    s1, q1 = _trim(s1, q1, p.umi_start, p.umi_length)
-                else:
-                    s2, q2 = _trim(s2, q2, p.umi_start, p.umi_length)
+                if p.trim_barcode:
+                    if p.barcode_read.upper() == "R1":
+                        s1, q1 = _trim(s1, q1, p.barcode_start, p.barcode_length)
+                    else:
+                        s2, q2 = _trim(s2, q2, p.barcode_start, p.barcode_length)
 
-            if cell_id is None:
-                unknown += 1
-                unknown_r1.write(f"{_sanitize_header(h1)}\n{s1}\n{_sanitize_plus()}\n{q1}\n")
-                unknown_r2.write(f"{_sanitize_header(h2)}\n{s2}\n{_sanitize_plus()}\n{q2}\n")
-                continue
+                if p.umi_start is not None and p.umi_length is not None and p.trim_umi:
+                    if p.barcode_read.upper() == "R1":
+                        s1, q1 = _trim(s1, q1, p.umi_start, p.umi_length)
+                    else:
+                        s2, q2 = _trim(s2, q2, p.umi_start, p.umi_length)
 
-            w1, w2 = get_writer(cell_id)
-            w1.write(f"{_sanitize_header(h1)}\n{s1}\n{_sanitize_plus()}\n{q1}\n")
-            w2.write(f"{_sanitize_header(h2)}\n{s2}\n{_sanitize_plus()}\n{q2}\n")
-            stats[cell_id]["n_reads"] += 1
-            assigned += 1
+                if cell_id is None:
+                    unknown += 1
+                    unknown_r1.write(f"{_sanitize_header(h1)}\n{s1}\n{_sanitize_plus()}\n{q1}\n")
+                    unknown_r2.write(f"{_sanitize_header(h2)}\n{s2}\n{_sanitize_plus()}\n{q2}\n")
+                    continue
 
-    for w1, w2 in writers.values():
-        w1.close()
-        w2.close()
-    unknown_r1.close()
-    unknown_r2.close()
+                w1, w2 = get_writer(cell_id)
+                w1.write(f"{_sanitize_header(h1)}\n{s1}\n{_sanitize_plus()}\n{q1}\n")
+                w2.write(f"{_sanitize_header(h2)}\n{s2}\n{_sanitize_plus()}\n{q2}\n")
+                stats[cell_id]["n_reads"] += 1
+                assigned += 1
+    finally:
+        for w1, w2 in writers.values():
+            w1.close()
+            w2.close()
+        unknown_r1.close()
+        unknown_r2.close()
 
     report = {
         "platform": "smartseq2",
@@ -194,6 +214,7 @@ def demux_smartseq2_pooled(p: SmartSeq2DemuxParams) -> Dict[str, Dict[str, int]]
             "total_reads_seen": total_seen,
             "assigned_reads": assigned,
             "unknown_barcode_reads": unknown,
+            "short_barcode_reads": short_barcode_reads,
             "cell_count": len(stats),
         },
         "outputs": {

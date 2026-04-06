@@ -37,7 +37,7 @@ def test_read_manifest_accepts_r1_r2(tmp_path: Path):
 
     from circyto.pipeline.run_detector import read_manifest
 
-    rows = read_manifest(m)
+    rows = read_manifest(m, validate_files=False)
     assert rows[0][0] == "sc01"
     assert rows[0][1].name.endswith("_R1.fastq.gz")
     assert rows[0][2].name.endswith("_R2.fastq.gz")
@@ -53,7 +53,7 @@ def test_read_manifest_accepts_read1_read2(tmp_path: Path):
 
     from circyto.pipeline.run_detector import read_manifest
 
-    rows = read_manifest(m)
+    rows = read_manifest(m, validate_files=False)
     assert rows[0][0] == "sc01"
     assert rows[0][1].name == "sc01_R1.fastq.gz"
     assert rows[0][2].name == "sc01_R2.fastq.gz"

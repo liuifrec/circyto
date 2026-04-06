@@ -4,6 +4,7 @@ from __future__ import annotations
 import os
 import shutil
 import subprocess
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
@@ -131,17 +132,19 @@ class CiriFullDetector(DetectorBase):
 
         cmd = [
             "bash",
-            "-lc",
-            f'"{self.adapter_script}"',
+            str(self.adapter_script),
         ]
 
-        # Let errors propagate; the orchestrator will catch CalledProcessError.
-        subprocess.run(
-            " ".join(cmd),
-            shell=True,
-            check=True,
-            env=real_env,
-        )
+        run_started = time.perf_counter()
+        with log_path.open("w", encoding="utf-8") as log_handle:
+            # Let errors propagate; the orchestrator will catch CalledProcessError.
+            subprocess.run(
+                cmd,
+                check=True,
+                env=real_env,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+            )
 
         # If we reach here, the adapter exited 0.
         # We expect OUT_TSV and the run dir to exist.
@@ -152,5 +155,5 @@ class CiriFullDetector(DetectorBase):
             tsv_path=out_tsv,
             run_dir=run_dir,
             log_path=log_path,
-            meta={"threads": threads},
+            meta={"threads": threads, "elapsed_seconds": round(time.perf_counter() - run_started, 3)},
         )

@@ -30,10 +30,9 @@ def test_ciri2_uses_se_recommended_flags(monkeypatch: pytest.MonkeyPatch, tmp_pa
     det = Ciri2Detector()
     captured: dict[str, object] = {}
 
-    def fake_run(cmd, shell=False, env=None):
+    def fake_run(cmd, **kwargs):
         captured["cmd"] = cmd
-        captured["shell"] = shell
-        captured["env"] = env
+        captured.update(kwargs)
 
         class _Result:
             returncode = 0
@@ -55,8 +54,10 @@ def test_ciri2_uses_se_recommended_flags(monkeypatch: pytest.MonkeyPatch, tmp_pa
     result = det.run(inputs)
 
     assert result.tsv_path == tmp_path / "sc01.tsv"
-    assert captured["shell"] is True
+    assert captured["cmd"] == ["bash", str(det.adapter_script)]
     assert isinstance(captured["env"], dict)
+    assert captured["check"] is False
+    assert captured["stderr"] is not None
     assert captured["env"]["CIRI2_FLAGS"] == "-0 -U 15"
     assert captured["env"]["CIRI2_BWA_MEM_FLAGS"] == "-T 19"
 
@@ -68,8 +69,9 @@ def test_ciri2_uses_short_read_bwa_flags_for_short_se_fastq(
     det = Ciri2Detector()
     captured: dict[str, object] = {}
 
-    def fake_run(cmd, shell=False, env=None):
-        captured["env"] = env
+    def fake_run(cmd, **kwargs):
+        captured["cmd"] = cmd
+        captured.update(kwargs)
 
         class _Result:
             returncode = 0
@@ -94,5 +96,6 @@ def test_ciri2_uses_short_read_bwa_flags_for_short_se_fastq(
 
     det.run(inputs)
 
+    assert captured["cmd"] == ["bash", str(det.adapter_script)]
     assert isinstance(captured["env"], dict)
     assert captured["env"]["CIRI2_BWA_MEM_FLAGS"] == "-k 15 -T 15"

@@ -63,53 +63,43 @@ def _build_matrix_and_features(
             # Skip files that don't look like CIRI-full outputs
             continue
 
-        # Normalize support column if present: circ_id -> support count
-        supports: Dict[str, int] = {}
-        if "support" in df.columns:
-            for _, r in df.iterrows():
-                try:
-                    circ = str(r["circ_id"])
-                    supports[circ] = int(r["support"])
-                except Exception:
-                    # Be tolerant of weird/NaN entries
-                    continue
-
-        # Iterate rows, register circ_ids + features + matrix entries
-        for _, r in df.iterrows():
-            circ = str(r["circ_id"])
+        # Iterate rows once, register circ_ids + features + matrix entries.
+        for r in df.itertuples(index=False):
+            row = r._asdict()
+            circ = str(row["circ_id"])
 
             if circ not in circ_index:
                 circ_index[circ] = len(circ_index)
 
                 chrom = (
-                    str(r["chr"])
-                    if "chr" in df.columns and pd.notna(r["chr"])
+                    str(row["chr"])
+                    if "chr" in df.columns and pd.notna(row["chr"])
                     else ""
                 )
 
                 # start
                 start: Optional[int] = None
-                if "start" in df.columns and pd.notna(r["start"]):
+                if "start" in df.columns and pd.notna(row["start"]):
                     try:
-                        start = int(r["start"])
+                        start = int(row["start"])
                     except (ValueError, TypeError):
                         start = None
 
                 # end
                 end: Optional[int] = None
-                if "end" in df.columns and pd.notna(r["end"]):
+                if "end" in df.columns and pd.notna(row["end"]):
                     try:
-                        end = int(r["end"])
+                        end = int(row["end"])
                     except (ValueError, TypeError):
                         end = None
 
                 strand = ""
-                if "strand" in df.columns and pd.notna(r["strand"]):
-                    strand = str(r["strand"])
+                if "strand" in df.columns and pd.notna(row["strand"]):
+                    strand = str(row["strand"])
 
                 host_gene = ""
-                if "host_gene" in df.columns and pd.notna(r["host_gene"]):
-                    host_gene = str(r["host_gene"])
+                if "host_gene" in df.columns and pd.notna(row["host_gene"]):
+                    host_gene = str(row["host_gene"])
 
                 features[circ] = {
                     "chrom": chrom,
@@ -123,15 +113,19 @@ def _build_matrix_and_features(
             cols.append(col)
 
             # Prefer 'support' if present; otherwise fall back to 'count' or 1
-            val = supports.get(circ)
-            if val is None:
-                if "count" in df.columns:
-                    try:
-                        val = int(r["count"])
-                    except Exception:
-                        val = 1
-                else:
+            val: int
+            if "support" in df.columns:
+                try:
+                    val = int(row["support"])
+                except Exception:
                     val = 1
+            elif "count" in df.columns:
+                try:
+                    val = int(row["count"])
+                except Exception:
+                    val = 1
+            else:
+                val = 1
             data.append(val)
 
     if not data:

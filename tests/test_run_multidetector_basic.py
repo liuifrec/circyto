@@ -40,6 +40,9 @@ class FakeDetector:
 def test_run_multidetector_creates_per_detector_dirs(tmp_path):
     # manifest with two cells
     manifest = tmp_path / "manifest.tsv"
+    (tmp_path / "R1_1.fq").write_text("", encoding="utf-8")
+    (tmp_path / "R1_2.fq").write_text("", encoding="utf-8")
+    (tmp_path / "R2_1.fq").write_text("", encoding="utf-8")
     manifest.write_text(
         "cell_id\tr1\tr2\n"
         "c1\tR1_1.fq\tR1_2.fq\n"

@@ -5,6 +5,7 @@ import os
 import shutil
 import subprocess
 import gzip
+import time
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Dict, Any
@@ -122,19 +123,17 @@ class Ciri2Detector(DetectorBase):
 
         real_env = os.environ.copy()
         real_env.update({k: str(v) for k, v in env.items()})
+        run_started = time.perf_counter()
 
-        # Let the adapter handle all the heavy lifting; we just capture logs.
-        cmd = [
-            "bash",
-            "-lc",
-            f'"{self.adapter_script}" > "{log_path}" 2>&1',
-        ]
-
-        result = subprocess.run(
-            " ".join(cmd),
-            shell=True,
-            env=real_env,
-        )
+        # Let the adapter handle all the heavy lifting; capture stdout/stderr directly.
+        with log_path.open("w", encoding="utf-8") as log_handle:
+            result = subprocess.run(
+                ["bash", str(self.adapter_script)],
+                env=real_env,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
 
         if result.returncode != 0:
             raise RuntimeError(
@@ -151,6 +150,7 @@ class Ciri2Detector(DetectorBase):
             log_path=log_path,
             meta={
                 "threads": threads,
+                "elapsed_seconds": round(time.perf_counter() - run_started, 3),
                 "read_length": read_length,
                 "bwa_mem_flags": env["CIRI2_BWA_MEM_FLAGS"],
                 "ciri2_flags": env["CIRI2_FLAGS"],

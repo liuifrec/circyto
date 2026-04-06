@@ -7,6 +7,7 @@ import pytest
 
 from circyto.detectors import build_default_engines
 from circyto.pipeline.run_detector import run_detector_manifest
+from circyto.pipeline.run_detector import read_manifest
 
 
 @pytest.mark.slow
@@ -22,6 +23,10 @@ def test_ciri2_single_end_chr21_known_positive() -> None:
 
     if not manifest.exists() or not ref_fa.exists() or not gtf.exists():
         pytest.skip("ERR1041421 SE manifest or chr21 reference assets are missing")
+    try:
+        read_manifest(manifest, validate_files=True)
+    except FileNotFoundError as exc:
+        pytest.skip(f"ERR1041421 SE manifest references missing local FASTQ assets: {exc}")
 
     engines = build_default_engines()
     det = engines["ciri2"]
