@@ -2,7 +2,7 @@
 
 This page explains which detectors circyto can orchestrate, what each one needs, and when to choose which.
 
-> Planned: `circyto detectors` will print a live, authoritative list. Until then, this doc is the reference.
+Use `circyto detectors` for the live readiness report and this page for behavior notes and workflow guidance.
 
 ---
 
@@ -21,8 +21,7 @@ This page explains which detectors circyto can orchestrate, what each one needs,
 
 **Typical run**
 ```bash
-circyto run-batch \
-  --detector find-circ3 \
+circyto run-detector find-circ3 \
   --manifest manifest.tsv \
   --outdir work/find_circ3_run \
   --ref-fa ref/genome.fa \
@@ -40,7 +39,7 @@ Notes:
 
 **Best for**
 - full-length short-read protocols (e.g., Smart-seq2-like data)
-- workflows where you want CIRI-full’s reconstruction/quantification behavior
+- workflows where you want CIRI-full-style calling through the unified detector interface
 
 **External requirements**
 - `bwa`
@@ -49,10 +48,44 @@ Notes:
 
 **Typical run**
 ```bash
-circyto run-batch \
-  --detector ciri-full \
+circyto run-detector ciri-full \
   --manifest manifest.tsv \
   --outdir work/ciri_full_run \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 8 \
+  --parallel 1
+```
+
+Notes:
+- `circyto` reports `ciri-full` as READY when the required external tools and bundled assets are available. That status does **not** imply one identical internal execution path for every read layout.
+- **Paired-end input (`r1` + `r2`)** uses the upstream bundled **CIRI-full Java Pipeline**.
+- **Single-end input (`r1` only)** does **not** use the upstream CIRI-full Pipeline directly, because upstream Pipeline mode is paired-end only. `circyto` falls back to the bundled **CIRI2-based detection path** and normalizes the result to the same TSV schema.
+- The normalized TSV schema is the same for both layouts:
+
+```text
+circ_id    chr    start    end    strand    support
+```
+
+- This preserves compatibility with downstream collection and multi-detector workflows, but **single-end `ciri-full` runs are not equivalent to upstream CIRI-full full-length reconstruction**.
+- If you do not have a GTF, the detector may still run with limited annotation context, but `--gtf` is the recommended public workflow.
+
+### `ciri2`
+
+**Best for**
+- direct CIRI2-based circRNA detection
+- single-end short-read datasets where you want the explicit CIRI2 path rather than the `ciri-full` compatibility wrapper
+
+**External requirements**
+- `bwa`
+- `perl`
+- bundled `tools/CIRI-full_v2.0/bin/CIRI_v2.0.6/CIRI2.pl`
+
+**Typical run**
+```bash
+circyto run-detector ciri2 \
+  --manifest manifest.tsv \
+  --outdir work/ciri2_run \
   --ref-fa ref/genome.fa \
   --gtf ref/genes.gtf \
   --threads 8 \
@@ -60,8 +93,8 @@ circyto run-batch \
 ```
 
 Notes:
-- CIRI-full’s own documentation indicates it is Java-based and requires `bwa` for generating SAM inputs. It bundles CIRI2 and CIRI-AS as part of the CIRI-full software package.
-- If you do not have a GTF, you can still run on a reference FASTA, but downstream annotation will be limited.
+- `ciri2` is the direct bundled CIRI2 integration.
+- For short single-end reads, the wrapper applies more permissive BWA/CIRI2 settings than the default paired-end path.
 
 ---
 
@@ -76,9 +109,9 @@ Examples discussed for future integration:
 
 ---
 
-## Planned UX: `circyto detectors`
+## `circyto detectors`
 
-Proposed output (example):
+Example output shape:
 
 ```text
 $ circyto detectors
@@ -94,9 +127,9 @@ Optional flags under consideration:
 
 ---
 
-## Planned UX: `circyto doctor`
+## `circyto doctor`
 
-Proposed checks:
+Current checks:
 - detect executables on PATH: `bowtie2`, `samtools`, `bwa`, `java`, `STAR` (optional)
 - detect the presence of required detector assets under `tools/`
 - print one actionable line per missing dependency

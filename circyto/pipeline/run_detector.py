@@ -82,12 +82,14 @@ def _build_provenance_stamp(
     threads: int,
     extra: dict[str, Any],
 ) -> dict[str, Any]:
+    read_layout = "paired-end" if r2 is not None else "single-end"
     return {
         "detector": detector.name,
         "detector_class": detector.__class__.__name__,
         "cell_id": cell_id,
         "read1": _normalize_stamp_path(r1),
         "read2": _normalize_stamp_path(r2),
+        "read_layout": read_layout,
         "ref_fa": _normalize_stamp_path(ref_fa),
         "gtf": _normalize_stamp_path(gtf),
         "threads": threads,
@@ -212,6 +214,7 @@ def run_detector_manifest(
 
     def _run_one(row: tuple[str, Path, Path | None]) -> tuple[list[DetectorResult], dict[str, Any]]:
         cell_id, r1, r2 = row
+        read_layout = "paired-end" if r2 is not None else "single-end"
         existing_path = _existing_output_for(cell_id)
         expected_stamp = _build_provenance_stamp(
             detector,
@@ -237,6 +240,7 @@ def run_detector_manifest(
             )
             return [result], {
                 "cell_id": cell_id,
+                "read_layout": read_layout,
                 "status": "skipped_existing",
                 "seconds": 0.0,
                 "tsv_path": str(existing_path),
@@ -263,6 +267,7 @@ def run_detector_manifest(
         status = "success" if _detector_output_has_calls(primary_path, detector.name) else "empty"
         return flat_results, {
             "cell_id": cell_id,
+            "read_layout": read_layout,
             "status": status,
             "seconds": elapsed,
             "tsv_path": str(primary_path),
@@ -296,10 +301,12 @@ def run_detector_manifest(
                 results.extend(cell_results)
                 per_cell_records.append(record)
             except Exception as exc:
-                failures.append({"cell_id": cell_id, "error": str(exc)})
+                read_layout = "paired-end" if row_r2 is not None else "single-end"
+                failures.append({"cell_id": cell_id, "read_layout": read_layout, "error": str(exc)})
                 per_cell_records.append(
                     {
                         "cell_id": cell_id,
+                        "read_layout": read_layout,
                         "status": "failed",
                         "seconds": None,
                         "error": str(exc),

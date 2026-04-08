@@ -58,17 +58,18 @@ def test_run_detector_manifest_skips_completed_outputs_and_writes_summary(tmp_pa
     )
     (outdir / "c1.tsv.provenance.json").write_text(
         json.dumps(
-            {
-                "detector": "ciri2",
-                "detector_class": "_FakeDetector",
-                "cell_id": "c1",
-                "read1": str((tmp_path / "c1_R1.fastq.gz").resolve()),
-                "read2": str((tmp_path / "c1_R2.fastq.gz").resolve()),
-                "ref_fa": str((tmp_path / "ref.fa").resolve()),
-                "gtf": str((tmp_path / "genes.gtf").resolve()),
-                "threads": 2,
-                "extra": {},
-            }
+                {
+                    "detector": "ciri2",
+                    "detector_class": "_FakeDetector",
+                    "cell_id": "c1",
+                    "read1": str((tmp_path / "c1_R1.fastq.gz").resolve()),
+                    "read2": str((tmp_path / "c1_R2.fastq.gz").resolve()),
+                    "read_layout": "paired-end",
+                    "ref_fa": str((tmp_path / "ref.fa").resolve()),
+                    "gtf": str((tmp_path / "genes.gtf").resolve()),
+                    "threads": 2,
+                    "extra": {},
+                }
         )
         + "\n",
         encoding="utf-8",
@@ -119,6 +120,8 @@ def test_run_detector_manifest_failure_writes_summary(tmp_path: Path) -> None:
     summary = json.loads((outdir / "detector_run_summary.json").read_text(encoding="utf-8"))
     assert summary["status_counts"]["failed"] == 1
     assert summary["status_counts"]["success"] == 1
+    failed_record = next(cell for cell in summary["cells"] if cell["cell_id"] == "c2")
+    assert failed_record["read_layout"] == "paired-end"
 
 
 def test_run_detector_manifest_reruns_when_provenance_changes(tmp_path: Path) -> None:
@@ -153,3 +156,32 @@ def test_run_detector_manifest_reruns_when_provenance_changes(tmp_path: Path) ->
         parallel=1,
     )
     assert detector.calls == ["c1", "c1"]
+
+
+def test_run_detector_manifest_records_single_end_layout_in_summary(tmp_path: Path) -> None:
+    manifest = tmp_path / "manifest.tsv"
+    r1 = tmp_path / "c1_R1.fastq.gz"
+    r1.write_text("r1", encoding="utf-8")
+    manifest.write_text(
+        "cell_id\tr1\n"
+        f"c1\t{r1}\n",
+        encoding="utf-8",
+    )
+
+    detector = _FakeDetector()
+    outdir = tmp_path / "run"
+    run_detector_manifest(
+        detector=detector,
+        manifest=manifest,
+        outdir=outdir,
+        ref_fa=tmp_path / "ref.fa",
+        gtf=tmp_path / "genes.gtf",
+        threads=2,
+        parallel=1,
+    )
+
+    summary = json.loads((outdir / "detector_run_summary.json").read_text(encoding="utf-8"))
+    assert summary["cells"][0]["read_layout"] == "single-end"
+
+    provenance = json.loads((outdir / "c1.tsv.provenance.json").read_text(encoding="utf-8"))
+    assert provenance["read_layout"] == "single-end"

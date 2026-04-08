@@ -14,7 +14,7 @@ Before you start:
 - You installed `circyto` (`pip install -e .` from the repo)
 - You installed **at least one detector**:
   - `find-circ3` (recommended for a first run), or
-  - CIRI-full (requires Java + bwa + a JAR)
+  - `ciri-full` / `ciri2` (requires Java + bwa + the bundled CIRI-full assets)
 
 If your first run fails with `command not found`, skip ahead to **External dependencies**.
 
@@ -53,23 +53,31 @@ Circyto orchestrates detectors, but many detectors rely on standard bioinformati
 - `bwa` and `java` (required for CIRI-full workflows)
 - `STAR` (optional; relevant only for future STAR-based detectors)
 
-> Planned: `circyto doctor` will check these for you and print a clear report. Until then, you can manually verify with:
->
-> ```bash
-> command -v bowtie2 samtools bwa java
-> ```
+Use the built-in diagnostics first:
+
+```bash
+circyto doctor
+circyto detectors
+```
+
+If you need a manual spot check:
+
+```bash
+command -v bowtie2 samtools bwa java
+```
 
 ---
 
-## Workflow 1: run a detector on many cells (recommended: `run-batch`)
+## Workflow 1: run a detector on many cells
 
-`run-batch` is the recommended entry point for most users because it makes parallelism explicit and keeps arguments uniform.
+`run-detector` is the canonical single-detector command.
+
+`run-batch` is still available, but it is effectively an alias of `run-detector` with a required `--detector` flag.
 
 ### Example: find-circ3 on the bundled chr21 manifest
 
 ```bash
-circyto run-batch \
-  --detector find-circ3 \
+circyto run-detector find-circ3 \
   --manifest manifest_2.tsv \
   --outdir work/find_circ3_chr21 \
   --ref-fa ref/chr21.fa \
@@ -85,6 +93,26 @@ What you should see:
 If this fails:
 - confirm `find-circ3 --help` works
 - confirm `bowtie2` and `samtools` are on your PATH
+
+### Example: `ciri-full` on your own manifest
+
+```bash
+circyto run-detector ciri-full \
+  --manifest manifest.tsv \
+  --outdir work/ciri_full_run \
+  --ref-fa ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --threads 4 \
+  --parallel 1
+```
+
+`ciri-full` layout semantics are important:
+
+- paired-end rows (`r1` + `r2`) use the upstream bundled **CIRI-full Java Pipeline**
+- single-end rows (`r1` only) use a bundled **CIRI2-based fallback path**
+- both layouts are normalized to the same per-cell TSV schema for downstream collection
+
+If you specifically need upstream CIRI-full full-length reconstruction behavior, use paired-end input.
 
 ---
 
@@ -137,8 +165,8 @@ If you want to run multiple detectors on the same manifest:
 ```bash
 circyto run-multidetector \
   ciri-full find-circ3 \
-  work/multidetector_chr21 \
   --manifest manifest_2.tsv \
+  --outdir work/multidetector_chr21 \
   --ref-fa ref/chr21.fa \
   --gtf ref/chr21.gtf \
   --threads 4 \

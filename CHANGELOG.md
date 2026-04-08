@@ -5,6 +5,22 @@ All notable changes to **circyto** will be documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and semantic-ish versioning.
 
 ---
+## [Unreleased]
+
+### Changed
+
+- Clarify public documentation for the current **v0.8.x** release line instead of older prototype/planning framing.
+- Document that `circyto doctor` and `circyto detectors` are live commands and that bundled asset resolution is intended to be cwd-independent.
+- Align README and workflow docs with the current CLI examples and flag names, including `--ref-fa`.
+
+### Fixed
+
+- Document the real `ciri-full` layout semantics:
+  - paired-end rows use the upstream bundled **CIRI-full Java Pipeline**
+  - single-end rows use a bundled **CIRI2-based fallback path**
+  - both layouts normalize to the same TSV schema for downstream collection
+- Record the recent `ciri-full` runtime diagnostics improvements in user-facing release notes.
+
 ## [0.8.3] – 2025-12-17
 - Add `circyto doctor` to validate external dependencies and report detector readiness.
 - Add `circyto detectors` to list detectors with status and dependency requirements.

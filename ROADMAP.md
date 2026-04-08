@@ -10,6 +10,8 @@ For step-by-step usage, see `docs/getting_started.md`.
 
 **A new user can go from “I have FASTQs” → “I have a circRNA × cell matrix”** without reading developer logs, spelunking through source code, or guessing CLI conventions.
 
+Current release line: **v0.8.x** (`pyproject.toml` currently reports `0.8.3`).
+
 ---
 
 ## Guiding principles
@@ -36,10 +38,14 @@ For step-by-step usage, see `docs/getting_started.md`.
 - README becomes a single “golden path” entry point (install → minimal example → next steps).
 - Introduce `docs/` pages that are the canonical reference for workflows and CLI semantics.
 - Reduce user-facing friction caused by external dependencies and hidden detector lists.
+- Make layout-specific detector behavior explicit instead of implying uniform support where upstream tools differ.
 
 **Deliverables**
 - `circyto detectors`: list detectors and their short descriptions + required external tools.
 - `circyto doctor`: validate external dependencies (bwa/bowtie2/samtools/java; STAR optional) and print actionable messages.
+- Document that `ciri-full` has two public execution modes:
+  - paired-end rows: upstream bundled CIRI-full Pipeline
+  - single-end rows: bundled CIRI2-based fallback normalized to the same TSV schema
 - Move detailed workflows and edge cases into:
   - `docs/getting_started.md`
   - `docs/cli_policy.md`
