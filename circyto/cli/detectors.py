@@ -2,12 +2,11 @@ from __future__ import annotations
 
 import json
 import shutil
-from pathlib import Path
 from typing import Dict, Any
 
 import typer
 
-from circyto.cli.doctor_meta import DETECTOR_SPECS
+from circyto.cli.doctor_meta import DETECTOR_SPECS, resolve_asset
 
 detectors_app = typer.Typer(
     help="List available detectors and their dependency requirements.",
@@ -20,13 +19,7 @@ def _have_cmd(cmd: str) -> bool:
 
 
 def _have_asset(asset: str) -> bool:
-    # Keep this consistent with doctor.py
-    if asset == "CIRI-full-jar":
-        tools_dir = Path(__file__).resolve().parents[2] / "tools"
-        if not tools_dir.exists():
-            return False
-        return len(list(tools_dir.glob("CIRI-full*.jar"))) > 0
-    return False
+    return resolve_asset(asset).found
 
 
 def _status_for(spec) -> str:
@@ -52,12 +45,22 @@ def detectors(
     for spec in DETECTOR_SPECS:
         status = _status_for(spec)
         needs = spec.required_cmds + spec.required_assets
+        asset_details = {}
+        for asset in spec.required_assets:
+            resolution = resolve_asset(asset)
+            asset_details[asset] = {
+                "found": resolution.found,
+                "path": str(resolution.resolved_path) if resolution.resolved_path else None,
+                "source": resolution.source,
+                "checked_paths": [str(path) for path in resolution.checked_paths],
+            }
         rows.append(
             {
                 "name": spec.name,
                 "status": status,
                 "type": spec.det_type,
                 "needs": needs,
+                "assets": asset_details,
                 "hints": spec.hint_lines,
             }
         )
@@ -71,6 +74,13 @@ def detectors(
     for r in rows:
         needs_str = ", ".join(r["needs"]) if r["needs"] else "-"
         typer.echo(f"{r['name']:<12} {r['status']:<10} {r['type']:<5} {needs_str}")
+        for asset, details in r["assets"].items():
+            if details["path"]:
+                typer.echo(f"  asset: {asset} -> {details['path']}")
+            elif details["checked_paths"]:
+                typer.echo(f"  asset: {asset} -> missing")
+                for checked in details["checked_paths"]:
+                    typer.echo(f"    checked: {checked}")
 
     if hints:
         typer.echo("\nHints:")

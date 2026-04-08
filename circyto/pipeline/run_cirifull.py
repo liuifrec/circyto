@@ -5,6 +5,8 @@ import subprocess
 from pathlib import Path
 from typing import Iterable, Tuple
 
+from circyto.paths import resolve_manifest_path
+
 
 def _ensure_outdir(path: Path) -> None:
     path.mkdir(parents=True, exist_ok=True)
@@ -85,15 +87,17 @@ def _read_manifest_rows(manifest: Path) -> Iterable[Tuple[str, Path, Path | None
     Manifest TSV with headers: cell_id  r1  r2
     r2 can be missing/blank for single-end.
     """
+    manifest = manifest.resolve(strict=False)
     with open(manifest, newline="") as fh:
         rd = csv.DictReader(fh, delimiter="\t")
         for row in rd:
             cell_id = row.get("cell_id") or row.get("cell") or row.get("id") or "cell"
-            r1 = Path(row.get("r1", "").strip())
+            r1_raw = row.get("r1", "").strip()
             r2_raw = row.get("r2", "").strip()
-            r2 = Path(r2_raw) if r2_raw else None
-            if not r1:
+            if not r1_raw:
                 continue
+            r1 = resolve_manifest_path(manifest, r1_raw)
+            r2 = resolve_manifest_path(manifest, r2_raw) if r2_raw else None
             yield cell_id, r1, r2
 
 

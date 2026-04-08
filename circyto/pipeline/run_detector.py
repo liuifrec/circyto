@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from circyto.detectors import DetectorBase, DetectorRunInputs, DetectorResult
+from circyto.paths import resolve_manifest_path
 
 def ensure_dir(path: Path) -> None:
     """
@@ -24,10 +25,7 @@ def _pick_col(row: dict, keys: Tuple[str, ...]) -> Optional[str]:
 
 
 def _resolve_manifest_path(manifest_path: Path, value: str) -> Path:
-    path = Path(value.strip())
-    if path.is_absolute():
-        return path
-    return (manifest_path.parent / path).resolve()
+    return resolve_manifest_path(manifest_path, value.strip())
 
 
 def _detector_output_has_calls(path: Path, detector_name: str) -> bool:

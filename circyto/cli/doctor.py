@@ -2,9 +2,8 @@ from __future__ import annotations
 
 import sys
 import shutil
-from pathlib import Path
 from typing import List
-from circyto.cli.doctor_meta import DETECTOR_SPECS
+from circyto.cli.doctor_meta import DETECTOR_SPECS, resolve_asset
 
 import typer
 
@@ -70,14 +69,16 @@ def doctor():
     check("STAR")  # optional
 
     # ---- Detector assets ----------------------------------------------------
-    tools_dir = Path(__file__).resolve().parents[2] / "tools"
-    jars = list(tools_dir.glob("CIRI-full*.jar")) if tools_dir.exists() else []
-    found_assets["CIRI-full-jar"] = bool(jars)
+    ciri_full_jar = resolve_asset("CIRI-full-jar")
+    found_assets["CIRI-full-jar"] = ciri_full_jar.found
 
-    if jars:
-        _print("OK", "CIRI-full", "jar found in tools/")
+    if ciri_full_jar.found and ciri_full_jar.resolved_path is not None:
+        source = f" ({ciri_full_jar.source})" if ciri_full_jar.source else ""
+        _print("OK", "CIRI-full", f"{ciri_full_jar.resolved_path}{source}")
     else:
-        _print("WARN", "CIRI-full", "jar not found in tools/")
+        _print("WARN", "CIRI-full", "jar not found")
+        for checked in ciri_full_jar.checked_paths:
+            typer.echo(f"       checked: {checked}")
 
     # ---- Summary ------------------------------------------------------------
     typer.echo("\nDetector readiness:")
@@ -108,4 +109,3 @@ def doctor():
     else:
         typer.echo("  ✅ Environment looks good")
         raise typer.Exit(code=0)
-

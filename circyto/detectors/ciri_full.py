@@ -10,9 +10,11 @@ from pathlib import Path
 from typing import Optional
 
 from .base import DetectorBase, DetectorRunInputs, DetectorResult
-
-CIRI_FULL_JAR_DEFAULT = Path("tools/CIRI-full_v2.0/CIRI-full.jar")
-CIRI_FULL_ADAPTER_DEFAULT = Path("tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh")
+from circyto.paths import (
+    find_ciri_full_adapter,
+    find_ciri_full_jar,
+    format_missing_resolution,
+)
 
 
 @dataclass
@@ -34,19 +36,31 @@ class CiriFullDetector(DetectorBase):
     input_type: str = "fastq"
     supports_paired_end: bool = True
 
-    ciri_full_jar: Path = CIRI_FULL_JAR_DEFAULT
-    adapter_script: Path = CIRI_FULL_ADAPTER_DEFAULT
+    ciri_full_jar: Path | None = None
+    adapter_script: Path | None = None
 
     # New: tell the orchestrator this tool must run serially
     max_parallel: int = 1
+
+    def _resolve_ciri_full_jar(self) -> Path:
+        resolution = find_ciri_full_jar(self.ciri_full_jar)
+        if resolution.resolved_path is None:
+            raise FileNotFoundError(format_missing_resolution("CIRI-full jar", resolution))
+        return resolution.resolved_path
+
+    def _resolve_adapter_script(self) -> Path:
+        resolution = find_ciri_full_adapter(self.adapter_script)
+        if resolution.resolved_path is None:
+            raise FileNotFoundError(format_missing_resolution("CIRI-full adapter", resolution))
+        return resolution.resolved_path
 
     def is_available(self) -> bool:
         # java + jar + adapter must exist
         if shutil.which("java") is None:
             return False
-        if not self.ciri_full_jar.exists():
+        if find_ciri_full_jar(self.ciri_full_jar).resolved_path is None:
             return False
-        if not self.adapter_script.exists():
+        if find_ciri_full_adapter(self.adapter_script).resolved_path is None:
             return False
         return True
 
@@ -124,15 +138,18 @@ class CiriFullDetector(DetectorBase):
             # NEW: ask CIRI-full/CIRI to keep 1-BSJ circRNAs
             "CIRI_EXTRA_FLAGS": "-0",
         }
+        adapter_script = self._resolve_adapter_script()
+        ciri_full_jar = self._resolve_ciri_full_jar()
 
         # Inherit the current environment, then overlay our variables.
         # This ensures PATH, java, bwa, samtools, etc. are visible.
         real_env = os.environ.copy()
         real_env.update(env)
+        real_env["CIRCYTO_CIRI_FULL_JAR"] = str(ciri_full_jar)
 
         cmd = [
             "bash",
-            str(self.adapter_script),
+            str(adapter_script),
         ]
 
         run_started = time.perf_counter()
@@ -155,5 +172,10 @@ class CiriFullDetector(DetectorBase):
             tsv_path=out_tsv,
             run_dir=run_dir,
             log_path=log_path,
-            meta={"threads": threads, "elapsed_seconds": round(time.perf_counter() - run_started, 3)},
+            meta={
+                "threads": threads,
+                "elapsed_seconds": round(time.perf_counter() - run_started, 3),
+                "ciri_full_jar": str(ciri_full_jar),
+                "adapter_script": str(adapter_script),
+            },
         )

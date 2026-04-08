@@ -8,6 +8,7 @@ import pytest
 from circyto.detectors.base import DetectorRunInputs
 from circyto.detectors.ciri2 import Ciri2Detector
 from circyto.detectors.ciri_full import CiriFullDetector
+from circyto.paths import find_ciri2_adapter
 
 
 def test_cirifull_rejects_single_end_input(tmp_path: Path) -> None:
@@ -40,6 +41,7 @@ def test_ciri2_uses_se_recommended_flags(monkeypatch: pytest.MonkeyPatch, tmp_pa
         return _Result()
 
     monkeypatch.setattr("subprocess.run", fake_run)
+    monkeypatch.chdir(tmp_path)
 
     inputs = DetectorRunInputs(
         cell_id="sc01",
@@ -54,7 +56,9 @@ def test_ciri2_uses_se_recommended_flags(monkeypatch: pytest.MonkeyPatch, tmp_pa
     result = det.run(inputs)
 
     assert result.tsv_path == tmp_path / "sc01.tsv"
-    assert captured["cmd"] == ["bash", str(det.adapter_script)]
+    adapter_path = find_ciri2_adapter().resolved_path
+    assert adapter_path is not None
+    assert captured["cmd"] == ["bash", str(adapter_path)]
     assert isinstance(captured["env"], dict)
     assert captured["check"] is False
     assert captured["stderr"] is not None
@@ -79,6 +83,7 @@ def test_ciri2_uses_short_read_bwa_flags_for_short_se_fastq(
         return _Result()
 
     monkeypatch.setattr("subprocess.run", fake_run)
+    monkeypatch.chdir(tmp_path)
 
     r1 = tmp_path / "sc01_R1.fastq.gz"
     with gzip.open(r1, "wt", encoding="utf-8") as handle:
@@ -96,6 +101,8 @@ def test_ciri2_uses_short_read_bwa_flags_for_short_se_fastq(
 
     det.run(inputs)
 
-    assert captured["cmd"] == ["bash", str(det.adapter_script)]
+    adapter_path = find_ciri2_adapter().resolved_path
+    assert adapter_path is not None
+    assert captured["cmd"] == ["bash", str(adapter_path)]
     assert isinstance(captured["env"], dict)
     assert captured["env"]["CIRI2_BWA_MEM_FLAGS"] == "-k 15 -T 15"

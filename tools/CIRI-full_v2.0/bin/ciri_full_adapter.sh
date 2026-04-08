@@ -12,8 +12,10 @@ OUT_DIR="$(dirname "${OUT_PREFIX}")"
 OUT_BASENAME="$(basename "${OUT_PREFIX}")"
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-JAR=""
-if [[ -f "${ROOT_DIR}/CIRI-full.jar" ]]; then
+JAR="${CIRCYTO_CIRI_FULL_JAR:-${CIRI_FULL_JAR:-}}"
+if [[ -n "${JAR}" && -f "${JAR}" ]]; then
+  :
+elif [[ -f "${ROOT_DIR}/CIRI-full.jar" ]]; then
   JAR="${ROOT_DIR}/CIRI-full.jar"
 elif [[ -f "${ROOT_DIR}/CIRI_Full.jar" ]]; then
   JAR="${ROOT_DIR}/CIRI_Full.jar"

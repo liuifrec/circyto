@@ -11,10 +11,7 @@ from pathlib import Path
 from typing import Optional, Dict, Any
 
 from .base import DetectorBase, DetectorRunInputs, DetectorResult
-
-# NOTE: this matches your current codespace layout:
-# tools/CIRI-full_v2.0/bin/ciri2_adapter.sh
-CIRI2_ADAPTER_DEFAULT = Path("tools/CIRI-full_v2.0/bin/ciri2_adapter.sh")
+from circyto.paths import find_ciri2_adapter, format_missing_resolution
 
 
 def _infer_fastq_read_length(path: Path) -> Optional[int]:
@@ -49,11 +46,17 @@ class Ciri2Detector(DetectorBase):
     input_type: str = "fastq"
     supports_paired_end: bool = True
 
-    adapter_script: Path = CIRI2_ADAPTER_DEFAULT
+    adapter_script: Path | None = None
+
+    def _resolve_adapter_script(self) -> Path:
+        resolution = find_ciri2_adapter(self.adapter_script)
+        if resolution.resolved_path is None:
+            raise FileNotFoundError(format_missing_resolution("CIRI2 adapter", resolution))
+        return resolution.resolved_path
 
     def is_available(self) -> bool:
         """Check that the adapter script, perl, and bwa exist."""
-        if not self.adapter_script.exists():
+        if find_ciri2_adapter(self.adapter_script).resolved_path is None:
             return False
         if shutil.which("perl") is None:
             return False
@@ -66,10 +69,13 @@ class Ciri2Detector(DetectorBase):
         Try to read a version string from the bundled manual if present.
         Fall back to a generic label on failure.
         """
+        adapter_script = find_ciri2_adapter(self.adapter_script).resolved_path
+        if adapter_script is None:
+            return "CIRI2 (adapter missing)"
         # We know from your layout:
         # tools/CIRI-full_v2.0/bin/CIRI_v2.0.6/CIRI2_manual.txt
         manual = (
-            self.adapter_script.parent
+            adapter_script.parent
             / "CIRI_v2.0.6"
             / "CIRI2_manual.txt"
         )
@@ -102,6 +108,7 @@ class Ciri2Detector(DetectorBase):
         out_tsv = outdir / f"{cell_id}.tsv"
         run_dir = outdir / f"{cell_id}.ciri2_run"
         log_path = outdir / f"{cell_id}.ciri2.log"
+        adapter_script = self._resolve_adapter_script()
 
         env: Dict[str, Any] = {
             "R1": str(inputs.r1),
@@ -128,7 +135,7 @@ class Ciri2Detector(DetectorBase):
         # Let the adapter handle all the heavy lifting; capture stdout/stderr directly.
         with log_path.open("w", encoding="utf-8") as log_handle:
             result = subprocess.run(
-                ["bash", str(self.adapter_script)],
+                ["bash", str(adapter_script)],
                 env=real_env,
                 stdout=log_handle,
                 stderr=subprocess.STDOUT,
@@ -154,5 +161,6 @@ class Ciri2Detector(DetectorBase):
                 "read_length": read_length,
                 "bwa_mem_flags": env["CIRI2_BWA_MEM_FLAGS"],
                 "ciri2_flags": env["CIRI2_FLAGS"],
+                "adapter_script": str(adapter_script),
             },
         )
