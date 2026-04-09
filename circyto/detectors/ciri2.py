@@ -10,7 +10,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional, Dict, Any
 
-from .base import DetectorBase, DetectorRunInputs, DetectorResult
+from .base import DetectorBase, DetectorCapabilities, DetectorRunInputs, DetectorResult
 from circyto.paths import find_ciri2_adapter, format_missing_resolution
 
 
@@ -45,6 +45,16 @@ class Ciri2Detector(DetectorBase):
     name: str = "ciri2"
     input_type: str = "fastq"
     supports_paired_end: bool = True
+    capabilities: DetectorCapabilities = DetectorCapabilities(
+        accepts_fastq=True,
+        accepts_alignment=False,
+        prefers_paired=True,
+        supports_single_end=True,
+        supports_multisample_alignment=False,
+        max_parallel=4,
+        recommended_execution_mode="per-cell-fastq",
+    )
+    max_parallel: int = 4
 
     adapter_script: Path | None = None
 
@@ -162,5 +172,12 @@ class Ciri2Detector(DetectorBase):
                 "bwa_mem_flags": env["CIRI2_BWA_MEM_FLAGS"],
                 "ciri2_flags": env["CIRI2_FLAGS"],
                 "adapter_script": str(adapter_script),
+                "raw_output_path": str(run_dir / f"{cell_id}.ciri2.txt"),
+                "read_layout": "paired-end" if inputs.r2 is not None else "single-end",
+                "input_mode": "fastq",
+                "detector_backend": self.name,
             },
         )
+
+    def run_from_fastq(self, inputs: DetectorRunInputs) -> DetectorResult:
+        return self.run(inputs)

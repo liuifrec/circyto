@@ -4,7 +4,23 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Dict, Iterable, Optional, Protocol, runtime_checkable, Literal
 
-DetectorInputType = Literal["fastq", "bam"]
+DetectorInputType = Literal["fastq", "bam", "sam", "alignment", "short-read"]
+DetectorExecutionMode = Literal["per-cell-fastq", "alignment-first", "multisample-alignment"]
+DetectorInputMode = Literal["fastq", "alignment"]
+
+
+@dataclass(frozen=True)
+class DetectorCapabilities:
+    accepts_fastq: bool = True
+    accepts_alignment: bool = False
+    prefers_paired: bool = True
+    supports_single_end: bool = True
+    supports_multisample_alignment: bool = False
+    requires_unsorted_sam: bool = False
+    supports_star: bool = False
+    supports_bwa: bool = False
+    max_parallel: int = 1
+    recommended_execution_mode: DetectorExecutionMode = "per-cell-fastq"
 
 
 @dataclass
@@ -22,6 +38,10 @@ class DetectorRunInputs:
     r1: Optional[Path] = None
     r2: Optional[Path] = None
     bam: Optional[Path] = None
+    sam: Optional[Path] = None
+    input_mode: DetectorInputMode = "fastq"
+    read_layout: Optional[str] = None
+    alignment_group: Optional[str] = None
 
     # Reference / annotation
     ref_fa: Optional[Path] = None
@@ -33,6 +53,20 @@ class DetectorRunInputs:
     # Optional extras (detector-specific flags, env, etc.)
     # Tests expect this to exist and to default to an empty dict.
     extra: Dict[str, Any] = field(default_factory=dict)
+    provenance: Dict[str, Any] = field(default_factory=dict)
+
+    @property
+    def alignment_path(self) -> Optional[Path]:
+        return self.bam or self.sam
+
+    def effective_read_layout(self) -> str:
+        if self.read_layout:
+            return self.read_layout
+        return "paired-end" if self.r2 is not None else "single-end"
+
+    def iter_samples(self) -> Iterable[dict[str, Any]]:
+        sample = {"cell_id": self.cell_id, "r1": self.r1, "r2": self.r2, "bam": self.bam, "sam": self.sam}
+        return [sample]
 
 
 @dataclass
@@ -68,6 +102,7 @@ class DetectorBase(Protocol):
     name: str
     input_type: DetectorInputType
     supports_paired_end: bool
+    capabilities: DetectorCapabilities
 
     # Maximum parallel jobs this detector can realistically handle at once.
     # Used by run_detector_manifest / run_multidetector to avoid oversubscription.
@@ -84,3 +119,24 @@ class DetectorBase(Protocol):
         - Optionally populate run_dir, log_path, meta
         """
         ...
+
+
+def get_detector_capabilities(detector: Any) -> DetectorCapabilities:
+    caps = getattr(detector, "capabilities", None)
+    if isinstance(caps, DetectorCapabilities):
+        return caps
+
+    max_parallel = int(getattr(detector, "max_parallel", 1) or 1)
+    input_type = str(getattr(detector, "input_type", "fastq"))
+    accepts_alignment = input_type in {"bam", "sam", "alignment"}
+    accepts_fastq = input_type in {"fastq", "short-read"} or not accepts_alignment
+    supports_paired_end = bool(getattr(detector, "supports_paired_end", True))
+    return DetectorCapabilities(
+        accepts_fastq=accepts_fastq,
+        accepts_alignment=accepts_alignment,
+        prefers_paired=supports_paired_end,
+        supports_single_end=True,
+        supports_multisample_alignment=False,
+        max_parallel=max_parallel,
+        recommended_execution_mode="alignment-first" if accepts_alignment and not accepts_fastq else "per-cell-fastq",
+    )

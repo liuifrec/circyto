@@ -6,6 +6,39 @@ Use `circyto detectors` for the live readiness report and this page for behavior
 
 ---
 
+## Execution tracks
+
+circyto now supports two execution tracks:
+
+- `per-cell-fastq`: the original manifest-driven FASTQ -> align -> detector flow
+- `alignment-first`: a shared preprocessing flow where alignments are prepared once, cached, and reused by alignment-capable detectors
+
+The alignment-first flow is designed for large demultiplexed datasets where rerunning alignments per detector or per rerun is not computationally practical.
+
+Typical alignment-first flow:
+
+```bash
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner reuse-existing \
+  --detector ciri3 \
+  --outdir work/alignment_cache
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --outdir work/ciri3_from_alignments \
+  --ref-fa ref/genome.fa
+```
+
+The normalized detector TSV schema remains:
+
+```text
+circ_id    chr    start    end    strand    support
+```
+
+---
+
 ## Detector summary
 
 ### `find-circ3`
@@ -98,14 +131,47 @@ Notes:
 
 ---
 
-## STAR-based detectors (future)
+### `ciri3`
 
-STAR-based detectors are planned/under consideration and will be treated as **optional integrations** (because STAR is a large external dependency).
+**Best for**
+- alignment-first workflows on large demultiplexed datasets
+- detector runs where BAM/SAM reuse is more important than repeated FASTQ alignment
+- future multisample-alignment backends
 
-Examples discussed for future integration:
+**External requirements**
+- a local CIRI3 executable on `PATH` or `CIRCYTO_CIRI3_BIN`
+- a local execution contract provided via `CIRCYTO_CIRI3_CMD_TEMPLATE` or the detector instance configuration
+
+**Typical run**
+```bash
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner reuse-existing \
+  --detector ciri3 \
+  --outdir work/alignment_cache
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --outdir work/ciri3_run \
+  --ref-fa ref/genome.fa
+```
+
+Notes:
+- `ciri3` is the first detector registered as alignment-native in circyto.
+- circyto still does not claim a universal default CIRI3 CLI contract. If a binary is present but no command template is configured, circyto reports readiness metadata but refuses to invent a command line.
+- The template path is now validated up front, previewed in plan mode, and surfaced in run summaries for cluster debugging.
+- The backend normalizes tabular CIRI3 output to the stable circyto TSV schema.
+
+---
+
+## Other detectors (future)
+
+Additional STAR-based or alignment-native detectors are still planned as optional integrations.
+
+Examples:
 - DCC
 - circhunter
-- CIRI3
 
 ---
 

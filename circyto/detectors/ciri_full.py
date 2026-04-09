@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Optional
 
-from .base import DetectorBase, DetectorRunInputs, DetectorResult
+from .base import DetectorBase, DetectorCapabilities, DetectorRunInputs, DetectorResult
 from .ciri2 import _infer_fastq_read_length
 from circyto.paths import (
     find_ciri_full_adapter,
@@ -36,6 +36,15 @@ class CiriFullDetector(DetectorBase):
     name: str = "ciri-full"
     input_type: str = "fastq"
     supports_paired_end: bool = True
+    capabilities: DetectorCapabilities = DetectorCapabilities(
+        accepts_fastq=True,
+        accepts_alignment=False,
+        prefers_paired=True,
+        supports_single_end=True,
+        supports_multisample_alignment=False,
+        max_parallel=1,
+        recommended_execution_mode="per-cell-fastq",
+    )
 
     ciri_full_jar: Path | None = None
     adapter_script: Path | None = None
@@ -211,5 +220,15 @@ class CiriFullDetector(DetectorBase):
                 ),
                 "read_length": read_length,
                 "bwa_mem_flags": env.get("CIRI2_BWA_MEM_FLAGS"),
+                "raw_output_path": (
+                    str(run_dir / f"{cell_id}.ciri2.txt")
+                    if read_layout == "single-end"
+                    else None
+                ),
+                "input_mode": "fastq",
+                "detector_backend": self.name,
             },
         )
+
+    def run_from_fastq(self, inputs: DetectorRunInputs) -> DetectorResult:
+        return self.run(inputs)

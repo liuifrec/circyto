@@ -13,9 +13,10 @@ from __future__ import annotations
 import os
 from typing import Dict
 
-from .base import DetectorRunInputs, DetectorResult, DetectorBase
+from .base import DetectorRunInputs, DetectorResult, DetectorBase, DetectorCapabilities, get_detector_capabilities
 from .ciri_full import CiriFullDetector
 from .ciri2 import Ciri2Detector
+from .ciri3 import Ciri3Detector
 from .find_circ3 import FindCirc3Detector
 
 try:
@@ -52,6 +53,7 @@ def build_default_engines() -> Dict[str, DetectorBase]:
     engines: Dict[str, DetectorBase] = {
         "ciri-full": CiriFullDetector(),
         "ciri2": Ciri2Detector(),
+        "ciri3": Ciri3Detector(),
         "find-circ3": FindCirc3Detector(),
     }
 
@@ -76,6 +78,9 @@ __all__ = [
     "DetectorRunInputs",
     "DetectorResult",
     "DetectorBase",
+    "DetectorCapabilities",
+    "get_detector_capabilities",
+    "Ciri3Detector",
     "available_detectors",
     "build_default_engines",
 ]

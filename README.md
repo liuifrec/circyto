@@ -30,7 +30,7 @@ A single-cell circRNA detection CLI to orchestrate detectors, build circRNA×cel
 
 ## What it is
 
-`circyto` provides a reproducible command-line interface over multiple circRNA detectors (currently **CIRI-full**, **CIRI2**, and **find-circ3**) and standardizes outputs for downstream single-cell analysis (Scanpy / Seurat / scVI).
+`circyto` provides a reproducible command-line interface over multiple circRNA detectors (currently **CIRI-full**, **CIRI2**, **find-circ3**, and an alignment-native **CIRI3** scaffold) and standardizes outputs for downstream single-cell analysis (Scanpy / Seurat / scVI).
 
 If you're new, your fastest path is:
 
@@ -155,10 +155,74 @@ This preserves manifest compatibility and downstream collection, but **single-en
 
 ---
 
+## Alignment-first workflow
+
+For large demultiplexed datasets, circyto now includes an alignment-first execution track so alignments can be prepared once and reused across downstream detector runs.
+
+Example:
+
+```bash
+circyto plan-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner bwa-mem \
+  --ref-fa ref/genome.fa \
+  --detector ciri3 \
+  --outdir work/alignment_cache
+
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner bwa-mem \
+  --ref-fa ref/genome.fa \
+  --detector ciri3 \
+  --outdir work/alignment_cache \
+  --sentinel-cells 8 \
+  --chunk-size 48
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --outdir work/ciri3_run \
+  --ref-fa ref/genome.fa \
+  --chunk-size 64
+```
+
+Recover after a partial failure:
+
+```bash
+circyto summarize-run-state \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --run-dir work/ciri3_run \
+  --mode detector
+
+circyto export-run-subset \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --run-dir work/ciri3_run \
+  --subset incomplete \
+  --out work/ciri3_incomplete.tsv
+
+# For stale outputs only:
+circyto export-run-subset \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --run-dir work/ciri3_run \
+  --subset stale \
+  --out work/ciri3_stale.tsv
+```
+
+Validate the local plumbing with repo-shipped assets:
+
+```bash
+circyto alignment-first-smoke --outdir work/alignment_first_smoke
+```
+
+See `docs/alignment_first_execution.md` for cache keys, resume behavior, chunk recovery, and the validated-template CIRI3 contract.
+
+---
+
 ## Next steps
 
 - **Getting started guide** (full workflows, references/manifests): `docs/getting_started.md`
 - **Detector catalog** (what each detector needs & produces): `docs/detectors.md`
+- **Alignment-first execution** (shared preprocessing and reusable BAM/SAM manifests): `docs/alignment_first_execution.md`
 - **CLI contract** (“where do detector/outdir go?”): `docs/cli_policy.md`
 - **Project strategy & milestones**: `ROADMAP.md`
 

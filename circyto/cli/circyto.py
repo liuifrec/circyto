@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 from pathlib import Path
 from typing import List, Optional, Tuple
@@ -18,6 +19,14 @@ from circyto.pipeline.collect import collect_matrix
 from circyto.writers.convert import convert_matrix_files
 from circyto.pipeline.export_multimodal import export_multimodal as _export_multimodal
 from circyto.pipeline.annotate_host_gene import annotate_host_genes
+from circyto.pipeline.align_manifest import (
+    export_manifest_subset,
+    plan_alignment_cache,
+    prepare_alignment_cache,
+    run_detector_alignment_manifest,
+    summarize_alignment_chunks,
+    summarize_run_state,
+)
 from circyto.pipeline.run_detector import run_detector_manifest
 from circyto.pipeline.run_multidetector import run_multidetector_pipeline
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
@@ -26,7 +35,9 @@ from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
 from circyto.pipeline.collect_circexplorer2_matrix import (
     collect_circexplorer2_matrix as collect_circexplorer2_matrix_from_dir,
 )
-from circyto.detectors import build_default_engines
+from circyto.detectors import build_default_engines, get_detector_capabilities
+from circyto.detectors.ciri3 import Ciri3Detector
+from circyto.paths import get_repo_root, get_tools_dir
 from circyto.cli.doctor import doctor_app
 from circyto.cli.detectors import detectors_app
 from circyto.cli.smoke import smoke_app
@@ -48,6 +59,7 @@ app = typer.Typer(
         "Includes:\n"
         "  [LEGACY] CIRI-full wrappers (prepare/run/run-manifest/make)\n"
         "  [RUN]    run-detector / run-batch / run-multidetector\n"
+        "  [ALIGN]  prepare-alignment-cache / plan-alignment-cache / align-manifest / run-detector-from-alignments\n"
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
         "  [MERGE]  merge-detectors\n"
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
@@ -599,6 +611,14 @@ def _run_detector_impl(
     )
 
 
+def _get_detector_engine(detector: str):
+    engines = build_default_engines()
+    if detector not in engines:
+        available = ", ".join(sorted(engines.keys()))
+        raise typer.Exit(f"Detector '{detector}' not available. Available: {available}")
+    return engines[detector]
+
+
 @app.command("run-detector")
 def run_detector_cmd(
     detector_pos: Optional[str] = typer.Argument(
@@ -674,6 +694,406 @@ def run_batch_cmd(
     )
 
 
+@app.command("prepare-alignment-cache")
+def prepare_alignment_cache_cmd(
+    manifest: Path = typer.Option(..., exists=True, help="Input manifest TSV with FASTQ and/or BAM columns"),
+    outdir: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Output directory for cached alignments"),
+    aligner: str = typer.Option(
+        "reuse-existing",
+        "--aligner",
+        help="Alignment strategy: reuse-existing or bwa-mem, unless --command-template is provided",
+    ),
+    detector: Optional[str] = typer.Option(None, "--detector", "-d", help="Optional detector hint for cache keying"),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA for alignment"),
+    threads: int = typer.Option(8, "--threads", help="Threads per alignment task"),
+    parallel: int = typer.Option(4, "--parallel", help="Concurrent alignment tasks"),
+    sentinel_cells: int = typer.Option(0, "--sentinel-cells", help="Run the first N cells before the rest"),
+    chunk_size: int = typer.Option(25, "--chunk-size", help="Chunk size for resumable alignment execution"),
+    command_template: Optional[str] = typer.Option(
+        None,
+        "--command-template",
+        help="Shell template for custom aligners; placeholders: {cell_id} {read1} {read2} {ref_fa} {out_path} {threads} {extra_flags}",
+    ),
+    extra_flags: str = typer.Option("", "--extra-flags", help="Extra aligner flags included in cache key"),
+    link_mode: str = typer.Option("symlink", "--link-mode", help="symlink or copy staged alignments into the working directory"),
+    index_bam: bool = typer.Option(False, "--index-bam", help="Index BAM outputs when samtools is available"),
+    output_format: str = typer.Option("bam", "--output-format", help="bam or sam"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Preflight only; write a plan JSON without running alignments"),
+    fail_fast: bool = typer.Option(False, "--fail-fast", help="Stop after the first failed chunk instead of continuing"),
+) -> None:
+    """
+    Prepare reusable alignment artifacts from a source manifest.
+
+    This is the first stage of the alignment-first execution track.
+    """
+    if outdir is None:
+        outdir = _auto_outdir("prepare-alignment-cache", detector or aligner, manifest.stem)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=outdir,
+        aligner=aligner,
+        ref_fa=ref_fa,
+        detector_hint=detector,
+        threads=threads,
+        parallel=parallel,
+        sentinel_cells=sentinel_cells,
+        chunk_size=chunk_size,
+        command_template=command_template,
+        extra_flags=extra_flags,
+        link_mode=link_mode,
+        index_bam=index_bam,
+        output_format=output_format,
+        dry_run=dry_run,
+        fail_fast=fail_fast,
+    )
+    if dry_run:
+        typer.echo(f"[prepare-alignment-cache] Wrote plan: {outdir/'alignment_prepare_plan.json'}")
+    else:
+        typer.echo(f"[prepare-alignment-cache] Wrote alignment manifest: {alignment_manifest}")
+
+
+@app.command("align-manifest")
+def align_manifest_cmd(
+    manifest: Path = typer.Option(..., exists=True, help="Input manifest TSV with FASTQ and/or BAM columns"),
+    outdir: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Output directory"),
+    aligner: str = typer.Option("reuse-existing", "--aligner"),
+    detector: Optional[str] = typer.Option(None, "--detector", "-d"),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa"),
+    threads: int = typer.Option(8, "--threads"),
+    parallel: int = typer.Option(4, "--parallel"),
+    sentinel_cells: int = typer.Option(0, "--sentinel-cells"),
+    chunk_size: int = typer.Option(25, "--chunk-size"),
+    command_template: Optional[str] = typer.Option(None, "--command-template"),
+    extra_flags: str = typer.Option("", "--extra-flags"),
+    output_format: str = typer.Option("bam", "--output-format"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+    fail_fast: bool = typer.Option(False, "--fail-fast"),
+) -> None:
+    """
+    Alias for prepare-alignment-cache focused on manifest generation.
+    """
+    if outdir is None:
+        outdir = _auto_outdir("align-manifest", detector or aligner, manifest.stem)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=outdir,
+        aligner=aligner,
+        ref_fa=ref_fa,
+        detector_hint=detector,
+        threads=threads,
+        parallel=parallel,
+        sentinel_cells=sentinel_cells,
+        chunk_size=chunk_size,
+        command_template=command_template,
+        extra_flags=extra_flags,
+        output_format=output_format,
+        dry_run=dry_run,
+        fail_fast=fail_fast,
+    )
+    if dry_run:
+        typer.echo(outdir / "alignment_prepare_plan.json")
+    else:
+        typer.echo(alignment_manifest)
+
+
+@app.command("plan-alignment-cache")
+def plan_alignment_cache_cmd(
+    manifest: Path = typer.Option(..., exists=True, help="Input manifest TSV with FASTQ and/or BAM columns"),
+    outdir: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Output directory"),
+    aligner: str = typer.Option("reuse-existing", "--aligner"),
+    detector: Optional[str] = typer.Option(None, "--detector", "-d"),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa"),
+    threads: int = typer.Option(8, "--threads"),
+    parallel: int = typer.Option(4, "--parallel"),
+    sentinel_cells: int = typer.Option(0, "--sentinel-cells"),
+    chunk_size: int = typer.Option(25, "--chunk-size"),
+    command_template: Optional[str] = typer.Option(None, "--command-template"),
+    extra_flags: str = typer.Option("", "--extra-flags"),
+    output_format: str = typer.Option("bam", "--output-format"),
+    preview_rows: int = typer.Option(3, "--preview-rows", help="Show exact first N commands in the plan"),
+) -> None:
+    """
+    Print and persist a preflight plan for alignment cache preparation.
+    """
+    if outdir is None:
+        outdir = _auto_outdir("plan-alignment-cache", detector or aligner, manifest.stem)
+    payload = plan_alignment_cache(
+        manifest=manifest,
+        outdir=outdir,
+        aligner=aligner,
+        ref_fa=ref_fa,
+        detector_hint=detector,
+        threads=threads,
+        parallel=parallel,
+        sentinel_cells=sentinel_cells,
+        chunk_size=chunk_size,
+        command_template=command_template,
+        extra_flags=extra_flags,
+        output_format=output_format,
+        preview_rows=preview_rows,
+    )
+    outdir.mkdir(parents=True, exist_ok=True)
+    plan_path = outdir / "alignment_prepare_plan.json"
+    plan_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    typer.echo(f"rows={payload['n_rows']} chunks={payload['chunk_count']} errors={len(payload['errors'])}")
+    typer.echo(plan_path)
+
+
+@app.command("run-detector-from-alignments")
+def run_detector_from_alignments_cmd(
+    detector: str = typer.Option(..., "--detector", "-d", help="Alignment-capable detector name"),
+    manifest: Path = typer.Option(..., exists=True, help="Alignment manifest TSV"),
+    outdir: Optional[Path] = typer.Option(None, "--outdir", "-o", help="Detector output directory"),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA"),
+    gtf: Optional[Path] = typer.Option(None, "--gtf", help="Annotation GTF/GFF"),
+    command_template: Optional[str] = typer.Option(
+        None,
+        "--command-template",
+        help="Optional detector command template override. Especially useful for ciri3.",
+    ),
+    threads: int = typer.Option(8, "--threads", help="Threads per detector process"),
+    parallel: int = typer.Option(4, "--parallel", help="Number of alignment rows to run in parallel"),
+    chunk_size: int = typer.Option(50, "--chunk-size", help="Chunk size for detector execution"),
+    sentinel_cells: int = typer.Option(0, "--sentinel-cells", help="Run the first N cells before the rest"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Preflight only; write a detector plan JSON"),
+    fail_fast: bool = typer.Option(False, "--fail-fast", help="Stop after the first failed chunk instead of continuing"),
+) -> None:
+    """
+    Run an alignment-capable detector over a reusable alignment manifest.
+    """
+    det_engine = _get_detector_engine(detector)
+    if detector == "ciri3" and command_template is not None and isinstance(det_engine, Ciri3Detector):
+        det_engine.command_template = command_template
+    caps = get_detector_capabilities(det_engine)
+    if not caps.accepts_alignment:
+        raise typer.BadParameter(
+            f"Detector '{detector}' does not accept alignment inputs. Use run-detector with FASTQ manifests instead."
+        )
+    if outdir is None:
+        outdir = _auto_outdir("run-detector-from-alignments", detector, manifest.stem)
+        console.print(f"[yellow]--outdir not provided; using[/yellow] {outdir}")
+
+    results = run_detector_alignment_manifest(
+        detector=det_engine,
+        manifest=manifest,
+        outdir=outdir,
+        ref_fa=ref_fa,
+        gtf=gtf,
+        threads=threads,
+        parallel=parallel,
+        chunk_size=chunk_size,
+        sentinel_cells=sentinel_cells,
+        dry_run=dry_run,
+        fail_fast=fail_fast,
+    )
+    if dry_run:
+        typer.echo(f"[run-detector-from-alignments] Wrote plan: {outdir/'detector_alignment_plan.json'}")
+    else:
+        typer.echo(f"[run-detector-from-alignments] Completed {len(results)} jobs into {outdir}")
+
+
+@app.command("validate-ciri3-template")
+def validate_ciri3_template_cmd(
+    template: Optional[str] = typer.Option(None, "--template", help="CIRI3 command template to validate"),
+) -> None:
+    """
+    Validate the configured CIRI3 command template before a large cluster run.
+    """
+    det = Ciri3Detector(command_template=template) if template else Ciri3Detector()
+    ok, errors, details = det.validate_runtime(template=template)
+    if ok:
+        typer.echo("OK")
+        typer.echo(str(details))
+        return
+    for err in errors:
+        typer.echo(f"ERROR: {err}", err=True)
+    typer.echo(str(details), err=True)
+    raise typer.Exit(code=1)
+
+
+@app.command("alignment-first-smoke")
+def alignment_first_smoke_cmd(
+    outdir: Path = typer.Option(Path("work/alignment_first_smoke"), "--outdir", "-o"),
+    ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA; defaults to repo ref/chr21.fa when present"),
+    r1: Optional[Path] = typer.Option(None, "--r1", help="Override paired-end smoke read1 FASTQ"),
+    r2: Optional[Path] = typer.Option(None, "--r2", help="Override paired-end smoke read2 FASTQ"),
+    threads: int = typer.Option(2, "--threads"),
+    parallel: int = typer.Option(1, "--parallel"),
+    chunk_size: int = typer.Option(1, "--chunk-size"),
+    dry_run: bool = typer.Option(False, "--dry-run"),
+) -> None:
+    """
+    Run a small local alignment-first smoke path using repo-shipped FASTQs plus a bundled CIRI3-compatible template.
+
+    This validates the workflow plumbing, not biological CIRI3 correctness.
+    """
+    repo_root = get_repo_root()
+    tools_dir = get_tools_dir()
+    if repo_root is None or tools_dir is None:
+        raise typer.BadParameter("Could not resolve repo-local smoke assets.")
+    default_r1 = tools_dir / "CIRI-full_v2.0" / "CIRI-full_test" / "test_1.fq.gz"
+    default_r2 = tools_dir / "CIRI-full_v2.0" / "CIRI-full_test" / "test_2.fq.gz"
+    default_ref = repo_root / "ref" / "chr21.fa"
+    smoke_template = tools_dir / "ciri3_smoke_template.sh"
+    r1 = r1 or default_r1
+    r2 = r2 or default_r2
+    ref_fa = ref_fa or default_ref
+    if not r1.exists() or not r2.exists():
+        raise typer.BadParameter(f"Smoke FASTQs not found: {r1} {r2}")
+    if not ref_fa.exists():
+        raise typer.BadParameter(f"Reference FASTA not found: {ref_fa}")
+    if not smoke_template.exists():
+        raise typer.BadParameter(f"Smoke template not found: {smoke_template}")
+
+    outdir.mkdir(parents=True, exist_ok=True)
+    manifest = outdir / "smoke_manifest.tsv"
+    manifest.write_text(
+        "cell_id\tplatform\tread1\tread2\tbam\tlibrary_id\tn_input_reads\tgroup_id\n"
+        f"smoke1\tsmartseq2\t{r1}\t{r2}\t\talignment-first-smoke\t0\tsmoke\n",
+        encoding="utf-8",
+    )
+    prepare_dir = outdir / "align"
+    detector_dir = outdir / "ciri3"
+    matrix_dir = outdir / "matrix"
+    template = (
+        f"bash {smoke_template} {{alignment}} {{raw_output}} {{cell_id}}"
+        " # {alignment_format} {threads} {outdir}"
+    )
+    if dry_run:
+        prepare_alignment_cache(
+            manifest=manifest,
+            outdir=prepare_dir,
+            aligner="bwa-mem",
+            ref_fa=ref_fa,
+            detector_hint="ciri3",
+            threads=threads,
+            parallel=parallel,
+            chunk_size=chunk_size,
+            dry_run=True,
+        )
+        det = Ciri3Detector(command_template=template)
+        run_detector_alignment_manifest(
+            detector=det,
+            manifest=prepare_dir / "alignment_manifest.tsv",
+            outdir=detector_dir,
+            ref_fa=ref_fa,
+            threads=threads,
+            parallel=parallel,
+            chunk_size=chunk_size,
+            dry_run=True,
+        )
+        typer.echo(f"[alignment-first-smoke] Wrote plans under {outdir}")
+        return
+
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=prepare_dir,
+        aligner="bwa-mem",
+        ref_fa=ref_fa,
+        detector_hint="ciri3",
+        threads=threads,
+        parallel=parallel,
+        chunk_size=chunk_size,
+        index_bam=True,
+    )
+    det = Ciri3Detector(command_template=template)
+    run_detector_alignment_manifest(
+        detector=det,
+        manifest=alignment_manifest,
+        outdir=detector_dir,
+        ref_fa=ref_fa,
+        threads=threads,
+        parallel=parallel,
+        chunk_size=chunk_size,
+    )
+    collect_matrix_cmd(
+        detector="ciri3",
+        indir=detector_dir,
+        outdir=matrix_dir,
+        matrix=None,
+        circ_index=None,
+        cell_index=None,
+        min_count_per_cell=1,
+    )
+    typer.echo(f"[alignment-first-smoke] Completed under {outdir}")
+
+
+@app.command("summarize-chunks")
+def summarize_chunks_cmd(
+    indir: Path = typer.Option(..., "--indir", exists=True, help="Alignment or detector output directory with chunks/"),
+    json_out: bool = typer.Option(False, "--json", help="Emit JSON"),
+) -> None:
+    """
+    Summarize per-chunk checkpoint files for cluster logs and resume inspection.
+    """
+    payload = summarize_alignment_chunks(indir)
+    if json_out:
+        typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+        return
+    typer.echo(f"chunks={payload['n_chunks']} status_counts={payload['status_counts']}")
+    if payload["failed_chunks"]:
+        typer.echo(f"failed_chunks={payload['failed_chunks']}")
+    if payload["failed_cells"]:
+        typer.echo(f"failed_cells={payload['failed_cells']}")
+    for chunk in payload["chunks"]:
+        typer.echo(
+            f"chunk={chunk['chunk_index']} status={chunk['status']} size={chunk['chunk_size']} "
+            f"elapsed={chunk['elapsed_seconds']}"
+        )
+
+
+@app.command("summarize-run-state")
+def summarize_run_state_cmd(
+    manifest: Path = typer.Option(..., "--manifest", exists=True, help="Source or alignment manifest"),
+    run_dir: Path = typer.Option(..., "--run-dir", exists=True, help="Prepare or detector run directory"),
+    mode: str = typer.Option(..., "--mode", help="prepare or detector"),
+    json_out: bool = typer.Option(False, "--json", help="Emit JSON"),
+) -> None:
+    """
+    Summarize a run against its manifest, including missing and stale cells.
+    """
+    payload = summarize_run_state(manifest=manifest, run_dir=run_dir, mode=mode)
+    if json_out:
+        typer.echo(json.dumps(payload, indent=2, sort_keys=True))
+        return
+    typer.echo(
+        f"planned={payload['planned_cells']} completed={payload['completed_cells']} "
+        f"failed={payload['failed_cells']} missing={payload['missing_cells']} stale={len(payload['stale_cells'])}"
+    )
+    if payload["failed_cell_ids"]:
+        typer.echo(f"failed_cells={payload['failed_cell_ids']}")
+    if payload["missing_cell_ids"]:
+        typer.echo(f"missing_cells={payload['missing_cell_ids']}")
+    if payload["stale_cells"]:
+        typer.echo(f"stale_cells={payload['stale_cells']}")
+
+
+@app.command("export-run-subset")
+def export_run_subset_cmd(
+    manifest: Path = typer.Option(..., "--manifest", exists=True, help="Source or alignment manifest to filter"),
+    run_dir: Path = typer.Option(..., "--run-dir", exists=True, help="Prepare or detector run directory"),
+    out: Path = typer.Option(..., "--out", help="Output subset manifest"),
+    subset: str = typer.Option("failed", "--subset", help="failed, missing, stale, incomplete, all-failed-chunks"),
+    chunk_index: Optional[int] = typer.Option(None, "--chunk-index", help="Export one specific chunk as a manifest"),
+) -> None:
+    """
+    Export failed, missing, stale, incomplete, or chunk-specific rows as a new manifest for reruns.
+    """
+    out_path = export_manifest_subset(
+        manifest=manifest,
+        run_dir=run_dir,
+        out_path=out,
+        subset=subset,
+        chunk_index=chunk_index,
+    )
+    typer.echo(out_path)
+
+
 @app.command("run-multidetector")
 def run_multidetector_cmd(
     detectors: List[str] = typer.Argument(..., help="List of detectors to run"),
@@ -720,7 +1140,7 @@ def collect_matrix_cmd(
         ...,
         "--detector",
         "-d",
-        help="Detector name (ciri-full, find-circ3, circexplorer2)",
+        help="Detector name (ciri-full, ciri2, ciri3, find-circ3, circexplorer2)",
     ),
     indir: Path = typer.Option(..., "--indir", exists=True, help="Directory with per-cell outputs"),
     outdir: Optional[Path] = typer.Option(
@@ -748,7 +1168,7 @@ def collect_matrix_cmd(
     _require_paths(matrix, circ_index, cell_index, names=["--matrix", "--circ-index", "--cell-index"])
     assert matrix and circ_index and cell_index
 
-    if detector == "ciri-full":
+    if detector in {"ciri-full", "ciri2", "ciri3"}:
         collect_matrix(
             cirifull_dir=str(indir),
             matrix_path=str(matrix),
@@ -785,7 +1205,7 @@ def collect_matrix_cmd(
     else:
         raise typer.Exit(
             f"Unknown detector '{detector}' for collect-matrix. "
-            "Supported: ciri-full, find-circ3, circexplorer2."
+            "Supported: ciri-full, ciri2, ciri3, find-circ3, circexplorer2."
         )
 
     console.print(f"[bold cyan][collect-matrix][/bold cyan] Wrote: {matrix} {circ_index} {cell_index}")

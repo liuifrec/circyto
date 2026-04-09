@@ -13,7 +13,7 @@ from pathlib import Path
 from shutil import which
 from typing import Optional
 
-from .base import DetectorRunInputs, DetectorResult
+from .base import DetectorCapabilities, DetectorRunInputs, DetectorResult
 from .circexplorer2_adapter import run_circexplorer2
 
 
@@ -46,6 +46,15 @@ class CircExplorer2Detector:
     name: str = "circexplorer2"
     input_type: str = "fastq"
     supports_paired_end: bool = True
+    capabilities: DetectorCapabilities = DetectorCapabilities(
+        accepts_fastq=True,
+        accepts_alignment=False,
+        prefers_paired=True,
+        supports_single_end=False,
+        supports_multisample_alignment=False,
+        max_parallel=1,
+        recommended_execution_mode="per-cell-fastq",
+    )
 
     # ------------------------------------------------------------------ #
     # Protocol methods                                                   #

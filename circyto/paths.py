@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 from dataclasses import dataclass
 from functools import lru_cache
 from pathlib import Path
@@ -17,6 +18,30 @@ class PathResolution:
     @property
     def found(self) -> bool:
         return self.resolved_path is not None
+
+
+@dataclass(frozen=True)
+class Ciri3Resolution:
+    home: PathResolution
+    jar: PathResolution
+    bin: PathResolution
+    java: PathResolution
+
+    @property
+    def has_home(self) -> bool:
+        return self.home.found
+
+    @property
+    def has_jar(self) -> bool:
+        return self.jar.found
+
+    @property
+    def has_bin(self) -> bool:
+        return self.bin.found
+
+    @property
+    def has_java(self) -> bool:
+        return self.java.found
 
 
 def _normalize_path(path: str | Path) -> Path:
@@ -129,6 +154,147 @@ def _resolve_from_candidates(
             )
 
     return PathResolution(label=label, resolved_path=None, checked_paths=_dedupe_paths(checked), source=None)
+
+
+def _which_resolution(
+    label: str,
+    *,
+    override: str | Path | None,
+    override_source: str | None,
+    names: Iterable[str],
+) -> PathResolution:
+    checked: list[Path] = []
+
+    if override is not None:
+        candidate = _normalize_path(override)
+        checked.append(candidate)
+        if candidate.exists():
+            return PathResolution(label=label, resolved_path=candidate, checked_paths=(candidate,), source=override_source)
+
+    for name in names:
+        found = shutil.which(name)
+        if not found:
+            continue
+        candidate = _normalize_path(found)
+        checked.append(candidate)
+        if candidate.exists():
+            return PathResolution(label=label, resolved_path=candidate, checked_paths=_dedupe_paths(checked), source=f"path:{name}")
+
+    return PathResolution(label=label, resolved_path=None, checked_paths=_dedupe_paths(checked), source=None)
+
+
+def _iter_configured_search_roots() -> tuple[Path, ...]:
+    roots: list[Path] = []
+
+    env_value = os.environ.get("CIRCYTO_CIRI3_SEARCH_ROOTS", "")
+    for raw in env_value.split(os.pathsep):
+        raw = raw.strip()
+        if raw:
+            roots.append(_normalize_path(raw))
+
+    tools_dir = get_tools_dir()
+    if tools_dir is not None:
+        roots.extend(
+            [
+                tools_dir / "CIRI3",
+                tools_dir / "ciri3",
+            ]
+        )
+
+    return _dedupe_paths(roots)
+
+
+def _parse_version_tuple(path: Path) -> tuple[int, ...]:
+    stem = path.stem
+    digits = "".join(ch if ch.isdigit() or ch == "." else " " for ch in stem).split()
+    if not digits:
+        return tuple()
+    parts = digits[-1].split(".")
+    values: list[int] = []
+    for part in parts:
+        try:
+            values.append(int(part))
+        except ValueError:
+            values.append(0)
+    return tuple(values)
+
+
+def find_java_executable(override: str | Path | None = None) -> PathResolution:
+    return _which_resolution(
+        "java",
+        override=override if override is not None else os.environ.get("CIRCYTO_CIRI3_JAVA"),
+        override_source="override" if override is not None else "env:CIRCYTO_CIRI3_JAVA",
+        names=("java",),
+    )
+
+
+def find_ciri3_home(override: str | Path | None = None) -> PathResolution:
+    candidates: list[tuple[Path, str]] = []
+    for root in _iter_configured_search_roots():
+        candidates.append((root, "configured-search-root"))
+
+    return _resolve_from_candidates(
+        "CIRI3 home",
+        override=override if override is not None else os.environ.get("CIRCYTO_CIRI3_HOME"),
+        override_source="override" if override is not None else "env:CIRCYTO_CIRI3_HOME",
+        candidates=candidates,
+    )
+
+
+def find_ciri3_jar(override: str | Path | None = None) -> PathResolution:
+    home = find_ciri3_home()
+    candidates: list[tuple[Path, str]] = []
+
+    if home.resolved_path is not None:
+        root = home.resolved_path
+        direct = sorted(root.glob("CIRI3*.jar"))
+        for match in sorted(direct, key=lambda path: (_parse_version_tuple(path), path.name), reverse=True):
+            candidates.append((match, "ciri3-home"))
+    for root in _iter_configured_search_roots():
+        direct = sorted(root.glob("CIRI3*.jar"))
+        for match in sorted(direct, key=lambda path: (_parse_version_tuple(path), path.name), reverse=True):
+            candidates.append((match, "configured-search-root"))
+
+    return _resolve_from_candidates(
+        "CIRI3 jar",
+        override=override if override is not None else os.environ.get("CIRCYTO_CIRI3_JAR"),
+        override_source="override" if override is not None else "env:CIRCYTO_CIRI3_JAR",
+        candidates=candidates,
+    )
+
+
+def find_ciri3_bin(override: str | Path | None = None) -> PathResolution:
+    home = find_ciri3_home()
+    candidates: list[tuple[Path, str]] = []
+    wrapper_names = ("CIRI3", "ciri3", "CIRI3.sh", "ciri3.sh", "CIRI3.pl", "ciri3.pl")
+
+    if home.resolved_path is not None:
+        for name in wrapper_names:
+            candidates.append((home.resolved_path / "bin" / name, "ciri3-home"))
+            candidates.append((home.resolved_path / "scripts" / name, "ciri3-home"))
+
+    return _resolve_from_candidates(
+        "CIRI3 wrapper",
+        override=override if override is not None else os.environ.get("CIRCYTO_CIRI3_BIN"),
+        override_source="override" if override is not None else "env:CIRCYTO_CIRI3_BIN",
+        candidates=[
+            *candidates,
+            *[
+                (_normalize_path(found), f"path:{name}")
+                for name in wrapper_names
+                for found in ([shutil.which(name)] if shutil.which(name) else [])
+            ],
+        ],
+    )
+
+
+def resolve_ciri3_installation() -> Ciri3Resolution:
+    return Ciri3Resolution(
+        home=find_ciri3_home(),
+        jar=find_ciri3_jar(),
+        bin=find_ciri3_bin(),
+        java=find_java_executable(),
+    )
 
 
 def find_ciri_full_jar(override: str | Path | None = None) -> PathResolution:

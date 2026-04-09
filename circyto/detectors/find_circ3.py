@@ -6,6 +6,7 @@ from typing import List
 
 from .base import (
     DetectorBase,
+    DetectorCapabilities,
     DetectorRunInputs,
     DetectorResult,
 )
@@ -21,6 +22,16 @@ class FindCirc3Detector(DetectorBase):
     name: str = "find-circ3"
     input_type: str = "short-read"
     supports_paired_end: bool = True
+    capabilities: DetectorCapabilities = DetectorCapabilities(
+        accepts_fastq=True,
+        accepts_alignment=False,
+        prefers_paired=True,
+        supports_single_end=False,
+        supports_multisample_alignment=False,
+        max_parallel=2,
+        recommended_execution_mode="per-cell-fastq",
+    )
+    max_parallel: int = 2
 
     def is_available(self) -> bool:
         """
@@ -67,6 +78,9 @@ class FindCirc3Detector(DetectorBase):
                 tsv_path=out_bed,
             )
         ]
+
+    def run_from_fastq(self, inputs: DetectorRunInputs) -> List[DetectorResult]:
+        return self.run(inputs)
 
     def run_manifest(self, inputs: DetectorRunInputs) -> List[DetectorResult]:
         """

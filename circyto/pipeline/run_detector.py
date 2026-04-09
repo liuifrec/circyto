@@ -8,6 +8,7 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 from circyto.detectors import DetectorBase, DetectorRunInputs, DetectorResult
+from circyto.detectors.base import get_detector_capabilities
 from circyto.paths import resolve_manifest_path
 
 def ensure_dir(path: Path) -> None:
@@ -39,6 +40,28 @@ def _detector_output_has_calls(path: Path, detector_name: str) -> bool:
 
     data_lines = [line for line in text if line.strip() and not line.startswith("#")]
     return len(data_lines) > 0
+
+
+def _count_output_rows(path: Path, detector_name: str) -> int | None:
+    if not path.exists() or path.stat().st_size == 0:
+        return 0
+
+    text = path.read_text(encoding="utf-8", errors="replace").splitlines()
+    if detector_name in {"ciri-full", "ciri2", "ciri3"}:
+        return len([line for line in text[1:] if line.strip()])
+    return len([line for line in text if line.strip() and not line.startswith("#")])
+
+
+def _outcome_category(status: str, *, raw_rows: int | None, normalized_rows: int | None) -> str:
+    if status == "failed":
+        return "failed"
+    if status == "skipped_existing":
+        return "skipped-existing"
+    if normalized_rows and normalized_rows > 0:
+        return "success-non-empty"
+    if raw_rows is not None and raw_rows > 0 and (normalized_rows or 0) == 0:
+        return "success-normalized-empty"
+    return "success-empty"
 
 
 def _flatten_detector_result(result: Any) -> List[DetectorResult]:
@@ -86,10 +109,14 @@ def _build_provenance_stamp(
     return {
         "detector": detector.name,
         "detector_class": detector.__class__.__name__,
+        "detector_backend": detector.name,
         "cell_id": cell_id,
         "read1": _normalize_stamp_path(r1),
         "read2": _normalize_stamp_path(r2),
         "read_layout": read_layout,
+        "execution_mode": "per-cell-fastq",
+        "input_mode": "fastq",
+        "reused_alignment": False,
         "ref_fa": _normalize_stamp_path(ref_fa),
         "gtf": _normalize_stamp_path(gtf),
         "threads": threads,
@@ -112,6 +139,14 @@ def _write_provenance_stamp(output_path: Path, stamp: dict[str, Any]) -> None:
         json.dumps(stamp, indent=2, sort_keys=True) + "\n",
         encoding="utf-8",
     )
+
+
+def _provenance_matches(existing: dict[str, Any] | None, expected: dict[str, Any]) -> bool:
+    if existing is None:
+        return False
+    if existing == expected:
+        return True
+    return all(expected.get(key) == value for key, value in existing.items())
 
 
 def read_manifest(path: Path, *, validate_files: bool = True) -> List[Tuple[str, Path, Optional[Path]]]:
@@ -195,7 +230,7 @@ def run_detector_manifest(
     outdir.mkdir(parents=True, exist_ok=True)
 
     # NEW: limit effective parallelism based on detector capability
-    det_max_parallel = getattr(detector, "max_parallel", parallel)
+    det_max_parallel = get_detector_capabilities(detector).max_parallel
     effective_parallel = max(1, min(parallel, det_max_parallel, len(rows)))
     if effective_parallel < parallel:
         print(
@@ -227,9 +262,8 @@ def run_detector_manifest(
             extra={},
         )
         existing_stamp = _load_provenance_stamp(existing_path)
-        if (
-            _detector_output_has_calls(existing_path, detector.name)
-            and existing_stamp == expected_stamp
+        if _detector_output_has_calls(existing_path, detector.name) and _provenance_matches(
+            existing_stamp, expected_stamp
         ):
             result = DetectorResult(
                 detector=detector.name,
@@ -244,6 +278,10 @@ def run_detector_manifest(
                 "status": "skipped_existing",
                 "seconds": 0.0,
                 "tsv_path": str(existing_path),
+                "execution_mode": "per-cell-fastq",
+                "input_mode": "fastq",
+                "reused_alignment": False,
+                "detector_backend": detector.name,
             }
 
         cell_started = time.perf_counter()
@@ -264,14 +302,26 @@ def run_detector_manifest(
 
         elapsed = round(time.perf_counter() - cell_started, 3)
         primary_path = flat_results[0].tsv_path
-        status = "success" if _detector_output_has_calls(primary_path, detector.name) else "empty"
+        normalized_rows = _count_output_rows(primary_path, detector.name)
+        raw_output_path = flat_results[0].meta.get("raw_output_path") if flat_results[0].meta else None
+        raw_rows = _count_output_rows(Path(raw_output_path), detector.name) if raw_output_path else None
+        status = "success" if (normalized_rows or 0) > 0 else "empty"
         return flat_results, {
             "cell_id": cell_id,
             "read_layout": read_layout,
             "status": status,
+            "outcome_category": _outcome_category(status, raw_rows=raw_rows, normalized_rows=normalized_rows),
             "seconds": elapsed,
             "tsv_path": str(primary_path),
             "log_path": str(flat_results[0].log_path) if flat_results[0].log_path else None,
+            "execution_mode": "per-cell-fastq",
+            "input_mode": "fastq",
+            "reused_alignment": False,
+            "detector_backend": detector.name,
+            "reference_used": str(ref_fa) if ref_fa else None,
+            "raw_output_path": raw_output_path,
+            "raw_row_count": raw_rows,
+            "normalized_row_count": normalized_rows,
         }
 
     results: list[DetectorResult] = []
@@ -308,8 +358,17 @@ def run_detector_manifest(
                         "cell_id": cell_id,
                         "read_layout": read_layout,
                         "status": "failed",
+                        "outcome_category": "failed",
                         "seconds": None,
                         "error": str(exc),
+                        "execution_mode": "per-cell-fastq",
+                        "input_mode": "fastq",
+                        "reused_alignment": False,
+                        "detector_backend": detector.name,
+                        "reference_used": str(ref_fa) if ref_fa else None,
+                        "raw_output_path": None,
+                        "raw_row_count": None,
+                        "normalized_row_count": None,
                     }
                 )
 
@@ -329,6 +388,8 @@ def run_detector_manifest(
         "n_manifest_rows": len(rows),
         "status_counts": status_counts,
         "elapsed_seconds": round(time.perf_counter() - started_at, 3),
+        "execution_mode": "per-cell-fastq",
+        "input_mode": "fastq",
         "cells": per_cell_records,
     }
     if failures:

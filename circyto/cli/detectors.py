@@ -6,7 +6,8 @@ from typing import Dict, Any
 
 import typer
 
-from circyto.cli.doctor_meta import DETECTOR_SPECS, resolve_asset
+from circyto.cli.doctor_meta import DETECTOR_SPECS, detector_runtime_status, resolve_asset
+from circyto.detectors import build_default_engines, get_detector_capabilities
 
 detectors_app = typer.Typer(
     help="List available detectors and their dependency requirements.",
@@ -23,14 +24,7 @@ def _have_asset(asset: str) -> bool:
 
 
 def _status_for(spec) -> str:
-    missing_cmds = [c for c in spec.required_cmds if not _have_cmd(c)]
-    missing_assets = [a for a in spec.required_assets if not _have_asset(a)]
-
-    if not missing_cmds and not missing_assets:
-        return "READY"
-    if missing_cmds:
-        return "NOT READY"
-    return "PARTIAL"
+    return detector_runtime_status(spec.name)["status"]
 
 
 @detectors_app.callback()
@@ -42,9 +36,13 @@ def detectors(
     Print detectors and dependency readiness.
     """
     rows = []
+    engines = build_default_engines()
     for spec in DETECTOR_SPECS:
         status = _status_for(spec)
+        runtime = detector_runtime_status(spec.name)
         needs = spec.required_cmds + spec.required_assets
+        engine = engines.get(spec.name)
+        caps = get_detector_capabilities(engine) if engine is not None else None
         asset_details = {}
         for asset in spec.required_assets:
             resolution = resolve_asset(asset)
@@ -58,9 +56,21 @@ def detectors(
             {
                 "name": spec.name,
                 "status": status,
+                "reason": runtime["reason"],
                 "type": spec.det_type,
                 "needs": needs,
                 "assets": asset_details,
+                "runtime": runtime["details"],
+                "capabilities": {
+                    "accepts_fastq": caps.accepts_fastq if caps else None,
+                    "accepts_alignment": caps.accepts_alignment if caps else None,
+                    "supports_multisample_alignment": caps.supports_multisample_alignment if caps else None,
+                    "requires_unsorted_sam": caps.requires_unsorted_sam if caps else None,
+                    "supports_star": caps.supports_star if caps else None,
+                    "supports_bwa": caps.supports_bwa if caps else None,
+                    "recommended_execution_mode": caps.recommended_execution_mode if caps else None,
+                    "max_parallel": caps.max_parallel if caps else None,
+                },
                 "hints": spec.hint_lines,
             }
         )
@@ -70,10 +80,32 @@ def detectors(
         raise typer.Exit(code=0)
 
     # Pretty table (simple, no extra deps)
-    typer.echo("NAME         STATUS     TYPE   NEEDS")
+    typer.echo("NAME         STATUS     TYPE   MODE                NEEDS")
     for r in rows:
         needs_str = ", ".join(r["needs"]) if r["needs"] else "-"
-        typer.echo(f"{r['name']:<12} {r['status']:<10} {r['type']:<5} {needs_str}")
+        mode = r["capabilities"]["recommended_execution_mode"] or "-"
+        typer.echo(f"{r['name']:<12} {r['status']:<10} {r['type']:<5} {mode:<19} {needs_str}")
+        typer.echo(f"  reason: {r['reason']}")
+        caps = r["capabilities"]
+        typer.echo(
+            "  caps: "
+            f"fastq={caps['accepts_fastq']} alignment={caps['accepts_alignment']} "
+            f"multisample={caps['supports_multisample_alignment']} "
+            f"unsorted_sam={caps['requires_unsorted_sam']} "
+            f"bwa={caps['supports_bwa']} star={caps['supports_star']} "
+            f"max_parallel={caps['max_parallel']}"
+        )
+        runtime = r["runtime"]
+        if r["name"] == "ciri3":
+            if runtime.get("jar"):
+                typer.echo(f"  jar: {runtime['jar']}")
+            if runtime.get("bin"):
+                typer.echo(f"  wrapper: {runtime['bin']}")
+            if runtime.get("java"):
+                typer.echo(f"  java: {runtime['java']}")
+            typer.echo(f"  execution: {runtime.get('preferred_mode') or 'unconfigured'}")
+            for err in runtime.get("template_errors", []):
+                typer.echo(f"  template: {err}")
         for asset, details in r["assets"].items():
             if details["path"]:
                 typer.echo(f"  asset: {asset} -> {details['path']}")
@@ -81,6 +113,14 @@ def detectors(
                 typer.echo(f"  asset: {asset} -> missing")
                 for checked in details["checked_paths"]:
                     typer.echo(f"    checked: {checked}")
+        if r["name"] == "ciri3":
+            for key in ("home", "jar", "bin", "java"):
+                checked = runtime.get("checked_paths", {}).get(key, [])
+                if not checked:
+                    continue
+                typer.echo(f"  checked {key}:")
+                for path in checked:
+                    typer.echo(f"    {path}")
 
     if hints:
         typer.echo("\nHints:")

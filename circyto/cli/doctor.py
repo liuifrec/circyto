@@ -3,7 +3,7 @@ from __future__ import annotations
 import sys
 import shutil
 from typing import List
-from circyto.cli.doctor_meta import DETECTOR_SPECS, resolve_asset
+from circyto.cli.doctor_meta import DETECTOR_SPECS, detector_runtime_status, resolve_asset
 
 import typer
 
@@ -80,22 +80,45 @@ def doctor():
         for checked in ciri_full_jar.checked_paths:
             typer.echo(f"       checked: {checked}")
 
+    ciri3 = detector_runtime_status("ciri3")
+    ciri3_details = ciri3["details"]
+    ciri3_status = ciri3["status"]
+    ciri3_name = "CIRI3"
+    if ciri3_status == "READY":
+        mode = ciri3_details.get("preferred_mode") or "unknown"
+        if mode == "direct-jar":
+            _print("OK", ciri3_name, f"ready via direct jar: {ciri3_details.get('jar')}")
+            if ciri3_details.get("java"):
+                typer.echo(f"       java: {ciri3_details['java']}")
+        else:
+            _print("OK", ciri3_name, "ready via configured template")
+            if ciri3_details.get("bin"):
+                typer.echo(f"       wrapper: {ciri3_details['bin']}")
+    elif ciri3_status == "PARTIAL":
+        _print("WARN", ciri3_name, ciri3["reason"])
+        if ciri3_details.get("jar"):
+            typer.echo(f"       jar: {ciri3_details['jar']}")
+        if ciri3_details.get("bin"):
+            typer.echo(f"       wrapper: {ciri3_details['bin']}")
+        if ciri3_details.get("java"):
+            typer.echo(f"       java: {ciri3_details['java']}")
+        for key in ("jar", "bin", "java"):
+            for checked in ciri3_details.get("checked_paths", {}).get(key, []):
+                typer.echo(f"       checked {key}: {checked}")
+        for err in ciri3_details.get("template_errors", []):
+            typer.echo(f"       template: {err}")
+    else:
+        _print("WARN", ciri3_name, ciri3["reason"])
+        for key in ("home", "jar", "bin", "java"):
+            for checked in ciri3_details.get("checked_paths", {}).get(key, []):
+                typer.echo(f"       checked {key}: {checked}")
+
     # ---- Summary ------------------------------------------------------------
     typer.echo("\nDetector readiness:")
     for spec in DETECTOR_SPECS:
-        missing_cmds = [c for c in spec.required_cmds if not found_cmds.get(c, False)]
-        missing_assets = [a for a in spec.required_assets if not found_assets.get(a, False)]
-
-        if not missing_cmds and not missing_assets:
-            status = "READY"
-            msg = ""
-        elif missing_cmds:
-            status = "NOT READY"
-            msg = f"(missing: {', '.join(missing_cmds)})"
-        else:
-            status = "PARTIAL"
-            msg = f"(missing: {', '.join(missing_assets)})"
-
+        runtime = detector_runtime_status(spec.name)
+        status = runtime["status"]
+        msg = runtime["reason"]
         typer.echo(f"  {spec.name:<10}: {status}" + (f" {msg}" if msg else ""))
 
 
