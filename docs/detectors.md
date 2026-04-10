@@ -136,18 +136,22 @@ Notes:
 **Best for**
 - alignment-first workflows on large demultiplexed datasets
 - detector runs where BAM/SAM reuse is more important than repeated FASTQ alignment
-- future multisample-alignment backends
+- multisample-alignment backends with reusable cached alignments
 
 **External requirements**
-- a local CIRI3 executable on `PATH` or `CIRCYTO_CIRI3_BIN`
-- a local execution contract provided via `CIRCYTO_CIRI3_CMD_TEMPLATE` or the detector instance configuration
+- `java` (mandatory)
+- a local CIRI3 jar under `tools/CIRI3/` or configured via `CIRCYTO_CIRI3_HOME` / `CIRCYTO_CIRI3_JAR`
+- `samtools`
+- `bwa` for BWA mode
+- `STAR` only for STAR mode
 
 **Typical run**
 ```bash
 circyto prepare-alignment-cache \
   --manifest manifest.tsv \
-  --aligner reuse-existing \
+  --aligner bwa-mem \
   --detector ciri3 \
+  --ref-fa ref/genome.fa \
   --outdir work/alignment_cache
 
 circyto run-detector-from-alignments \
@@ -158,10 +162,25 @@ circyto run-detector-from-alignments \
 ```
 
 Notes:
-- `ciri3` is the first detector registered as alignment-native in circyto.
-- circyto still does not claim a universal default CIRI3 CLI contract. If a binary is present but no command template is configured, circyto reports readiness metadata but refuses to invent a command line.
-- The template path is now validated up front, previewed in plan mode, and surfaced in run summaries for cluster debugging.
+- `ciri3` is an alignment-first detector with a real backend.
+- Direct execution is `java -jar` based and is reported as `READY` when circyto finds both a usable CIRI3 jar and Java.
+- `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
+- `PARTIAL` means local CIRI3 assets were found but the runtime contract is incomplete.
+- Supported runtime environment variables include `CIRCYTO_CIRI3_HOME`, `CIRCYTO_CIRI3_JAR`, `CIRCYTO_CIRI3_JAVA`, and `CIRCYTO_CIRI3_EXTRA_ARGS`.
+- `CIRCYTO_CIRI3_CMD_TEMPLATE` and `--command-template` remain available for explicit template execution.
+- BWA mode requires unsorted SAM input, is alignment-sensitive, and is the validated local production path.
+- Validated local BWA settings are `-S 0`, `-Ma 0`, and `bwa mem -k 15 -T 15`.
+- STAR mode is supported in code for alignment-first workflows, also alignment-sensitive, and uses `-Ma 1`.
+- STAR mode is not yet fully validated end-to-end in this release.
 - The backend normalizes tabular CIRI3 output to the stable circyto TSV schema.
+
+Verification example:
+
+```bash
+export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
+circyto doctor
+circyto detectors
+```
 
 ---
 

@@ -19,7 +19,7 @@ DETECTORS = {
 }
 
 doctor_app = typer.Typer(
-    help="Diagnose circyto environment and external dependencies.",
+    help="Diagnose circyto environment and external dependencies, including CIRI3 runtime requirements.",
     invoke_without_command=True,
 )
 

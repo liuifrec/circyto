@@ -46,3 +46,21 @@ markers = [
   "slow: slow tests that may take longer to run",
   "integration: integration tests that require external tools (bowtie2, find-circ3, etc.)"
 ]
+
+# External runtime requirements (not managed by pip).
+# These are system or third-party tool dependencies and must be installed
+# separately via conda, apt, brew, or another system package manager.
+[tool.circyto.external]
+ciri3 = [
+  "java",
+  "CIRI3 jar (tools/CIRI3 or CIRCYTO_CIRI3_HOME)",
+  "bwa (for BWA mode)",
+  "STAR (for STAR mode)",
+  "samtools"
+]
+
+alignment = [
+  "bwa",
+  "STAR",
+  "samtools"
+]

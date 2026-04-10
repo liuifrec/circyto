@@ -12,6 +12,12 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Clarify public documentation for the current **v0.8.x** release line instead of older prototype/planning framing.
 - Document that `circyto doctor` and `circyto detectors` are live commands and that bundled asset resolution is intended to be cwd-independent.
 - Align README and workflow docs with the current CLI examples and flag names, including `--ref-fa`.
+- Document alignment-first execution and real CIRI3 integration with explicit environment and setup guidance.
+- Document CIRI3 readiness semantics for `circyto doctor` / `circyto detectors`, including direct `java -jar` readiness versus incomplete local contracts.
+- Document validated local BWA + CIRI3 execution and distinguish it from STAR support that is implemented in code but not yet fully validated end-to-end.
+- Document explicit CIRI3 external requirements: Java, a CIRI3 jar, `samtools`, and mode-specific `bwa` or `STAR`.
+- Document validated local BWA + CIRI3 settings for single-cell alignment-first runs: unsorted SAM, `-S 0`, `-Ma 0`, and `bwa mem -k 15 -T 15`.
+- Document STAR + CIRI3 as supported in code for alignment-first workflows, but not yet validated end-to-end in this release.
 
 ### Fixed
 
@@ -20,6 +26,13 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
   - single-end rows use a bundled **CIRI2-based fallback path**
   - both layouts normalize to the same TSV schema for downstream collection
 - Record the recent `ciri-full` runtime diagnostics improvements in user-facing release notes.
+- Fix CIRI3 alignment-first execution selection so an explicit `--command-template` takes precedence over direct `java -jar` mode.
+- Clarify that explicit template execution does not require `--ref-fa` unless the template itself uses `{ref_fa}`, while direct execution still requires `--ref-fa`.
+
+### Notes
+
+- BWA + CIRI3 has been validated locally on a chr21 pilot with non-zero output.
+- STAR + CIRI3 support is present in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
 
 ## [0.8.3] – 2025-12-17
 - Add `circyto doctor` to validate external dependencies and report detector readiness.

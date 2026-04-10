@@ -25,12 +25,13 @@ A single-cell circRNA detection CLI to orchestrate detectors, build circRNA×cel
 - `circyto doctor` and `circyto detectors` are live commands, not planned features.
 - Bundled detector asset resolution is intended to be **cwd-independent**.
 - Detector integrations are still heterogeneous; detector-specific limits are documented rather than hidden.
+- CIRI3 is a real alignment-first backend with direct `java -jar` support when its local runtime contract is available.
 
 ---
 
 ## What it is
 
-`circyto` provides a reproducible command-line interface over multiple circRNA detectors (currently **CIRI-full**, **CIRI2**, **find-circ3**, and an alignment-native **CIRI3** scaffold) and standardizes outputs for downstream single-cell analysis (Scanpy / Seurat / scVI).
+`circyto` provides a reproducible command-line interface over multiple circRNA detectors (currently **CIRI-full**, **CIRI2**, **find-circ3**, and an alignment-first **CIRI3** backend) and standardizes outputs for downstream single-cell analysis (Scanpy / Seurat / scVI).
 
 If you're new, your fastest path is:
 
@@ -50,6 +51,9 @@ You will need:
 - **Python 3.10+**
 - For `find-circ3` workflows: **bowtie2** and **samtools**
 - For `ciri-full` workflows: **bwa** and **Java (JRE)**
+- For `ciri3` workflows: **Java** plus a usable **CIRI3 jar**
+- For `ciri3` BWA alignment-first workflows: **bwa** and **samtools**
+- For `ciri3` STAR alignment-first workflows: **STAR** and **samtools**
 
 > Tip: if something fails with “command not found”, jump to `docs/getting_started.md#external-dependencies`.
 
@@ -85,6 +89,40 @@ You also need `bwa` and a Java runtime.
 
 See: `docs/detectors.md#ciri-full`.
 
+#### Option C: CIRI3
+
+CIRI3 requires:
+
+- `java` (mandatory)
+- a local CIRI3 jar, either vendored under `tools/CIRI3/` or configured explicitly
+- `bwa` for BWA-based alignment-first runs
+- `STAR` only for STAR-based runs
+- `samtools` for alignment handling and inspection
+
+Supported environment variables:
+
+- `CIRCYTO_CIRI3_HOME`
+- `CIRCYTO_CIRI3_JAR`
+- `CIRCYTO_CIRI3_JAVA`
+- `CIRCYTO_CIRI3_EXTRA_ARGS`
+- `CIRCYTO_CIRI3_CMD_TEMPLATE`
+
+Expected vendored layout:
+
+```text
+tools/
+  CIRI3/
+    CIRI3_Java_*.jar
+```
+
+Minimal setup example:
+
+```bash
+export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
+circyto doctor
+circyto detectors
+```
+
 ---
 ## Quick check (recommended)
 
@@ -97,6 +135,12 @@ circyto detectors
 
 - **circyto doctor** checks required external dependencies.
 - **circyto detectors** shows which detectors are ready to run.
+
+For CIRI3 specifically:
+
+- `READY` means circyto found a usable CIRI3 jar and `java`, so direct `java -jar` execution is available.
+- `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
+- `PARTIAL` means local CIRI3 assets were found but the runtime contract is incomplete.
 
 These commands should work regardless of your current working directory as long as the installed package can see the bundled assets you configured.
 
@@ -159,7 +203,46 @@ This preserves manifest compatibility and downstream collection, but **single-en
 
 For large demultiplexed datasets, circyto now includes an alignment-first execution track so alignments can be prepared once and reused across downstream detector runs.
 
-Example:
+### CIRI3 setup
+
+Expected repo-local layout:
+
+```text
+tools/
+  CIRI3/
+    CIRI3_Java_*.jar
+```
+
+Supported environment variables:
+
+- `CIRCYTO_CIRI3_HOME`
+- `CIRCYTO_CIRI3_JAR`
+- `CIRCYTO_CIRI3_JAVA`
+- `CIRCYTO_CIRI3_EXTRA_ARGS`
+- `CIRCYTO_CIRI3_CMD_TEMPLATE`
+
+Verify the runtime contract before a real alignment-first CIRI3 run:
+
+```bash
+export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
+circyto doctor
+circyto detectors
+```
+
+Mode-specific minimum tools:
+
+- BWA mode: `bwa`, `samtools`, `java`
+- STAR mode: `STAR`, `samtools`, `java`
+
+Readiness semantics:
+
+- `READY`: CIRI3 jar and Java were detected and direct `java -jar` execution is usable.
+- `NOT READY`: circyto could not find a usable CIRI3 jar or execution path.
+- `PARTIAL`: local CIRI3 assets were detected, but the direct or template execution contract is incomplete.
+
+Direct CIRI3 execution requires a detected CIRI3 jar plus Java. Java is mandatory for direct mode. `STAR` is not required unless STAR mode is used. Template execution remains available through `--command-template` or `CIRCYTO_CIRI3_CMD_TEMPLATE`; template mode does not require `--ref-fa` unless the template itself uses `{ref_fa}`.
+
+Validated local BWA + CIRI3 example:
 
 ```bash
 circyto plan-alignment-cache \
@@ -185,6 +268,42 @@ circyto run-detector-from-alignments \
   --ref-fa ref/genome.fa \
   --chunk-size 64
 ```
+
+Assumptions:
+
+- the `bwa` index matches `ref/genome.fa`
+- the alignment manifest rows resolve to unsorted SAM for direct CIRI3 execution
+- the same reference build is used for alignment preparation and detector execution
+
+Validated local settings:
+
+- aligner: `bwa mem -k 15 -T 15`
+- CIRI3: `-S 0 -Ma 0`
+
+STAR + CIRI3 example:
+
+```bash
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner star \
+  --ref-fa ref/genome.fa \
+  --detector ciri3 \
+  --outdir work/alignment_cache_star
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache_star/alignment_manifest.tsv \
+  --outdir work/ciri3_star_run \
+  --ref-fa ref/genome.fa
+```
+
+STAR assumptions:
+
+- a matching STAR genome index is available to the alignment step
+- STAR chimeric outputs are present in the alignment manifest
+- the same reference build is used throughout
+
+BWA + CIRI3 is the validated local production path. STAR + CIRI3 is supported in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
 
 Recover after a partial failure:
 
@@ -214,7 +333,7 @@ Validate the local plumbing with repo-shipped assets:
 circyto alignment-first-smoke --outdir work/alignment_first_smoke
 ```
 
-See `docs/alignment_first_execution.md` for cache keys, resume behavior, chunk recovery, and the validated-template CIRI3 contract.
+See `docs/alignment_first_execution.md` for cache keys, resume behavior, chunk recovery, and CIRI3 execution-mode details.
 
 ---
 

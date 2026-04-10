@@ -10,7 +10,7 @@ from circyto.cli.doctor_meta import DETECTOR_SPECS, detector_runtime_status, res
 from circyto.detectors import build_default_engines, get_detector_capabilities
 
 detectors_app = typer.Typer(
-    help="List available detectors and their dependency requirements.",
+    help="List available detectors, readiness status, and external runtime requirements.",
     invoke_without_command=True,
 )
 

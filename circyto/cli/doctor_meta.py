@@ -44,10 +44,12 @@ DETECTOR_SPECS: List[DetectorSpec] = [
         required_cmds=[],
         required_assets=[],
         hint_lines=[
-            "Set CIRCYTO_CIRI3_JAR or CIRCYTO_CIRI3_HOME to the local CIRI3 installation.",
+            "CIRI3 requires Java plus a local CIRI3 jar; set CIRCYTO_CIRI3_JAR or CIRCYTO_CIRI3_HOME.",
+            "Install samtools for alignment handling; install bwa for BWA mode or STAR for STAR mode.",
             "If direct java -jar execution is unsuitable locally, set CIRCYTO_CIRI3_CMD_TEMPLATE or CIRCYTO_CIRI3_BIN.",
             "Set CIRCYTO_CIRI3_JAVA if circyto should use a non-default java executable.",
             "Set CIRCYTO_CIRI3_EXTRA_ARGS for local tuning such as -S 0 during single-end validation.",
+            "STAR is only required for STAR-based CIRI3 workflows.",
         ],
     ),
 ]

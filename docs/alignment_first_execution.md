@@ -100,10 +100,73 @@ Useful controls:
 - `circyto export-run-subset --manifest ... --run-dir ... --subset failed|missing|stale|incomplete --out subset.tsv`: export rerun manifests
 - rerun the same command against the same `--outdir` to resume cached work; chunk history appends and detector summaries retain the whole-run cell set during subset retries
 
+## CIRI3 execution modes
+
+circyto supports two CIRI3 execution modes in the alignment-first path.
+
+### BWA mode (validated locally)
+
+- validated locally with BWA + CIRI3 on a chr21 pilot
+- uses unsorted SAM input
+- CIRI3 mapper mode: `-Ma 0`
+- recommended single-cell stringency: `-S 0`
+- recommended local BWA parameters: `bwa mem -k 15 -T 15`
+
+Minimal example:
+
+```bash
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner bwa-mem \
+  --ref-fa ref/genome.fa \
+  --detector ciri3 \
+  --outdir work/alignment_cache
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --outdir work/ciri3_run \
+  --ref-fa ref/genome.fa
+```
+
+Assumptions:
+
+- the BWA index matches `ref/genome.fa`
+- the same reference build is used for alignment preparation and detector execution
+- the manifest rows resolve to unsorted SAM for direct CIRI3 execution
+- `samtools` is available for alignment handling and inspection
+
+### STAR mode (supported in code)
+
+- implemented in code for alignment-first workflows
+- requires STAR alignment and a matching STAR index
+- uses CIRI3 mapper mode: `-Ma 1`
+- requires STAR chimeric outputs in the alignment manifest
+- may optionally include a paired BWA SAM when using the STAR hybrid input path
+- requires `samtools` for alignment handling and inspection
+
+Minimal example:
+
+```bash
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner star \
+  --ref-fa ref/genome.fa \
+  --detector ciri3 \
+  --outdir work/alignment_cache_star
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache_star/alignment_manifest.tsv \
+  --outdir work/ciri3_star_run \
+  --ref-fa ref/genome.fa
+```
+
+Note: STAR mode is implemented but not yet validated end-to-end in this release.
+
 ## CIRI3 template validation
 
-The current CIRI3 backend is operational through a validated command template.
-circyto still does **not** assume a universal default upstream CIRI3 CLI contract.
+Template execution remains available when you need to pin an explicit local command contract.
 
 Preflight before a large run:
 
@@ -129,6 +192,8 @@ Optional placeholders:
 - `read_layout`
 - `group_id`
 - `log_path`
+
+Template mode does not require `ref_fa` unless your template explicitly uses `{ref_fa}`. Direct `java -jar` mode still requires `--ref-fa`.
 
 Plan mode now records exact first-command previews for both alignment preparation and CIRI3 detector execution when a template is configured.
 
@@ -186,7 +251,7 @@ circyto prepare-alignment-cache \
 circyto manifest validate-alignment work/prjna607968_align/alignment_manifest.tsv --strict
 ```
 
-4. Validate the CIRI3 template once:
+4. Validate the CIRI3 template once if you intend to use explicit template execution:
 
 ```bash
 circyto validate-ciri3-template \
@@ -206,6 +271,8 @@ circyto run-detector-from-alignments \
   --chunk-size 64 \
   --parallel 8
 ```
+
+For direct local execution instead of template mode, ensure Java and a CIRI3 jar are detected by `circyto doctor`, and keep `--ref-fa` consistent with the reference used during alignment preparation.
 
 6. Collect the matrix:
 

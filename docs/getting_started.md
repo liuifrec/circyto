@@ -15,6 +15,7 @@ Before you start:
 - You installed **at least one detector**:
   - `find-circ3` (recommended for a first run), or
   - `ciri-full` / `ciri2` (requires Java + bwa + the bundled CIRI-full assets)
+  - `ciri3` (requires Java + a CIRI3 jar, with BWA or STAR depending on alignment mode)
 
 If your first run fails with `command not found`, skip ahead to **External dependencies**.
 
@@ -51,7 +52,9 @@ Circyto orchestrates detectors, but many detectors rely on standard bioinformati
 
 - `bowtie2` and `samtools` (required for find-circ3 workflows)
 - `bwa` and `java` (required for CIRI-full workflows)
-- `STAR` (optional; relevant only for future STAR-based detectors)
+- `java` and `samtools` (required for CIRI3 workflows)
+- `bwa` (required for CIRI3 BWA mode)
+- `STAR` (required only for CIRI3 STAR mode)
 
 Use the built-in diagnostics first:
 
@@ -65,6 +68,47 @@ If you need a manual spot check:
 ```bash
 command -v bowtie2 samtools bwa java
 ```
+
+### CIRI3 environment requirements
+
+CIRI3 requires all of the following:
+
+- Java: mandatory
+- a CIRI3 jar: either vendored under `tools/CIRI3/` or configured via environment variables
+- `samtools`: required for alignment handling and inspection
+- `bwa`: required for BWA alignment-first workflows
+- `STAR`: required only for STAR-based workflows
+
+Supported environment variables:
+
+- `CIRCYTO_CIRI3_HOME`
+- `CIRCYTO_CIRI3_JAR`
+- `CIRCYTO_CIRI3_JAVA`
+- `CIRCYTO_CIRI3_EXTRA_ARGS`
+
+`CIRCYTO_CIRI3_CMD_TEMPLATE` is also supported when you want explicit template execution instead of the direct `java -jar` path.
+
+Expected vendored layout:
+
+```text
+tools/
+  CIRI3/
+    CIRI3_Java_*.jar
+```
+
+Minimal verification:
+
+```bash
+export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
+circyto doctor
+circyto detectors
+```
+
+Readiness semantics:
+
+- `READY`: circyto found a usable CIRI3 jar and Java, so the direct `java -jar` contract is available.
+- `NOT READY`: circyto could not find a usable CIRI3 jar or execution path.
+- `PARTIAL`: local CIRI3 assets were detected but the execution contract is incomplete.
 
 ---
 
@@ -180,3 +224,55 @@ circyto merge-detectors --help
 circyto compare-detectors --help
 circyto collect-multidetector --help
 ```
+
+---
+
+## CIRI3 setup
+
+Use the alignment-first entrypoints for CIRI3:
+
+Expected layout:
+
+```text
+tools/
+  CIRI3/
+    CIRI3_Java_*.jar
+```
+
+Verify the runtime first:
+
+```bash
+export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
+circyto doctor
+circyto detectors
+```
+
+```bash
+circyto prepare-alignment-cache \
+  --manifest manifest.tsv \
+  --aligner bwa-mem \
+  --ref-fa ref/genome.fa \
+  --detector ciri3 \
+  --outdir work/alignment_cache
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --outdir work/ciri3_run \
+  --ref-fa ref/genome.fa
+```
+
+Minimal required tools by mode:
+
+- BWA mode: `bwa`, `samtools`, `java`
+- STAR mode: `STAR`, `samtools`, `java`
+
+Validated local BWA mode:
+
+- alignment input: unsorted SAM
+- `bwa mem` parameters: `-k 15 -T 15`
+- CIRI3 flags: `-S 0 -Ma 0`
+
+STAR mode is supported in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
+
+Reference consistency matters: the alignment cache, the alignment manifest, and the `--ref-fa` used for direct CIRI3 execution must all match the same reference build.

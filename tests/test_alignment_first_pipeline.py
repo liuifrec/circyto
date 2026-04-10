@@ -357,6 +357,59 @@ def test_ciri3_runs_from_alignment_with_direct_jar_contract(tmp_path: Path, monk
     assert any(isinstance(cmd, list) and "-S" in cmd and "-Ma" in cmd for cmd in seen_cmds)
 
 
+def test_ciri3_explicit_command_template_overrides_direct_jar(tmp_path: Path, monkeypatch) -> None:
+    bam = tmp_path / "cell1.bam"
+    bam.write_text("bam", encoding="utf-8")
+    ciri3_home = tmp_path / "CIRI3"
+    ciri3_home.mkdir()
+    jar = ciri3_home / "CIRI3_Java_18.0.1.jar"
+    jar.write_text("jar", encoding="utf-8")
+    java = tmp_path / "java"
+    java.write_text("java", encoding="utf-8")
+
+    monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
+    monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
+
+    seen = []
+
+    def fake_run(cmd, **kwargs):
+        seen.append((cmd, kwargs))
+        out = tmp_path / "out" / "cell1.ciri3_run" / "ciri3_raw.tsv"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            "circRNA_ID\tchr\tstart\tend\tstrand\tbsj_reads\n"
+            "circA\tchr1\t11\t22\t+\t7\n",
+            encoding="utf-8",
+        )
+
+        class _Result:
+            returncode = 0
+
+        return _Result()
+
+    monkeypatch.setattr("circyto.detectors.ciri3.subprocess.run", fake_run)
+
+    detector = Ciri3Detector(
+        command_template="bash -lc 'printf \"ignored\" >/dev/null' # {alignment} {raw_output} {cell_id}"
+    )
+    result = detector.run_from_alignment(
+        DetectorRunInputs(
+            cell_id="cell1",
+            bam=bam,
+            outdir=tmp_path / "out",
+            threads=2,
+            input_mode="alignment",
+            read_layout="paired-end",
+        )
+    )
+
+    assert result.meta["execution_mode"] == "template"
+    assert seen
+    cmd, kwargs = seen[0]
+    assert isinstance(cmd, str)
+    assert kwargs["shell"] is True
+
+
 def test_cli_help_lists_alignment_first_commands() -> None:
     runner = CliRunner()
     result = runner.invoke(app, ["--help"])

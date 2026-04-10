@@ -318,12 +318,12 @@ def _build_direct_ciri3_command(
 @dataclass
 class Ciri3Detector(DetectorBase):
     """
-    Alignment-native CIRI3 scaffold.
+    Alignment-native CIRI3 backend.
 
     This backend is intentionally strict about its execution contract:
     - it consumes BAM/SAM via DetectorRunInputs.input_mode="alignment"
-    - it can probe availability directly from PATH / CIRCYTO_CIRI3_BIN
-    - it runs via CIRCYTO_CIRI3_CMD_TEMPLATE or the instance command_template
+    - it can execute directly via java -jar when the local runtime contract is ready
+    - it can also run through CIRCYTO_CIRI3_CMD_TEMPLATE or the instance command_template
 
     Template placeholders:
       {alignment}, {alignment_format}, {cell_id}, {threads}, {ref_fa}, {gtf},
@@ -461,7 +461,30 @@ class Ciri3Detector(DetectorBase):
         cli_args = _resolve_ciri3_cli_args(extra_args=self.resolve_extra_args(), mapper_mode=mapper_mode)
         stringency = _option_value(cli_args, "-S", "--stringency")
         with log_path.open("w", encoding="utf-8") as log_handle:
-            if details["direct_ready"]:
+            if self.command_template is not None:
+                prep_meta = {
+                    "input_file_type": "template",
+                    "input_sortedness": str(row_meta.get("sortedness", "")).strip() or "unknown",
+                    "mapper_mode": mapper_mode,
+                }
+                assert runtime_template is not None
+                try:
+                    cmd = runtime_template.format(**context)
+                except KeyError as exc:
+                    raise RuntimeError(f"CIRI3 template references unsupported placeholder: {exc}") from exc
+                log_handle.write(f"$ {cmd}\n")
+                log_handle.flush()
+                result = subprocess.run(
+                    cmd,
+                    shell=True,
+                    executable="/bin/bash",
+                    stdout=log_handle,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                )
+                command_string = cmd
+                execution_mode = "template"
+            elif details["direct_ready"]:
                 resolution = resolve_ciri3_installation()
                 if inputs.ref_fa is None:
                     raise RuntimeError("CIRI3 direct execution requires ref_fa.")
@@ -496,27 +519,9 @@ class Ciri3Detector(DetectorBase):
                 )
                 command_string = _shell_join(cmd_list)
             else:
-                prep_meta = {
-                    "input_file_type": "template",
-                    "input_sortedness": str(row_meta.get("sortedness", "")).strip() or "unknown",
-                    "mapper_mode": mapper_mode,
-                }
-                assert runtime_template is not None
-                try:
-                    cmd = runtime_template.format(**context)
-                except KeyError as exc:
-                    raise RuntimeError(f"CIRI3 template references unsupported placeholder: {exc}") from exc
-                log_handle.write(f"$ {cmd}\n")
-                log_handle.flush()
-                result = subprocess.run(
-                    cmd,
-                    shell=True,
-                    executable="/bin/bash",
-                    stdout=log_handle,
-                    stderr=subprocess.STDOUT,
-                    check=False,
+                raise RuntimeError(
+                    "Invalid CIRI3 runtime configuration: no explicit command_template and no direct jar contract."
                 )
-                command_string = cmd
         if result.returncode != 0:
             tail = _tail_text(log_path)
             suffix = f"\n--- log tail ---\n{tail}" if tail else ""

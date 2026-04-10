@@ -854,7 +854,7 @@ def run_detector_from_alignments_cmd(
     command_template: Optional[str] = typer.Option(
         None,
         "--command-template",
-        help="Optional detector command template override. Especially useful for ciri3.",
+        help="Optional detector command template override. For ciri3, an explicit template always overrides direct java -jar execution.",
     ),
     threads: int = typer.Option(8, "--threads", help="Threads per detector process"),
     parallel: int = typer.Option(4, "--parallel", help="Number of alignment rows to run in parallel"),

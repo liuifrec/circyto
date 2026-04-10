@@ -108,6 +108,16 @@ Many failures happen before circyto can do meaningful work, e.g.:
 
 Bundled asset resolution is intended to be cwd-independent; users should not need to `cd` into the repository root just to make `doctor` or `detectors` find the bundled CIRI-full assets.
 
+For CIRI3:
+
+- `READY` means circyto found a usable CIRI3 jar and Java, so the direct `java -jar` contract is available.
+- `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
+- `PARTIAL` means local CIRI3 assets were found but the runtime contract is incomplete.
+- Java is mandatory for direct CIRI3 execution.
+- `samtools` is required for alignment handling.
+- `bwa` is required for BWA mode.
+- `STAR` is only required when STAR-based CIRI3 workflows are used.
+
 ---
 
 ## Detector semantics note
@@ -118,6 +128,8 @@ Bundled asset resolution is intended to be cwd-independent; users should not nee
 - single-end rows use a bundled CIRI2-based fallback path
 
 Both modes normalize to the same TSV schema, but the single-end path is **not** identical to upstream CIRI-full full-length reconstruction.
+
+`ciri3` is a separate alignment-first detector and should be treated as a real backend rather than a scaffold. When `--command-template` is explicitly provided, that template is used for execution. Direct `java -jar` execution is used only when no template is provided and the local CIRI3 jar + Java contract is ready.
 
 ---
 
