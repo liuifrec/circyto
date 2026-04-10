@@ -701,7 +701,7 @@ def prepare_alignment_cache_cmd(
     aligner: str = typer.Option(
         "reuse-existing",
         "--aligner",
-        help="Alignment strategy: reuse-existing or bwa-mem, unless --command-template is provided",
+        help="Alignment strategy. For --aligner star with --detector ciri3, circyto runs the official STAR+BWA hybrid prep and records aligned.sam + chimeric junctions + unmapped mates + bwa rescue SAM.",
     ),
     detector: Optional[str] = typer.Option(None, "--detector", "-d", help="Optional detector hint for cache keying"),
     ref_fa: Optional[Path] = typer.Option(None, "--ref-fa", help="Reference FASTA for alignment"),
@@ -725,6 +725,11 @@ def prepare_alignment_cache_cmd(
     Prepare reusable alignment artifacts from a source manifest.
 
     This is the first stage of the alignment-first execution track.
+
+    Detector-specific note:
+    - `--aligner star --detector ciri3` uses the official CIRI3 hybrid contract:
+      STAR writes `Aligned.out.sam`, `Chimeric.out.junction`, and unmapped mates,
+      then circyto runs `bwa mem -T 19` on the unmapped mates and records `bwa_sam`.
     """
     if outdir is None:
         outdir = _auto_outdir("prepare-alignment-cache", detector or aligner, manifest.stem)
@@ -865,6 +870,11 @@ def run_detector_from_alignments_cmd(
 ) -> None:
     """
     Run an alignment-capable detector over a reusable alignment manifest.
+
+    For CIRI3 STAR rows (`mapper_mode=1`), the manifest must include:
+    - STAR aligned SAM
+    - `chimeric_junction`
+    - `bwa_sam` rescue alignment
     """
     det_engine = _get_detector_engine(detector)
     if detector == "ciri3" and command_template is not None and isinstance(det_engine, Ciri3Detector):

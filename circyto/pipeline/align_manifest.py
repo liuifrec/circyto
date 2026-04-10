@@ -7,6 +7,7 @@ import os
 import shlex
 import shutil
 import subprocess
+import tempfile
 import time
 from concurrent.futures import ThreadPoolExecutor, as_completed
 from dataclasses import dataclass
@@ -270,6 +271,14 @@ def _tail_text(path: Path, max_lines: int = 40) -> str:
     return "\n".join(lines[-max_lines:])
 
 
+def _row_field(row: AlignmentManifestRow, name: str, default: str = "") -> str:
+    value = getattr(row, name, "") or ""
+    if value:
+        return str(value)
+    extra = row.extra or {}
+    return str(extra.get(name, default) or default)
+
+
 def _alignment_output_path(cell_cache_dir: Path, output_format: str) -> Path:
     suffix = ".sam" if output_format == "sam" else ".bam"
     return cell_cache_dir / f"alignment{suffix}"
@@ -301,7 +310,40 @@ def _star_genome_dir(extra_flags: str) -> str | None:
     return os.environ.get("CIRCYTO_STAR_GENOME_DIR")
 
 
+def _flag_present(tokens: list[str], flag: str) -> bool:
+    if flag in tokens:
+        return True
+    prefix = f"{flag}="
+    return any(token.startswith(prefix) for token in tokens)
+
+
+def _star_tmp_dir_base() -> str | None:
+    return os.environ.get("CIRCYTO_STAR_TMPDIR") or os.environ.get("TMPDIR")
+
+
 def _effective_alignment_extra_flags(*, detector_hint: str | None, aligner: str, extra_flags: str) -> str:
+    if detector_hint == "ciri3" and aligner == "star":
+        tokens = shlex.split(extra_flags.strip()) if extra_flags.strip() else []
+        required_pairs = [
+            ("--outSAMtype", ["SAM"]),
+            ("--outReadsUnmapped", ["Fastx"]),
+            ("--outSJfilterOverhangMin", ["15", "12", "12", "12"]),
+            ("--alignSJoverhangMin", ["15"]),
+            ("--alignSJDBoverhangMin", ["15"]),
+            ("--outFilterMultimapNmax", ["20"]),
+            ("--outFilterScoreMin", ["1"]),
+            ("--outFilterMatchNmin", ["1"]),
+            ("--outFilterMismatchNmax", ["2"]),
+            ("--chimSegmentMin", ["15"]),
+            ("--chimScoreMin", ["15"]),
+            ("--chimJunctionOverhangMin", ["15"]),
+        ]
+        merged: list[str] = []
+        for flag, values in required_pairs:
+            if not _flag_present(tokens, flag):
+                merged.extend([flag, *values])
+        merged.extend(tokens)
+        return shlex.join(merged)
     if extra_flags.strip():
         return extra_flags
     if detector_hint == "ciri3" and aligner == "bwa-mem":
@@ -538,6 +580,10 @@ def _run_star_alignment(
     row: SourceManifestRow,
     out_path: Path,
     chimeric_path: Path,
+    unmapped_mate1_path: Path | None,
+    unmapped_mate2_path: Path | None,
+    bwa_sam_path: Path | None,
+    ref_fa: Path | None,
     threads: int,
     extra_flags: str,
     log_path: Path,
@@ -548,22 +594,10 @@ def _run_star_alignment(
 
     star_dir = out_path.parent / "star_run"
     star_dir.mkdir(parents=True, exist_ok=True)
-    prefix = f"{star_dir}/"
-    cmd = [
-        "STAR",
-        "--runThreadN",
-        str(max(1, threads)),
-        "--genomeDir",
-        genome_dir,
-        "--readFilesIn",
-        str(row.read1),
-    ]
-    if row.read2 is not None:
-        cmd.append(str(row.read2))
     extra_tokens = shlex.split(extra_flags.strip()) if extra_flags.strip() else []
     skip_next = False
     filtered_tokens: list[str] = []
-    for idx, token in enumerate(extra_tokens):
+    for token in extra_tokens:
         if skip_next:
             skip_next = False
             continue
@@ -573,34 +607,114 @@ def _run_star_alignment(
         if token.startswith("--genomeDir="):
             continue
         filtered_tokens.append(token)
-    if "--outSAMtype" not in filtered_tokens:
-        filtered_tokens.extend(["--outSAMtype", "SAM", "Unsorted"])
-    if "--chimOutType" not in filtered_tokens:
+    if not _flag_present(filtered_tokens, "--outSAMtype"):
+        filtered_tokens.extend(["--outSAMtype", "SAM"])
+    if not _flag_present(filtered_tokens, "--chimOutType"):
         filtered_tokens.extend(["--chimOutType", "Junctions"])
-    cmd.extend(filtered_tokens)
-    cmd.extend(["--outFileNamePrefix", prefix])
 
-    with log_path.open("w", encoding="utf-8") as log_handle:
-        result = subprocess.run(
-            cmd,
-            stdout=log_handle,
-            stderr=subprocess.STDOUT,
-            check=False,
-            text=True,
-        )
-    if result.returncode != 0:
-        tail = _tail_text(log_path)
-        suffix = f"\n--- log tail ---\n{tail}" if tail else ""
-        raise RuntimeError(f"STAR alignment failed for {row.cell_id}; see {log_path}.{suffix}")
+    with tempfile.TemporaryDirectory(prefix="circyto_star_", dir=_star_tmp_dir_base()) as tmp_root_str:
+        tmp_root = Path(tmp_root_str)
+        run_dir = tmp_root / "run"
+        run_dir.mkdir(parents=True, exist_ok=True)
+        prefix = f"{run_dir}/"
+        out_tmp_dir = tmp_root / "_STARtmp"
+        cmd = [
+            "STAR",
+            "--runThreadN",
+            str(max(1, threads)),
+            "--genomeDir",
+            genome_dir,
+            "--readFilesIn",
+            str(row.read1),
+        ]
+        if row.read2 is not None:
+            cmd.append(str(row.read2))
+        cmd.extend(filtered_tokens)
+        cmd.extend(["--outFileNamePrefix", prefix, "--outTmpDir", str(out_tmp_dir)])
 
-    produced_sam = star_dir / "Aligned.out.sam"
-    produced_chimeric = star_dir / "Chimeric.out.junction"
-    if not produced_sam.exists():
-        raise RuntimeError(f"STAR completed but did not produce {produced_sam}")
-    if not produced_chimeric.exists():
-        raise RuntimeError(f"STAR completed but did not produce {produced_chimeric}")
-    shutil.copy2(produced_sam, out_path)
-    shutil.copy2(produced_chimeric, chimeric_path)
+        with log_path.open("w", encoding="utf-8") as log_handle:
+            log_handle.write(
+                f"# STAR temp workspace: {tmp_root}"
+                " (override with CIRCYTO_STAR_TMPDIR or TMPDIR)\n"
+            )
+            log_handle.write(
+                "# Running STAR in a local Linux temp directory before copying outputs "
+                "back into the alignment cache.\n"
+            )
+            log_handle.flush()
+            result = subprocess.run(
+                cmd,
+                stdout=log_handle,
+                stderr=subprocess.STDOUT,
+                check=False,
+                text=True,
+            )
+
+        for name in ("Log.out", "Log.progress.out", "Log.final.out", "SJ.out.tab"):
+            candidate = run_dir / name
+            if candidate.exists():
+                shutil.copy2(candidate, star_dir / name)
+
+        if result.returncode != 0:
+            tail = _tail_text(log_path)
+            suffix = f"\n--- log tail ---\n{tail}" if tail else ""
+            raise RuntimeError(
+                f"STAR alignment failed for {row.cell_id}; see {log_path}. "
+                "If you are on WSL or a network-mounted workspace, prefer a local Linux temp directory "
+                "for STAR via CIRCYTO_STAR_TMPDIR or by leaving TMPDIR unset so /tmp is used."
+                f"{suffix}"
+            )
+
+        produced_sam = run_dir / "Aligned.out.sam"
+        produced_chimeric = run_dir / "Chimeric.out.junction"
+        produced_unmapped_mate1 = run_dir / "Unmapped.out.mate1"
+        produced_unmapped_mate2 = run_dir / "Unmapped.out.mate2"
+        if not produced_sam.exists():
+            raise RuntimeError(f"STAR completed but did not produce {produced_sam}")
+        if not produced_chimeric.exists():
+            raise RuntimeError(f"STAR completed but did not produce {produced_chimeric}")
+        shutil.copy2(produced_sam, out_path)
+        shutil.copy2(produced_chimeric, chimeric_path)
+        if unmapped_mate1_path is not None:
+            if not produced_unmapped_mate1.exists():
+                raise RuntimeError(f"STAR completed but did not produce {produced_unmapped_mate1}")
+            shutil.copy2(produced_unmapped_mate1, unmapped_mate1_path)
+        if unmapped_mate2_path is not None:
+            if not produced_unmapped_mate2.exists():
+                raise RuntimeError(f"STAR completed but did not produce {produced_unmapped_mate2}")
+            shutil.copy2(produced_unmapped_mate2, unmapped_mate2_path)
+
+    if bwa_sam_path is not None:
+        if ref_fa is None:
+            raise RuntimeError("STAR+CIRI3 hybrid rescue requires ref_fa.")
+        if unmapped_mate1_path is None or unmapped_mate2_path is None:
+            raise RuntimeError("STAR+CIRI3 hybrid rescue requires both unmapped mates.")
+        bwa_cmd = [
+            "bwa",
+            "mem",
+            "-T",
+            "19",
+            str(ref_fa),
+            str(unmapped_mate1_path),
+            str(unmapped_mate2_path),
+        ]
+        with log_path.open("a", encoding="utf-8") as log_handle:
+            log_handle.write(f"\n$ {shlex.join(bwa_cmd)} > {bwa_sam_path}\n")
+            log_handle.flush()
+            with bwa_sam_path.open("w", encoding="utf-8") as out_handle:
+                result = subprocess.run(
+                    bwa_cmd,
+                    stdout=out_handle,
+                    stderr=log_handle,
+                    check=False,
+                    text=True,
+                )
+        if result.returncode != 0:
+            tail = _tail_text(log_path)
+            suffix = f"\n--- log tail ---\n{tail}" if tail else ""
+            raise RuntimeError(f"STAR rescue bwa mem failed for {row.cell_id}; see {log_path}.{suffix}")
+        if not bwa_sam_path.exists() or bwa_sam_path.stat().st_size == 0:
+            raise RuntimeError(f"STAR rescue bwa mem produced empty output for {row.cell_id}: {bwa_sam_path}")
 
 
 def _flatten_detector_result(result: Any) -> List[DetectorResult]:
@@ -635,9 +749,12 @@ def _build_detector_alignment_stamp(
         "cell_id": row.cell_id,
         "alignment_path": str(Path(row.alignment_path).resolve()),
         "aligner": row.aligner,
-        "sortedness": (row.extra or {}).get("sortedness"),
-        "mapper_mode": (row.extra or {}).get("mapper_mode"),
-        "chimeric_junction": (row.extra or {}).get("chimeric_junction"),
+        "sortedness": _row_field(row, "sortedness"),
+        "mapper_mode": _row_field(row, "mapper_mode"),
+        "chimeric_junction": row.chimeric_junction,
+        "unmapped_mate1": row.unmapped_mate1,
+        "unmapped_mate2": row.unmapped_mate2,
+        "bwa_sam": row.bwa_sam,
         "cache_key": row.cache_key,
         "source_manifest": row.source_manifest,
         "read_layout": row.read_layout,
@@ -692,12 +809,25 @@ def _validate_alignment_rows(
                 errors.extend([f"CIRI3 preflight: {msg}" for msg in ciri_errors])
             if row.bam:
                 errors.append(f"CIRI3 requires unsorted SAM input; cell_id={row.cell_id} currently points to BAM")
-            sortedness = (row.extra or {}).get("sortedness", "")
+            sortedness = _row_field(row, "sortedness")
             if sortedness and sortedness != "unsorted":
                 errors.append(f"CIRI3 requires unsorted alignment input; cell_id={row.cell_id} has sortedness={sortedness}")
-            mapper_mode = (row.extra or {}).get("mapper_mode", "")
-            if mapper_mode == "1" and not (row.extra or {}).get("chimeric_junction"):
-                errors.append(f"CIRI3 STAR mode requires chimeric_junction; cell_id={row.cell_id}")
+            mapper_mode = _row_field(row, "mapper_mode")
+            if mapper_mode == "1":
+                if row.aligner != "star":
+                    errors.append(f"CIRI3 STAR mode requires aligner=star; cell_id={row.cell_id} has aligner={row.aligner or 'unknown'}")
+                if not row.sam:
+                    errors.append(f"CIRI3 STAR mode requires STAR-generated aligned SAM; cell_id={row.cell_id}")
+                if not row.chimeric_junction:
+                    errors.append(f"CIRI3 STAR mode requires chimeric_junction; cell_id={row.cell_id}")
+                if not row.bwa_sam:
+                    errors.append(f"CIRI3 STAR mode requires bwa_sam rescue alignment; cell_id={row.cell_id}")
+                if row.sam and not Path(row.sam).exists():
+                    errors.append(f"CIRI3 STAR mode aligned SAM missing for cell_id={row.cell_id}: {row.sam}")
+                if row.chimeric_junction and not Path(row.chimeric_junction).exists():
+                    errors.append(f"CIRI3 STAR mode chimeric_junction missing for cell_id={row.cell_id}: {row.chimeric_junction}")
+                if row.bwa_sam and not Path(row.bwa_sam).exists():
+                    errors.append(f"CIRI3 STAR mode bwa_sam missing for cell_id={row.cell_id}: {row.bwa_sam}")
         if detector.name in {"ciri2", "ciri-full"} and gtf is None:
             errors.append(f"Detector '{detector.name}' requires --gtf")
     if ref_fa is not None and not ref_fa.exists():
@@ -1002,6 +1132,12 @@ def prepare_alignment_cache(
         staged_path = staged_dir / f"{row.cell_id}{out_path.suffix}"
         chimeric_path = cell_cache_dir / "Chimeric.out.junction"
         staged_chimeric_path = staged_dir / f"{row.cell_id}.Chimeric.out.junction"
+        unmapped_mate1_path = cell_cache_dir / "Unmapped.out.mate1" if aligner == "star" and detector_hint == "ciri3" else None
+        unmapped_mate2_path = cell_cache_dir / "Unmapped.out.mate2" if aligner == "star" and detector_hint == "ciri3" else None
+        bwa_sam_path = cell_cache_dir / "bwa_rescue.sam" if aligner == "star" and detector_hint == "ciri3" else None
+        staged_unmapped_mate1_path = staged_dir / f"{row.cell_id}.Unmapped.out.mate1" if unmapped_mate1_path else None
+        staged_unmapped_mate2_path = staged_dir / f"{row.cell_id}.Unmapped.out.mate2" if unmapped_mate2_path else None
+        staged_bwa_sam_path = staged_dir / f"{row.cell_id}.bwa_rescue.sam" if bwa_sam_path else None
         log_path = cell_cache_dir / f"{row.cell_id}.align.log"
         provenance = {
             "cell_id": row.cell_id,
@@ -1022,15 +1158,28 @@ def prepare_alignment_cache(
         existing_prov = _load_provenance(_alignment_provenance_path(out_path))
         if out_path.exists() and _provenance_matches(existing_prov, provenance):
             _copy_or_link(out_path, staged_path, link_mode=link_mode)
-            extra = {
-                "reused_alignment": "true",
-                "sortedness": str(existing_prov.get("sortedness", "unknown")),
-                "mapper_mode": str(existing_prov.get("mapper_mode", "")),
-                "artifact_bucket": _staged_alignment_bucket(aligner=aligner, output_format=effective_output_format),
+            sortedness = str(existing_prov.get("sortedness", "unknown"))
+            mapper_mode = str(existing_prov.get("mapper_mode", ""))
+            artifact_bucket = _staged_alignment_bucket(aligner=aligner, output_format=effective_output_format)
+            row_kwargs = {
+                "chimeric_junction": "",
+                "unmapped_mate1": "",
+                "unmapped_mate2": "",
+                "bwa_sam": "",
             }
+            extra = {"reused_alignment": "true"}
             if aligner == "star" and chimeric_path.exists():
                 _copy_or_link(chimeric_path, staged_chimeric_path, link_mode=link_mode)
-                extra["chimeric_junction"] = str(staged_chimeric_path.resolve())
+                row_kwargs["chimeric_junction"] = str(staged_chimeric_path.resolve())
+            if staged_unmapped_mate1_path is not None and unmapped_mate1_path is not None and unmapped_mate1_path.exists():
+                _copy_or_link(unmapped_mate1_path, staged_unmapped_mate1_path, link_mode=link_mode)
+                row_kwargs["unmapped_mate1"] = str(staged_unmapped_mate1_path.resolve())
+            if staged_unmapped_mate2_path is not None and unmapped_mate2_path is not None and unmapped_mate2_path.exists():
+                _copy_or_link(unmapped_mate2_path, staged_unmapped_mate2_path, link_mode=link_mode)
+                row_kwargs["unmapped_mate2"] = str(staged_unmapped_mate2_path.resolve())
+            if staged_bwa_sam_path is not None and bwa_sam_path is not None and bwa_sam_path.exists():
+                _copy_or_link(bwa_sam_path, staged_bwa_sam_path, link_mode=link_mode)
+                row_kwargs["bwa_sam"] = str(staged_bwa_sam_path.resolve())
             return (
                 AlignmentManifestRow(
                     cell_id=row.cell_id,
@@ -1042,6 +1191,10 @@ def prepare_alignment_cache(
                     reference=str(ref_fa.resolve()) if ref_fa else "",
                     cache_key=cache_key,
                     source_manifest=str(manifest.resolve()),
+                    mapper_mode=mapper_mode,
+                    artifact_bucket=artifact_bucket,
+                    sortedness=sortedness,
+                    **row_kwargs,
                     extra=extra,
                 ),
                 {
@@ -1050,9 +1203,9 @@ def prepare_alignment_cache(
                     "reused_alignment": True,
                     "cache_key": cache_key,
                     "alignment_path": str(staged_path.resolve()),
-                    "artifact_bucket": _staged_alignment_bucket(aligner=aligner, output_format=effective_output_format),
-                    "sortedness": str(existing_prov.get("sortedness", "unknown")),
-                    "mapper_mode": str(existing_prov.get("mapper_mode", "")),
+                    "artifact_bucket": artifact_bucket,
+                    "sortedness": sortedness,
+                    "mapper_mode": mapper_mode,
                     "read_layout": row.read_layout,
                 },
             )
@@ -1081,6 +1234,10 @@ def prepare_alignment_cache(
                 row=row,
                 out_path=out_path,
                 chimeric_path=chimeric_path,
+                unmapped_mate1_path=unmapped_mate1_path,
+                unmapped_mate2_path=unmapped_mate2_path,
+                bwa_sam_path=bwa_sam_path,
+                ref_fa=ref_fa,
                 threads=threads,
                 extra_flags=effective_extra_flags,
                 log_path=log_path,
@@ -1117,17 +1274,36 @@ def prepare_alignment_cache(
         )
         if aligner == "star":
             provenance["chimeric_junction"] = str(chimeric_path.resolve())
+        if unmapped_mate1_path is not None:
+            provenance["unmapped_mate1"] = str(unmapped_mate1_path.resolve())
+        if unmapped_mate2_path is not None:
+            provenance["unmapped_mate2"] = str(unmapped_mate2_path.resolve())
+        if bwa_sam_path is not None:
+            provenance["bwa_sam"] = str(bwa_sam_path.resolve())
         _write_json(_alignment_provenance_path(out_path), provenance)
         _copy_or_link(out_path, staged_path, link_mode=link_mode)
-        extra = {
-            "reused_alignment": str(reused_alignment).lower(),
-            "sortedness": "unsorted" if effective_output_format == "sam" else "sorted",
-            "mapper_mode": "1" if aligner == "star" else "0",
-            "artifact_bucket": _staged_alignment_bucket(aligner=aligner, output_format=effective_output_format),
+        sortedness = "unsorted" if effective_output_format == "sam" else "sorted"
+        mapper_mode = "1" if aligner == "star" else "0"
+        artifact_bucket = _staged_alignment_bucket(aligner=aligner, output_format=effective_output_format)
+        row_kwargs = {
+            "chimeric_junction": "",
+            "unmapped_mate1": "",
+            "unmapped_mate2": "",
+            "bwa_sam": "",
         }
+        extra = {"reused_alignment": str(reused_alignment).lower()}
         if aligner == "star":
             _copy_or_link(chimeric_path, staged_chimeric_path, link_mode=link_mode)
-            extra["chimeric_junction"] = str(staged_chimeric_path.resolve())
+            row_kwargs["chimeric_junction"] = str(staged_chimeric_path.resolve())
+        if staged_unmapped_mate1_path is not None and unmapped_mate1_path is not None:
+            _copy_or_link(unmapped_mate1_path, staged_unmapped_mate1_path, link_mode=link_mode)
+            row_kwargs["unmapped_mate1"] = str(staged_unmapped_mate1_path.resolve())
+        if staged_unmapped_mate2_path is not None and unmapped_mate2_path is not None:
+            _copy_or_link(unmapped_mate2_path, staged_unmapped_mate2_path, link_mode=link_mode)
+            row_kwargs["unmapped_mate2"] = str(staged_unmapped_mate2_path.resolve())
+        if staged_bwa_sam_path is not None and bwa_sam_path is not None:
+            _copy_or_link(bwa_sam_path, staged_bwa_sam_path, link_mode=link_mode)
+            row_kwargs["bwa_sam"] = str(staged_bwa_sam_path.resolve())
         return (
             AlignmentManifestRow(
                 cell_id=row.cell_id,
@@ -1139,6 +1315,10 @@ def prepare_alignment_cache(
                 reference=str(ref_fa.resolve()) if ref_fa else "",
                 cache_key=cache_key,
                 source_manifest=str(manifest.resolve()),
+                mapper_mode=mapper_mode,
+                artifact_bucket=artifact_bucket,
+                sortedness=sortedness,
+                **row_kwargs,
                 extra=extra,
             ),
             {
@@ -1147,9 +1327,9 @@ def prepare_alignment_cache(
                 "reused_alignment": reused_alignment,
                 "cache_key": cache_key,
                 "alignment_path": str(staged_path.resolve()),
-                "artifact_bucket": _staged_alignment_bucket(aligner=aligner, output_format=effective_output_format),
-                "sortedness": "unsorted" if effective_output_format == "sam" else "sorted",
-                "mapper_mode": "1" if aligner == "star" else "0",
+                "artifact_bucket": artifact_bucket,
+                "sortedness": sortedness,
+                "mapper_mode": mapper_mode,
                 "read_layout": row.read_layout,
                 "seconds": round(time.perf_counter() - cell_started, 3),
             },
@@ -1342,6 +1522,8 @@ def run_detector_alignment_manifest(
         cell_started = time.perf_counter()
         alignment_path = Path(row.alignment_path)
         row_extra = row.extra or {}
+        row_sortedness = _row_field(row, "sortedness")
+        row_mapper_mode = _row_field(row, "mapper_mode")
         expected_output = outdir / f"{row.cell_id}.tsv"
         expected_stamp = _build_detector_alignment_stamp(
             detector,
@@ -1364,13 +1546,13 @@ def run_detector_alignment_manifest(
                     "read_layout": row.read_layout,
                     "execution_mode": "alignment-first",
                     "input_mode": "alignment",
-                    "reused_alignment": (row.extra or {}).get("reused_alignment") == "true",
+                    "reused_alignment": row_extra.get("reused_alignment") == "true",
                     "detector_backend": detector.name,
                     "alignment_group": row.group_id,
                     "reference_used": str(ref_fa) if ref_fa else None,
                     "input_file_type": "bam" if row.bam else "sam",
-                    "input_sortedness": row_extra.get("sortedness"),
-                    "mapper_mode": row_extra.get("mapper_mode"),
+                    "input_sortedness": row_sortedness,
+                    "mapper_mode": row_mapper_mode,
                     "raw_output_path": None,
                     "raw_row_count": None,
                     "normalized_row_count": _count_alignment_output_rows(expected_output, detector.name),
@@ -1399,10 +1581,12 @@ def run_detector_alignment_manifest(
         )
         raw_result = _run_detector(detector, inputs)
         flat_results = _flatten_detector_result(raw_result)
-        primary_path = flat_results[0].tsv_path
+        primary_result = flat_results[0]
+        primary_meta = primary_result.meta or {}
+        primary_path = primary_result.tsv_path
         _write_json(_detector_output_provenance_path(primary_path), expected_stamp)
         normalized_rows = _count_alignment_output_rows(primary_path, detector.name)
-        raw_output_path = flat_results[0].meta.get("raw_output_path") if flat_results[0].meta else None
+        raw_output_path = primary_meta.get("raw_output_path")
         raw_rows = _count_alignment_output_rows(Path(raw_output_path), detector.name) if raw_output_path else None
         status = "success" if (normalized_rows or 0) > 0 else "empty"
         return flat_results, {
@@ -1414,13 +1598,13 @@ def run_detector_alignment_manifest(
             "read_layout": row.read_layout,
             "execution_mode": "alignment-first",
             "input_mode": "alignment",
-            "reused_alignment": (row.extra or {}).get("reused_alignment") == "true",
+            "reused_alignment": row_extra.get("reused_alignment") == "true",
             "detector_backend": detector.name,
             "alignment_group": row.group_id,
             "reference_used": str(ref_fa) if ref_fa else None,
-            "input_file_type": "bam" if row.bam else "sam",
-            "input_sortedness": row_extra.get("sortedness"),
-            "mapper_mode": row_extra.get("mapper_mode"),
+            "input_file_type": primary_meta.get("input_file_type") or ("bam" if row.bam else "sam"),
+            "input_sortedness": primary_meta.get("input_sortedness") or row_sortedness,
+            "mapper_mode": primary_meta.get("mapper_mode") or row_mapper_mode,
             "raw_output_path": raw_output_path,
             "raw_row_count": raw_rows,
             "normalized_row_count": normalized_rows,
@@ -1461,8 +1645,8 @@ def run_detector_alignment_manifest(
                         "alignment_group": row.group_id,
                         "reference_used": str(ref_fa) if ref_fa else None,
                         "input_file_type": "bam" if row.bam else "sam",
-                        "input_sortedness": (row.extra or {}).get("sortedness"),
-                        "mapper_mode": (row.extra or {}).get("mapper_mode"),
+                        "input_sortedness": _row_field(row, "sortedness"),
+                        "mapper_mode": _row_field(row, "mapper_mode"),
                         "raw_output_path": None,
                         "raw_row_count": None,
                         "normalized_row_count": None,

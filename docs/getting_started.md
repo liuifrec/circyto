@@ -19,6 +19,34 @@ Before you start:
 
 If your first run fails with `command not found`, skip ahead to **External dependencies**.
 
+For Linux and HPC deployments, prefer the repo-root environment file instead of building the toolchain piecemeal:
+
+```bash
+conda env create -f environment.yml
+conda activate circyto
+pip install -e .
+```
+
+That environment covers the common executables used by the currently integrated workflows: `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not include separately obtained detector artifacts such as the CIRI3 jar.
+
+---
+
+## Quick smoke
+
+For a fast installation and workflow check, use:
+
+```bash
+circyto smoke --detector ciri3 --aligner bwa-mem
+```
+
+If STAR mode is configured:
+
+```bash
+circyto smoke --detector ciri3 --aligner star
+```
+
+Smoke validates runtime resolution, workflow mechanics, and matrix collection. It is not full biological validation. Tiny smoke subsets may legitimately produce empty outputs; that still counts as success unless you add `--require-nonempty`.
+
 ---
 
 ## Concepts
@@ -85,6 +113,8 @@ Supported environment variables:
 - `CIRCYTO_CIRI3_JAR`
 - `CIRCYTO_CIRI3_JAVA`
 - `CIRCYTO_CIRI3_EXTRA_ARGS`
+
+For STAR alignment-first runs, `circyto` executes STAR in a local Linux temp workspace and copies the required outputs back into the alignment cache. If your cluster expects a specific node-local scratch path, set `CIRCYTO_STAR_TMPDIR` before running `prepare-alignment-cache`.
 
 `CIRCYTO_CIRI3_CMD_TEMPLATE` is also supported when you want explicit template execution instead of the direct `java -jar` path.
 

@@ -20,6 +20,18 @@ ALIGNMENT_REQUIRED_COLUMNS = [
     "source_manifest",
 ]
 
+ALIGNMENT_EXPLICIT_OPTIONAL_COLUMNS = [
+    "chimeric_junction",
+    "unmapped_mate1",
+    "unmapped_mate2",
+    "bwa_sam",
+    "mapper_mode",
+    "artifact_bucket",
+    "sortedness",
+]
+
+ALIGNMENT_ALL_EXPLICIT_COLUMNS = ALIGNMENT_REQUIRED_COLUMNS + ALIGNMENT_EXPLICIT_OPTIONAL_COLUMNS
+
 
 @dataclass(frozen=True)
 class AlignmentManifestRow:
@@ -32,6 +44,13 @@ class AlignmentManifestRow:
     reference: str = ""
     cache_key: str = ""
     source_manifest: str = ""
+    chimeric_junction: str = ""
+    unmapped_mate1: str = ""
+    unmapped_mate2: str = ""
+    bwa_sam: str = ""
+    mapper_mode: str = ""
+    artifact_bucket: str = ""
+    sortedness: str = ""
     extra: Optional[Dict[str, str]] = None
 
     def to_dict(self) -> Dict[str, str]:
@@ -45,6 +64,13 @@ class AlignmentManifestRow:
             "reference": self.reference,
             "cache_key": self.cache_key,
             "source_manifest": self.source_manifest,
+            "chimeric_junction": self.chimeric_junction,
+            "unmapped_mate1": self.unmapped_mate1,
+            "unmapped_mate2": self.unmapped_mate2,
+            "bwa_sam": self.bwa_sam,
+            "mapper_mode": self.mapper_mode,
+            "artifact_bucket": self.artifact_bucket,
+            "sortedness": self.sortedness,
         }
         if self.extra:
             data.update({k: str(v) for k, v in self.extra.items()})
@@ -60,14 +86,14 @@ def write_alignment_manifest_tsv(rows: Iterable[AlignmentManifestRow], path: Pat
     rows_list = list(rows)
 
     extras: List[str] = []
-    seen = set(ALIGNMENT_REQUIRED_COLUMNS)
+    seen = set(ALIGNMENT_ALL_EXPLICIT_COLUMNS)
     for row in rows_list:
         if row.extra:
             for key in row.extra:
                 if key not in seen:
                     extras.append(key)
                     seen.add(key)
-    fieldnames = ALIGNMENT_REQUIRED_COLUMNS + sorted(extras)
+    fieldnames = ALIGNMENT_ALL_EXPLICIT_COLUMNS + sorted(extras)
 
     with path.open("w", encoding="utf-8", newline="") as handle:
         writer = csv.DictWriter(handle, fieldnames=fieldnames, delimiter="\t")
@@ -113,8 +139,19 @@ def read_alignment_manifest_tsv(path: Path, *, validate_files: bool = True) -> L
             extras = {
                 key: value
                 for key, value in raw.items()
-                if key not in ALIGNMENT_REQUIRED_COLUMNS and value not in (None, "")
+                if key not in ALIGNMENT_ALL_EXPLICIT_COLUMNS and value not in (None, "")
             }
+
+            def _resolved_optional_path(name: str) -> str:
+                value = (raw.get(name) or "").strip()
+                if not value:
+                    return ""
+                resolved = resolve_manifest_path(path, value)
+                if validate_files and not resolved.exists():
+                    raise FileNotFoundError(
+                        f"Alignment artifact '{name}' not found for cell_id={cell_id}: {resolved}"
+                    )
+                return str(resolved)
 
             rows.append(
                 AlignmentManifestRow(
@@ -127,6 +164,13 @@ def read_alignment_manifest_tsv(path: Path, *, validate_files: bool = True) -> L
                     reference=(raw.get("reference") or "").strip(),
                     cache_key=(raw.get("cache_key") or "").strip(),
                     source_manifest=(raw.get("source_manifest") or "").strip(),
+                    chimeric_junction=_resolved_optional_path("chimeric_junction"),
+                    unmapped_mate1=_resolved_optional_path("unmapped_mate1"),
+                    unmapped_mate2=_resolved_optional_path("unmapped_mate2"),
+                    bwa_sam=_resolved_optional_path("bwa_sam"),
+                    mapper_mode=(raw.get("mapper_mode") or "").strip(),
+                    artifact_bucket=(raw.get("artifact_bucket") or "").strip(),
+                    sortedness=(raw.get("sortedness") or "").strip(),
                     extra=extras or None,
                 )
             )
@@ -163,5 +207,9 @@ def validate_alignment_manifest_tsv(path: Path, strict: bool = False) -> Tuple[b
             if not ref_path.exists():
                 summary["missing_files"] += 1
                 errors.append(f"Reference file not found for cell_id={row.cell_id}: {ref_path}")
+        for artifact in (row.chimeric_junction, row.unmapped_mate1, row.unmapped_mate2, row.bwa_sam):
+            if strict and artifact and not Path(artifact).exists():
+                summary["missing_files"] += 1
+                errors.append(f"Alignment artifact not found for cell_id={row.cell_id}: {artifact}")
 
     return len(errors) == 0, errors, summary

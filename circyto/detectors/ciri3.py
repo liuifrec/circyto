@@ -26,6 +26,14 @@ OPTIONAL_TEMPLATE_FIELDS = {
     "ref_fa",
     "gtf",
     "extra_args",
+    "alignment_input",
+    "mapper_mode",
+    "sortedness",
+    "artifact_bucket",
+    "chimeric_junction",
+    "unmapped_mate1",
+    "unmapped_mate2",
+    "bwa_sam",
     "read_layout",
     "group_id",
     "log_path",
@@ -167,15 +175,19 @@ def _build_ciri3_alignment_input(
 ) -> tuple[str, dict[str, Any]]:
     sortedness = str(row_meta.get("sortedness", "")).strip() or "unknown"
     if mapper_mode == "1":
+        if alignment.suffix.lower() != ".sam":
+            raise RuntimeError(
+                f"CIRI3 STAR mode requires STAR-generated aligned SAM input; got {alignment.suffix or 'unknown'} for {alignment}"
+            )
         chimeric = str(row_meta.get("chimeric_junction", "")).strip()
         if not chimeric:
             raise RuntimeError("CIRI3 STAR mode requires chimeric_junction in the alignment manifest row.")
         bwa_sam = str(row_meta.get("bwa_sam", "")).strip()
+        if not bwa_sam:
+            raise RuntimeError("CIRI3 STAR mode requires bwa_sam in the alignment manifest row.")
         input_parts = [chimeric, str(alignment)]
-        input_kind = "star-sam"
-        if bwa_sam:
-            input_parts.append(bwa_sam)
-            input_kind = "star-hybrid"
+        input_kind = "star-hybrid"
+        input_parts.append(bwa_sam)
         return (
             ",".join(input_parts),
             {
@@ -390,7 +402,7 @@ class Ciri3Detector(DetectorBase):
     def resolve_extra_args(self) -> str:
         if self.extra_args.strip():
             return self.extra_args
-        return os.environ.get("CIRCYTO_CIRI3_EXTRA_ARGS", "-S 0 -Ma 0")
+        return os.environ.get("CIRCYTO_CIRI3_EXTRA_ARGS", "-S 0")
 
     def resolve_command_template(self) -> str | None:
         return self.command_template or os.environ.get("CIRCYTO_CIRI3_CMD_TEMPLATE")
@@ -409,8 +421,16 @@ class Ciri3Detector(DetectorBase):
         assert alignment is not None
         row_meta = inputs.extra.get("alignment_manifest_row", {}) if inputs.extra else {}
         mapper_mode = _infer_mapper_mode(aligner=row_meta.get("aligner"), row_meta=row_meta)
+        alignment_input = str(alignment)
+        if mapper_mode == "1":
+            alignment_input, _ = _build_ciri3_alignment_input(
+                alignment=alignment,
+                row_meta=row_meta,
+                mapper_mode=mapper_mode,
+            )
         return {
             "alignment": alignment,
+            "alignment_input": alignment_input,
             "alignment_format": alignment.suffix.lstrip(".") or "bam",
             "cell_id": inputs.cell_id,
             "threads": inputs.threads,
@@ -420,6 +440,12 @@ class Ciri3Detector(DetectorBase):
             "outdir": run_dir,
             "extra_args": self.resolve_extra_args(),
             "mapper_mode": mapper_mode,
+            "sortedness": row_meta.get("sortedness", ""),
+            "artifact_bucket": row_meta.get("artifact_bucket", ""),
+            "chimeric_junction": row_meta.get("chimeric_junction", ""),
+            "unmapped_mate1": row_meta.get("unmapped_mate1", ""),
+            "unmapped_mate2": row_meta.get("unmapped_mate2", ""),
+            "bwa_sam": row_meta.get("bwa_sam", ""),
             "read_layout": inputs.effective_read_layout(),
             "group_id": inputs.alignment_group or "",
             "log_path": log_path,

@@ -4,6 +4,8 @@ This page explains which detectors circyto can orchestrate, what each one needs,
 
 Use `circyto detectors` for the live readiness report and this page for behavior notes and workflow guidance.
 
+For Linux/HPC installs, use the repo-root [environment.yml](/mnt/d/circyto/environment.yml) plus `pip install -e .` as the default shared environment. That keeps the packaged runtime conservative and practical while leaving separately obtained assets such as the CIRI3 jar under explicit local control.
+
 ---
 
 ## Execution tracks
@@ -171,6 +173,7 @@ Notes:
 - BWA mode requires unsorted SAM input, is alignment-sensitive, and is the validated local production path.
 - Validated local BWA settings are `-S 0`, `-Ma 0`, and `bwa mem -k 15 -T 15`.
 - STAR mode is supported in code for alignment-first workflows, also alignment-sensitive, and uses `-Ma 1`.
+- STAR alignment prep is executed in a local Linux temp workspace before artifacts are copied back into the cache. Use `CIRCYTO_STAR_TMPDIR` if you need to force node-local scratch.
 - STAR mode is not yet fully validated end-to-end in this release.
 - The backend normalizes tabular CIRI3 output to the stable circyto TSV schema.
 
@@ -180,7 +183,13 @@ Verification example:
 export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
 circyto doctor
 circyto detectors
+circyto smoke --detector ciri3 --aligner bwa-mem
 ```
+
+Smoke notes:
+- `circyto smoke --detector ciri3 --aligner bwa-mem` is the baseline installation smoke.
+- `circyto smoke --detector ciri3 --aligner star` exercises the official STAR+BWA hybrid contract when STAR prerequisites are present.
+- Smoke success means the workflow ran correctly. Very small subsets may still produce an empty matrix; use `--require-nonempty` only when you want that to fail the smoke run.
 
 ---
 

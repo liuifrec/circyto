@@ -143,7 +143,9 @@ def _install_fake_star(bin_dir: Path) -> None:
         "done\n"
         "mkdir -p \"$(dirname \"$prefix\")\"\n"
         "printf '@HD\\tVN:1.0\\n' > \"${prefix}Aligned.out.sam\"\n"
-        "printf 'chr1\\t10\\t20\\n' > \"${prefix}Chimeric.out.junction\"\n",
+        "printf 'chr1\\t10\\t20\\n' > \"${prefix}Chimeric.out.junction\"\n"
+        "printf '@mate1\\nACGT\\n+\\n!!!!\\n' > \"${prefix}Unmapped.out.mate1\"\n"
+        "printf '@mate2\\nTGCA\\n+\\n!!!!\\n' > \"${prefix}Unmapped.out.mate2\"\n",
         encoding="utf-8",
     )
     star.chmod(0o755)
@@ -169,7 +171,7 @@ def test_prepare_alignment_cache_reuses_bam_inputs(tmp_path: Path) -> None:
     assert all(row.bam for row in rows)
     assert rows[0].group_id == "plateA"
     assert rows[0].extra["reused_alignment"] == "true"
-    assert rows[0].extra["sortedness"] == "sorted"
+    assert rows[0].sortedness == "sorted"
 
     summary = json.loads((outdir / "alignment_prepare_summary.json").read_text(encoding="utf-8"))
     assert summary["status_counts"]["reused_input"] == 2
@@ -211,6 +213,46 @@ def test_run_detector_alignment_manifest_records_alignment_provenance(tmp_path: 
     assert summary["status_counts"]["success"] == 2
     assert summary["cells"][0]["reused_alignment"] is True
     assert summary["cells"][0]["detector_backend"] == "fake-align-detector"
+
+
+def test_run_detector_alignment_manifest_prefers_detector_input_metadata(tmp_path: Path) -> None:
+    class _MetaAwareDetector(_FakeAlignmentDetector):
+        def run_from_alignment(self, inputs):
+            result = super().run_from_alignment(inputs)
+            result.meta.update(
+                {
+                    "input_file_type": "STAR tuple",
+                    "input_sortedness": "unsorted",
+                    "mapper_mode": "1",
+                }
+            )
+            return result
+
+    manifest = _write_source_manifest(tmp_path)
+    alignment_dir = tmp_path / "align"
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=alignment_dir,
+        aligner="reuse-existing",
+        detector_hint="fake-align-detector",
+        threads=2,
+        parallel=2,
+    )
+
+    outdir = tmp_path / "detector"
+    results = run_detector_alignment_manifest(
+        detector=_MetaAwareDetector(),
+        manifest=alignment_manifest,
+        outdir=outdir,
+        threads=2,
+        parallel=2,
+    )
+
+    assert len(results) == 2
+    summary = json.loads((outdir / "detector_run_summary.json").read_text(encoding="utf-8"))
+    assert summary["cells"][0]["input_file_type"] == "STAR tuple"
+    assert summary["cells"][0]["input_sortedness"] == "unsorted"
+    assert summary["cells"][0]["mapper_mode"] == "1"
 
 
 def test_ciri3_registered_with_alignment_capabilities() -> None:
@@ -471,9 +513,9 @@ def test_prepare_alignment_cache_bwa_mem_for_ciri3_stages_unsorted_sam(tmp_path:
     assert rows[0].sam
     assert rows[0].bam == ""
     assert Path(rows[0].sam).suffix == ".sam"
-    assert rows[0].extra["artifact_bucket"] == "bwa_mem"
-    assert rows[0].extra["sortedness"] == "unsorted"
-    assert rows[0].extra["mapper_mode"] == "0"
+    assert rows[0].artifact_bucket == "bwa_mem"
+    assert rows[0].sortedness == "unsorted"
+    assert rows[0].mapper_mode == "0"
 
 
 def test_prepare_alignment_cache_star_for_ciri3_records_chimeric_junction(tmp_path: Path, monkeypatch) -> None:
@@ -481,6 +523,7 @@ def test_prepare_alignment_cache_star_for_ciri3_records_chimeric_junction(tmp_pa
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     _install_fake_star(fake_bin)
+    _install_fake_bwa_and_samtools(fake_bin)
     monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
     ref = tmp_path / "ref.fa"
     ref.write_text(">chr1\nACGT\n", encoding="utf-8")
@@ -498,10 +541,40 @@ def test_prepare_alignment_cache_star_for_ciri3_records_chimeric_junction(tmp_pa
     rows = read_alignment_manifest_tsv(alignment_manifest, validate_files=True)
     assert len(rows) == 1
     assert rows[0].sam
-    assert rows[0].extra["mapper_mode"] == "1"
-    assert rows[0].extra["sortedness"] == "unsorted"
-    assert Path(rows[0].extra["chimeric_junction"]).exists()
-    assert rows[0].extra["artifact_bucket"] == "star"
+    assert rows[0].mapper_mode == "1"
+    assert rows[0].sortedness == "unsorted"
+    assert Path(rows[0].chimeric_junction).exists()
+    assert Path(rows[0].unmapped_mate1).exists()
+    assert Path(rows[0].unmapped_mate2).exists()
+    assert Path(rows[0].bwa_sam).exists()
+    assert rows[0].artifact_bucket == "star"
+    assert Path(rows[0].bwa_sam).read_text(encoding="utf-8").startswith("@HD\tVN:1.0")
+
+
+def test_prepare_alignment_cache_star_without_ciri3_does_not_require_rescue_outputs(tmp_path: Path, monkeypatch) -> None:
+    manifest = _write_fastq_manifest(tmp_path, ["c1"])
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    _install_fake_star(fake_bin)
+    monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
+
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=tmp_path / "align",
+        aligner="star",
+        detector_hint="circexplorer2",
+        threads=2,
+        parallel=1,
+        extra_flags="--genomeDir /tmp/star-index",
+    )
+    rows = read_alignment_manifest_tsv(alignment_manifest, validate_files=True)
+    assert len(rows) == 1
+    assert rows[0].bam
+    assert rows[0].sam == ""
+    assert rows[0].chimeric_junction
+    assert rows[0].unmapped_mate1 == ""
+    assert rows[0].unmapped_mate2 == ""
+    assert rows[0].bwa_sam == ""
 
 
 def test_prepare_alignment_cache_resume_reuses_cached_chunks(tmp_path: Path) -> None:
@@ -596,6 +669,122 @@ def test_validate_ciri3_template_cli(tmp_path: Path, monkeypatch) -> None:
     result = runner.invoke(app, ["validate-ciri3-template", "--template", template])
     assert result.exit_code == 0
     assert "OK" in result.stdout
+
+
+def test_ciri3_star_manifest_row_requires_bwa_rescue(tmp_path: Path, monkeypatch) -> None:
+    sam = tmp_path / "cell1.sam"
+    sam.write_text("@HD\tVN:1.0\n", encoding="utf-8")
+    chimeric = tmp_path / "cell1.Chimeric.out.junction"
+    chimeric.write_text("chr1\t10\t+\tchr1\t20\t+\t0\t0\t10\tread1\t10\t10M\t20\t10M\n", encoding="utf-8")
+    ref = tmp_path / "ref.fa"
+    ref.write_text(">chr1\nACGT\n", encoding="utf-8")
+    ciri3_home = tmp_path / "CIRI3"
+    ciri3_home.mkdir()
+    (ciri3_home / "CIRI3_Java_18.0.1.jar").write_text("jar", encoding="utf-8")
+    java = tmp_path / "java"
+    java.write_text("java", encoding="utf-8")
+    monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
+    monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
+
+    detector = Ciri3Detector()
+    try:
+        detector.run_from_alignment(
+            DetectorRunInputs(
+                cell_id="cell1",
+                sam=sam,
+                outdir=tmp_path / "out",
+                ref_fa=ref,
+                threads=2,
+                input_mode="alignment",
+                read_layout="paired-end",
+                extra={
+                    "alignment_manifest_row": {
+                        "cell_id": "cell1",
+                        "sam": str(sam),
+                        "aligner": "star",
+                        "mapper_mode": "1",
+                        "sortedness": "unsorted",
+                        "chimeric_junction": str(chimeric),
+                    }
+                },
+            )
+        )
+        raise AssertionError("expected RuntimeError")
+    except RuntimeError as exc:
+        assert "requires bwa_sam" in str(exc)
+
+
+def test_ciri3_runs_from_star_hybrid_manifest_row_with_direct_jar_contract(tmp_path: Path, monkeypatch) -> None:
+    sam = tmp_path / "cell1.sam"
+    sam.write_text("@HD\tVN:1.0\n", encoding="utf-8")
+    chimeric = tmp_path / "cell1.Chimeric.out.junction"
+    chimeric.write_text("chr1\t10\t+\tchr1\t20\t+\t0\t0\t10\tread1\t10\t10M\t20\t10M\n", encoding="utf-8")
+    bwa_sam = tmp_path / "cell1.bwa_rescue.sam"
+    bwa_sam.write_text("@SQ\tSN:chr1\tLN:4\n", encoding="utf-8")
+    ref = tmp_path / "ref.fa"
+    ref.write_text(">chr1\nACGT\n", encoding="utf-8")
+    ciri3_home = tmp_path / "CIRI3"
+    ciri3_home.mkdir()
+    jar = ciri3_home / "CIRI3_Java_18.0.1.jar"
+    jar.write_text("jar", encoding="utf-8")
+    java = tmp_path / "java"
+    java.write_text("java", encoding="utf-8")
+
+    monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
+    monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
+
+    seen_cmds = []
+
+    def fake_run(cmd, **kwargs):
+        seen_cmds.append(cmd)
+        out = tmp_path / "out" / "cell1.ciri3_run" / "ciri3_raw.tsv"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(
+            "circRNA_ID\tchr\tstart\tend\tstrand\tbsj_reads\n"
+            "circA\tchr1\t11\t22\t+\t7\n",
+            encoding="utf-8",
+        )
+
+        class _Result:
+            returncode = 0
+
+        return _Result()
+
+    monkeypatch.setattr("circyto.detectors.ciri3.subprocess.run", fake_run)
+
+    detector = Ciri3Detector()
+    result = detector.run_from_alignment(
+        DetectorRunInputs(
+            cell_id="cell1",
+            sam=sam,
+            outdir=tmp_path / "out",
+            ref_fa=ref,
+            threads=2,
+            input_mode="alignment",
+            read_layout="paired-end",
+            extra={
+                "alignment_manifest_row": {
+                    "cell_id": "cell1",
+                    "sam": str(sam),
+                    "aligner": "star",
+                    "mapper_mode": "1",
+                    "sortedness": "unsorted",
+                    "artifact_bucket": "star",
+                    "chimeric_junction": str(chimeric),
+                    "bwa_sam": str(bwa_sam),
+                }
+            },
+        )
+    )
+
+    text = result.tsv_path.read_text(encoding="utf-8")
+    assert "circA\tchr1\t11\t22\t+\t7" in text
+    assert result.meta["execution_mode"] == "direct-jar"
+    assert result.meta["input_file_type"] == "STAR tuple"
+    assert result.meta["mapper_mode"] == "1"
+    assert result.meta["bwa_sam"] == str(bwa_sam)
+    assert f"{chimeric},{sam},{bwa_sam}" in result.meta["command"]
+    assert " -Ma 1" in f" {result.meta['command']}"
 
 
 def test_run_detector_from_alignments_cli_accepts_ciri3_template(tmp_path: Path) -> None:

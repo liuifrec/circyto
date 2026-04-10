@@ -36,7 +36,7 @@ A single-cell circRNA detection CLI to orchestrate detectors, build circRNA×cel
 If you're new, your fastest path is:
 
 1) install `circyto` + one detector  
-2) run the bundled chr21 smoke test  
+2) run the bundled smoke test  
 3) collect a `circ_counts.mtx` matrix  
 4) move on to your own reference/manifest
 
@@ -53,7 +53,7 @@ You will need:
 - For `ciri-full` workflows: **bwa** and **Java (JRE)**
 - For `ciri3` workflows: **Java** plus a usable **CIRI3 jar**
 - For `ciri3` BWA alignment-first workflows: **bwa** and **samtools**
-- For `ciri3` STAR alignment-first workflows: **STAR** and **samtools**
+- For `ciri3` STAR alignment-first workflows: **STAR**, **bwa**, and **samtools**
 
 > Tip: if something fails with “command not found”, jump to `docs/getting_started.md#external-dependencies`.
 
@@ -63,13 +63,15 @@ You will need:
 git clone https://github.com/liuifrec/circyto
 cd circyto
 
-# (recommended) use a virtualenv
-python -m venv .venv
-source .venv/bin/activate
+# preferred on Linux / HPC
+conda env create -f environment.yml
+conda activate circyto
 
-pip install -U pip
+# installs the repo itself into that environment
 pip install -e .
 ```
+
+The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the default practical environment for Linux and HPC use. It installs the shared runtime used by the currently integrated workflows: Python, `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not install non-redistributed detector assets such as the CIRI3 jar.
 
 ### Install at least one detector
 
@@ -118,10 +120,19 @@ tools/
 Minimal setup example:
 
 ```bash
+conda activate circyto
 export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
 circyto doctor
 circyto detectors
 ```
+
+STAR alignment-first note:
+
+- `circyto` treats `CIRI3 + STAR` as the official upstream hybrid workflow, not as STAR-only.
+- The STAR prepare stage must emit `Aligned.out.sam`, `Chimeric.out.junction`, `Unmapped.out.mate1`, and `Unmapped.out.mate2`.
+- `circyto` then runs `bwa mem -T 19` on the unmapped mates and passes `Chimeric.out.junction,Aligned.out.sam,bwa_rescue.sam` into CIRI3 with `-Ma 1`.
+- STAR alignment prep now runs STAR inside a local Linux temp directory and then copies the required artifacts back into the cache. Override the temp base with `CIRCYTO_STAR_TMPDIR` if your cluster requires a specific local scratch path.
+- This STAR alignment-first contract is currently specific to `ciri3`. Other bundled detectors should be considered BWA-oriented or FASTQ-native unless documented otherwise.
 
 ---
 ## Quick check (recommended)
@@ -146,13 +157,24 @@ These commands should work regardless of your current working directory as long 
 
 ## Minimal example (bundled chr21 smoke test)
 
-This repository includes a small chr21 reference (`ref/chr21.fa`) and a small manifest (`manifest_2.tsv`) intended for smoke testing.
+The recommended installation smoke path is:
 
-`manifest_2.tsv` is a **paired-end** example manifest.
+```bash
+circyto smoke --detector ciri3 --aligner bwa-mem
+```
+
+If STAR prerequisites are present, you can also exercise the official hybrid route:
+
+```bash
+circyto smoke --detector ciri3 --aligner star
+```
+
+The smoke command builds a tiny local chr21 subset, runs the current alignment-first CIRI3 workflow, and writes a compact `smoke_summary.json` under the chosen `--outdir`.
 
 What this smoke test proves:
 
-- the detector command line runs with the bundled reference/manifest
+- runtime resolution is usable
+- the alignment-first workflow can complete
 - per-cell outputs can be collected into a sparse matrix
 - the normalized TSV and matrix plumbing are working
 
@@ -161,32 +183,9 @@ What it does **not** prove:
 - broad biological validity
 - performance on your full dataset
 - equivalence between different detector algorithms
+- guaranteed non-empty biological calls on a tiny subset
 
-### 1) Run a detector on the bundled manifest
-
-```bash
-circyto run-detector find-circ3 \
-  --manifest manifest_2.tsv \
-  --outdir work/find_circ3_chr21 \
-  --ref-fa ref/chr21.fa \
-  --threads 4 \
-  --parallel 2
-```
-
-### 2) Collect a circRNA × cell MatrixMarket matrix
-
-```bash
-mkdir -p work/find_circ3_chr21_matrix
-
-circyto collect-matrix \
-  --detector find-circ3 \
-  --indir work/find_circ3_chr21 \
-  --matrix work/find_circ3_chr21_matrix/circ_counts.mtx \
-  --circ-index work/find_circ3_chr21_matrix/circ_index.txt \
-  --cell-index work/find_circ3_chr21_matrix/cell_index.txt
-```
-
-**Expected outcome**: `circ_counts.mtx` exists and has non-zero entries.
+By default, smoke treats an empty detector output or empty matrix as a PASS if the full workflow completed correctly. Use `--require-nonempty` when you want smoke to fail on all-zero outputs.
 
 ## Detector behavior note
 
@@ -330,7 +329,8 @@ circyto export-run-subset \
 Validate the local plumbing with repo-shipped assets:
 
 ```bash
-circyto alignment-first-smoke --outdir work/alignment_first_smoke
+circyto smoke --detector ciri3 --aligner bwa-mem --outdir work/smoke_bwa
+circyto smoke --detector ciri3 --aligner star --outdir work/smoke_star
 ```
 
 See `docs/alignment_first_execution.md` for cache keys, resume behavior, chunk recovery, and CIRI3 execution-mode details.

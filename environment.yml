@@ -1,0 +1,25 @@
+name: circyto
+channels:
+  - conda-forge
+  - bioconda
+  - defaults
+dependencies:
+  - python=3.11
+  - pip
+  - setuptools>=77
+  - wheel
+  - numpy>=1.24
+  - pandas>=2.0
+  - scipy>=1.10
+  - tqdm>=4.66
+  - typer>=0.9,<1.0
+  - rich>=13.0
+  - bwa
+  - samtools
+  - star
+  - bowtie2
+  - perl
+  - openjdk=17
+  - pytest
+  - pip:
+      - -e .

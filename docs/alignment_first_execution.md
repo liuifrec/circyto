@@ -142,8 +142,9 @@ Assumptions:
 - requires STAR alignment and a matching STAR index
 - uses CIRI3 mapper mode: `-Ma 1`
 - requires STAR chimeric outputs in the alignment manifest
-- may optionally include a paired BWA SAM when using the STAR hybrid input path
+- requires a paired BWA rescue SAM when using the official CIRI3 STAR hybrid input path
 - requires `samtools` for alignment handling and inspection
+- runs STAR in a local Linux temp workspace before copying artifacts back into the cache; use `CIRCYTO_STAR_TMPDIR` to force node-local scratch when needed
 
 Minimal example:
 
@@ -162,7 +163,7 @@ circyto run-detector-from-alignments \
   --ref-fa ref/genome.fa
 ```
 
-Note: STAR mode is implemented but not yet validated end-to-end in this release.
+Note: STAR mode now completes through the normal CLI on a small real chr21 subset with the official hybrid contract. BWA + CIRI3 remains the validated baseline, and larger STAR runs should still be rechecked on the target server environment.
 
 ## CIRI3 template validation
 
@@ -202,18 +203,19 @@ Plan mode now records exact first-command previews for both alignment preparatio
 To validate the full alignment-first plumbing with local repo assets:
 
 ```bash
-circyto alignment-first-smoke --outdir work/alignment_first_smoke
+circyto smoke --detector ciri3 --aligner bwa-mem --outdir work/smoke_bwa
+circyto smoke --detector ciri3 --aligner star --outdir work/smoke_star
 ```
 
-This uses local paired FASTQs plus a bundled smoke template adapter. It validates the end-to-end workflow shape:
+This uses a tiny local chr21 subset. It validates the end-to-end workflow shape:
 
 - FASTQ manifest
-- `bwa mem` alignment prep
+- alignment preparation
 - alignment manifest
-- CIRI3-compatible template execution
+- CIRI3 execution
 - `collect-matrix`
 
-This smoke path validates workflow mechanics, not biological CIRI3 correctness.
+This smoke path validates workflow mechanics, not biological CIRI3 correctness. Empty smoke outputs can still be a PASS unless `--require-nonempty` is requested.
 
 ## PRJNA607968-style workflow
 
