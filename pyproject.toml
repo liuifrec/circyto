@@ -39,7 +39,15 @@ exclude = ["tests*", "fastq*", "ref*", "assets*", "work_*", "data*", ".github*"]
 include-package-data = true
 
 [tool.setuptools.package-data]
-circyto = ["**/*.txt", "**/*.sh"]
+circyto = [
+  "**/*.txt",
+  "**/*.sh",
+  "resources/**/*",
+  "resources/**/*.fa",
+  "resources/**/*.gtf",
+  "resources/**/*.fastq",
+  "resources/**/*.tsv",
+]
 
 [tool.pytest.ini_options]
 markers = [

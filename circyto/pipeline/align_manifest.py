@@ -67,15 +67,24 @@ class SourceManifestRow:
     platform: str = ""
     library_id: str = ""
     group_id: str = ""
+    declared_read_layout: str = ""
     extra: Optional[Dict[str, str]] = None
 
     @property
     def read_layout(self) -> str:
+        if self.declared_read_layout in VALID_READ_LAYOUTS:
+            return self.declared_read_layout
         return "paired-end" if self.read2 is not None else "single-end"
 
     @property
     def input_mode(self) -> str:
         return "alignment" if self.bam is not None and self.read1 is None else "fastq"
+
+    @property
+    def effective_read2(self) -> Optional[Path]:
+        if self.read_layout != "paired-end":
+            return None
+        return self.read2
 
 
 def _summary_path(outdir: Path, name: str) -> Path:
@@ -122,9 +131,28 @@ def _write_manifest_rows_raw(path: Path, *, header: list[str], rows: list[dict[s
 
 def _pick_col(row: dict[str, str], keys: tuple[str, ...]) -> Optional[str]:
     for key in keys:
-        if key in row and row.get(key) not in (None, ""):
+        value = row.get(key)
+        if key in row and value is not None and str(value).strip():
             return key
     return None
+
+
+def _manifest_value(raw: dict[str, str], *keys: str) -> str:
+    for key in keys:
+        value = raw.get(key)
+        if value is None:
+            continue
+        text = str(value).strip()
+        if text:
+            return text
+    return ""
+
+
+def _validated_read_layout(raw: dict[str, str], *, path: Path, line_number: int, cell_id: str) -> str:
+    read_layout = (raw.get("read_layout") or "").strip()
+    if read_layout and read_layout not in VALID_READ_LAYOUTS:
+        raise ValueError(f"Invalid read_layout '{read_layout}' for cell_id={cell_id} at {path}:{line_number}")
+    return read_layout
 
 
 def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[SourceManifestRow]:
@@ -146,10 +174,11 @@ def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[Sou
                 raise ValueError(f"Duplicate cell_id '{cell_id}' at {path}:{i}")
             seen_ids.add(cell_id)
 
-            read1_key = _pick_col(raw, ("read1", "r1"))
-            read2_key = _pick_col(raw, ("read2", "r2"))
-            read1 = resolve_manifest_path(path, raw[read1_key].strip()) if read1_key else None
-            read2 = resolve_manifest_path(path, raw[read2_key].strip()) if read2_key else None
+            read1_raw = _manifest_value(raw, "read1", "r1")
+            read2_raw = _manifest_value(raw, "read2", "r2")
+            read_layout = _validated_read_layout(raw, path=path, line_number=i, cell_id=cell_id)
+            read1 = resolve_manifest_path(path, read1_raw) if read1_raw else None
+            read2 = resolve_manifest_path(path, read2_raw) if read2_raw else None
             bam_raw = (raw.get("bam") or "").strip()
             bam = resolve_manifest_path(path, bam_raw) if bam_raw else None
 
@@ -178,6 +207,7 @@ def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[Sou
                     platform=(raw.get("platform") or "").strip(),
                     library_id=(raw.get("library_id") or "").strip(),
                     group_id=(raw.get("group_id") or raw.get("library_id") or "").strip(),
+                    declared_read_layout=read_layout,
                     extra=extras or None,
                 )
             )
@@ -234,7 +264,7 @@ def _alignment_cache_key(
     payload = {
         "cell_id": row.cell_id,
         "read1": str(row.read1.resolve()) if row.read1 else None,
-        "read2": str(row.read2.resolve()) if row.read2 else None,
+        "read2": str(row.effective_read2.resolve()) if row.effective_read2 else None,
         "bam": str(row.bam.resolve()) if row.bam else None,
         "aligner": aligner,
         "ref_fa": str(ref_fa.resolve()) if ref_fa else None,
@@ -254,7 +284,9 @@ def _copy_or_link(src: Path, dest: Path, *, link_mode: str) -> None:
         shutil.copy2(src, dest)
         return
     try:
-        os.symlink(src, dest)
+        # Use an absolute source so manifest rows derived from dest.resolve()
+        # point at the cached artifact rather than a doubly-prefixed relative path.
+        os.symlink(src.resolve(), dest)
     except OSError:
         shutil.copy2(src, dest)
 
@@ -269,6 +301,64 @@ def _tail_text(path: Path, max_lines: int = 40) -> str:
     except OSError:
         return ""
     return "\n".join(lines[-max_lines:])
+
+
+def _shell_join(parts: list[str]) -> str:
+    return shlex.join(parts)
+
+
+def _build_bwa_mem_command(
+    *,
+    row: SourceManifestRow,
+    ref_fa: Path,
+    threads: int,
+    extra_flags: str,
+) -> list[str]:
+    cmd = ["bwa", "mem", "-t", str(threads)]
+    if extra_flags.strip():
+        cmd.extend(shlex.split(extra_flags))
+    cmd.extend([str(ref_fa), str(row.read1)])
+    if row.effective_read2 is not None:
+        cmd.append(str(row.effective_read2))
+    return cmd
+
+
+def _alignment_failure_details(
+    *,
+    row: SourceManifestRow,
+    command: list[str],
+    log_path: Path,
+    exit_code: int | None,
+    stderr_tail_lines: int = 40,
+) -> dict[str, Any]:
+    return {
+        "read_layout": row.read_layout,
+        "read1": str(row.read1.resolve()) if row.read1 else None,
+        "read2": str(row.effective_read2.resolve()) if row.effective_read2 else None,
+        "command": _shell_join(command),
+        "exit_code": exit_code,
+        "log_path": str(log_path.resolve()),
+        "stderr_tail": _tail_text(log_path, max_lines=stderr_tail_lines),
+    }
+
+
+def _format_alignment_failure(prefix: str, details: dict[str, Any], *, extra: str = "") -> str:
+    segments = [
+        prefix,
+        f"read_layout={details.get('read_layout')}",
+        f"command={details.get('command')}",
+        f"read1={details.get('read1')}",
+        f"read2={details.get('read2') or '<none>'}",
+        f"exit={details.get('exit_code')}",
+        f"log={details.get('log_path')}",
+    ]
+    if extra:
+        segments.append(extra)
+    message = "; ".join(segments)
+    stderr_tail = str(details.get("stderr_tail") or "").strip()
+    if stderr_tail:
+        message += f"\n--- log tail ---\n{stderr_tail}"
+    return message
 
 
 def _row_field(row: AlignmentManifestRow, name: str, default: str = "") -> str:
@@ -315,6 +405,16 @@ def _flag_present(tokens: list[str], flag: str) -> bool:
         return True
     prefix = f"{flag}="
     return any(token.startswith(prefix) for token in tokens)
+
+
+def _star_read_files_command(extra_flags: str) -> str | None:
+    tokens = shlex.split(extra_flags.strip()) if extra_flags.strip() else []
+    for i, token in enumerate(tokens):
+        if token == "--readFilesCommand" and i + 1 < len(tokens):
+            return tokens[i + 1]
+        if token.startswith("--readFilesCommand="):
+            return token.split("=", 1)[1]
+    return None
 
 
 def _star_tmp_dir_base() -> str | None:
@@ -396,10 +496,28 @@ def _validate_prepare_config(
         if not _tool_exists("STAR"):
             errors.append("STAR not found on PATH")
         if _star_genome_dir(extra_flags) is None:
-            errors.append("STAR alignment requires --extra-flags to include --genomeDir or CIRCYTO_STAR_GENOME_DIR.")
+            errors.append(
+                "STAR alignment requires a genome index. Pass it via "
+                '--extra-flags "--genomeDir /path/to/star_index" '
+                "or set CIRCYTO_STAR_GENOME_DIR."
+            )
         for row in rows:
             if row.read1 is None:
                 errors.append(f"star requires FASTQ input; cell_id={row.cell_id} only provides BAM")
+            if detector_hint == "ciri3" and row.read_layout != "paired-end":
+                errors.append(
+                    "STAR + CIRI3 is currently supported only for paired-end data; "
+                    f"cell_id={row.cell_id} has read_layout={row.read_layout}. "
+                    "Single-end STAR + CIRI3 is not implemented in the current hybrid rescue path. "
+                    "Use BWA + CIRI3 for the sentinel/production baseline, or use paired-end STAR + CIRI3."
+                )
+            if any(path and path.suffix == ".gz" for path in (row.read1, row.effective_read2)):
+                if _star_read_files_command(extra_flags) is None:
+                    errors.append(
+                        "STAR input FASTQs appear to be gzipped; configure decompression with "
+                        '--extra-flags "--readFilesCommand zcat" '
+                        f"(cell_id={row.cell_id})."
+                    )
     elif aligner == "reuse-existing":
         for row in rows:
             if row.bam is None:
@@ -476,18 +594,17 @@ def _alignment_command_preview(
     if aligner == "reuse-existing":
         return f"reuse-existing {row.bam} -> {out_path}"
     if aligner == "bwa-mem":
-        cmd = ["bwa", "mem", "-t", str(threads)]
-        if extra_flags.strip():
-            cmd.extend(shlex.split(extra_flags))
-        if ref_fa is not None:
-            cmd.append(str(ref_fa))
-        if row.read1 is not None:
-            cmd.append(str(row.read1))
-        if row.read2 is not None:
-            cmd.append(str(row.read2))
+        if ref_fa is None:
+            return "<bwa-mem requires ref_fa>"
+        cmd = _build_bwa_mem_command(
+            row=row,
+            ref_fa=ref_fa,
+            threads=threads,
+            extra_flags=extra_flags,
+        )
         if effective_output_format == "bam":
-            return " ".join(shlex.quote(part) for part in cmd) + f" | samtools sort -@ {max(1, threads)} -o {shlex.quote(str(out_path))}"
-        return " ".join(shlex.quote(part) for part in cmd) + f" > {shlex.quote(str(out_path))}"
+            return _shell_join(cmd) + f" | samtools sort -@ {max(1, threads)} -o {shlex.quote(str(out_path))}"
+        return _shell_join(cmd) + f" > {shlex.quote(str(out_path))}"
     if aligner == "star":
         prefix = f"{cell_cache_dir / 'star_run'}/"
         cmd = ["STAR", "--runThreadN", str(threads)]
@@ -497,15 +614,15 @@ def _alignment_command_preview(
             cmd.extend(["--genomeDir", "<genomeDir-required>"])
         if row.read1 is not None:
             cmd.extend(["--readFilesIn", str(row.read1)])
-            if row.read2 is not None:
-                cmd.append(str(row.read2))
+            if row.effective_read2 is not None:
+                cmd.append(str(row.effective_read2))
         cmd.extend(["--outFileNamePrefix", prefix])
         return " ".join(shlex.quote(part) for part in cmd)
     if command_template:
         context = {
             "cell_id": row.cell_id,
             "read1": row.read1 or "",
-            "read2": row.read2 or "",
+            "read2": row.effective_read2 or "",
             "bam": row.bam or "",
             "ref_fa": ref_fa or "",
             "out_path": out_path,
@@ -528,18 +645,23 @@ def _run_bwa_mem_alignment(
     output_format: str,
     log_path: Path,
 ) -> None:
-    bwa_cmd = ["bwa", "mem", "-t", str(threads)]
-    if extra_flags.strip():
-        bwa_cmd.extend(shlex.split(extra_flags))
-    bwa_cmd.extend([str(ref_fa), str(row.read1)])
-    if row.read2 is not None:
-        bwa_cmd.append(str(row.read2))
+    bwa_cmd = _build_bwa_mem_command(
+        row=row,
+        ref_fa=ref_fa,
+        threads=threads,
+        extra_flags=extra_flags,
+    )
 
     tmp_out = out_path.with_suffix(out_path.suffix + ".partial")
     if tmp_out.exists():
         tmp_out.unlink()
 
     with log_path.open("w", encoding="utf-8") as log_handle:
+        log_handle.write(f"$ {_shell_join(bwa_cmd)}\n")
+        log_handle.write(f"# read_layout={row.read_layout}\n")
+        log_handle.write(f"# read1={row.read1}\n")
+        log_handle.write(f"# read2={row.effective_read2 or '<none>'}\n")
+        log_handle.flush()
         bwa_proc = subprocess.Popen(
             bwa_cmd,
             stdout=subprocess.PIPE,
@@ -560,8 +682,18 @@ def _run_bwa_mem_alignment(
             bwa_rc = bwa_proc.wait()
             sort_rc = sort_proc.wait()
             if bwa_rc != 0 or sort_rc != 0:
+                details = _alignment_failure_details(
+                    row=row,
+                    command=bwa_cmd,
+                    log_path=log_path,
+                    exit_code=bwa_rc if bwa_rc != 0 else sort_rc,
+                )
                 raise RuntimeError(
-                    f"bwa-mem pipeline failed for {row.cell_id}; bwa={bwa_rc} samtools_sort={sort_rc}"
+                    _format_alignment_failure(
+                        f"bwa-mem pipeline failed for {row.cell_id}",
+                        details,
+                        extra=f"samtools_sort={sort_rc}",
+                    )
                 )
         else:
             assert bwa_proc.stdout is not None
@@ -570,7 +702,13 @@ def _run_bwa_mem_alignment(
             bwa_proc.stdout.close()
             bwa_rc = bwa_proc.wait()
             if bwa_rc != 0:
-                raise RuntimeError(f"bwa mem failed for {row.cell_id}; exit={bwa_rc}")
+                details = _alignment_failure_details(
+                    row=row,
+                    command=bwa_cmd,
+                    log_path=log_path,
+                    exit_code=bwa_rc,
+                )
+                raise RuntimeError(_format_alignment_failure(f"bwa mem failed for {row.cell_id}", details))
 
     tmp_out.replace(out_path)
 
@@ -627,8 +765,8 @@ def _run_star_alignment(
             "--readFilesIn",
             str(row.read1),
         ]
-        if row.read2 is not None:
-            cmd.append(str(row.read2))
+        if row.effective_read2 is not None:
+            cmd.append(str(row.effective_read2))
         cmd.extend(filtered_tokens)
         cmd.extend(["--outFileNamePrefix", prefix, "--outTmpDir", str(out_tmp_dir)])
 
@@ -792,7 +930,9 @@ def _validate_alignment_rows(
         alignment_path = Path(row.alignment_path)
         if not alignment_path.exists():
             errors.append(f"Missing alignment file for cell_id={row.cell_id}: {alignment_path}")
-        if row.read_layout and row.read_layout not in VALID_READ_LAYOUTS:
+        if not row.read_layout:
+            errors.append(f"Missing read_layout for cell_id={row.cell_id}")
+        elif row.read_layout not in VALID_READ_LAYOUTS:
             errors.append(f"Invalid read_layout for cell_id={row.cell_id}: {row.read_layout}")
         if not row.cache_key:
             errors.append(f"Missing cache_key for cell_id={row.cell_id}")
@@ -1147,7 +1287,7 @@ def prepare_alignment_cache(
             "manifest": str(manifest.resolve()),
             "read_layout": row.read_layout,
             "read1": str(row.read1.resolve()) if row.read1 else None,
-            "read2": str(row.read2.resolve()) if row.read2 else None,
+            "read2": str(row.effective_read2.resolve()) if row.effective_read2 else None,
             "input_bam": str(row.bam.resolve()) if row.bam else None,
             "ref_fa": str(ref_fa.resolve()) if ref_fa else None,
             "threads": threads,
@@ -1246,15 +1386,15 @@ def prepare_alignment_cache(
             context = {
                 "cell_id": row.cell_id,
                 "read1": row.read1 or "",
-                "read2": row.read2 or "",
-                    "bam": row.bam or "",
-                    "ref_fa": ref_fa or "",
-                    "out_path": out_path,
-                    "threads": threads,
-                    "extra_flags": effective_extra_flags,
-                    "read_layout": row.read_layout,
-                    "log_path": log_path,
-                }
+                "read2": row.effective_read2 or "",
+                "bam": row.bam or "",
+                "ref_fa": ref_fa or "",
+                "out_path": out_path,
+                "threads": threads,
+                "extra_flags": effective_extra_flags,
+                "read_layout": row.read_layout,
+                "log_path": log_path,
+            }
             assert command_template is not None
             _run_shell_template(template=command_template, context=context, log_path=log_path)
             if not out_path.exists():
@@ -1352,7 +1492,34 @@ def prepare_alignment_cache(
                     chunk_records.append(record)
                     per_cell_records.append(record)
                 except Exception as exc:
-                    failure = {"cell_id": row.cell_id, "error": str(exc), "read_layout": row.read_layout}
+                    cache_key = _alignment_cache_key(
+                        row,
+                        aligner=aligner,
+                        ref_fa=ref_fa,
+                        detector_hint=detector_hint,
+                        threads=threads,
+                        extra_flags=effective_extra_flags,
+                    )
+                    failure_log_path = cache_dir / cache_key / f"{row.cell_id}.align.log"
+                    failure = {
+                        "cell_id": row.cell_id,
+                        "error": str(exc),
+                        "read_layout": row.read_layout,
+                        "read1": str(row.read1.resolve()) if row.read1 else None,
+                        "read2": str(row.effective_read2.resolve()) if row.effective_read2 else None,
+                        "log_path": str(failure_log_path.resolve()),
+                        "stderr_tail": _tail_text(failure_log_path),
+                        "command": _alignment_command_preview(
+                            row=row,
+                            aligner=aligner,
+                            ref_fa=ref_fa,
+                            threads=threads,
+                            extra_flags=effective_extra_flags,
+                            output_format=effective_output_format,
+                            command_template=command_template,
+                            outdir=outdir,
+                        ),
+                    }
                     chunk_failures.append(failure)
                     failures.append(failure)
                     record = {
@@ -1361,6 +1528,11 @@ def prepare_alignment_cache(
                         "reused_alignment": False,
                         "error": str(exc),
                         "read_layout": row.read_layout,
+                        "read1": failure["read1"],
+                        "read2": failure["read2"],
+                        "log_path": failure["log_path"],
+                        "stderr_tail": failure["stderr_tail"],
+                        "command": failure["command"],
                     }
                     chunk_records.append(record)
                     per_cell_records.append(record)

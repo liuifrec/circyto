@@ -31,6 +31,17 @@ ALIGNMENT_EXPLICIT_OPTIONAL_COLUMNS = [
 ]
 
 ALIGNMENT_ALL_EXPLICIT_COLUMNS = ALIGNMENT_REQUIRED_COLUMNS + ALIGNMENT_EXPLICIT_OPTIONAL_COLUMNS
+ALIGNMENT_PATH_COLUMNS = {
+    "bam",
+    "sam",
+    "reference",
+    "source_manifest",
+    "chimeric_junction",
+    "unmapped_mate1",
+    "unmapped_mate2",
+    "bwa_sam",
+}
+VALID_READ_LAYOUTS = {"single-end", "paired-end"}
 
 
 @dataclass(frozen=True)
@@ -81,6 +92,26 @@ class AlignmentManifestRow:
         return self.bam or self.sam
 
 
+def _normalize_optional_path(value: str) -> str:
+    text = str(value).strip()
+    if not text:
+        return ""
+    return str(Path(text).expanduser().resolve(strict=False))
+
+
+def _require_explicit_layout(raw: dict[str, str], *, path: Path, line_number: int, cell_id: str) -> str:
+    read_layout = (raw.get("read_layout") or "").strip()
+    if not read_layout:
+        raise ValueError(
+            f"Alignment manifest row missing required read_layout for cell_id={cell_id} at {path}:{line_number}"
+        )
+    if read_layout not in VALID_READ_LAYOUTS:
+        raise ValueError(
+            f"Invalid read_layout '{read_layout}' for cell_id={cell_id} at {path}:{line_number}"
+        )
+    return read_layout
+
+
 def write_alignment_manifest_tsv(rows: Iterable[AlignmentManifestRow], path: Path) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     rows_list = list(rows)
@@ -99,7 +130,16 @@ def write_alignment_manifest_tsv(rows: Iterable[AlignmentManifestRow], path: Pat
         writer = csv.DictWriter(handle, fieldnames=fieldnames, delimiter="\t")
         writer.writeheader()
         for row in sorted(rows_list, key=lambda item: item.cell_id):
-            writer.writerow(row.to_dict())
+            payload = row.to_dict()
+            if not payload.get("read_layout"):
+                raise ValueError(f"Alignment manifest row missing read_layout for cell_id={row.cell_id}")
+            if payload["read_layout"] not in VALID_READ_LAYOUTS:
+                raise ValueError(
+                    f"Invalid alignment manifest read_layout '{payload['read_layout']}' for cell_id={row.cell_id}"
+                )
+            for key in ALIGNMENT_PATH_COLUMNS:
+                payload[key] = _normalize_optional_path(payload.get(key, ""))
+            writer.writerow(payload)
 
 
 def read_alignment_manifest_tsv(path: Path, *, validate_files: bool = True) -> List[AlignmentManifestRow]:
@@ -130,6 +170,7 @@ def read_alignment_manifest_tsv(path: Path, *, validate_files: bool = True) -> L
             if bam and sam:
                 raise ValueError(f"Alignment manifest row has both bam and sam for cell_id={cell_id} at {path}:{i}")
 
+            read_layout = _require_explicit_layout(raw, path=path, line_number=i, cell_id=cell_id)
             alignment_path = resolve_manifest_path(path, bam or sam)
             if validate_files and not alignment_path.exists():
                 raise FileNotFoundError(
@@ -159,11 +200,11 @@ def read_alignment_manifest_tsv(path: Path, *, validate_files: bool = True) -> L
                     bam=str(alignment_path) if bam else "",
                     sam=str(alignment_path) if sam else "",
                     group_id=(raw.get("group_id") or "").strip(),
-                    read_layout=(raw.get("read_layout") or "").strip(),
+                    read_layout=read_layout,
                     aligner=(raw.get("aligner") or "").strip(),
-                    reference=(raw.get("reference") or "").strip(),
+                    reference=_normalize_optional_path(raw.get("reference") or ""),
                     cache_key=(raw.get("cache_key") or "").strip(),
-                    source_manifest=(raw.get("source_manifest") or "").strip(),
+                    source_manifest=_normalize_optional_path(raw.get("source_manifest") or ""),
                     chimeric_junction=_resolved_optional_path("chimeric_junction"),
                     unmapped_mate1=_resolved_optional_path("unmapped_mate1"),
                     unmapped_mate2=_resolved_optional_path("unmapped_mate2"),
@@ -195,7 +236,10 @@ def validate_alignment_manifest_tsv(path: Path, strict: bool = False) -> Tuple[b
             summary["bam_rows"] += 1
         if row.sam:
             summary["sam_rows"] += 1
-        if row.read_layout and row.read_layout not in {"single-end", "paired-end"}:
+        if not row.read_layout:
+            summary["invalid_layouts"] += 1
+            errors.append(f"Missing read_layout for cell_id={row.cell_id}")
+        elif row.read_layout not in VALID_READ_LAYOUTS:
             summary["invalid_layouts"] += 1
             errors.append(f"Invalid read_layout for cell_id={row.cell_id}: {row.read_layout}")
         alignment_path = Path(row.alignment_path)

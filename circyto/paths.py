@@ -116,6 +116,10 @@ def get_bundled_smoke_testdata_dir(name: str = "smartseq2_smoke") -> Path | None
     return testdata_dir / name
 
 
+def get_packaged_smoke_demo_dir(name: str = "smoke_demo") -> Path:
+    return get_package_root() / "resources" / name
+
+
 def resolve_relative_to(base_dir: Path, value: str | Path) -> Path:
     path = Path(value).expanduser()
     if path.is_absolute():

@@ -16,6 +16,7 @@ from circyto.paths import (
     find_ciri3_jar,
     find_ciri_full_jar,
     get_bundled_smoke_testdata_dir,
+    get_packaged_smoke_demo_dir,
     get_repo_root,
     resolve_ciri3_installation,
 )
@@ -55,6 +56,20 @@ def test_get_bundled_smoke_testdata_dir_is_cwd_independent(
 
     assert smoke_dir == repo_root / "testdata" / "smartseq2_smoke"
     assert smoke_dir.exists()
+
+
+def test_get_packaged_smoke_demo_dir_is_cwd_independent(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    repo_root = get_repo_root()
+    assert repo_root is not None
+
+    monkeypatch.chdir(tmp_path)
+    demo_dir = get_packaged_smoke_demo_dir()
+
+    assert demo_dir == repo_root / "circyto" / "resources" / "smoke_demo"
+    assert demo_dir.exists()
 
 
 def test_find_ciri_full_jar_env_override(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> None:

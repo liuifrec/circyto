@@ -94,6 +94,9 @@ def _install_fake_bwa_and_samtools(bin_dir: Path, *, fail_on: str | None = None)
     bwa.write_text(
         "#!/usr/bin/env bash\n"
         "set -euo pipefail\n"
+        "if [[ -n \"${BWA_ARGS_LOG:-}\" ]]; then\n"
+        "  printf '%s\\n' \"$*\" >> \"$BWA_ARGS_LOG\"\n"
+        "fi\n"
         "args=(\"$@\")\n"
         "for a in \"${args[@]}\"; do\n"
         f"  if [[ -n \"{fail_on or ''}\" && \"$a\" == *\"{fail_on or ''}\"* ]]; then exit 19; fi\n"
@@ -518,6 +521,87 @@ def test_prepare_alignment_cache_bwa_mem_for_ciri3_stages_unsorted_sam(tmp_path:
     assert rows[0].mapper_mode == "0"
 
 
+def test_prepare_alignment_cache_bwa_mem_single_end_uses_only_r1(tmp_path: Path, monkeypatch) -> None:
+    r1 = tmp_path / "c1_R1.fastq"
+    r2 = tmp_path / "c1_R2.fastq"
+    r1.write_text("@r1\nACGT\n+\n!!!!\n", encoding="utf-8")
+    r2.write_text("@r2\nTGCA\n+\n!!!!\n", encoding="utf-8")
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "\n".join(
+            [
+                "cell_id\tplatform\tread1\tread2\tbam\tlibrary_id\tn_input_reads\tgroup_id\tread_layout",
+                f"c1\tsmartseq2\t{r1}\t{r2}\t\tlib1\t100\tplateA\tsingle-end",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    _install_fake_bwa_and_samtools(fake_bin)
+    monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
+    args_log = tmp_path / "bwa_args.log"
+    monkeypatch.setenv("BWA_ARGS_LOG", str(args_log))
+    ref = tmp_path / "ref.fa"
+    ref.write_text(">chr1\nACGT\n", encoding="utf-8")
+
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=tmp_path / "align",
+        aligner="bwa-mem",
+        detector_hint="ciri3",
+        ref_fa=ref,
+        threads=2,
+        parallel=1,
+    )
+    rows = read_alignment_manifest_tsv(alignment_manifest, validate_files=True)
+    assert len(rows) == 1
+    assert rows[0].read_layout == "single-end"
+    logged = args_log.read_text(encoding="utf-8").strip()
+    assert str(r1) in logged
+    assert str(r2) not in logged
+
+
+def test_prepare_alignment_cache_bwa_mem_single_end_ignores_whitespace_read2(tmp_path: Path, monkeypatch) -> None:
+    r1 = tmp_path / "c1_R1.fastq"
+    r1.write_text("@r1\nACGT\n+\n!!!!\n", encoding="utf-8")
+    manifest = tmp_path / "manifest.tsv"
+    manifest.write_text(
+        "\n".join(
+            [
+                "cell_id\tplatform\tread1\tread2\tbam\tlibrary_id\tn_input_reads\tgroup_id",
+                f"c1\tsmartseq2\t{r1}\t \t\tlib1\t100\tplateA",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    fake_bin = tmp_path / "bin"
+    fake_bin.mkdir()
+    _install_fake_bwa_and_samtools(fake_bin)
+    monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
+    args_log = tmp_path / "bwa_args.log"
+    monkeypatch.setenv("BWA_ARGS_LOG", str(args_log))
+    ref = tmp_path / "ref.fa"
+    ref.write_text(">chr1\nACGT\n", encoding="utf-8")
+
+    alignment_manifest = prepare_alignment_cache(
+        manifest=manifest,
+        outdir=tmp_path / "align",
+        aligner="bwa-mem",
+        detector_hint="ciri3",
+        ref_fa=ref,
+        threads=2,
+        parallel=1,
+    )
+    rows = read_alignment_manifest_tsv(alignment_manifest, validate_files=True)
+    assert rows[0].read_layout == "single-end"
+    logged = args_log.read_text(encoding="utf-8").strip()
+    assert str(r1) in logged
+    assert logged.split()[-1] == str(r1)
+
+
 def test_prepare_alignment_cache_star_for_ciri3_records_chimeric_junction(tmp_path: Path, monkeypatch) -> None:
     manifest = _write_fastq_manifest(tmp_path, ["c1"])
     fake_bin = tmp_path / "bin"
@@ -654,6 +738,17 @@ def test_prepare_alignment_cache_partial_failure_writes_summary(tmp_path: Path, 
     summary = json.loads((tmp_path / "align" / "alignment_prepare_summary.json").read_text(encoding="utf-8"))
     assert summary["status_counts"]["aligned"] == 1
     assert summary["status_counts"]["failed"] == 1
+    failed = next(cell for cell in summary["cells"] if cell["status"] == "failed")
+    assert failed["read_layout"] == "paired-end"
+    assert "bwa mem" in failed["command"]
+    assert "c2_R1.fastq" in failed["command"]
+    assert failed["log_path"].endswith("c2.align.log")
+    assert failed["stderr_tail"]
+    failure_detail = summary["failures"][0]
+    assert failure_detail["read_layout"] == "paired-end"
+    assert "bwa mem" in failure_detail["command"]
+    assert failure_detail["read2"] is not None
+    assert failure_detail["stderr_tail"]
 
 
 def test_validate_ciri3_template_reports_missing_placeholders() -> None:

@@ -1,26 +1,41 @@
-# Alignment-First Execution
+# CIRI3 Alignment-First Workflow
 
-## Why this exists
+## Purpose
 
-The original circyto detector orchestration path runs each detector per cell from FASTQ input. That means repeated alignment work across:
+Use the alignment-first path when you want to:
 
-- every cell
-- every rerun
-- every detector that shells out to an aligner internally
+- align once and reuse those alignments across reruns
+- run CIRI3 through the intended `prepare-alignment-cache -> run-detector-from-alignments -> collect-matrix` sequence
+- validate workflow mechanics before scaling to a larger cluster run
 
-For small smoke tests that is acceptable. For large demultiplexed datasets it becomes the dominant cost and makes reruns impractical.
+This is the first-class `ciri3` execution path in `circyto`.
 
-## New flow
+## Required inputs
 
-The alignment-first track splits execution into explicit phases:
+Source manifest:
 
-1. source manifest -> prepare or reuse alignments
-2. alignment manifest -> run alignment-capable detector backends
-3. per-cell normalized TSV -> collect-matrix
+- one row per cell
+- `read1` required
+- `read2` optional for paired-end rows
+- `cell_id` required
+- source manifests can infer layout from `read2` presence or absence in simple cases
+- `read_layout` is still strongly recommended in the source manifest and always required in the generated alignment manifest
+- layout inference does not make single-end STAR + CIRI3 supported
 
-This keeps the downstream TSV schema stable while making the expensive alignment stage reusable.
+Reference/runtime:
 
-## Core commands
+- `--ref-fa` matching the aligner index used for the run
+- `bwa` and `samtools`
+- Java plus a usable CIRI3 jar for direct execution, or an explicit CIRI3 command template
+
+Useful preflight:
+
+```bash
+circyto doctor
+circyto detectors --json
+```
+
+## Workflow
 
 Prepare reusable alignments:
 
@@ -28,346 +43,291 @@ Prepare reusable alignments:
 circyto prepare-alignment-cache \
   --manifest manifest.tsv \
   --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
   --detector ciri3 \
+  --ref-fa /path/to/genome.fa \
   --outdir work/alignment_cache \
-  --chunk-size 48 \
-  --sentinel-cells 8
+  --threads 8 \
+  --parallel 4 \
+  --chunk-size 48
 ```
 
-Generate the alignment manifest via the alias:
-
-```bash
-circyto align-manifest \
-  --manifest manifest.tsv \
-  --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
-  --outdir work/alignment_cache
-```
-
-Run an alignment-capable detector:
+Run CIRI3 from the emitted alignment manifest:
 
 ```bash
 circyto run-detector-from-alignments \
   --detector ciri3 \
   --manifest work/alignment_cache/alignment_manifest.tsv \
-  --outdir work/ciri3_run \
-  --ref-fa ref/genome.fa \
+  --outdir work/ciri3 \
+  --ref-fa /path/to/genome.fa \
+  --threads 8 \
+  --parallel 4 \
   --chunk-size 64
 ```
 
-## Alignment manifest
+Collect the matrix:
 
-The alignment manifest is a TSV with one row per cell. Core columns:
+```bash
+circyto collect-matrix \
+  --detector ciri3 \
+  --indir work/ciri3 \
+  --outdir work/ciri3_matrix
+```
+
+## Alignment manifest contract
+
+The generated alignment manifest is the handoff between alignment preparation and CIRI3 execution.
+
+Core columns:
 
 ```text
 cell_id    bam    sam    group_id    read_layout    aligner    reference    cache_key    source_manifest
 ```
 
-Only one of `bam` or `sam` should be populated for a row.
+Current expectations:
 
-## Cache behavior
+- paths are normalized to absolute paths
+- `read_layout` must be explicit
+- BWA-mode CIRI3 rows point to unsorted `sam`
+- `reference` must match the FASTA used later with `run-detector-from-alignments --ref-fa`
 
-Alignment outputs are cached by a hash over:
+Validate before a large run:
 
-- source reads or input BAM
-- read layout
-- aligner strategy
-- reference
-- detector hint
-- alignment flags
+```bash
+circyto manifest validate-alignment --strict work/alignment_cache/alignment_manifest.tsv
+```
 
-This is intended to let future detectors require different alignment caches without pretending one BAM always fits every backend.
+## Local chr21 sentinel example
 
-## Resume and scheduling
+This is the exact bounded validation pattern used locally after the CIRI3 hardening work. It uses real local data subsets plus the local `chr21` reference.
 
-The prepare phase writes:
-
-- `alignment_manifest.tsv`
-- `alignment_prepare_summary.json`
-- `alignment_prepare_plan.json` when `--dry-run` is used
-- per-alignment provenance JSON beside cached BAM/SAM files
-- `chunks/chunk_*.json` per chunk
-
-Useful controls:
-
-- `--sentinel-cells`: run the first N cells before the rest
-- `--chunk-size`: checkpoint the manifest progressively
-- `--parallel`: bound concurrent work
-- `--fail-fast`: stop after the first failed chunk
-- `circyto summarize-chunks --indir ...`: inspect chunk completion state
-- `circyto summarize-run-state --manifest ... --run-dir ... --mode prepare|detector`: audit missing and stale cells
-- `circyto export-run-subset --manifest ... --run-dir ... --subset failed|missing|stale|incomplete --out subset.tsv`: export rerun manifests
-- rerun the same command against the same `--outdir` to resume cached work; chunk history appends and detector summaries retain the whole-run cell set during subset retries
-
-## CIRI3 execution modes
-
-circyto supports two CIRI3 execution modes in the alignment-first path.
-
-### BWA mode (validated locally)
-
-- validated locally with BWA + CIRI3 on a chr21 pilot
-- uses unsorted SAM input
-- CIRI3 mapper mode: `-Ma 0`
-- recommended single-cell stringency: `-S 0`
-- recommended local BWA parameters: `bwa mem -k 15 -T 15`
-
-Minimal example:
+Single-end sentinel:
 
 ```bash
 circyto prepare-alignment-cache \
-  --manifest manifest.tsv \
+  --manifest work/local_validation_20260410/se_manifest.tsv \
   --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
   --detector ciri3 \
-  --outdir work/alignment_cache
+  --ref-fa ref/chr21.fa \
+  --outdir work/post_hardening_ciri3_se/align \
+  --threads 2 \
+  --parallel 1 \
+  --chunk-size 1
+
+circyto manifest validate-alignment --strict \
+  work/post_hardening_ciri3_se/align/alignment_manifest.tsv
 
 circyto run-detector-from-alignments \
   --detector ciri3 \
-  --manifest work/alignment_cache/alignment_manifest.tsv \
-  --outdir work/ciri3_run \
-  --ref-fa ref/genome.fa
+  --manifest work/post_hardening_ciri3_se/align/alignment_manifest.tsv \
+  --outdir work/post_hardening_ciri3_se/ciri3 \
+  --ref-fa ref/chr21.fa \
+  --threads 2 \
+  --parallel 1 \
+  --chunk-size 1
+
+circyto collect-matrix \
+  --detector ciri3 \
+  --indir work/post_hardening_ciri3_se/ciri3 \
+  --outdir work/post_hardening_ciri3_se/matrix
 ```
 
-Assumptions:
-
-- the BWA index matches `ref/genome.fa`
-- the same reference build is used for alignment preparation and detector execution
-- the manifest rows resolve to unsorted SAM for direct CIRI3 execution
-- `samtools` is available for alignment handling and inspection
-
-### STAR mode (supported in code)
-
-- implemented in code for alignment-first workflows
-- requires STAR alignment and a matching STAR index
-- uses CIRI3 mapper mode: `-Ma 1`
-- requires STAR chimeric outputs in the alignment manifest
-- requires a paired BWA rescue SAM when using the official CIRI3 STAR hybrid input path
-- requires `samtools` for alignment handling and inspection
-- runs STAR in a local Linux temp workspace before copying artifacts back into the cache; use `CIRCYTO_STAR_TMPDIR` to force node-local scratch when needed
-
-Minimal example:
+Paired-end sentinel:
 
 ```bash
 circyto prepare-alignment-cache \
-  --manifest manifest.tsv \
-  --aligner star \
-  --ref-fa ref/genome.fa \
+  --manifest work/local_validation_20260410/pe_manifest_10k.tsv \
+  --aligner bwa-mem \
   --detector ciri3 \
-  --outdir work/alignment_cache_star
+  --ref-fa ref/chr21.fa \
+  --outdir work/post_hardening_ciri3_pe/align \
+  --threads 2 \
+  --parallel 1 \
+  --chunk-size 1
+
+circyto manifest validate-alignment --strict \
+  work/post_hardening_ciri3_pe/align/alignment_manifest.tsv
 
 circyto run-detector-from-alignments \
   --detector ciri3 \
-  --manifest work/alignment_cache_star/alignment_manifest.tsv \
-  --outdir work/ciri3_star_run \
-  --ref-fa ref/genome.fa
-```
+  --manifest work/post_hardening_ciri3_pe/align/alignment_manifest.tsv \
+  --outdir work/post_hardening_ciri3_pe/ciri3 \
+  --ref-fa ref/chr21.fa \
+  --threads 2 \
+  --parallel 1 \
+  --chunk-size 1
 
-Note: STAR mode now completes through the normal CLI on a small real chr21 subset with the official hybrid contract. BWA + CIRI3 remains the validated baseline, and larger STAR runs should still be rechecked on the target server environment.
-
-## CIRI3 template validation
-
-Template execution remains available when you need to pin an explicit local command contract.
-
-Preflight before a large run:
-
-```bash
-circyto validate-ciri3-template \
-  --template 'ciri3 --bam {alignment} --out {raw_output} --threads {threads} --cell {cell_id} --tmp {outdir} --fmt {alignment_format}'
-```
-
-Required placeholders:
-
-- `alignment`
-- `alignment_format`
-- `cell_id`
-- `threads`
-- `raw_output`
-- `outdir`
-
-Optional placeholders:
-
-- `ref_fa`
-- `gtf`
-- `extra_args`
-- `read_layout`
-- `group_id`
-- `log_path`
-
-Template mode does not require `ref_fa` unless your template explicitly uses `{ref_fa}`. Direct `java -jar` mode still requires `--ref-fa`.
-
-Plan mode now records exact first-command previews for both alignment preparation and CIRI3 detector execution when a template is configured.
-
-## Small local validation
-
-To validate the full alignment-first plumbing with local repo assets:
-
-```bash
-circyto smoke --detector ciri3 --aligner bwa-mem --outdir work/smoke_bwa
-circyto smoke --detector ciri3 --aligner star --outdir work/smoke_star
-```
-
-This uses a tiny local chr21 subset. It validates the end-to-end workflow shape:
-
-- FASTQ manifest
-- alignment preparation
-- alignment manifest
-- CIRI3 execution
-- `collect-matrix`
-
-This smoke path validates workflow mechanics, not biological CIRI3 correctness. Empty smoke outputs can still be a PASS unless `--require-nonempty` is requested.
-
-## PRJNA607968-style workflow
-
-For a large demultiplexed rerun, the goal is to pay alignment cost once, checkpoint aggressively, and resume only missing work.
-
-1. Plan the run:
-
-```bash
-circyto plan-alignment-cache \
-  --manifest prjna607968_manifest.tsv \
-  --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
+circyto collect-matrix \
   --detector ciri3 \
-  --outdir work/prjna607968_align
+  --indir work/post_hardening_ciri3_pe/ciri3 \
+  --outdir work/post_hardening_ciri3_pe/matrix
 ```
 
-2. Run a sentinel-first alignment preparation:
+Structural success criteria:
+
+- `alignment_manifest.tsv` exists and validates
+- `alignment_prepare_summary.json` exists
+- `detector_run_summary.json` exists
+- per-cell normalized TSV exists
+- matrix files exist
+
+Biological emptiness is acceptable for this sentinel if the run completes cleanly.
+
+## Cluster whole-genome recipe
+
+Replace the paths below with your cluster locations and keep the command order unchanged.
+
+Environment preflight:
+
+```bash
+circyto doctor
+circyto smoke --detector ciri3 --aligner bwa-mem --outdir /scratch/$USER/circyto_smoke
+```
+
+Alignment preparation:
 
 ```bash
 circyto prepare-alignment-cache \
-  --manifest prjna607968_manifest.tsv \
+  --manifest /project/manifests/project_manifest.tsv \
   --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
   --detector ciri3 \
-  --outdir work/prjna607968_align \
-  --sentinel-cells 8 \
-  --chunk-size 48 \
+  --ref-fa /project/ref/genome.fa \
+  --outdir /scratch/$USER/project_alignments \
+  --threads 16 \
   --parallel 8 \
-  --index-bam
+  --chunk-size 64 \
+  --sentinel-cells 8
 ```
 
-3. Validate the resulting alignment manifest:
+Alignment manifest validation:
 
 ```bash
-circyto manifest validate-alignment work/prjna607968_align/alignment_manifest.tsv --strict
+circyto manifest validate-alignment --strict \
+  /scratch/$USER/project_alignments/alignment_manifest.tsv
 ```
 
-4. Validate the CIRI3 template once if you intend to use explicit template execution:
+Detector execution:
 
 ```bash
-circyto validate-ciri3-template \
-  --template 'ciri3 --bam {alignment} --out {raw_output} --threads {threads} --cell {cell_id} --tmp {outdir} --fmt {alignment_format}'
-```
-
-5. Run CIRI3 from alignments:
-
-```bash
-export CIRCYTO_CIRI3_CMD_TEMPLATE='ciri3 --bam {alignment} --out {raw_output} --threads {threads} --cell {cell_id} --tmp {outdir} --fmt {alignment_format}'
-
 circyto run-detector-from-alignments \
   --detector ciri3 \
-  --manifest work/prjna607968_align/alignment_manifest.tsv \
-  --outdir work/prjna607968_ciri3 \
-  --ref-fa ref/genome.fa \
+  --manifest /scratch/$USER/project_alignments/alignment_manifest.tsv \
+  --outdir /scratch/$USER/project_ciri3 \
+  --ref-fa /project/ref/genome.fa \
+  --threads 16 \
+  --parallel 8 \
   --chunk-size 64 \
-  --parallel 8
+  --sentinel-cells 8
 ```
 
-For direct local execution instead of template mode, ensure Java and a CIRI3 jar are detected by `circyto doctor`, and keep `--ref-fa` consistent with the reference used during alignment preparation.
-
-6. Collect the matrix:
+Matrix collection:
 
 ```bash
 circyto collect-matrix \
   --detector ciri3 \
-  --indir work/prjna607968_ciri3 \
-  --outdir work/prjna607968_ciri3_matrix
+  --indir /scratch/$USER/project_ciri3 \
+  --outdir /scratch/$USER/project_ciri3_matrix
 ```
 
-7. Resume only incomplete work:
+After the sentinel succeeds, rerun the same `prepare-alignment-cache` and `run-detector-from-alignments` commands without `--sentinel-cells` for the full batch.
+
+## STAR + CIRI3
+
+Use STAR + CIRI3 only when you specifically want the official STAR hybrid path.
+
+Current status:
+
+- paired-end only
+- real alignment-first execution is supported for paired-end rows
+- single-end STAR + CIRI3 is not implemented in the current hybrid rescue path
+- BWA + CIRI3 remains the baseline reliable path for sentinel and production use
+
+Operator requirements:
+
+- pass a usable STAR genome index explicitly
+- use `--extra-flags "--genomeDir /path/to/star_index"`
+- for gzipped FASTQs, also pass `--readFilesCommand zcat`
+- keep `--ref-fa` consistent with the reference used for STAR and the downstream CIRI3 run
+
+Paired-end STAR example:
 
 ```bash
-circyto summarize-chunks --indir work/prjna607968_align
-circyto summarize-chunks --indir work/prjna607968_ciri3
+circyto prepare-alignment-cache \
+  --manifest /project/manifests/project_manifest.tsv \
+  --aligner star \
+  --detector ciri3 \
+  --ref-fa /project/ref/genome.fa \
+  --extra-flags "--genomeDir /project/ref/star_index" \
+  --outdir /scratch/$USER/project_alignments_star \
+  --threads 16 \
+  --parallel 8 \
+  --chunk-size 64 \
+  --sentinel-cells 8
 
-# rerun the exact same prepare or detector command
-# completed rows are skipped via cache/provenance
+circyto manifest validate-alignment --strict \
+  /scratch/$USER/project_alignments_star/alignment_manifest.tsv
+
+circyto run-detector-from-alignments \
+  --detector ciri3 \
+  --manifest /scratch/$USER/project_alignments_star/alignment_manifest.tsv \
+  --outdir /scratch/$USER/project_ciri3_star \
+  --ref-fa /project/ref/genome.fa \
+  --threads 16 \
+  --parallel 8 \
+  --chunk-size 64 \
+  --sentinel-cells 8
+
+circyto collect-matrix \
+  --detector ciri3 \
+  --indir /scratch/$USER/project_ciri3_star \
+  --outdir /scratch/$USER/project_ciri3_star_matrix
 ```
 
-This is the operational difference from the older week-scale per-cell FASTQ model: alignments are checkpointed and reused, and failed chunks do not force a full project restart.
-
-## Resume after failure
-
-Export only failed cells from an interrupted prepare run:
+Paired-end STAR example for gzipped FASTQs:
 
 ```bash
-circyto export-run-subset \
-  --manifest prjna607968_manifest.tsv \
-  --run-dir work/prjna607968_align \
-  --subset failed \
-  --out work/prjna607968_failed_prepare.tsv
+circyto prepare-alignment-cache \
+  --manifest /project/manifests/project_manifest.tsv \
+  --aligner star \
+  --detector ciri3 \
+  --ref-fa /project/ref/genome.fa \
+  --extra-flags "--genomeDir /project/ref/star_index --readFilesCommand zcat" \
+  --outdir /scratch/$USER/project_alignments_star \
+  --threads 16 \
+  --parallel 8 \
+  --chunk-size 64 \
+  --sentinel-cells 8
 ```
 
-Export only failed detector rows:
+Single-end STAR + CIRI3 is rejected deliberately. Use BWA + CIRI3 instead.
+
+## Smoke command
+
+Recommended install/runtime smoke:
 
 ```bash
-circyto export-run-subset \
-  --manifest work/prjna607968_align/alignment_manifest.tsv \
-  --run-dir work/prjna607968_ciri3 \
-  --subset failed \
-  --out work/prjna607968_failed_detector.tsv
+circyto smoke --detector ciri3 --aligner bwa-mem --outdir work/smoke_ciri3_bwa
+circyto smoke --detector ciri3 --aligner bwa-mem --read-layout single-end --outdir work/smoke_ciri3_bwa_se
+circyto smoke --detector ciri3 --aligner star --outdir work/smoke_ciri3_star
 ```
 
-Export one failed chunk as a standalone rerun manifest:
+What smoke does now:
 
-```bash
-circyto export-run-subset \
-  --manifest work/prjna607968_align/alignment_manifest.tsv \
-  --run-dir work/prjna607968_ciri3 \
-  --chunk-index 3 \
-  --out work/prjna607968_chunk3.tsv
-```
+- stages packaged demo FASTQs and a tiny packaged reference under the chosen `--outdir`
+- builds lightweight local indexes as needed
+- runs a packaged alignment-first demo path that validates CLI plumbing
+- writes `smoke_summary.json` plus a final single-cell matrix
 
-## Sentinel-first overnight recipe
+Limitations:
 
-Recommended overnight pattern:
+- smoke is not a real biological CIRI3 validation
+- smoke validates packaged demo plumbing and CLI/runtime wiring
+- the packaged demo is intentionally tiny
+- empty outputs may still count as a PASS unless `--require-nonempty` is used
+- the default smoke path uses a packaged CIRI3-compatible template for stability on fresh machines rather than the full real-data execution path
 
-1. `circyto plan-alignment-cache ... --preview-rows 5`
-2. `circyto validate-ciri3-template --template '...'`
-3. `circyto prepare-alignment-cache ... --sentinel-cells 8 --chunk-size 48`
-4. `circyto run-detector-from-alignments ... --sentinel-cells 8 --chunk-size 64`
-5. next morning, inspect:
-   `circyto summarize-chunks --indir work/prjna607968_align`
-   `circyto summarize-run-state --manifest ... --run-dir ... --mode detector`
+## Notes
 
-## Provenance
-
-The detector summary and per-cell records now include:
-
-- `read_layout`
-- `execution_mode`
-- `input_mode`
-- `reused_alignment`
-- `detector_backend`
-
-This makes reused alignment behavior explicit rather than hidden.
-
-## Current scope
-
-Implemented now:
-
-- alignment manifest format
-- reusable alignment cache plumbing
-- built-in `bwa mem` preparation with sorted BAM output
-- resumable prepare phase with chunking, per-chunk summaries, and sentinel-first scheduling
-- alignment-native detector execution path with chunking and skip-existing support
-- first-class `ciri3` detector registration plus validated template execution
-- manifest export for failed, missing, incomplete, and chunk-specific reruns
-- manifest-aware stale-output auditing and chunk summaries
-
-Still future work:
-
-- richer built-in aligner recipes beyond `reuse-existing` and `bwa-mem`
-- multisample slicing and detector-specific partitioners
-- additional alignment-native detector backends
+- BWA mode is the baseline validated CIRI3 path.
+- STAR + CIRI3 should currently be treated as a paired-end-only operator path.
+- Keep the reference build consistent across alignment preparation, detector execution, and any downstream interpretation.
+- For cluster runs, start with `--sentinel-cells` and inspect the emitted JSON summaries before scaling out.

@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import csv
-import gzip
 import json
 import os
 import shutil
+import subprocess
 import time
 from pathlib import Path
 from typing import Optional
@@ -14,6 +14,7 @@ from rich.console import Console
 
 from circyto.detectors import build_default_engines
 from circyto.detectors.base import get_detector_capabilities
+from circyto.detectors.ciri3 import Ciri3Detector
 from circyto.manifest.v1 import validate_manifest_tsv
 from circyto.pipeline.run_detector import read_manifest, run_detector_manifest
 from circyto.pipeline.collect import collect_matrix
@@ -21,7 +22,7 @@ from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
 from circyto.pipeline.align_manifest import prepare_alignment_cache, run_detector_alignment_manifest
 from circyto.writers.convert import convert_matrix_files
 from circyto.demux.smartseq2 import SmartSeq2DemuxParams, demux_smartseq2_pooled
-from circyto.paths import get_repo_root, get_tools_dir
+from circyto.paths import get_packaged_smoke_demo_dir
 
 smoke_app = typer.Typer(
     help="One-command smoke tests (public data / dev).",
@@ -121,26 +122,193 @@ def _count_detector_rows(tsv_path: Path) -> int:
     return len([line for line in lines[1:] if line.strip()])
 
 
+def _pick_manifest_value(row: dict[str, str], *keys: str) -> str:
+    for key in keys:
+        value = (row.get(key) or "").strip()
+        if value:
+            return value
+    return ""
+
+
+def _read_smoke_manifest_rows(manifest: Path) -> tuple[list[str], list[dict[str, str]]]:
+    with manifest.open("r", encoding="utf-8", newline="") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        if reader.fieldnames is None or "cell_id" not in reader.fieldnames:
+            raise typer.BadParameter(f"Manifest missing required column 'cell_id': {manifest}")
+        header = list(reader.fieldnames)
+        rows = [{k: "" if v is None else str(v) for k, v in row.items()} for row in reader]
+    if not rows:
+        raise typer.BadParameter(f"Manifest contains 0 data rows: {manifest}")
+    return header, rows
+
+
+def _validate_smoke_manifest_selection(
+    manifest: Path,
+    rows: list[dict[str, str]],
+    *,
+    fixture_kind: str,
+) -> dict[str, str]:
+    layouts: set[str] = set()
+    selected_fastqs: list[str] = []
+    selected_cells: list[str] = []
+    for index, row in enumerate(rows, start=1):
+        cell_id = (row.get("cell_id") or "").strip() or f"row{index}"
+        read1_raw = _pick_manifest_value(row, "read1", "r1")
+        read2_raw = _pick_manifest_value(row, "read2", "r2")
+        declared_layout = (row.get("read_layout") or "").strip()
+        if declared_layout and declared_layout not in {"single-end", "paired-end"}:
+            raise typer.BadParameter(
+                f"Invalid read_layout for smoke fixture row cell_id={cell_id}: {declared_layout}"
+            )
+        inferred_layout = declared_layout or ("paired-end" if read2_raw else "single-end")
+        if not read1_raw:
+            raise typer.BadParameter(
+                f"Smoke fixture row cell_id={cell_id} is missing read1/r1. "
+                f"Fixture kind={fixture_kind}. Pass --manifest explicitly if needed."
+            )
+        if inferred_layout == "single-end" and read2_raw:
+            raise typer.BadParameter(
+                f"Smoke fixture row cell_id={cell_id} declares single-end but also provides read2/r2={read2_raw}. "
+                "Pass --manifest explicitly if needed."
+            )
+        if inferred_layout == "paired-end" and not read2_raw:
+            raise typer.BadParameter(
+                f"Smoke fixture row cell_id={cell_id} requires paired-end input but is missing read2/r2. "
+                "Pass --manifest explicitly if needed."
+            )
+        read1 = (manifest.parent / read1_raw) if not Path(read1_raw).is_absolute() else Path(read1_raw)
+        if not read1.exists():
+            raise typer.BadParameter(
+                f"Smoke fixture read1 missing for cell_id={cell_id}: {read1} "
+                f"(mode={inferred_layout}). Pass --manifest explicitly if needed."
+            )
+        selected_fastqs.append(str(read1.resolve()))
+        if inferred_layout == "paired-end":
+            read2 = (manifest.parent / read2_raw) if not Path(read2_raw).is_absolute() else Path(read2_raw)
+            if not read2.exists():
+                raise typer.BadParameter(
+                    f"Smoke fixture read2 missing for cell_id={cell_id}: {read2} "
+                    f"(mode=paired-end). Pass --manifest explicitly if needed."
+                )
+            selected_fastqs.append(str(read2.resolve()))
+        layouts.add(inferred_layout)
+        selected_cells.append(cell_id)
+
+    if len(layouts) != 1:
+        raise typer.BadParameter(
+            f"Smoke fixture selection mixes read layouts: {', '.join(sorted(layouts))}. "
+            "Choose a single-layout fixture set or pass --manifest explicitly."
+        )
+
+    return {
+        "read_layout": next(iter(layouts)),
+        "fixture_cells": ",".join(selected_cells),
+        "selected_fastqs": ",".join(selected_fastqs),
+    }
+
+
+def _copy_smoke_resource(src: Path, dest: Path) -> Path:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    shutil.copy2(src, dest)
+    return dest
+
+
+def _stage_packaged_smoke_demo(
+    *,
+    outdir: Path,
+    read_layout: str,
+) -> tuple[Path, Path, Path, dict[str, str]]:
+    demo_dir = get_packaged_smoke_demo_dir()
+    if not demo_dir.exists():
+        raise typer.BadParameter(f"Packaged smoke demo directory not found: {demo_dir}")
+    if read_layout not in {"single-end", "paired-end"}:
+        raise typer.BadParameter(f"Unsupported smoke read_layout: {read_layout}")
+
+    stage_dir = outdir / "demo"
+    stage_dir.mkdir(parents=True, exist_ok=True)
+    staged_ref = _copy_smoke_resource(demo_dir / "reference.fa", stage_dir / "reference.fa")
+    staged_gtf = _copy_smoke_resource(demo_dir / "reference.gtf", stage_dir / "reference.gtf")
+
+    if read_layout == "single-end":
+        staged_r1 = _copy_smoke_resource(demo_dir / "single_end.fastq", stage_dir / "single_end.fastq")
+        staged_r2: Path | None = None
+        cell_id = "smoke_se"
+    else:
+        staged_r1 = _copy_smoke_resource(demo_dir / "paired_end_R1.fastq", stage_dir / "paired_end_R1.fastq")
+        staged_r2 = _copy_smoke_resource(demo_dir / "paired_end_R2.fastq", stage_dir / "paired_end_R2.fastq")
+        cell_id = "smoke_pe"
+
+    manifest = outdir / "smoke_manifest.tsv"
+    header = [
+        "cell_id",
+        "platform",
+        "read1",
+        "read2",
+        "bam",
+        "library_id",
+        "n_input_reads",
+        "group_id",
+        "read_layout",
+    ]
+    row = {
+        "cell_id": cell_id,
+        "platform": "smartseq2",
+        "read1": str(staged_r1.resolve()),
+        "read2": str(staged_r2.resolve()) if staged_r2 is not None else "",
+        "bam": "",
+        "library_id": "packaged_smoke_demo",
+        "n_input_reads": "2",
+        "group_id": "smoke",
+        "read_layout": read_layout,
+    }
+    with manifest.open("w", encoding="utf-8", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=header, delimiter="\t")
+        writer.writeheader()
+        writer.writerow(row)
+
+    return (
+        manifest,
+        staged_ref,
+        staged_gtf,
+        {
+            "fixture_kind": "packaged-demo",
+            "fixture_manifest": str(manifest),
+            "fixture_cells": cell_id,
+            "read_layout": read_layout,
+            "selected_fastqs": ",".join(
+                [str(staged_r1.resolve())] + ([str(staged_r2.resolve())] if staged_r2 is not None else [])
+            ),
+            "packaged_demo_dir": str(demo_dir),
+            "staged_demo_dir": str(stage_dir),
+        },
+    )
+
+
+def _build_smoke_detector(detector_name: str, detector_engine):
+    if detector_name == "ciri3" and isinstance(detector_engine, Ciri3Detector):
+        script = get_packaged_smoke_demo_dir() / "ciri3_smoke_template.sh"
+        if not script.exists():
+            raise typer.BadParameter(f"Packaged smoke template not found: {script}")
+        return Ciri3Detector(
+            command_template=f"bash {script} {{alignment}} {{raw_output}} {{cell_id}}",
+        )
+    return detector_engine
+
+
 def _select_alignment_first_fixture(
     *,
     manifest: Path | None,
     outdir: Path,
     subset_cells: int,
-) -> tuple[Path, dict[str, str]]:
+    read_layout: str,
+) -> tuple[Path, Path | None, Path | None, dict[str, str]]:
     if subset_cells < 1:
         raise typer.BadParameter("--subset-cells must be >= 1")
 
     if manifest is not None:
-        rows: list[dict[str, str]] = []
-        with manifest.open("r", encoding="utf-8", newline="") as handle:
-            reader = csv.DictReader(handle, delimiter="\t")
-            if reader.fieldnames is None or "cell_id" not in reader.fieldnames:
-                raise typer.BadParameter(f"Manifest missing required column 'cell_id': {manifest}")
-            header = list(reader.fieldnames)
-            for row in reader:
-                rows.append({k: "" if v is None else str(v) for k, v in row.items()})
-        if not rows:
-            raise typer.BadParameter(f"Manifest contains 0 data rows: {manifest}")
+        if not manifest.exists():
+            raise typer.BadParameter(f"Smoke manifest not found: {manifest}")
+        header, rows = _read_smoke_manifest_rows(manifest)
         selected = rows[:subset_cells]
         selected_manifest = outdir / "smoke_manifest.tsv"
         with selected_manifest.open("w", encoding="utf-8", newline="") as handle:
@@ -148,85 +316,27 @@ def _select_alignment_first_fixture(
             writer.writeheader()
             for row in selected:
                 writer.writerow({key: row.get(key, "") for key in header})
-        return selected_manifest, {
+        meta = _validate_smoke_manifest_selection(
+            selected_manifest,
+            selected,
+            fixture_kind="manifest-override",
+        )
+        return selected_manifest, None, None, {
             "fixture_kind": "manifest-override",
             "fixture_manifest": str(manifest),
-            "fixture_cells": ",".join(row["cell_id"] for row in selected),
+            **meta,
         }
 
-    repo_root = get_repo_root()
-    tools_dir = get_tools_dir()
-    if repo_root is None or tools_dir is None:
-        raise typer.BadParameter("Could not resolve repo-local smoke fixtures.")
     if subset_cells != 1:
         raise typer.BadParameter(
-            "Built-in alignment-first smoke fixtures only provide one stable paired-end sample. "
+            "The packaged smoke demo provides one stable demo sample per layout. "
             "Use --manifest to smoke test more than one cell."
         )
-
-    default_manifest = repo_root / "manifest_2.tsv"
-    if default_manifest.exists():
-        rows: list[dict[str, str]] = []
-        with default_manifest.open("r", encoding="utf-8", newline="") as handle:
-            reader = csv.DictReader(handle, delimiter="\t")
-            if reader.fieldnames:
-                rows = [{k: "" if v is None else str(v) for k, v in row.items()} for row in reader]
-        if rows:
-            first = rows[0]
-            source_r1 = (repo_root / first.get("r1", "")).resolve()
-            source_r2 = (repo_root / first.get("r2", "")).resolve()
-            if source_r1.exists() and source_r2.exists():
-                subset_dir = outdir / "fixture_fastq"
-                subset_dir.mkdir(parents=True, exist_ok=True)
-                r1 = subset_dir / f"{first['cell_id']}_R1_1k.fastq"
-                r2 = subset_dir / f"{first['cell_id']}_R2_1k.fastq"
-
-                def _subset_fastq(src: Path, dst: Path, n_reads: int = 1000) -> None:
-                    with gzip.open(src, "rt") as in_handle, dst.open("w", encoding="utf-8") as out_handle:
-                        for _ in range(n_reads * 4):
-                            line = in_handle.readline()
-                            if not line:
-                                break
-                            out_handle.write(line)
-
-                if not r1.exists():
-                    _subset_fastq(source_r1, r1)
-                if not r2.exists():
-                    _subset_fastq(source_r2, r2)
-
-                selected_manifest = outdir / "smoke_manifest.tsv"
-                selected_manifest.write_text(
-                    "cell_id\tplatform\tread1\tread2\tbam\tlibrary_id\tn_input_reads\tgroup_id\n"
-                    f"{first['cell_id']}_1k\tsmartseq2\t{r1}\t{r2}\t\tciri3-smoke\t0\tsmoke\n",
-                    encoding="utf-8",
-                )
-                return selected_manifest, {
-                    "fixture_kind": "repo-chr21-subset",
-                    "fixture_manifest": str(default_manifest),
-                    "fixture_source_cell": first["cell_id"],
-                    "fixture_r1": str(r1),
-                    "fixture_r2": str(r2),
-                    "fixture_cells": f"{first['cell_id']}_1k",
-                }
-
-    r1 = tools_dir / "CIRI-full_v2.0" / "CIRI-full_test" / "test_1.fq.gz"
-    r2 = tools_dir / "CIRI-full_v2.0" / "CIRI-full_test" / "test_2.fq.gz"
-    if not r1.exists() or not r2.exists():
-        raise typer.BadParameter(f"Smoke FASTQs not found: {r1} {r2}")
-
-    selected_manifest = outdir / "smoke_manifest.tsv"
-    selected_manifest.write_text(
-        "cell_id\tplatform\tread1\tread2\tbam\tlibrary_id\tn_input_reads\tgroup_id\n"
-        f"smoke1\tsmartseq2\t{r1}\t{r2}\t\tciri3-smoke\t0\tsmoke\n",
-        encoding="utf-8",
+    manifest_path, staged_ref, staged_gtf, meta = _stage_packaged_smoke_demo(
+        outdir=outdir,
+        read_layout=read_layout,
     )
-    return selected_manifest, {
-        "fixture_kind": "repo-bundled",
-        "fixture_manifest": str(selected_manifest),
-        "fixture_r1": str(r1),
-        "fixture_r2": str(r2),
-        "fixture_cells": "smoke1",
-    }
+    return manifest_path, staged_ref, staged_gtf, meta
 
 
 def _resolve_smoke_references(
@@ -235,22 +345,77 @@ def _resolve_smoke_references(
     gtf: Path | None,
     genome_dir: Path | None,
     aligner: str,
+    fixture_ref: Path | None,
+    fixture_gtf: Path | None,
 ) -> tuple[Path, Path | None, Path | None]:
-    repo_root = get_repo_root()
-    default_ref = repo_root / "ref" / "chr21.fa" if repo_root is not None else None
-    default_gtf = repo_root / "ref" / "chr21.gtf" if repo_root is not None else None
-    default_genome_dir = repo_root / "ref" / "star_index_chr21" if repo_root is not None else None
-
-    resolved_ref = ref_fa or default_ref
-    resolved_gtf = gtf or default_gtf
-    resolved_genome_dir = genome_dir or default_genome_dir
+    resolved_ref = ref_fa or fixture_ref
+    resolved_gtf = gtf or fixture_gtf
+    resolved_genome_dir = genome_dir
     if resolved_ref is None or not resolved_ref.exists():
         raise typer.BadParameter(f"Reference FASTA not found: {resolved_ref}")
-    if aligner == "star" and (resolved_genome_dir is None or not resolved_genome_dir.exists()):
-        raise typer.BadParameter(
-            "STAR smoke requires --genome-dir or a repo-local ref/star_index_chr21 fixture."
-        )
+    if resolved_gtf is not None and not resolved_gtf.exists():
+        raise typer.BadParameter(f"GTF not found: {resolved_gtf}")
     return resolved_ref, resolved_gtf, resolved_genome_dir
+
+
+def _require_smoke_command(name: str, *, purpose: str) -> None:
+    if shutil.which(name) is None:
+        raise typer.BadParameter(f"Smoke requires '{name}' for {purpose}, but it was not found in PATH.")
+
+
+def _run_smoke_command(cmd: list[str], *, cwd: Path, label: str) -> None:
+    result = subprocess.run(
+        cmd,
+        cwd=cwd,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.STDOUT,
+        text=True,
+        check=False,
+    )
+    if result.returncode != 0:
+        tail = "\n".join((result.stdout or "").splitlines()[-40:])
+        raise RuntimeError(
+            f"Smoke {label} failed with exit={result.returncode}: {' '.join(cmd)}"
+            + (f"\n--- output tail ---\n{tail}" if tail else "")
+        )
+
+
+def _ensure_bwa_index(ref_fa: Path) -> list[str]:
+    suffixes = [".amb", ".ann", ".bwt", ".pac", ".sa"]
+    if all((ref_fa.parent / f"{ref_fa.name}{suffix}").exists() for suffix in suffixes):
+        return []
+    _require_smoke_command("bwa", purpose="BWA smoke alignment")
+    _run_smoke_command(["bwa", "index", str(ref_fa)], cwd=ref_fa.parent, label="bwa index")
+    return [str(ref_fa.parent / f"{ref_fa.name}{suffix}") for suffix in suffixes]
+
+
+def _ensure_star_genome_dir(ref_fa: Path, gtf: Path | None, genome_dir: Path) -> Path:
+    if gtf is None:
+        raise typer.BadParameter("STAR smoke requires a GTF annotation.")
+    genome_dir.mkdir(parents=True, exist_ok=True)
+    if (genome_dir / "genomeParameters.txt").exists():
+        return genome_dir
+    _require_smoke_command("STAR", purpose="STAR smoke alignment")
+    _run_smoke_command(
+        [
+            "STAR",
+            "--runMode",
+            "genomeGenerate",
+            "--runThreadN",
+            "1",
+            "--genomeDir",
+            str(genome_dir),
+            "--genomeFastaFiles",
+            str(ref_fa),
+            "--sjdbGTFfile",
+            str(gtf),
+            "--genomeSAindexNbases",
+            "3",
+        ],
+        cwd=genome_dir,
+        label="STAR genomeGenerate",
+    )
+    return genome_dir
 
 
 def _summarize_alignment_first_smoke(
@@ -319,6 +484,7 @@ def smoke_root(
     detector: str = typer.Option("ciri3", "--detector", "-d"),
     aligner: str = typer.Option("bwa-mem", "--aligner"),
     mode: str = typer.Option("alignment-first", "--mode"),
+    read_layout: str = typer.Option("paired-end", "--read-layout"),
     outdir: Path = typer.Option(Path("work/smoke"), "--outdir", "-o"),
     ref_fa: Optional[Path] = typer.Option(None, "--ref-fa"),
     gtf: Optional[Path] = typer.Option(None, "--gtf"),
@@ -336,7 +502,7 @@ def smoke_root(
     """
     Run a fast installation and workflow smoke test.
 
-    The default smoke path is alignment-first CIRI3 with a tiny local fixture.
+    The default smoke path is alignment-first CIRI3 with packaged demo inputs.
     Success means the workflow completed cleanly. Empty outputs are still a PASS
     unless `--require-nonempty` is requested.
     """
@@ -356,16 +522,21 @@ def smoke_root(
             "circyto smoke currently supports detector=ciri3 only. "
             "Other detectors should be smoke-tested via their existing workflows."
         )
+    if read_layout not in {"single-end", "paired-end"}:
+        raise typer.BadParameter("--read-layout must be single-end or paired-end")
     if aligner not in {"bwa-mem", "star"}:
         raise typer.BadParameter("Smoke aligner must be one of: bwa-mem, star")
     if not use_testdata and manifest is None:
         raise typer.BadParameter("--use-local-manifest requires --manifest")
+    if aligner == "star" and read_layout != "paired-end":
+        raise typer.BadParameter("STAR smoke currently requires --read-layout paired-end")
 
     engines = build_default_engines()
     if detector not in engines:
         avail = ", ".join(sorted(engines.keys()))
         raise typer.BadParameter(f"Unknown detector '{detector}'. Available: {avail}")
     det_engine = engines[detector]
+    det_engine = _build_smoke_detector(detector, det_engine)
     caps = get_detector_capabilities(det_engine)
     if not caps.accepts_alignment:
         raise typer.BadParameter(f"Detector '{detector}' does not support alignment-first smoke.")
@@ -382,23 +553,35 @@ def smoke_root(
     outdir = outdir.resolve()
     outdir.mkdir(parents=True, exist_ok=True)
     manifest_override = manifest.resolve() if manifest is not None else None
-    smoke_manifest, fixture_meta = _select_alignment_first_fixture(
+    smoke_manifest, fixture_ref, fixture_gtf, fixture_meta = _select_alignment_first_fixture(
         manifest=manifest_override if not use_testdata else None,
         outdir=outdir,
         subset_cells=subset_cells,
+        read_layout=read_layout,
     )
     if use_testdata and manifest_override is not None:
-        smoke_manifest, fixture_meta = _select_alignment_first_fixture(
+        smoke_manifest, fixture_ref, fixture_gtf, fixture_meta = _select_alignment_first_fixture(
             manifest=manifest_override,
             outdir=outdir,
             subset_cells=subset_cells,
+            read_layout=read_layout,
         )
     resolved_ref, resolved_gtf, resolved_genome_dir = _resolve_smoke_references(
         ref_fa=ref_fa,
         gtf=gtf,
         genome_dir=genome_dir,
         aligner=aligner,
+        fixture_ref=fixture_ref,
+        fixture_gtf=fixture_gtf,
     )
+
+    generated_index_paths = _ensure_bwa_index(resolved_ref)
+    if aligner == "star":
+        resolved_genome_dir = _ensure_star_genome_dir(
+            resolved_ref,
+            resolved_gtf,
+            resolved_genome_dir or (outdir / "demo" / "star_index"),
+        )
 
     extra_flags = ""
     previous_star_tmpdir = os.environ.get("CIRCYTO_STAR_TMPDIR")
@@ -414,6 +597,16 @@ def smoke_root(
     prepare_dir.mkdir(parents=True, exist_ok=True)
     detector_dir.mkdir(parents=True, exist_ok=True)
     matrix_dir.mkdir(parents=True, exist_ok=True)
+    selected_fastqs = [item for item in fixture_meta.get("selected_fastqs", "").split(",") if item]
+    if not json_summary:
+        console.print(
+            f"fixture={fixture_meta['fixture_kind']} manifest={smoke_manifest} read_layout={fixture_meta.get('read_layout', 'unknown')}"
+        )
+        if selected_fastqs:
+            console.print("selected_fastqs=" + ", ".join(selected_fastqs))
+        console.print(f"reference={resolved_ref}")
+        if aligner == "star":
+            console.print(f"genome_dir={resolved_genome_dir}")
     started = time.perf_counter()
     try:
         alignment_manifest = prepare_alignment_cache(
@@ -460,6 +653,8 @@ def smoke_root(
                 "gtf": str(resolved_gtf) if resolved_gtf else None,
                 "genome_dir": str(resolved_genome_dir) if resolved_genome_dir else None,
                 "tmpdir": str(tmpdir) if tmpdir else None,
+                "read_layout": read_layout,
+                "generated_index_paths": generated_index_paths,
                 "summary_path": str(summary_path),
             }
         )
@@ -471,6 +666,7 @@ def smoke_root(
                 "[bold]SMOKE[/bold]",
                 f"detector={detector}",
                 f"aligner={aligner}",
+                f"read_layout={read_layout}",
                 f"cells={summary['cells_used']}",
                 f"matrix={summary['matrix_rows']}x{summary['matrix_cols']}",
                 f"nnz={summary['matrix_nnz']}",

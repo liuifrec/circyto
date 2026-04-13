@@ -1355,7 +1355,7 @@ def collect_multidetector_cmd(
         circ_index_path = matrices_dir / f"{det_name}.circ.txt"
         cell_index_path = matrices_dir / f"{det_name}.cell.txt"
 
-        if det_name == "ciri-full":
+        if det_name in {"ciri-full", "ciri2", "ciri3"}:
             collect_matrix(
                 cirifull_dir=str(det_outdir),
                 matrix_path=str(matrix_path),
