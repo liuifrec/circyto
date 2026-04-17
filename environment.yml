@@ -1,24 +1,17 @@
 name: circyto
 channels:
   - conda-forge
-  - bioconda
   - nodefaults
 dependencies:
-  - python=3.11
+  - python=3.10
   - pip
-  - setuptools>=77
+  - setuptools
   - wheel
-  - numpy>=1.24
-  - pandas>=2.0
-  - scipy>=1.10
-  - anndata>=0.10
-  - h5py>=3.10
-  - tqdm>=4.66
+  - numpy
+  - pandas
+  - scipy
+  - anndata
+  - h5py
+  - tqdm
   - typer>=0.9,<1.0
-  - rich>=13.0
-  - bwa
-  - samtools
-  - star
-  - bowtie2
-  - perl
-  - openjdk=17
+  - rich

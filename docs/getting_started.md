@@ -27,7 +27,9 @@ conda activate circyto
 pip install -e .
 ```
 
-That environment is the supported runtime baseline for source installs. It keeps the Python scientific stack on `conda-forge`/`bioconda`, includes the CLI/runtime Python packages (`numpy`, `scipy`, `pandas`, `anndata`, `typer`, `rich`, `tqdm`), and installs the common executables used by the currently integrated workflows: `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not include separately obtained detector artifacts such as the CIRI3 jar.
+That environment is the supported runtime baseline for source installs. It targets **Python 3.10** and keeps the solve focused on the Python scientific stack on `conda-forge`: `numpy`, `scipy`, `pandas`, `anndata`, `h5py`, `typer`, `rich`, and `tqdm`.
+
+It intentionally does **not** include detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, or Java. Install those separately only for the workflows you actually plan to run. This keeps the default environment reproducible across Linux, WSL, and HPC conda installs.
 
 ---
 
@@ -90,6 +92,8 @@ Use the built-in diagnostics first:
 circyto doctor
 circyto detectors
 ```
+
+In the default environment, these commands validate the installed Python package and report workflow-specific executables as optional warnings if they are absent.
 
 If you need a manual spot check:
 

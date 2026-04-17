@@ -36,6 +36,7 @@ def doctor():
     typer.echo("circyto doctor\n")
 
     fatal_missing: List[str] = []
+    missing_optional: List[str] = []
 
     # ---- Python -------------------------------------------------------------
     ver = sys.version_info
@@ -57,7 +58,7 @@ def doctor():
         else:
             if required_for:
                 _print("MISS", cmd, f"required for {required_for}")
-                fatal_missing.append(cmd)
+                missing_optional.append(cmd)
             else:
                 _print("WARN", cmd, "not found (optional)")
 
@@ -130,5 +131,12 @@ def doctor():
             typer.echo(f"   - {m}")
         raise typer.Exit(code=1)
     else:
-        typer.echo("  ✅ Environment looks good")
+        if missing_optional:
+            typer.echo("  ✅ Baseline environment looks good")
+            typer.echo("  Optional detector executables not found:")
+            for m in sorted(set(missing_optional)):
+                typer.echo(f"   - {m}")
+            typer.echo("  Install workflow-specific tools only for the detectors you plan to run.")
+        else:
+            typer.echo("  ✅ Environment looks good")
         raise typer.Exit(code=0)

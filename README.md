@@ -63,7 +63,7 @@ You will need:
 git clone https://github.com/liuifrec/circyto
 cd circyto
 
-# preferred on Linux / HPC
+# supported baseline on Linux / WSL / HPC
 conda env create -f environment.yml
 conda activate circyto
 
@@ -71,7 +71,14 @@ conda activate circyto
 pip install -e .
 ```
 
-The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported Linux/HPC runtime environment. It keeps the scientific Python stack on `conda-forge`/`bioconda`, installs the CLI runtime (`numpy`, `scipy`, `pandas`, `anndata`, `typer`, `rich`, `tqdm`), and adds the common external tools used by the integrated workflows: `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not install non-redistributed detector assets such as the CIRI3 jar.
+The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported source-install baseline. It targets **Python 3.10** and keeps the default solve limited to the core Python runtime stack on `conda-forge`: `numpy`, `scipy`, `pandas`, `anndata`, `h5py`, `typer`, `rich`, and `tqdm`.
+
+It intentionally does **not** install detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, or Java. Those tools are workflow-specific, much more solver-fragile on mixed Linux/HPC systems, and are better installed separately through site modules, `apt`, `brew`, or a detector-specific conda environment. The default environment is meant to support:
+
+- `pip install -e .`
+- `circyto --help`
+- `circyto doctor`
+- `circyto detectors --json`
 
 ### Install at least one detector
 
@@ -146,6 +153,7 @@ circyto detectors
 
 - **circyto doctor** checks required external dependencies.
 - **circyto detectors** shows which detectors are ready to run.
+- In the default baseline environment, missing detector executables are reported as optional warnings rather than a failed installation.
 
 For CIRI3 specifically:
 
