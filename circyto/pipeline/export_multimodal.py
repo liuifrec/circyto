@@ -6,7 +6,6 @@ from typing import Optional, Dict, List, Tuple
 import numpy as np
 import scipy.io
 import scipy.sparse as sp
-import anndata as ad
 import pandas as pd
 
 
@@ -79,6 +78,8 @@ def export_multimodal(
       - adata.uns["circ"]["feature_table"]
       - adata.uns["circ_host_map"] (circ_id -> host_gene)
     """
+    import anndata as ad
+
     # 1) load base gene expression AnnData
     adata = ad.read_h5ad(genes_h5ad)
 

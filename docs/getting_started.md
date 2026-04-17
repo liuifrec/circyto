@@ -27,7 +27,7 @@ conda activate circyto
 pip install -e .
 ```
 
-That environment covers the common executables used by the currently integrated workflows: `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not include separately obtained detector artifacts such as the CIRI3 jar.
+That environment is the supported runtime baseline for source installs. It keeps the Python scientific stack on `conda-forge`/`bioconda`, includes the CLI/runtime Python packages (`numpy`, `scipy`, `pandas`, `anndata`, `typer`, `rich`, `tqdm`), and installs the common executables used by the currently integrated workflows: `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not include separately obtained detector artifacts such as the CIRI3 jar.
 
 ---
 

@@ -71,7 +71,7 @@ conda activate circyto
 pip install -e .
 ```
 
-The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the default practical environment for Linux and HPC use. It installs the shared runtime used by the currently integrated workflows: Python, `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not install non-redistributed detector assets such as the CIRI3 jar.
+The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported Linux/HPC runtime environment. It keeps the scientific Python stack on `conda-forge`/`bioconda`, installs the CLI runtime (`numpy`, `scipy`, `pandas`, `anndata`, `typer`, `rich`, `tqdm`), and adds the common external tools used by the integrated workflows: `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, and Java 17. It does not install non-redistributed detector assets such as the CIRI3 jar.
 
 ### Install at least one detector
 

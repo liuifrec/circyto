@@ -16,8 +16,6 @@ from circyto.pipeline.run_cirifull import (
     run_cirifull_with_manifest,
 )
 from circyto.pipeline.collect import collect_matrix
-from circyto.writers.convert import convert_matrix_files
-from circyto.pipeline.export_multimodal import export_multimodal as _export_multimodal
 from circyto.pipeline.annotate_host_gene import annotate_host_genes
 from circyto.pipeline.align_manifest import (
     export_manifest_subset,
@@ -448,6 +446,8 @@ def convert(
     """
     Convert circ × cell matrix and index files to loom/h5ad.
     """
+    from circyto.writers.convert import convert_matrix_files
+
     convert_matrix_files(
         matrix_path=matrix,
         circ_index_path=circ_index,
@@ -472,6 +472,8 @@ def make(
     """
     [LEGACY] Convenience wrapper combining CIRI-full calling + collect + convert.
     """
+    from circyto.writers.convert import convert_matrix_files
+
     if manifest:
         ciri_dir = outdir / "cirifull_out"
         run_cirifull_with_manifest(
@@ -540,6 +542,8 @@ def export_multimodal_cmd(
     """
     Attach circRNA counts as obsm['X_circ'] to an existing gene-expression AnnData.
     """
+    from circyto.pipeline.export_multimodal import export_multimodal as _export_multimodal
+
     _export_multimodal(
         genes_h5ad=genes_h5ad,
         circ_matrix=circ_matrix,
