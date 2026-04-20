@@ -103,6 +103,13 @@ def detectors(
                 typer.echo(f"  wrapper: {runtime['bin']}")
             if runtime.get("java"):
                 typer.echo(f"  java: {runtime['java']}")
+            typer.echo(
+                f"  java_version: {runtime.get('java_version')} "
+                f"(required >= {runtime.get('required_java_major')}, "
+                f"recommended {runtime.get('recommended_java_major')})"
+            )
+            if runtime.get("java_version_error"):
+                typer.echo(f"  java_check: {runtime['java_version_error']}")
             typer.echo(f"  execution: {runtime.get('preferred_mode') or 'unconfigured'}")
             for err in runtime.get("template_errors", []):
                 typer.echo(f"  template: {err}")

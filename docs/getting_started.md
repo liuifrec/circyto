@@ -29,7 +29,7 @@ pip install -e .
 
 That environment is the supported runtime baseline for source installs. It targets **Python 3.10** and keeps the solve focused on the Python scientific stack on `conda-forge`: `numpy`, `scipy`, `pandas`, `anndata`, `h5py`, `typer`, `rich`, and `tqdm`.
 
-It intentionally does **not** include detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, or Java. Install those separately only for the workflows you actually plan to run. This keeps the default environment reproducible across Linux, WSL, and HPC conda installs.
+It intentionally does **not** include detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `find-circ3`, `perl`, or Java. Install those separately only for the workflows you actually plan to run. This keeps the default environment reproducible across Linux, WSL, and HPC conda installs.
 
 ---
 
@@ -95,6 +95,8 @@ circyto detectors
 
 In the default environment, these commands validate the installed Python package and report workflow-specific executables as optional warnings if they are absent.
 
+For bundled CIRI3 direct mode, `circyto doctor` now checks both `java` presence and the detected Java major version. The bundled CIRI3 jar requires **Java >= 12**; **Java 17** is the recommended target.
+
 If you need a manual spot check:
 
 ```bash
@@ -105,7 +107,7 @@ command -v bowtie2 samtools bwa java
 
 CIRI3 requires all of the following:
 
-- Java: mandatory
+- Java 12+ for the bundled jar; Java 17 recommended
 - a CIRI3 jar: either vendored under `tools/CIRI3/` or configured via environment variables
 - `samtools`: required for alignment handling and inspection
 - `bwa`: required for BWA alignment-first workflows
@@ -141,6 +143,7 @@ circyto detectors
 Readiness semantics:
 
 - `READY`: circyto found a usable CIRI3 jar and Java, so the direct `java -jar` contract is available.
+- For bundled direct mode, `READY` also requires a detected Java version `>=12`.
 - `NOT READY`: circyto could not find a usable CIRI3 jar or execution path.
 - `PARTIAL`: local CIRI3 assets were detected but the execution contract is incomplete.
 

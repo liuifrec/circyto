@@ -110,10 +110,10 @@ Bundled asset resolution is intended to be cwd-independent; users should not nee
 
 For CIRI3:
 
-- `READY` means circyto found a usable CIRI3 jar and Java, so the direct `java -jar` contract is available.
+- `READY` means circyto found a usable CIRI3 jar and Java, and the detected Java major version satisfies the bundled jar requirement (`>=12`).
 - `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
 - `PARTIAL` means local CIRI3 assets were found but the runtime contract is incomplete.
-- Java is mandatory for direct CIRI3 execution.
+- Java `>=12` is mandatory for bundled direct CIRI3 execution; Java `17` is recommended.
 - `samtools` is required for alignment handling.
 - `bwa` is required for BWA mode.
 - `STAR` is only required when STAR-based CIRI3 workflows are used.

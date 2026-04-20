@@ -10,8 +10,11 @@ from circyto.cli.detectors import detectors_app
 from circyto.cli.doctor import doctor_app
 from circyto.cli.doctor_meta import detector_runtime_status
 from circyto.detectors.base import DetectorRunInputs
+from circyto.detectors.ciri3 import parse_java_major_version
 from circyto.detectors.ciri_full import CiriFullDetector
 from circyto.paths import (
+    Ciri3Resolution,
+    PathResolution,
     clear_path_resolution_caches,
     find_ciri3_jar,
     find_ciri_full_jar,
@@ -113,6 +116,95 @@ def test_find_ciri3_jar_prefers_env_override(monkeypatch: pytest.MonkeyPatch, tm
     assert resolution.source == "env:CIRCYTO_CIRI3_JAR"
 
 
+@pytest.mark.parametrize(
+    ("text", "expected"),
+    [
+        ('openjdk version "1.8.0_412"\nOpenJDK Runtime Environment\n', 8),
+        ('openjdk version "11.0.22" 2024-01-16\n', 11),
+        ('openjdk version "17.0.10" 2024-01-16\n', 17),
+    ],
+)
+def test_parse_java_major_version_handles_common_formats(text: str, expected: int) -> None:
+    assert parse_java_major_version(text) == expected
+
+
+def _fake_ciri3_resolution(tmp_path: Path) -> tuple[Ciri3Resolution, Path, Path]:
+    fake_home = tmp_path / "ciri3"
+    fake_home.mkdir(parents=True, exist_ok=True)
+    fake_jar = fake_home / "CIRI3_Java_18.0.1.jar"
+    fake_jar.write_text("jar", encoding="utf-8")
+    fake_java = tmp_path / "java"
+    fake_java.write_text("java", encoding="utf-8")
+    return (
+        Ciri3Resolution(
+            home=PathResolution("home", fake_home, (fake_home,), "test"),
+            jar=PathResolution("jar", fake_jar, (fake_jar,), "test"),
+            bin=PathResolution("bin", None, tuple(), None),
+            java=PathResolution("java", fake_java, (fake_java,), "test"),
+        ),
+        fake_jar,
+        fake_java,
+    )
+
+
+def _patch_java_version(monkeypatch: pytest.MonkeyPatch, java_path: Path, version_output: str) -> None:
+    import subprocess
+
+    def fake_run(cmd, *args, **kwargs):
+        if list(cmd) == [str(java_path), "-version"]:
+            return subprocess.CompletedProcess(cmd, 0, "", version_output)
+        raise AssertionError(f"unexpected subprocess.run call: {cmd}")
+
+    monkeypatch.setattr("circyto.detectors.ciri3.subprocess.run", fake_run)
+
+
+def test_ciri3_java8_is_not_ready_and_doctor_reports_version(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    resolution, fake_jar, fake_java = _fake_ciri3_resolution(tmp_path)
+    monkeypatch.setattr("circyto.detectors.ciri3.resolve_ciri3_installation", lambda: resolution)
+    _patch_java_version(monkeypatch, fake_java, 'openjdk version "1.8.0_412"\n')
+
+    status = detector_runtime_status("ciri3")
+    assert status["status"] == "NOT READY"
+    assert "found 8" in status["reason"]
+    assert status["details"]["java_version"] == "8"
+    assert status["details"]["required_java_major"] == 12
+
+    doctor_res = runner.invoke(doctor_app, [])
+    assert doctor_res.exit_code in {0, 1}
+    assert "Java version too old (found 8, need >=12 for bundled CIRI3 jar)" in doctor_res.stdout
+    assert str(fake_java) in doctor_res.stdout
+    assert "java_version: 8 (required >= 12, recommended 17)" in doctor_res.stdout
+    assert str(fake_jar) in doctor_res.stdout
+
+
+def test_ciri3_java17_is_ready_and_detectors_report_version(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    resolution, fake_jar, fake_java = _fake_ciri3_resolution(tmp_path)
+    monkeypatch.setattr("circyto.detectors.ciri3.resolve_ciri3_installation", lambda: resolution)
+    _patch_java_version(monkeypatch, fake_java, 'openjdk version "17.0.10" 2024-01-16\n')
+
+    status = detector_runtime_status("ciri3")
+    assert status["status"] == "READY"
+    assert status["details"]["jar"] == str(fake_jar)
+    assert status["details"]["java"] == str(fake_java)
+    assert status["details"]["java_version"] == "17"
+    assert status["details"]["required_java_major"] == 12
+
+    detectors_res = runner.invoke(detectors_app, ["--json"])
+    assert detectors_res.exit_code == 0
+    payload = json.loads(detectors_res.stdout)
+    ciri3 = next(row for row in payload["detectors"] if row["name"] == "ciri3")
+    assert ciri3["status"] == "READY"
+    assert ciri3["runtime"]["java"] == str(fake_java)
+    assert ciri3["runtime"]["java_version"] == "17"
+    assert ciri3["runtime"]["required_java_major"] == 12
+
+
 def test_resolve_ciri3_installation_is_cwd_independent(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
@@ -142,25 +234,21 @@ def test_doctor_and_detectors_report_ciri3_runtime_consistently(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,
 ) -> None:
-    fake_home = tmp_path / "ciri3"
-    fake_home.mkdir(parents=True, exist_ok=True)
-    fake_jar = fake_home / "CIRI3_Java_18.0.1.jar"
-    fake_jar.write_text("jar", encoding="utf-8")
-    fake_java = tmp_path / "java"
-    fake_java.write_text("java", encoding="utf-8")
-
+    resolution, fake_jar, fake_java = _fake_ciri3_resolution(tmp_path)
     monkeypatch.chdir(tmp_path)
-    monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(fake_home))
-    monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(fake_java))
+    monkeypatch.setattr("circyto.detectors.ciri3.resolve_ciri3_installation", lambda: resolution)
+    _patch_java_version(monkeypatch, fake_java, 'openjdk version "17.0.10"\n')
 
     status = detector_runtime_status("ciri3")
     assert status["status"] == "READY"
     assert status["details"]["jar"] == str(fake_jar)
     assert status["details"]["java"] == str(fake_java)
+    assert status["details"]["java_version"] == "17"
 
     doctor_res = runner.invoke(doctor_app, [])
     assert doctor_res.exit_code in {0, 1}
     assert str(fake_jar) in doctor_res.stdout
+    assert "java_version: 17 (required >= 12, recommended 17)" in doctor_res.stdout
 
     detectors_res = runner.invoke(detectors_app, ["--json"])
     assert detectors_res.exit_code == 0
@@ -169,6 +257,7 @@ def test_doctor_and_detectors_report_ciri3_runtime_consistently(
     assert ciri3["status"] == "READY"
     assert ciri3["runtime"]["jar"] == str(fake_jar)
     assert ciri3["runtime"]["java"] == str(fake_java)
+    assert ciri3["runtime"]["java_version"] == "17"
 
 
 def test_doctor_and_detectors_share_resolution_from_non_repo_cwd(
@@ -188,6 +277,7 @@ def test_doctor_and_detectors_share_resolution_from_non_repo_cwd(
     payload = json.loads(detectors_res.stdout)
     ciri_full = next(row for row in payload["detectors"] if row["name"] == "ciri-full")
     assert ciri_full["assets"]["CIRI-full-jar"]["path"] == str(jar_path)
+    assert ciri_full["assets"]["CIRI-full-adapter"]["path"] is not None
     assert ciri_full["status"] in {"READY", "PARTIAL", "NOT READY"}
 
 

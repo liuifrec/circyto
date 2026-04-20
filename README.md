@@ -73,7 +73,7 @@ pip install -e .
 
 The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported source-install baseline. It targets **Python 3.10** and keeps the default solve limited to the core Python runtime stack on `conda-forge`: `numpy`, `scipy`, `pandas`, `anndata`, `h5py`, `typer`, `rich`, and `tqdm`.
 
-It intentionally does **not** install detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `perl`, or Java. Those tools are workflow-specific, much more solver-fragile on mixed Linux/HPC systems, and are better installed separately through site modules, `apt`, `brew`, or a detector-specific conda environment. The default environment is meant to support:
+It intentionally does **not** install detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `find-circ3`, `perl`, or Java. Those tools are workflow-specific, much more solver-fragile on mixed Linux/HPC systems, and are better installed separately through site modules, `apt`, `brew`, or a detector-specific conda environment. The default environment is meant to support:
 
 - `pip install -e .`
 - `circyto --help`
@@ -102,7 +102,7 @@ See: `docs/detectors.md#ciri-full`.
 
 CIRI3 requires:
 
-- `java` (mandatory)
+- `java` >= 12 for the bundled CIRI3 jar (`java` 17 recommended)
 - a local CIRI3 jar, either vendored under `tools/CIRI3/` or configured explicitly
 - `bwa` for BWA-based alignment-first runs
 - `STAR` only for STAR-based runs
@@ -154,10 +154,11 @@ circyto detectors
 - **circyto doctor** checks required external dependencies.
 - **circyto detectors** shows which detectors are ready to run.
 - In the default baseline environment, missing detector executables are reported as optional warnings rather than a failed installation.
+- For bundled CIRI3 direct mode, readiness now requires both `java` on `PATH` and a detected Java major version new enough for the jar (`>=12`, `17` recommended).
 
 For CIRI3 specifically:
 
-- `READY` means circyto found a usable CIRI3 jar and `java`, so direct `java -jar` execution is available.
+- `READY` means circyto found a usable CIRI3 jar and `java`, and the detected Java major version is new enough for direct `java -jar` execution.
 - `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
 - `PARTIAL` means local CIRI3 assets were found but the runtime contract is incomplete.
 
@@ -243,11 +244,11 @@ Mode-specific minimum tools:
 
 Readiness semantics:
 
-- `READY`: CIRI3 jar and Java were detected and direct `java -jar` execution is usable.
+- `READY`: CIRI3 jar and Java were detected, and the detected Java major version is `>=12`, so direct `java -jar` execution is usable.
 - `NOT READY`: circyto could not find a usable CIRI3 jar or execution path.
 - `PARTIAL`: local CIRI3 assets were detected, but the direct or template execution contract is incomplete.
 
-Direct CIRI3 execution requires a detected CIRI3 jar plus Java. Java is mandatory for direct mode. `STAR` is not required unless STAR mode is used. Template execution remains available through `--command-template` or `CIRCYTO_CIRI3_CMD_TEMPLATE`; template mode does not require `--ref-fa` unless the template itself uses `{ref_fa}`.
+Direct CIRI3 execution requires a detected CIRI3 jar plus Java. For the bundled jar, Java `>=12` is required and Java `17` is recommended. `STAR` is not required unless STAR mode is used. Template execution remains available through `--command-template` or `CIRCYTO_CIRI3_CMD_TEMPLATE`; template mode does not require `--ref-fa` unless the template itself uses `{ref_fa}`.
 
 Validated local BWA + CIRI3 example:
 

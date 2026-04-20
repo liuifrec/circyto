@@ -63,6 +63,7 @@ def doctor():
                 _print("WARN", cmd, "not found (optional)")
 
 
+    check("find-circ3", "find-circ3")
     check("bowtie2", "find-circ3")
     check("samtools", "find-circ3")
     check("bwa", "ciri-full")
@@ -80,6 +81,15 @@ def doctor():
         _print("WARN", "CIRI-full", "jar not found")
         for checked in ciri_full_jar.checked_paths:
             typer.echo(f"       checked: {checked}")
+    ciri_full_adapter = resolve_asset("CIRI-full-adapter")
+    found_assets["CIRI-full-adapter"] = ciri_full_adapter.found
+    if ciri_full_adapter.found and ciri_full_adapter.resolved_path is not None:
+        source = f" ({ciri_full_adapter.source})" if ciri_full_adapter.source else ""
+        _print("OK", "CIRI-full", f"adapter: {ciri_full_adapter.resolved_path}{source}")
+    else:
+        _print("WARN", "CIRI-full", "adapter not found")
+        for checked in ciri_full_adapter.checked_paths:
+            typer.echo(f"       checked adapter: {checked}")
 
     ciri3 = detector_runtime_status("ciri3")
     ciri3_details = ciri3["details"]
@@ -91,10 +101,22 @@ def doctor():
             _print("OK", ciri3_name, f"ready via direct jar: {ciri3_details.get('jar')}")
             if ciri3_details.get("java"):
                 typer.echo(f"       java: {ciri3_details['java']}")
+            typer.echo(
+                f"       java_version: {ciri3_details.get('java_version')} "
+                f"(required >= {ciri3_details.get('required_java_major')}, "
+                f"recommended {ciri3_details.get('recommended_java_major')})"
+            )
         else:
             _print("OK", ciri3_name, "ready via configured template")
             if ciri3_details.get("bin"):
                 typer.echo(f"       wrapper: {ciri3_details['bin']}")
+            if ciri3_details.get("java"):
+                typer.echo(f"       java: {ciri3_details['java']}")
+                typer.echo(
+                    f"       java_version: {ciri3_details.get('java_version')} "
+                    f"(required >= {ciri3_details.get('required_java_major')}, "
+                    f"recommended {ciri3_details.get('recommended_java_major')})"
+                )
     elif ciri3_status == "PARTIAL":
         _print("WARN", ciri3_name, ciri3["reason"])
         if ciri3_details.get("jar"):
@@ -103,13 +125,33 @@ def doctor():
             typer.echo(f"       wrapper: {ciri3_details['bin']}")
         if ciri3_details.get("java"):
             typer.echo(f"       java: {ciri3_details['java']}")
+            typer.echo(
+                f"       java_version: {ciri3_details.get('java_version')} "
+                f"(required >= {ciri3_details.get('required_java_major')}, "
+                f"recommended {ciri3_details.get('recommended_java_major')})"
+            )
+        if ciri3_details.get("java_version_error"):
+            typer.echo(f"       java_check: {ciri3_details['java_version_error']}")
         for key in ("jar", "bin", "java"):
             for checked in ciri3_details.get("checked_paths", {}).get(key, []):
                 typer.echo(f"       checked {key}: {checked}")
         for err in ciri3_details.get("template_errors", []):
             typer.echo(f"       template: {err}")
     else:
-        _print("WARN", ciri3_name, ciri3["reason"])
+        _print("MISS", ciri3_name, ciri3["reason"])
+        if ciri3_details.get("jar"):
+            typer.echo(f"       jar: {ciri3_details['jar']}")
+        if ciri3_details.get("java"):
+            typer.echo(f"       java: {ciri3_details['java']}")
+            typer.echo(
+                f"       java_version: {ciri3_details.get('java_version')} "
+                f"(required >= {ciri3_details.get('required_java_major')}, "
+                f"recommended {ciri3_details.get('recommended_java_major')})"
+            )
+        if ciri3_details.get("java_version_error"):
+            typer.echo(f"       java_check: {ciri3_details['java_version_error']}")
+        if ciri3_details.get("java") and not ciri3_details.get("java_version_ok", True):
+            typer.echo("       recommendation: install or activate Java >= 12 (Java 17 recommended)")
         for key in ("home", "jar", "bin", "java"):
             for checked in ciri3_details.get("checked_paths", {}).get(key, []):
                 typer.echo(f"       checked {key}: {checked}")

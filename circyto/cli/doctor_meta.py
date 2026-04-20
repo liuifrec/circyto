@@ -4,7 +4,7 @@ import shutil
 from dataclasses import dataclass
 from typing import List
 
-from circyto.paths import PathResolution, find_ciri_full_jar
+from circyto.paths import PathResolution, find_ciri_full_adapter, find_ciri_full_jar
 from circyto.detectors.ciri3 import inspect_ciri3_runtime
 
 
@@ -21,21 +21,22 @@ DETECTOR_SPECS: List[DetectorSpec] = [
     DetectorSpec(
         name="find-circ3",
         det_type="CLI",
-        required_cmds=["bowtie2", "samtools"],
+        required_cmds=["find-circ3", "bowtie2", "samtools"],
         required_assets=[],
         hint_lines=[
-            "conda install -c bioconda bowtie2 samtools",
-            "or use apt/brew to install bowtie2 and samtools",
+            "conda install -c bioconda bowtie2 samtools and install find-circ3 from upstream",
+            "or use apt/brew for bowtie2 + samtools and make sure `find-circ3` is on PATH",
         ],
     ),
     DetectorSpec(
         name="ciri-full",
         det_type="JAR",
         required_cmds=["bwa", "java"],
-        required_assets=["CIRI-full-jar"],
+        required_assets=["CIRI-full-jar", "CIRI-full-adapter"],
         hint_lines=[
             "Install deps: conda install -c bioconda bwa openjdk",
             "Set CIRCYTO_CIRI_FULL_JAR=/abs/path/CIRI-full.jar or place it under tools/CIRI-full_v2.0/",
+            "Keep tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh available; circyto uses it at runtime.",
         ],
     ),
     DetectorSpec(
@@ -58,6 +59,8 @@ DETECTOR_SPECS: List[DetectorSpec] = [
 def resolve_asset(asset: str) -> PathResolution:
     if asset == "CIRI-full-jar":
         return find_ciri_full_jar()
+    if asset == "CIRI-full-adapter":
+        return find_ciri_full_adapter()
     return PathResolution(label=asset, resolved_path=None, checked_paths=(), source=None)
 
 
@@ -67,10 +70,19 @@ def detector_runtime_status(name: str) -> dict:
         errors = details.get("template_errors", []) if details.get("template_configured") else []
         if details["direct_ready"]:
             status = "READY"
-            reason = "direct java -jar contract available"
+            reason = (
+                f"direct java -jar contract available (Java {details.get('java_version')}, "
+                f"need >={details.get('required_java_major')})"
+            )
         elif details["template_configured"] and not errors:
             status = "READY"
             reason = "template contract configured"
+        elif details.get("jar") and details.get("java") and not details.get("java_version_ok"):
+            status = "NOT READY"
+            reason = (
+                f"Java version too old (found {details.get('java_version')}, "
+                f"need >={details.get('required_java_major')} for bundled CIRI3 jar)"
+            )
         elif details.get("jar") or details.get("bin"):
             status = "PARTIAL"
             reason = "found local CIRI3 assets but runtime contract is incomplete"

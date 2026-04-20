@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import csv
 import os
+import re
 import shlex
 import string
 import subprocess
@@ -39,10 +40,72 @@ OPTIONAL_TEMPLATE_FIELDS = {
     "log_path",
 }
 ALLOWED_TEMPLATE_FIELDS = REQUIRED_TEMPLATE_FIELDS | OPTIONAL_TEMPLATE_FIELDS
+CIRI3_MIN_JAVA_MAJOR = 12
+CIRI3_RECOMMENDED_JAVA_MAJOR = 17
 
 
 def _shell_join(args: list[str]) -> str:
     return shlex.join(args)
+
+
+def parse_java_major_version(version_output: str) -> int | None:
+    for line in version_output.splitlines():
+        text = line.strip()
+        if not text:
+            continue
+        match = re.search(r'version\s+"([^"]+)"', text, flags=re.IGNORECASE)
+        raw = match.group(1) if match else None
+        if raw is None:
+            token_match = re.search(r"\b(\d+(?:\.\d+)+(?:_[0-9]+)?)\b", text)
+            if token_match:
+                raw = token_match.group(1)
+        if raw is None:
+            continue
+        if raw.startswith("1."):
+            parts = raw.split(".")
+            if len(parts) >= 2 and parts[1].isdigit():
+                return int(parts[1])
+            continue
+        major = raw.split(".", 1)[0]
+        if major.isdigit():
+            return int(major)
+    return None
+
+
+def detect_java_version(java_path: str | os.PathLike[str] | None) -> dict[str, Any]:
+    details: dict[str, Any] = {
+        "path": str(java_path) if java_path is not None else None,
+        "major": None,
+        "raw_output": None,
+        "display": "unknown",
+        "error": None,
+    }
+    if java_path is None:
+        details["error"] = "java executable not configured"
+        return details
+
+    try:
+        result = subprocess.run(
+            [str(java_path), "-version"],
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+    except OSError as exc:
+        details["error"] = str(exc)
+        return details
+
+    output = ((result.stderr or "") + "\n" + (result.stdout or "")).strip()
+    details["raw_output"] = output
+    major = parse_java_major_version(output)
+    details["major"] = major
+    if major is not None:
+        details["display"] = str(major)
+    elif result.returncode != 0:
+        details["error"] = f"`java -version` exited with status {result.returncode}"
+    else:
+        details["error"] = "unable to parse `java -version` output"
+    return details
 
 
 def _normalize_ciri3_output(raw_path: Path, out_path: Path) -> None:
@@ -221,6 +284,7 @@ def inspect_ciri3_runtime(
 ) -> dict[str, Any]:
     runtime_template = command_template or os.environ.get("CIRCYTO_CIRI3_CMD_TEMPLATE")
     resolution = resolve_ciri3_installation()
+    java_version = detect_java_version(resolution.java.resolved_path)
     details: dict[str, Any] = {
         "template_configured": runtime_template is not None,
         "template_source": "argument" if command_template is not None else ("env:CIRCYTO_CIRI3_CMD_TEMPLATE" if runtime_template else None),
@@ -232,6 +296,12 @@ def inspect_ciri3_runtime(
         "bin_source": resolution.bin.source,
         "java": str(resolution.java.resolved_path) if resolution.java.resolved_path else None,
         "java_source": resolution.java.source,
+        "java_version": java_version["display"],
+        "java_version_major": java_version["major"],
+        "java_version_raw_output": java_version["raw_output"],
+        "java_version_error": java_version["error"],
+        "required_java_major": CIRI3_MIN_JAVA_MAJOR,
+        "recommended_java_major": CIRI3_RECOMMENDED_JAVA_MAJOR,
         "checked_paths": {
             "home": [str(path) for path in resolution.home.checked_paths],
             "jar": [str(path) for path in resolution.jar.checked_paths],
@@ -240,7 +310,12 @@ def inspect_ciri3_runtime(
         },
     }
 
-    direct_ready = resolution.jar.resolved_path is not None and resolution.java.resolved_path is not None
+    java_version_ok = java_version["major"] is not None and int(java_version["major"]) >= CIRI3_MIN_JAVA_MAJOR
+    direct_ready = (
+        resolution.jar.resolved_path is not None
+        and resolution.java.resolved_path is not None
+        and java_version_ok
+    )
     wrapper_ready = resolution.bin.resolved_path is not None and runtime_template is not None
     template_valid = False
     template_errors: list[str] = []
@@ -262,6 +337,7 @@ def inspect_ciri3_runtime(
 
     details["direct_ready"] = direct_ready
     details["wrapper_ready"] = wrapper_ready
+    details["java_version_ok"] = java_version_ok
     details["preferred_mode"] = mode
     details["template_errors"] = template_errors
     return details
@@ -279,6 +355,14 @@ def _runtime_errors(details: dict[str, Any]) -> list[str]:
 
     if details.get("jar") and not details.get("java"):
         errors.append("CIRI3 jar found, but Java is missing.")
+    elif details.get("jar") and details.get("java") and not details.get("java_version_ok"):
+        found = details.get("java_version") or "unknown"
+        need = details.get("required_java_major", CIRI3_MIN_JAVA_MAJOR)
+        errors.append(
+            f"CIRI3 jar found, but Java version is too old (found {found}, need >={need} for the bundled CIRI3 jar)."
+        )
+    elif details.get("jar") and details.get("java") and details.get("java_version_error"):
+        errors.append(f"CIRI3 jar found, but Java version could not be verified: {details['java_version_error']}.")
     elif details.get("jar"):
         errors.append("CIRI3 jar found, but direct execution is not usable.")
     elif details.get("bin") and not details["template_configured"]:
