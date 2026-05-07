@@ -307,6 +307,20 @@ def _shell_join(parts: list[str]) -> str:
     return shlex.join(parts)
 
 
+def _append_log_line(path: Path, line: str, *, mode: str = "a") -> None:
+    path.parent.mkdir(parents=True, exist_ok=True)
+    with path.open(mode, encoding="utf-8") as handle:
+        handle.write(line.rstrip("\n") + "\n")
+
+
+def _emit_prepare_progress(*, cell_id: str, stage: str, log_path: Path, detail: str = "") -> None:
+    line = f"[circyto] cell={cell_id} stage={stage}"
+    if detail:
+        line += f" {detail}"
+    print(line, flush=True)
+    _append_log_line(log_path, line)
+
+
 def _build_bwa_mem_command(
     *,
     row: SourceManifestRow,
@@ -770,7 +784,7 @@ def _run_star_alignment(
         cmd.extend(filtered_tokens)
         cmd.extend(["--outFileNamePrefix", prefix, "--outTmpDir", str(out_tmp_dir)])
 
-        with log_path.open("w", encoding="utf-8") as log_handle:
+        with log_path.open("a", encoding="utf-8") as log_handle:
             log_handle.write(
                 f"# STAR temp workspace: {tmp_root}"
                 " (override with CIRCYTO_STAR_TMPDIR or TMPDIR)\n"
@@ -780,6 +794,13 @@ def _run_star_alignment(
                 "back into the alignment cache.\n"
             )
             log_handle.flush()
+        _emit_prepare_progress(
+            cell_id=row.cell_id,
+            stage="star-start",
+            log_path=log_path,
+            detail=f"genome_dir={genome_dir} threads={max(1, threads)}",
+        )
+        with log_path.open("a", encoding="utf-8") as log_handle:
             result = subprocess.run(
                 cmd,
                 stdout=log_handle,
@@ -787,6 +808,7 @@ def _run_star_alignment(
                 check=False,
                 text=True,
             )
+        _append_log_line(log_path, f"[circyto] cell={row.cell_id} stage=star-end returncode={result.returncode}")
 
         for name in ("Log.out", "Log.progress.out", "Log.final.out", "SJ.out.tab"):
             candidate = run_dir / name
@@ -811,6 +833,7 @@ def _run_star_alignment(
             raise RuntimeError(f"STAR completed but did not produce {produced_sam}")
         if not produced_chimeric.exists():
             raise RuntimeError(f"STAR completed but did not produce {produced_chimeric}")
+        _emit_prepare_progress(cell_id=row.cell_id, stage="star-copy-start", log_path=log_path)
         shutil.copy2(produced_sam, out_path)
         shutil.copy2(produced_chimeric, chimeric_path)
         if unmapped_mate1_path is not None:
@@ -821,6 +844,17 @@ def _run_star_alignment(
             if not produced_unmapped_mate2.exists():
                 raise RuntimeError(f"STAR completed but did not produce {produced_unmapped_mate2}")
             shutil.copy2(produced_unmapped_mate2, unmapped_mate2_path)
+        _emit_prepare_progress(
+            cell_id=row.cell_id,
+            stage="star-copy-end",
+            log_path=log_path,
+            detail=(
+                f"sam_bytes={out_path.stat().st_size} "
+                f"chimeric_bytes={chimeric_path.stat().st_size} "
+                f"mate1_bytes={unmapped_mate1_path.stat().st_size if unmapped_mate1_path else 0} "
+                f"mate2_bytes={unmapped_mate2_path.stat().st_size if unmapped_mate2_path else 0}"
+            ),
+        )
 
     if bwa_sam_path is not None:
         if ref_fa is None:
@@ -836,6 +870,16 @@ def _run_star_alignment(
             str(unmapped_mate1_path),
             str(unmapped_mate2_path),
         ]
+        bwa_started = time.perf_counter()
+        _emit_prepare_progress(
+            cell_id=row.cell_id,
+            stage="bwa-rescue-start",
+            log_path=log_path,
+            detail=(
+                f"mate1_bytes={unmapped_mate1_path.stat().st_size} "
+                f"mate2_bytes={unmapped_mate2_path.stat().st_size}"
+            ),
+        )
         with log_path.open("a", encoding="utf-8") as log_handle:
             log_handle.write(f"\n$ {shlex.join(bwa_cmd)} > {bwa_sam_path}\n")
             log_handle.flush()
@@ -853,6 +897,12 @@ def _run_star_alignment(
             raise RuntimeError(f"STAR rescue bwa mem failed for {row.cell_id}; see {log_path}.{suffix}")
         if not bwa_sam_path.exists() or bwa_sam_path.stat().st_size == 0:
             raise RuntimeError(f"STAR rescue bwa mem produced empty output for {row.cell_id}: {bwa_sam_path}")
+        _emit_prepare_progress(
+            cell_id=row.cell_id,
+            stage="bwa-rescue-end",
+            log_path=log_path,
+            detail=f"seconds={round(time.perf_counter() - bwa_started, 3)} output_bytes={bwa_sam_path.stat().st_size}",
+        )
 
 
 def _flatten_detector_result(result: Any) -> List[DetectorResult]:
@@ -1353,6 +1403,14 @@ def prepare_alignment_cache(
         cell_cache_dir.mkdir(parents=True, exist_ok=True)
         cell_started = time.perf_counter()
         reused_alignment = False
+        if log_path.exists():
+            log_path.unlink()
+        _emit_prepare_progress(
+            cell_id=row.cell_id,
+            stage="prepare-start",
+            log_path=log_path,
+            detail=f"aligner={aligner} read_layout={row.read_layout}",
+        )
         if aligner == "reuse-existing":
             assert row.bam is not None
             source = row.bam
@@ -1421,6 +1479,7 @@ def prepare_alignment_cache(
         if bwa_sam_path is not None:
             provenance["bwa_sam"] = str(bwa_sam_path.resolve())
         _write_json(_alignment_provenance_path(out_path), provenance)
+        _emit_prepare_progress(cell_id=row.cell_id, stage="stage-artifacts-start", log_path=log_path)
         _copy_or_link(out_path, staged_path, link_mode=link_mode)
         sortedness = "unsorted" if effective_output_format == "sam" else "sorted"
         mapper_mode = "1" if aligner == "star" else "0"
@@ -1444,6 +1503,12 @@ def prepare_alignment_cache(
         if staged_bwa_sam_path is not None and bwa_sam_path is not None:
             _copy_or_link(bwa_sam_path, staged_bwa_sam_path, link_mode=link_mode)
             row_kwargs["bwa_sam"] = str(staged_bwa_sam_path.resolve())
+        _emit_prepare_progress(
+            cell_id=row.cell_id,
+            stage="stage-artifacts-end",
+            log_path=log_path,
+            detail=f"seconds={round(time.perf_counter() - cell_started, 3)}",
+        )
         return (
             AlignmentManifestRow(
                 cell_id=row.cell_id,
@@ -1538,7 +1603,9 @@ def prepare_alignment_cache(
                     per_cell_records.append(record)
 
         if completed_rows:
+            print(f"[circyto] stage=manifest-write-start rows={len(completed_rows)} path={manifest_path}", flush=True)
             write_alignment_manifest_tsv(completed_rows.values(), manifest_path)
+            print(f"[circyto] stage=manifest-write-end rows={len(completed_rows)} path={manifest_path}", flush=True)
 
         chunk_status = "success" if not chunk_failures else ("partial_failure" if len(chunk_failures) < len(chunk) else "failed")
         _write_json(

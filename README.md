@@ -313,6 +313,45 @@ STAR assumptions:
 
 BWA + CIRI3 is the validated local production path. STAR + CIRI3 is supported in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
 
+## Experimental SMART-Seq3 demux
+
+`circyto demux smartseq3` is an experimental pooled-read demultiplexing path for SMART-Seq3-style data with transcript FASTQs (`R1`/`R2`) plus dual index FASTQs (`I1`/`I2`).
+
+- It reads all four FASTQs in lockstep and fails fast on malformed FASTQ structure or desynchronized read IDs.
+- It maps `I1+I2` index pairs to cell IDs from a user-supplied TSV/CSV annotation table.
+- It writes per-cell transcript FASTQs plus `manifest.tsv`, so the output can feed `prepare-alignment-cache` and downstream STAR + CIRI3 runs.
+- This mode is for engineering validation and downstream compatibility first. Use local `chr21` resources only for smoke tests, not for biological completeness.
+
+Local E-MTAB-8735-style example with the shipped subset:
+
+```bash
+circyto demux smartseq3 \
+  --read1 emtab8735/subset_100k/diySpike.R1.100k.fastq.gz \
+  --read2 emtab8735/subset_100k/diySpike.R2.100k.fastq.gz \
+  --index1 emtab8735/subset_100k/diySpike.I1.100k.fastq.gz \
+  --index2 emtab8735/subset_100k/diySpike.I2.100k.fastq.gz \
+  --annotation path/to/emtab8735_annotation.tsv \
+  --cell-id-column cell_id \
+  --index1-column index1 \
+  --index2-column index2 \
+  --outdir work/emtab8735_smartseq3_demux \
+  --max-records 5000
+```
+
+Downstream chr21-only smoke after demux:
+
+```bash
+circyto prepare-alignment-cache \
+  --manifest work/emtab8735_smartseq3_demux/manifest.tsv \
+  --aligner star \
+  --detector ciri3 \
+  --ref-fa ref/chr21.fa \
+  --outdir work/emtab8735_smartseq3_align_chr21 \
+  --extra-flags "--genomeDir ref/star_index_chr21 --readFilesCommand zcat"
+```
+
+If no real SMART-Seq3 annotation table is available locally, use synthetic annotations for tests and treat the E-MTAB-8735 command above as a documented manual workflow scaffold.
+
 Recover after a partial failure:
 
 ```bash

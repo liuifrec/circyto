@@ -633,6 +633,16 @@ def test_prepare_alignment_cache_star_for_ciri3_records_chimeric_junction(tmp_pa
     assert Path(rows[0].bwa_sam).exists()
     assert rows[0].artifact_bucket == "star"
     assert Path(rows[0].bwa_sam).read_text(encoding="utf-8").startswith("@HD\tVN:1.0")
+    summary = json.loads((tmp_path / "align" / "alignment_prepare_summary.json").read_text(encoding="utf-8"))
+    assert summary["status_counts"]["aligned"] == 1
+    log_text = (tmp_path / "align" / "cache" / rows[0].cache_key / "c1.align.log").read_text(encoding="utf-8")
+    assert "stage=prepare-start" in log_text
+    assert "stage=star-start" in log_text
+    assert "stage=star-end returncode=0" in log_text
+    assert "stage=star-copy-end" in log_text
+    assert "stage=bwa-rescue-start" in log_text
+    assert "stage=bwa-rescue-end" in log_text
+    assert "stage=stage-artifacts-end" in log_text
 
 
 def test_prepare_alignment_cache_star_without_ciri3_does_not_require_rescue_outputs(tmp_path: Path, monkeypatch) -> None:

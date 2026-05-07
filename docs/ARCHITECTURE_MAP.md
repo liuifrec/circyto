@@ -58,9 +58,22 @@ Manifest is a TSV that describes per-cell inputs (fastq/bam) and minimal provena
     - `outdir/demux_report.json`
     - `outdir/manifest.tsv` (Manifest v1; must be written even when 0 cells)
 
+### SMART-Seq3 pooled demux (experimental)
+- `circyto/demux/smartseq3.py`
+  - `SmartSeq3DemuxParams`
+  - `load_smartseq3_annotation()`
+  - `demux_smartseq3()`
+  - Reads `R1/R2/I1/I2` in lockstep and validates synchronized read IDs.
+  - Writes:
+    - `outdir/fastq/<cell>_R1.fastq(.gz)`
+    - `outdir/fastq/<cell>_R2.fastq(.gz)`
+    - `outdir/sink/unmatched_R1.fastq(.gz)` (+ R2, optional)
+    - `outdir/demux_summary.json`
+    - `outdir/manifest.tsv` (Manifest v1 + `read_layout=paired-end` for downstream alignment cache prep)
+
 ### CLI wrapper
 - `circyto/cli/demux.py`
-  - Parses CLI flags and calls `circyto.demux.smartseq2.demux_smartseq2_pooled()`
+  - Parses CLI flags and calls `circyto.demux.smartseq2.demux_smartseq2_pooled()` or experimental `circyto.demux.smartseq3.demux_smartseq3()`
   - Optionally runs `circyto manifest validate`
 
 ---
