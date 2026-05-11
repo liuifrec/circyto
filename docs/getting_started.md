@@ -197,6 +197,50 @@ If you specifically need upstream CIRI-full full-length reconstruction behavior,
 
 ---
 
+## Workflow 1b: experimental SMART-Seq3 to CIRI3
+
+For validated SMART-Seq3 pooled demux plus STAR+CIRI3 orchestration, use the experimental high-level workflow:
+
+```bash
+circyto workflow smartseq3-ciri3 \
+  --read1 emtab8735/subset_100k/diySpike.R1.100k.fastq.gz \
+  --read2 emtab8735/subset_100k/diySpike.R2.100k.fastq.gz \
+  --index1 emtab8735/subset_100k/diySpike.I1.100k.fastq.gz \
+  --index2 emtab8735/subset_100k/diySpike.I2.100k.fastq.gz \
+  --annotation path/to/emtab8735_annotation.tsv \
+  --cell-id-column cell_id \
+  --index1-column index1 \
+  --index2-column index2 \
+  --ref-fa ref/chr21.fa \
+  --star-index ref/star_index_chr21 \
+  --outdir work/emtab8735_smartseq3_ciri3 \
+  --top-n 20 \
+  --resume
+```
+
+What it does:
+
+- demultiplexes SMART-Seq3 transcript reads with `circyto demux smartseq3`
+- writes `OUTDIR/manifests/top<N>_manifest.tsv` or `OUTDIR/manifests/all_manifest.tsv`
+- runs `prepare-alignment-cache --aligner star --detector ciri3`
+- runs `run-detector-from-alignments --detector ciri3`
+- runs `collect-matrix`
+- writes `workflow_summary.json`
+
+Server-validated E-MTAB-8735 diySpike summary:
+
+- full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
+- top20 STAR+CIRI3: all `20` cells succeeded
+- matrix: `588` circRNAs x `20` cells, `600` nonzero entries
+
+This support is still experimental:
+
+- use local `ref/chr21.fa` and `ref/star_index_chr21` for smoke tests
+- do not require full hg38 for CI or local preflight
+- keep the low-level `demux`, `prepare-alignment-cache`, `run-detector-from-alignments`, and `collect-matrix` commands available for manual control
+
+---
+
 ## Workflow 2: collect a circRNA × cell matrix
 
 Once you have per-cell calls, build a single sparse matrix:

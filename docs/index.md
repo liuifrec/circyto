@@ -9,6 +9,7 @@ Welcome to the `circyto` documentation.
 - [Getting started](getting_started.md)
 - [Detectors](detectors.md)
 - [CIRI-full chr21 example](ciri_full_chr21_example.md)
+- Experimental SMART-Seq3 workflow: see [Getting started](getting_started.md#workflow-1b-experimental-smart-seq3-to-ciri3)
 
 Use the links above to navigate through the documentation.
 

@@ -313,7 +313,7 @@ STAR assumptions:
 
 BWA + CIRI3 is the validated local production path. STAR + CIRI3 is supported in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
 
-## Experimental SMART-Seq3 demux
+## Experimental SMART-Seq3 demux and workflow
 
 `circyto demux smartseq3` is an experimental pooled-read demultiplexing path for SMART-Seq3-style data with transcript FASTQs (`R1`/`R2`) plus dual index FASTQs (`I1`/`I2`).
 
@@ -321,6 +321,45 @@ BWA + CIRI3 is the validated local production path. STAR + CIRI3 is supported in
 - It maps `I1+I2` index pairs to cell IDs from a user-supplied TSV/CSV annotation table.
 - It writes per-cell transcript FASTQs plus `manifest.tsv`, so the output can feed `prepare-alignment-cache` and downstream STAR + CIRI3 runs.
 - This mode is for engineering validation and downstream compatibility first. Use local `chr21` resources only for smoke tests, not for biological completeness.
+
+An experimental high-level workflow command is also available:
+
+```bash
+circyto workflow smartseq3-ciri3 \
+  --read1 emtab8735/subset_100k/diySpike.R1.100k.fastq.gz \
+  --read2 emtab8735/subset_100k/diySpike.R2.100k.fastq.gz \
+  --index1 emtab8735/subset_100k/diySpike.I1.100k.fastq.gz \
+  --index2 emtab8735/subset_100k/diySpike.I2.100k.fastq.gz \
+  --annotation path/to/emtab8735_annotation.tsv \
+  --cell-id-column cell_id \
+  --index1-column index1 \
+  --index2-column index2 \
+  --ref-fa ref/chr21.fa \
+  --star-index ref/star_index_chr21 \
+  --outdir work/emtab8735_smartseq3_ciri3 \
+  --top-n 20 \
+  --threads 8 \
+  --parallel 1 \
+  --chunk-size 1 \
+  --resume
+```
+
+This command stages:
+
+- `OUTDIR/demux`
+- `OUTDIR/manifests`
+- `OUTDIR/align`
+- `OUTDIR/ciri3`
+- `OUTDIR/matrix`
+- `OUTDIR/logs`
+
+It runs SMART-Seq3 demux, selects either all cells or top `N` by `reads_per_cell` and writes `manifests/top<N>_manifest.tsv`, prepares STAR+CIRI3 alignments, runs CIRI3 from alignments, collects the matrix, and writes `workflow_summary.json`.
+
+Server-validated DIY spike result summary for E-MTAB-8735:
+
+- full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
+- top20 STAR+CIRI3: all `20` cells succeeded
+- matrix: `588` circRNAs x `20` cells, `600` nonzero entries
 
 Local E-MTAB-8735-style example with the shipped subset:
 

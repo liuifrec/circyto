@@ -9,6 +9,7 @@ import typer
 from rich.console import Console
 from circyto.cli.demux import demux_app
 from circyto.cli.manifest import manifest_app
+from circyto.cli.workflow import workflow_app
 
 from circyto.pipeline.prepare import extract_per_cell_fastq
 from circyto.pipeline.run_cirifull import (
@@ -59,6 +60,7 @@ app = typer.Typer(
         "  [RUN]    run-detector / run-batch / run-multidetector\n"
         "  [ALIGN]  prepare-alignment-cache / plan-alignment-cache / align-manifest / run-detector-from-alignments\n"
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
+        "  [WORKFLOW] workflow smartseq3-ciri3 (experimental)\n"
         "  [MERGE]  merge-detectors\n"
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
     ),
@@ -70,6 +72,7 @@ app.add_typer(detectors_app, name="detectors")
 
 app.add_typer(demux_app, name="demux")
 app.add_typer(manifest_app, name="manifest")
+app.add_typer(workflow_app, name="workflow")
 app.add_typer(smoke_app, name="smoke")
 # --------------------------------------------------------------------------------------
 # Helpers: consistent INDIR/OUTDIR + default output naming
