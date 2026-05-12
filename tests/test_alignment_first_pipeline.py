@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import os
+import subprocess
 from pathlib import Path
 
 from typer.testing import CliRunner
@@ -18,6 +19,30 @@ from circyto.pipeline.align_manifest import (
     run_detector_alignment_manifest,
     summarize_run_state,
 )
+
+
+runner = CliRunner()
+
+
+def _install_fake_java(bin_path: Path, *, version_output: str = 'openjdk version "17.0.3"\n') -> Path:
+    bin_path.write_text(
+        "#!/usr/bin/env bash\n"
+        "set -euo pipefail\n"
+        "if [[ \"${1:-}\" == \"-version\" ]]; then\n"
+        f"  printf '%s' '{version_output}' >&2\n"
+        "  exit 0\n"
+        "fi\n"
+        "exit 0\n",
+        encoding="utf-8",
+    )
+    bin_path.chmod(0o755)
+    return bin_path
+
+
+def _fake_java_version_result(java: Path, cmd) -> subprocess.CompletedProcess[str] | None:
+    if isinstance(cmd, list) and cmd == [str(java), "-version"]:
+        return subprocess.CompletedProcess(cmd, 0, "", 'openjdk version "17.0.3"\n')
+    return None
 
 
 class _FakeAlignmentDetector:
@@ -312,8 +337,7 @@ def test_ciri3_validate_runtime_accepts_direct_jar_contract(tmp_path: Path, monk
     ciri3_home.mkdir()
     jar = ciri3_home / "CIRI3_Java_18.0.1.jar"
     jar.write_text("jar", encoding="utf-8")
-    java = tmp_path / "java"
-    java.write_text("java", encoding="utf-8")
+    java = _install_fake_java(tmp_path / "java")
 
     monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
     monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
@@ -326,6 +350,25 @@ def test_ciri3_validate_runtime_accepts_direct_jar_contract(tmp_path: Path, monk
     assert details["preferred_mode"] == "direct-jar"
     assert details["jar"] == str(jar)
     assert details["java"] == str(java)
+
+
+def test_ciri3_validate_runtime_rejects_old_java_for_direct_jar_contract(tmp_path: Path, monkeypatch) -> None:
+    ciri3_home = tmp_path / "CIRI3"
+    ciri3_home.mkdir()
+    (ciri3_home / "CIRI3_Java_18.0.1.jar").write_text("jar", encoding="utf-8")
+    java = _install_fake_java(tmp_path / "java", version_output='openjdk version "1.8.0_412"\n')
+
+    monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
+    monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
+
+    detector = Ciri3Detector()
+    ok, errors, details = detector.validate_runtime()
+
+    assert not ok
+    assert any("Java version is too old" in err for err in errors)
+    assert details["preferred_mode"] == "jar-partial"
+    assert details["java_version"] == "8"
+    assert details["java_version_ok"] is False
 
 
 def test_normalize_ciri3_output_handles_upstream_column_names(tmp_path: Path) -> None:
@@ -353,8 +396,7 @@ def test_ciri3_runs_from_alignment_with_direct_jar_contract(tmp_path: Path, monk
     ciri3_home.mkdir()
     jar = ciri3_home / "CIRI3_Java_18.0.1.jar"
     jar.write_text("jar", encoding="utf-8")
-    java = tmp_path / "java"
-    java.write_text("java", encoding="utf-8")
+    java = _install_fake_java(tmp_path / "java")
 
     monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
     monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
@@ -362,6 +404,9 @@ def test_ciri3_runs_from_alignment_with_direct_jar_contract(tmp_path: Path, monk
     seen_cmds = []
 
     def fake_run(cmd, **kwargs):
+        java_result = _fake_java_version_result(java, cmd)
+        if java_result is not None:
+            return java_result
         seen_cmds.append(cmd)
         out = tmp_path / "out" / "cell1.ciri3_run" / "ciri3_raw.tsv"
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -409,8 +454,7 @@ def test_ciri3_explicit_command_template_overrides_direct_jar(tmp_path: Path, mo
     ciri3_home.mkdir()
     jar = ciri3_home / "CIRI3_Java_18.0.1.jar"
     jar.write_text("jar", encoding="utf-8")
-    java = tmp_path / "java"
-    java.write_text("java", encoding="utf-8")
+    java = _install_fake_java(tmp_path / "java")
 
     monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
     monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
@@ -418,6 +462,9 @@ def test_ciri3_explicit_command_template_overrides_direct_jar(tmp_path: Path, mo
     seen = []
 
     def fake_run(cmd, **kwargs):
+        java_result = _fake_java_version_result(java, cmd)
+        if java_result is not None:
+            return java_result
         seen.append((cmd, kwargs))
         out = tmp_path / "out" / "cell1.ciri3_run" / "ciri3_raw.tsv"
         out.parent.mkdir(parents=True, exist_ok=True)
@@ -456,7 +503,6 @@ def test_ciri3_explicit_command_template_overrides_direct_jar(tmp_path: Path, mo
 
 
 def test_cli_help_lists_alignment_first_commands() -> None:
-    runner = CliRunner()
     result = runner.invoke(app, ["--help"])
     assert result.exit_code == 0
     assert "prepare-alignment-cache" in result.stdout
@@ -786,8 +832,7 @@ def test_ciri3_star_manifest_row_requires_bwa_rescue(tmp_path: Path, monkeypatch
     ciri3_home = tmp_path / "CIRI3"
     ciri3_home.mkdir()
     (ciri3_home / "CIRI3_Java_18.0.1.jar").write_text("jar", encoding="utf-8")
-    java = tmp_path / "java"
-    java.write_text("java", encoding="utf-8")
+    java = _install_fake_java(tmp_path / "java")
     monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
     monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
 
@@ -832,8 +877,7 @@ def test_ciri3_runs_from_star_hybrid_manifest_row_with_direct_jar_contract(tmp_p
     ciri3_home.mkdir()
     jar = ciri3_home / "CIRI3_Java_18.0.1.jar"
     jar.write_text("jar", encoding="utf-8")
-    java = tmp_path / "java"
-    java.write_text("java", encoding="utf-8")
+    java = _install_fake_java(tmp_path / "java")
 
     monkeypatch.setenv("CIRCYTO_CIRI3_HOME", str(ciri3_home))
     monkeypatch.setenv("CIRCYTO_CIRI3_JAVA", str(java))
@@ -841,6 +885,9 @@ def test_ciri3_runs_from_star_hybrid_manifest_row_with_direct_jar_contract(tmp_p
     seen_cmds = []
 
     def fake_run(cmd, **kwargs):
+        java_result = _fake_java_version_result(java, cmd)
+        if java_result is not None:
+            return java_result
         seen_cmds.append(cmd)
         out = tmp_path / "out" / "cell1.ciri3_run" / "ciri3_raw.tsv"
         out.parent.mkdir(parents=True, exist_ok=True)

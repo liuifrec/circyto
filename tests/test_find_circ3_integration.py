@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import os
+import shutil
 import subprocess
 from pathlib import Path
 
@@ -9,6 +10,52 @@ import pytest
 from circyto.detectors import build_default_engines
 from circyto.pipeline.run_detector import run_detector_manifest
 from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
+
+
+def _require_find_circ3_integration_runtime(repo_root: Path) -> tuple[Path, Path]:
+    """
+    Guard this heavyweight integration behind explicit opt-in plus runtime checks.
+
+    This test runs real bowtie2/samtools/find-circ3 commands against repo-local
+    chr21 FASTQs and references. It is not suitable for routine default pytest
+    runs unless the caller explicitly enables it.
+    """
+    if os.environ.get("CIRCYTO_SKIP_INTEGRATION", "").lower() in {"1", "true", "yes"}:
+        pytest.skip("CIRCYTO_SKIP_INTEGRATION is set, skipping integration test")
+
+    if os.environ.get("CIRCYTO_RUN_FIND_CIRC3_INTEGRATION", "").lower() not in {"1", "true", "yes"}:
+        pytest.skip(
+            "Set CIRCYTO_RUN_FIND_CIRC3_INTEGRATION=1 to run the heavyweight find_circ3 integration test"
+        )
+
+    missing_cmds = [name for name in ("bowtie2", "samtools", "find-circ3") if shutil.which(name) is None]
+    if missing_cmds:
+        pytest.skip(f"Missing external commands for find_circ3 integration: {', '.join(missing_cmds)}")
+
+    manifest = repo_root / "manifest_2.tsv"
+    ref_fa = repo_root / "ref" / "chr21.fa"
+    if not manifest.exists() or not ref_fa.exists():
+        pytest.skip(
+            f"Required test data not found: {manifest} or {ref_fa}. "
+            "This test expects manifest_2.tsv and ref/chr21.fa at repo root."
+        )
+
+    # The adapter derives a bowtie2 index prefix from ref/chr21.fa -> ref/chr21
+    bowtie2_index = ref_fa.with_suffix("")
+    index_suffixes = [".1.bt2", ".2.bt2", ".3.bt2", ".4.bt2", ".rev.1.bt2", ".rev.2.bt2"]
+    missing_indexes = [f"{bowtie2_index}{suffix}" for suffix in index_suffixes if not Path(f"{bowtie2_index}{suffix}").exists()]
+    if missing_indexes:
+        pytest.skip("Missing bowtie2 chr21 index files for find_circ3 integration")
+
+    for line in manifest.read_text(encoding="utf-8").splitlines()[1:]:
+        if not line.strip():
+            continue
+        fields = line.split("\t")
+        for rel_path in fields[1:3]:
+            if rel_path.strip() and not (repo_root / rel_path.strip()).exists():
+                pytest.skip(f"Missing FASTQ input for find_circ3 integration: {repo_root / rel_path.strip()}")
+
+    return manifest, ref_fa
 
 
 @pytest.mark.slow
@@ -27,20 +74,8 @@ def test_find_circ3_chr21_manifest2_integration() -> None:
     (e.g. via an environment variable or pytest -m filter).
     """
 
-    # Allow CI to skip easily if tools/bowtie2/find-circ3 are not available
-    if os.environ.get("CIRCYTO_SKIP_INTEGRATION", "").lower() in {"1", "true", "yes"}:
-        pytest.skip("CIRCYTO_SKIP_INTEGRATION is set, skipping integration test")
-
     repo_root = Path(__file__).resolve().parents[1]
-
-    manifest = repo_root / "manifest_2.tsv"
-    ref_fa = repo_root / "ref" / "chr21.fa"
-
-    if not manifest.exists() or not ref_fa.exists():
-        pytest.skip(
-            f"Required test data not found: {manifest} or {ref_fa}. "
-            "This test expects manifest_2.tsv and ref/chr21.fa at repo root."
-        )
+    manifest, ref_fa = _require_find_circ3_integration_runtime(repo_root)
 
     # 1. Build detector
     engines = build_default_engines()
