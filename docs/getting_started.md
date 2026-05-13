@@ -215,6 +215,7 @@ circyto workflow smartseq3-ciri3 \
   --star-index ref/star_index_chr21 \
   --outdir work/emtab8735_smartseq3_ciri3 \
   --top-n 20 \
+  --export-h5ad \
   --resume
 ```
 
@@ -225,13 +226,59 @@ What it does:
 - runs `prepare-alignment-cache --aligner star --detector ciri3`
 - runs `run-detector-from-alignments --detector ciri3`
 - runs `collect-matrix`
+- writes `OUTDIR/qc/cell_qc.tsv` and `OUTDIR/qc/circ_qc.tsv`
+- writes `OUTDIR/anndata/circ_counts.h5ad`
 - writes `workflow_summary.json`
 
 Server-validated E-MTAB-8735 diySpike summary:
 
 - full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
+- all192 hg38 STAR+CIRI3: completed successfully
+- all192 final matrix: `191` cells, `2503` circRNAs, `2659` nonzero entries, `1` empty cell
 - top20 STAR+CIRI3: all `20` cells succeeded
 - matrix: `588` circRNAs x `20` cells, `600` nonzero entries
+
+Analysis-ready exports:
+
+- `matrix/`
+- `qc/`
+- `anndata/`
+- `workflow_summary.json`
+
+`circ_counts.h5ad` is ready for Scanpy / ScGeo-style downstream analysis:
+
+- `adata.X`: circRNA counts with shape `cells x circRNAs`
+- `adata.obs`: cell QC indexed by `cell_id`
+- `adata.var`: circRNA QC / feature metadata indexed by `circ_id`
+- `adata.uns["circyto"]`: workflow provenance
+
+Optional multimodal export for joint RNA + circRNA analysis:
+
+```bash
+circyto workflow smartseq3-ciri3 \
+  ... \
+  --export-h5ad \
+  --gene-counts path/to/gene_counts.tsv \
+  --gene-counts-format tsv \
+  --export-mudata
+```
+
+When enabled, the workflow writes `OUTDIR/mudata/circyto_multimodal.h5mu` with:
+
+- `mdata.mod["rna"]` = gene expression AnnData
+- `mdata.mod["circ"]` = circRNA AnnData
+- shared cell metadata in `mdata.obs`
+- workflow provenance in `mdata.uns["circyto"]`
+
+If `mudata` is not installed, the workflow only errors when `--export-mudata` is explicitly requested.
+
+For lightweight downstream summaries from the circ-only AnnData:
+
+```bash
+circyto analyze summarize-h5ad \
+  --input work/emtab8735_smartseq3_ciri3/anndata/circ_counts.h5ad \
+  --outdir work/emtab8735_smartseq3_ciri3/anndata_summary
+```
 
 This support is still experimental:
 

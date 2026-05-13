@@ -34,6 +34,11 @@ def smartseq3_ciri3(
     max_mismatch: int = typer.Option(0, "--max-mismatch", help="[EXPERIMENTAL] Combined I1+I2 mismatches allowed"),
     write_sink: bool = typer.Option(True, "--write-sink/--no-write-sink", help="[EXPERIMENTAL] Write unmatched transcript reads to OUTDIR/demux/sink/"),
     resume: bool = typer.Option(False, "--resume/--no-resume", help="[EXPERIMENTAL] Skip completed workflow stages after validating expected outputs"),
+    export_h5ad: bool = typer.Option(True, "--export-h5ad/--no-export-h5ad", help="[EXPERIMENTAL] Write OUTDIR/anndata/circ_counts.h5ad"),
+    gene_counts: Path | None = typer.Option(None, "--gene-counts", exists=True, help="[EXPERIMENTAL] Optional gene-count input for multimodal export"),
+    gene_counts_format: str = typer.Option("tsv", "--gene-counts-format", help="[EXPERIMENTAL] Gene-count format: tsv or mtx-dir"),
+    export_mudata: bool = typer.Option(False, "--export-mudata/--no-export-mudata", help="[EXPERIMENTAL] Write OUTDIR/mudata/circyto_multimodal.h5mu"),
+    cell_join: str = typer.Option("inner", "--cell-join", help="[EXPERIMENTAL] How to align RNA and circ cells: inner or outer"),
 ) -> None:
     """
     Experimental end-to-end SMART-Seq3 to CIRI3 workflow.
@@ -59,6 +64,11 @@ def smartseq3_ciri3(
             max_mismatch=max_mismatch,
             write_sink=write_sink,
             resume=resume,
+            export_h5ad=export_h5ad,
+            gene_counts=gene_counts,
+            gene_counts_format=gene_counts_format,
+            export_mudata=export_mudata,
+            cell_join=cell_join,
         ),
         progress=typer.echo,
     )

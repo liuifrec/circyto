@@ -5,6 +5,7 @@ from pathlib import Path
 from typing import Any, Callable, Optional
 import csv
 import json
+import time
 
 from circyto.demux.smartseq3 import SmartSeq3DemuxParams, demux_smartseq3
 from circyto.detectors.ciri3 import Ciri3Detector
@@ -15,6 +16,20 @@ from circyto.pipeline.align_manifest import (
     run_detector_alignment_manifest,
 )
 from circyto.pipeline.collect import collect_matrix
+from circyto.pipeline.workflow_reporting import (
+    build_cell_qc_table,
+    build_circ_qc_table,
+    expand_cells,
+    export_circ_h5ad,
+    export_mudata_bundle,
+    load_circ_feature_table,
+    load_circ_matrix,
+    load_json,
+    matrix_section,
+    numeric_summary,
+    top_mapping_items,
+    write_json,
+)
 
 
 ProgressFn = Callable[[str], None]
@@ -41,6 +56,11 @@ class SmartSeq3Ciri3WorkflowParams:
     max_mismatch: int = 0
     write_sink: bool = True
     resume: bool = False
+    export_h5ad: bool = True
+    gene_counts: Optional[Path] = None
+    gene_counts_format: str = "tsv"
+    export_mudata: bool = False
+    cell_join: str = "inner"
 
 
 def _workflow_paths(outdir: Path) -> dict[str, Path]:
@@ -51,6 +71,9 @@ def _workflow_paths(outdir: Path) -> dict[str, Path]:
         "align": outdir / "align",
         "ciri3": outdir / "ciri3",
         "matrix": outdir / "matrix",
+        "qc": outdir / "qc",
+        "anndata": outdir / "anndata",
+        "mudata": outdir / "mudata",
         "logs": outdir / "logs",
         "workflow_summary": outdir / "workflow_summary.json",
     }
@@ -60,21 +83,12 @@ def _emit(progress: ProgressFn, message: str) -> None:
     progress(f"[workflow smartseq3-ciri3] {message}")
 
 
-def _load_json(path: Path) -> dict[str, Any]:
-    return json.loads(path.read_text(encoding="utf-8"))
-
-
-def _write_json(path: Path, payload: dict[str, Any]) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
-
-
 def _validate_demux_complete(demux_dir: Path) -> bool:
     summary_path = demux_dir / "demux_summary.json"
     manifest_path = demux_dir / "manifest.tsv"
     if not summary_path.exists() or not manifest_path.exists():
         return False
-    _load_json(summary_path)
+    load_json(summary_path)
     read_source_manifest(manifest_path, validate_files=True)
     return True
 
@@ -84,7 +98,7 @@ def _validate_alignment_complete(align_dir: Path) -> bool:
     summary_path = align_dir / "alignment_prepare_summary.json"
     if not manifest_path.exists() or not summary_path.exists():
         return False
-    _load_json(summary_path)
+    load_json(summary_path)
     read_alignment_manifest_tsv(manifest_path, validate_files=True)
     return True
 
@@ -93,7 +107,7 @@ def _validate_detector_complete(detector_dir: Path) -> bool:
     summary_path = detector_dir / "detector_run_summary.json"
     if not summary_path.exists():
         return False
-    _load_json(summary_path)
+    load_json(summary_path)
     return True
 
 
@@ -158,7 +172,7 @@ def create_selected_manifest(
     header, rows = _read_manifest_rows(demux_manifest)
     if not rows:
         raise ValueError(f"Demux manifest contains 0 rows: {demux_manifest}")
-    demux_summary = _load_json(demux_summary_path)
+    demux_summary = load_json(demux_summary_path)
     selected_cell_ids = _compute_selected_cell_ids(
         demux_summary=demux_summary,
         manifest_rows=rows,
@@ -188,7 +202,7 @@ def _selected_manifest_matches(
     read_source_manifest(manifest_path, validate_files=True)
     _, all_rows = _read_manifest_rows(demux_manifest)
     expected_ids = _compute_selected_cell_ids(
-        demux_summary=_load_json(demux_summary_path),
+        demux_summary=load_json(demux_summary_path),
         manifest_rows=all_rows,
         top_n=top_n,
     )
@@ -198,7 +212,7 @@ def _selected_manifest_matches(
 
 
 def _status_counts_from_summary(path: Path) -> dict[str, int]:
-    summary = _load_json(path)
+    summary = load_json(path)
     raw = summary.get("status_counts", {})
     return {str(key): int(value) for key, value in dict(raw).items()}
 
@@ -221,21 +235,146 @@ def _matrix_stats(matrix_path: Path) -> dict[str, int]:
     return {"n_rows": n_rows, "n_cols": n_cols, "nnz": nnz}
 
 
+def _per_cell_record_map(summary: dict[str, Any]) -> dict[str, dict[str, Any]]:
+    records: dict[str, dict[str, Any]] = {}
+    for record in summary.get("cells", []):
+        cell_id = str(record.get("cell_id", "")).strip()
+        if cell_id:
+            records[cell_id] = dict(record)
+    return records
+
+
 def _build_workflow_summary(
     *,
     params: SmartSeq3Ciri3WorkflowParams,
     paths: dict[str, Path],
     selected_manifest_path: Path,
     completed_stages: list[str],
+    stage_seconds: dict[str, float],
 ) -> dict[str, Any]:
-    demux_summary = _load_json(paths["demux"] / "demux_summary.json")
+    demux_summary = load_json(paths["demux"] / "demux_summary.json")
+    alignment_summary = load_json(paths["align"] / "alignment_prepare_summary.json")
+    detector_summary = load_json(paths["ciri3"] / "detector_run_summary.json")
     alignment_summary_path = paths["align"] / "alignment_prepare_summary.json"
     detector_summary_path = paths["ciri3"] / "detector_run_summary.json"
     matrix_path = paths["matrix"] / "circ_counts.mtx"
     circ_index_path = paths["matrix"] / "circ_index.txt"
     cell_index_path = paths["matrix"] / "cell_index.txt"
+    circ_feature_table_path = paths["matrix"] / "circ_feature_table.tsv"
     selected_rows = read_source_manifest(selected_manifest_path, validate_files=True)
+    selected_cell_ids = [row.cell_id for row in selected_rows]
+    assigned_reads = {str(cell_id): int(count) for cell_id, count in dict(demux_summary.get("reads_per_cell", {})).items()}
     matrix_stats = _matrix_stats(matrix_path)
+    X_circ_by_cell, circ_ids, matrix_cell_ids = load_circ_matrix(
+        matrix_path=matrix_path,
+        circ_index_path=circ_index_path,
+        cell_index_path=cell_index_path,
+    )
+    X_cells_by_circ = X_circ_by_cell.T.tocsr()
+    X_selected_cells_by_circ = expand_cells(X_cells_by_circ, matrix_cell_ids, selected_cell_ids)
+    feature_df = load_circ_feature_table(circ_ids, circ_feature_table_path)
+    alignment_cells = _per_cell_record_map(alignment_summary)
+    detector_cells = _per_cell_record_map(detector_summary)
+    cell_qc = build_cell_qc_table(
+        selected_cell_ids=selected_cell_ids,
+        assigned_reads=assigned_reads,
+        alignment_cells=alignment_cells,
+        detector_cells=detector_cells,
+        X_cells_by_circ=X_selected_cells_by_circ,
+    )
+    circ_qc = build_circ_qc_table(
+        circ_ids=circ_ids,
+        feature_df=feature_df,
+        X_cells_by_circ=X_selected_cells_by_circ,
+    )
+    cell_qc_path = paths["qc"] / "cell_qc.tsv"
+    circ_qc_path = paths["qc"] / "circ_qc.tsv"
+    cell_qc.reset_index().to_csv(cell_qc_path, sep="\t", index=False)
+    circ_qc.reset_index().to_csv(circ_qc_path, sep="\t", index=False)
+
+    detector_status_counts = _status_counts_from_summary(detector_summary_path)
+    circ_counts_by_cell = {cell_id: int(value) for cell_id, value in zip(selected_cell_ids, cell_qc["circRNA_count"].tolist())}
+    demux_reads = list(assigned_reads.values())
+    alignment_seconds = [
+        float(record["seconds"])
+        for record in alignment_cells.values()
+        if record.get("seconds") is not None
+    ]
+    detector_seconds = [
+        float(record["seconds"])
+        for record in detector_cells.values()
+        if record.get("seconds") is not None
+    ]
+    matrix_payload = matrix_section(X_selected_cells_by_circ, circ_qc)
+    h5ad_path = paths["anndata"] / "circ_counts.h5ad"
+    h5ad_status = None
+    if params.export_h5ad:
+        h5ad_uns = {
+            "workflow_name": "smartseq3-ciri3",
+            "detector": "ciri3",
+            "aligner": "star",
+            "reference": str(params.ref_fa),
+            "command_options": {
+                "top_n": params.top_n,
+                "max_records": params.max_records,
+                "threads": params.threads,
+                "parallel": params.parallel,
+                "chunk_size": params.chunk_size,
+                "max_mismatch": params.max_mismatch,
+                "write_sink": params.write_sink,
+                "resume": params.resume,
+                "export_h5ad": params.export_h5ad,
+                "gene_counts": str(params.gene_counts) if params.gene_counts else None,
+                "gene_counts_format": params.gene_counts_format,
+                "export_mudata": params.export_mudata,
+                "cell_join": params.cell_join,
+            },
+            "demux_summary_path": str((paths["demux"] / "demux_summary.json").resolve()),
+            "detector_summary_path": str(detector_summary_path.resolve()),
+            "matrix_path": str(matrix_path.resolve()),
+            "experimental": True,
+        }
+        exported_h5ad = export_circ_h5ad(
+            out_path=h5ad_path,
+            X_cells_by_circ=X_selected_cells_by_circ,
+            cell_qc=cell_qc,
+            circ_qc=circ_qc,
+            uns_payload=h5ad_uns,
+        )
+        h5ad_status = str(exported_h5ad.resolve()) if exported_h5ad is not None else None
+
+    mudata_summary = None
+    if params.export_mudata:
+        if params.gene_counts is None:
+            raise ValueError("--export-mudata requires --gene-counts")
+        mudata_summary = export_mudata_bundle(
+            out_path=paths["mudata"] / "circyto_multimodal.h5mu",
+            circ_X=X_selected_cells_by_circ,
+            circ_qc=circ_qc,
+            cell_qc=cell_qc,
+            uns_payload={
+                "workflow_name": "smartseq3-ciri3",
+                "detector": "ciri3",
+                "aligner": "star",
+                "reference": str(params.ref_fa),
+                "command_options": {
+                    "gene_counts": str(params.gene_counts),
+                    "gene_counts_format": params.gene_counts_format,
+                    "cell_join": params.cell_join,
+                },
+                "demux_summary": str((paths["demux"] / "demux_summary.json").resolve()),
+                "matrix_paths": {
+                    "matrix": str(matrix_path.resolve()),
+                    "circ_index": str(circ_index_path.resolve()),
+                    "cell_index": str(cell_index_path.resolve()),
+                },
+                "experimental": True,
+            },
+            gene_counts=params.gene_counts,
+            gene_counts_format=params.gene_counts_format,
+            cell_join=params.cell_join,
+        )
+
     return {
         "workflow": "smartseq3-ciri3",
         "experimental": True,
@@ -259,16 +398,47 @@ def _build_workflow_summary(
             "max_mismatch": params.max_mismatch,
             "write_sink": params.write_sink,
             "resume": params.resume,
+            "export_h5ad": params.export_h5ad,
+            "gene_counts": str(params.gene_counts) if params.gene_counts else None,
+            "gene_counts_format": params.gene_counts_format,
+            "export_mudata": params.export_mudata,
+            "cell_join": params.cell_join,
         },
         "demux": {
             "assigned_records": int(demux_summary.get("assigned_records", 0)),
             "total_records": int(demux_summary.get("total_records", 0)),
+            "assignment_rate": float(demux_summary.get("assignment_rate", 0.0)),
             "number_of_cells_detected": int(demux_summary.get("number_of_cells_detected", 0)),
+            "reads_per_cell_summary": numeric_summary(demux_reads),
+            "top_cells_by_assigned_reads": top_mapping_items(assigned_reads, count_key="assigned_reads"),
         },
         "selected_cell_count": len(selected_rows),
         "alignment_status_counts": _status_counts_from_summary(alignment_summary_path),
-        "detector_status_counts": _status_counts_from_summary(detector_summary_path),
-        "matrix": matrix_stats,
+        "alignment": {
+            "completed_cells": int(alignment_summary.get("completed_cells", 0)),
+            "failed_cells": int(alignment_summary.get("failed_cells", 0)),
+            "empty_or_sentinel_cells": int(alignment_summary.get("sentinel_cells", 0)),
+            "elapsed_seconds": alignment_summary.get("elapsed_seconds"),
+            "per_cell_alignment_seconds": numeric_summary(alignment_seconds),
+        },
+        "detector_status_counts": detector_status_counts,
+        "detector": {
+            "success": int(detector_status_counts.get("success", 0)),
+            "empty": int(detector_status_counts.get("empty", 0)),
+            "failed": int(detector_status_counts.get("failed", 0)),
+            "circRNAs_per_cell_summary": numeric_summary(cell_qc["circRNA_count"].astype(int).tolist()),
+            "top_cells_by_circRNA_count": top_mapping_items(circ_counts_by_cell, count_key="circRNA_count"),
+            "elapsed_seconds": detector_summary.get("elapsed_seconds"),
+            "per_cell_detector_seconds": numeric_summary(detector_seconds),
+        },
+        "matrix": {
+            **matrix_stats,
+            **matrix_payload,
+        },
+        "workflow_timing": {
+            "elapsed_seconds_per_stage": stage_seconds,
+            "total_elapsed_seconds": round(sum(stage_seconds.values()), 3),
+        },
         "completed_stages": completed_stages,
         "paths": {
             "demux_summary": str((paths["demux"] / "demux_summary.json").resolve()),
@@ -280,7 +450,13 @@ def _build_workflow_summary(
             "matrix": str(matrix_path.resolve()),
             "circ_index": str(circ_index_path.resolve()),
             "cell_index": str(cell_index_path.resolve()),
+            "circ_feature_table": str(circ_feature_table_path.resolve()),
+            "cell_qc": str(cell_qc_path.resolve()),
+            "circ_qc": str(circ_qc_path.resolve()),
+            "h5ad": str(h5ad_path.resolve()) if h5ad_status else None,
+            "mudata": mudata_summary["path"] if mudata_summary else None,
         },
+        "multimodal": mudata_summary,
     }
 
 
@@ -297,6 +473,10 @@ def run_smartseq3_ciri3_workflow(
         raise ValueError("parallel must be > 0")
     if params.chunk_size <= 0:
         raise ValueError("chunk_size must be > 0")
+    if params.cell_join not in {"inner", "outer"}:
+        raise ValueError("cell_join must be one of: inner, outer")
+    if params.gene_counts is not None and not params.gene_counts.exists():
+        raise FileNotFoundError(f"gene_counts path not found: {params.gene_counts}")
 
     paths = _workflow_paths(params.outdir)
     for path in paths.values():
@@ -306,9 +486,12 @@ def run_smartseq3_ciri3_workflow(
             path.mkdir(parents=True, exist_ok=True)
 
     completed_stages: list[str] = []
+    stage_seconds: dict[str, float] = {}
+    workflow_started = time.perf_counter()
 
     demux_summary_path = paths["demux"] / "demux_summary.json"
     demux_manifest = paths["demux"] / "manifest.tsv"
+    stage_started = time.perf_counter()
     if params.resume and _validate_demux_complete(paths["demux"]):
         _emit(progress, f"resume skip: demux ({demux_summary_path})")
         completed_stages.append("demux_skipped")
@@ -339,8 +522,10 @@ def run_smartseq3_ciri3_workflow(
             f"cells={demux_summary['number_of_cells_detected']}",
         )
         completed_stages.append("demux")
+    stage_seconds["demux"] = round(time.perf_counter() - stage_started, 3)
 
     selected_manifest = _selected_manifest_path(paths["manifests"], params.top_n)
+    stage_started = time.perf_counter()
     if params.resume and _selected_manifest_matches(
         manifest_path=selected_manifest,
         demux_manifest=demux_manifest,
@@ -360,8 +545,10 @@ def run_smartseq3_ciri3_workflow(
         )
         _emit(progress, f"selected {selection['selected_cell_count']} cells into {selected_manifest}")
         completed_stages.append("manifest_selection")
+    stage_seconds["manifest_selection"] = round(time.perf_counter() - stage_started, 3)
 
     alignment_manifest_path = paths["align"] / "alignment_manifest.tsv"
+    stage_started = time.perf_counter()
     if params.resume and _validate_alignment_complete(paths["align"]):
         _emit(progress, f"resume skip: alignment prep ({alignment_manifest_path})")
         completed_stages.append("alignment_skipped")
@@ -381,8 +568,10 @@ def run_smartseq3_ciri3_workflow(
         )
         _emit(progress, f"alignment cache ready: {alignment_manifest_path}")
         completed_stages.append("alignment")
+    stage_seconds["alignment"] = round(time.perf_counter() - stage_started, 3)
 
     detector_summary_path = paths["ciri3"] / "detector_run_summary.json"
+    stage_started = time.perf_counter()
     if params.resume and _validate_detector_complete(paths["ciri3"]):
         _emit(progress, f"resume skip: detector ({detector_summary_path})")
         completed_stages.append("detector_skipped")
@@ -399,7 +588,9 @@ def run_smartseq3_ciri3_workflow(
         )
         _emit(progress, f"detector complete: {detector_summary_path}")
         completed_stages.append("detector")
+    stage_seconds["detector"] = round(time.perf_counter() - stage_started, 3)
 
+    stage_started = time.perf_counter()
     if params.resume and _validate_matrix_complete(paths["matrix"]):
         _emit(progress, f"resume skip: matrix ({paths['matrix'] / 'circ_counts.mtx'})")
         completed_stages.append("matrix_skipped")
@@ -414,13 +605,20 @@ def run_smartseq3_ciri3_workflow(
         )
         _emit(progress, f"matrix complete: {paths['matrix'] / 'circ_counts.mtx'}")
         completed_stages.append("matrix")
+    stage_seconds["matrix"] = round(time.perf_counter() - stage_started, 3)
 
+    stage_started = time.perf_counter()
     summary = _build_workflow_summary(
         params=params,
         paths=paths,
         selected_manifest_path=selected_manifest,
         completed_stages=completed_stages,
+        stage_seconds=stage_seconds,
     )
-    _write_json(paths["workflow_summary"], summary)
+    stage_seconds["reporting_export"] = round(time.perf_counter() - stage_started, 3)
+    stage_seconds["workflow_total"] = round(time.perf_counter() - workflow_started, 3)
+    summary["workflow_timing"]["elapsed_seconds_per_stage"] = stage_seconds
+    summary["workflow_timing"]["total_elapsed_seconds"] = stage_seconds["workflow_total"]
+    write_json(paths["workflow_summary"], summary)
     _emit(progress, f"workflow summary: {paths['workflow_summary']}")
     return summary

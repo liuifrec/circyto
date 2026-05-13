@@ -7,6 +7,7 @@ from typing import List, Optional, Tuple
 
 import typer
 from rich.console import Console
+from circyto.cli.analyze import analyze_app
 from circyto.cli.demux import demux_app
 from circyto.cli.manifest import manifest_app
 from circyto.cli.workflow import workflow_app
@@ -61,6 +62,7 @@ app = typer.Typer(
         "  [ALIGN]  prepare-alignment-cache / plan-alignment-cache / align-manifest / run-detector-from-alignments\n"
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
         "  [WORKFLOW] workflow smartseq3-ciri3 (experimental)\n"
+        "  [ANALYZE] analyze summarize-h5ad\n"
         "  [MERGE]  merge-detectors\n"
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
     ),
@@ -73,6 +75,7 @@ app.add_typer(detectors_app, name="detectors")
 app.add_typer(demux_app, name="demux")
 app.add_typer(manifest_app, name="manifest")
 app.add_typer(workflow_app, name="workflow")
+app.add_typer(analyze_app, name="analyze")
 app.add_typer(smoke_app, name="smoke")
 # --------------------------------------------------------------------------------------
 # Helpers: consistent INDIR/OUTDIR + default output naming

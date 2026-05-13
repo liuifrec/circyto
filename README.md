@@ -338,6 +338,7 @@ circyto workflow smartseq3-ciri3 \
   --star-index ref/star_index_chr21 \
   --outdir work/emtab8735_smartseq3_ciri3 \
   --top-n 20 \
+  --export-h5ad \
   --threads 8 \
   --parallel 1 \
   --chunk-size 1 \
@@ -351,15 +352,61 @@ This command stages:
 - `OUTDIR/align`
 - `OUTDIR/ciri3`
 - `OUTDIR/matrix`
+- `OUTDIR/qc`
+- `OUTDIR/anndata`
+- `OUTDIR/mudata` when `--export-mudata` is requested
 - `OUTDIR/logs`
 
-It runs SMART-Seq3 demux, selects either all cells or top `N` by `reads_per_cell` and writes `manifests/top<N>_manifest.tsv`, prepares STAR+CIRI3 alignments, runs CIRI3 from alignments, collects the matrix, and writes `workflow_summary.json`.
+It runs SMART-Seq3 demux, selects either all cells or top `N` by `reads_per_cell` and writes `manifests/top<N>_manifest.tsv`, prepares STAR+CIRI3 alignments, runs CIRI3 from alignments, collects the matrix, writes QC tables, exports analysis-ready AnnData, and writes `workflow_summary.json`.
+
+Workflow outputs now include:
+
+- `matrix/` with `circ_counts.mtx`, `circ_index.txt`, `cell_index.txt`, `circ_feature_table.tsv`
+- `qc/` with `cell_qc.tsv` and `circ_qc.tsv`
+- `anndata/` with `circ_counts.h5ad`
+- `mudata/` with `circyto_multimodal.h5mu` when gene counts are provided and `--export-mudata` is enabled
+- `workflow_summary.json` with stage timing, demux/alignment/detector QC, matrix sparsity, and recurrent circRNA summaries
 
 Server-validated DIY spike result summary for E-MTAB-8735:
 
 - full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
+- all192 hg38 STAR+CIRI3: completed successfully
+- all192 final matrix: `191` cells, `2503` circRNAs, `2659` nonzero entries, `1` empty cell
 - top20 STAR+CIRI3: all `20` cells succeeded
 - matrix: `588` circRNAs x `20` cells, `600` nonzero entries
+
+The exported `circ_counts.h5ad` is organized for Scanpy-style downstream analysis:
+
+- `adata.X`: sparse circRNA count matrix with shape `cells x circRNAs`
+- `adata.obs`: `cell_qc.tsv` indexed by `cell_id`
+- `adata.var`: `circ_qc.tsv` / `circ_feature_table.tsv` indexed by `circ_id`
+- `adata.uns["circyto"]`: workflow provenance and paths
+
+You can summarize the exported AnnData with:
+
+```bash
+circyto analyze summarize-h5ad \
+  --input work/emtab8735_smartseq3_ciri3/anndata/circ_counts.h5ad \
+  --outdir work/emtab8735_smartseq3_ciri3/anndata_summary
+```
+
+For future multimodal analysis, the workflow can also emit MuData:
+
+```bash
+circyto workflow smartseq3-ciri3 \
+  ... \
+  --export-h5ad \
+  --gene-counts path/to/gene_counts.tsv \
+  --gene-counts-format tsv \
+  --export-mudata
+```
+
+When MuData export is enabled:
+
+- `mdata.mod["rna"]` stores gene expression as `cells x genes`
+- `mdata.mod["circ"]` stores circRNA counts as `cells x circRNAs`
+- shared cell IDs are aligned with `--cell-join inner|outer` (default `inner`)
+- `mdata.uns["circyto"]` stores workflow provenance
 
 Local E-MTAB-8735-style example with the shipped subset:
 
