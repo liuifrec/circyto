@@ -135,13 +135,15 @@ def load_circ_feature_table(circ_ids: list[str], feature_path: Path) -> pd.DataF
     df = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
     if "circ_id" not in df.columns:
         return default_df
+    if "host_gene" not in df.columns and "gene_name" in df.columns:
+        df["host_gene"] = df["gene_name"]
     df = df.set_index("circ_id")
     for column in ("chrom", "start", "end", "strand", "host_gene"):
         if column not in df.columns:
             df[column] = pd.NA if column in {"start", "end"} else ""
     df = df.reindex(circ_ids)[["chrom", "start", "end", "strand", "host_gene"]]
     for column in ("chrom", "strand", "host_gene"):
-        df[column] = df[column].fillna("")
+        df[column] = df[column].fillna("").astype(str)
     for column in ("start", "end"):
         df[column] = pd.to_numeric(df[column], errors="coerce")
     return df
@@ -203,7 +205,12 @@ def build_circ_qc_table(
     n_cells = np.asarray(X_cells_by_circ.getnnz(axis=0)).ravel()
     max_support = np.asarray(X_cells_by_circ.max(axis=0).toarray()).ravel() if X_cells_by_circ.shape[0] else np.zeros(len(circ_ids), dtype=int)
     mean_support = np.divide(total_support, n_cells, out=np.zeros_like(total_support, dtype=float), where=n_cells > 0)
-    df = feature_df.reindex(circ_ids).copy()
+    df = pd.DataFrame(index=pd.Index(circ_ids, name="circ_id"))
+    df["chrom"] = feature_df.reindex(circ_ids)["chrom"].fillna("").astype(str)
+    df["start"] = pd.to_numeric(feature_df.reindex(circ_ids)["start"], errors="coerce")
+    df["end"] = pd.to_numeric(feature_df.reindex(circ_ids)["end"], errors="coerce")
+    df["strand"] = feature_df.reindex(circ_ids)["strand"].fillna("").astype(str)
+    df["host_gene"] = feature_df.reindex(circ_ids)["host_gene"].fillna("").astype(str)
     df["n_cells_detected"] = n_cells.astype(int)
     df["total_support"] = total_support.astype(int)
     df["max_support"] = max_support.astype(int)

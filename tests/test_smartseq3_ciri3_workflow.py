@@ -12,6 +12,7 @@ from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
 from circyto.manifest.alignment import AlignmentManifestRow, write_alignment_manifest_tsv
+from circyto.pipeline.collect import collect_matrix
 from circyto.pipeline.workflow_reporting import (
     HAS_MUDATA,
     build_cell_qc_table,
@@ -508,6 +509,51 @@ def test_circ_qc_blank_host_gene_preserves_columns_and_cell_bounds(tmp_path: Pat
     assert written.loc[0, "n_cells_detected"] == 2
     assert written.loc[0, "total_support"] == 7
     assert written.loc[0, "max_support"] == 5
+
+
+def test_collect_and_qc_preserve_string_host_gene_without_numeric_overwrite(tmp_path: Path) -> None:
+    input_dir = tmp_path / "cirifull"
+    input_dir.mkdir()
+    (input_dir / "cellA.tsv").write_text(
+        "circ_id\tchr\tstart\tend\tstrand\thost_gene\thost_gene_n\tsupport\n"
+        "circA\tchr1\t1\t5\t-\tGENE1\t1\t4\n"
+        "circB\tchr2\t10\t20\t+\t\t0\t1\n",
+        encoding="utf-8",
+    )
+    (input_dir / "cellB.tsv").write_text(
+        "circ_id\tchr\tstart\tend\tstrand\thost_gene\thost_gene_n\tsupport\n"
+        "circA\tchr1\t1\t5\t-\tGENE1\t1\t2\n",
+        encoding="utf-8",
+    )
+
+    matrix_dir = tmp_path / "matrix"
+    matrix_dir.mkdir()
+    collect_matrix(
+        str(input_dir),
+        str(matrix_dir / "circ_counts.mtx"),
+        str(matrix_dir / "circ_index.txt"),
+        str(matrix_dir / "cell_index.txt"),
+    )
+
+    feature_path = matrix_dir / "circ_feature_table.tsv"
+    feature_tsv = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
+    assert feature_tsv["host_gene"].tolist() == ["GENE1", ""]
+    assert not any(str(value).isdigit() for value in feature_tsv["host_gene"].tolist())
+
+    feature_df = load_circ_feature_table(["circA", "circB"], feature_path)
+    X_cells_by_circ = sp.csr_matrix([[4, 1], [2, 0]], dtype=int)
+    circ_qc = build_circ_qc_table(circ_ids=["circA", "circB"], feature_df=feature_df, X_cells_by_circ=X_cells_by_circ)
+    assert circ_qc["host_gene"].tolist() == ["GENE1", ""]
+    assert all(isinstance(value, str) for value in circ_qc["host_gene"].tolist())
+    assert not any(str(value).isdigit() for value in circ_qc["host_gene"].tolist())
+    assert circ_qc.loc["circA", "n_cells_detected"] == 2
+    assert circ_qc.loc["circA", "host_gene"] == "GENE1"
+
+    out_path = tmp_path / "circ_qc.tsv"
+    circ_qc.reset_index().to_csv(out_path, sep="\t", index=False)
+    written = pd.read_csv(out_path, sep="\t", keep_default_na=False)
+    assert written["host_gene"].tolist() == ["GENE1", ""]
+    assert not any(str(value).isdigit() for value in written["host_gene"].tolist())
 
 
 def test_h5ad_export_shape_orientation_and_indices(tmp_path: Path) -> None:

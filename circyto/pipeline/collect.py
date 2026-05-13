@@ -64,8 +64,7 @@ def _build_matrix_and_features(
             continue
 
         # Iterate rows once, register circ_ids + features + matrix entries.
-        for r in df.itertuples(index=False):
-            row = r._asdict()
+        for row in df.to_dict("records"):
             circ = str(row["circ_id"])
 
             if circ not in circ_index:
@@ -100,6 +99,8 @@ def _build_matrix_and_features(
                 host_gene = ""
                 if "host_gene" in df.columns and pd.notna(row["host_gene"]):
                     host_gene = str(row["host_gene"])
+                elif "gene_name" in df.columns and pd.notna(row["gene_name"]):
+                    host_gene = str(row["gene_name"])
 
                 features[circ] = {
                     "chrom": chrom,
