@@ -390,6 +390,20 @@ circyto analyze summarize-h5ad \
   --outdir work/emtab8735_smartseq3_ciri3/anndata_summary
 ```
 
+You can annotate `circ_qc.tsv` against known circRNA resources with the standalone database annotator:
+
+```bash
+circyto annotate-circs \
+  --circ-table work/diySpike_workflow_all192/qc/circ_qc.tsv \
+  --annotation-db "name=circatlas;path=path/to/circatlas.tsv;chrom=chrom;start=start;end=end;strand=strand;id=circatlas_id;host_gene=host_gene;extra=tissue" \
+  --annotation-db "name=circsc;path=path/to/circsc.tsv;chrom=chromosome;start=bsj_start;end=bsj_end;id=circsc_id;host_gene=gene_symbol;extra=celltype" \
+  --out work/diySpike_workflow_all192/qc/circ_qc.annotated.tsv \
+  --summary-out work/diySpike_workflow_all192/qc/annotation_summary.json \
+  --update-h5ad work/diySpike_workflow_all192/anndata/circ_counts.h5ad
+```
+
+The `--annotation-db` option is generic: use `name:path` only when the database already uses canonical column names `chrom`, `start`, `end`, `strand`, `id`, and `host_gene`.
+
 For future multimodal analysis, the workflow can also emit MuData:
 
 ```bash

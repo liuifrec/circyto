@@ -18,6 +18,10 @@ from circyto.pipeline.run_cirifull import (
     run_cirifull_with_manifest,
 )
 from circyto.pipeline.collect import collect_matrix
+from circyto.pipeline.annotate_circs import (
+    annotate_circ_table,
+    parse_annotation_db_spec,
+)
 from circyto.pipeline.annotate_host_gene import annotate_host_genes
 from circyto.pipeline.align_manifest import (
     export_manifest_subset,
@@ -62,6 +66,7 @@ app = typer.Typer(
         "  [ALIGN]  prepare-alignment-cache / plan-alignment-cache / align-manifest / run-detector-from-alignments\n"
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
         "  [WORKFLOW] workflow smartseq3-ciri3 (experimental)\n"
+        "  [ANNOTATE] annotate-circs\n"
         "  [ANALYZE] analyze summarize-h5ad\n"
         "  [MERGE]  merge-detectors\n"
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
@@ -575,6 +580,56 @@ def annotate_host_genes_cmd(
         gtf_path=gtf,
         out=out,
         max_genes_per_circ=max_genes_per_circ,
+    )
+
+
+@app.command("annotate-circs")
+def annotate_circs_cmd(
+    circ_table: Path = typer.Option(..., "--circ-table", exists=True, help="Input circ_qc.tsv-like table"),
+    annotation_db: List[str] = typer.Option(
+        [],
+        "--annotation-db",
+        help=(
+            "Repeated DB spec. Use 'name:path' for canonical columns "
+            "(chrom,start,end,strand,id,host_gene) or "
+            "'name=...;path=...;chrom=...;start=...;end=...;strand=...;id=...;host_gene=...;extra=col1,col2'"
+        ),
+    ),
+    out: Path = typer.Option(..., "--out", help="Output annotated circ table TSV"),
+    summary_out: Optional[Path] = typer.Option(None, "--summary-out", help="Optional output path for annotation_summary.json"),
+    max_bsj_distance: int = typer.Option(0, "--max-bsj-distance", help="Maximum absolute start/end distance for near-BSJ matches"),
+    enable_host_gene_match: bool = typer.Option(
+        False,
+        "--enable-host-gene-match/--no-enable-host-gene-match",
+        help="Allow lower-confidence host-gene plus overlapping-locus matches",
+    ),
+    update_h5ad: Optional[Path] = typer.Option(None, "--update-h5ad", exists=True, help="Optional circ_counts.h5ad to update in-place"),
+) -> None:
+    """
+    Annotate circRNAs against one or more known circRNA databases.
+    """
+    if not annotation_db:
+        raise typer.BadParameter("Provide at least one --annotation-db spec.")
+    try:
+        db_specs = [parse_annotation_db_spec(item) for item in annotation_db]
+    except Exception as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    summary = annotate_circ_table(
+        circ_table=circ_table,
+        db_specs=db_specs,
+        out_path=out,
+        summary_path=summary_out,
+        max_bsj_distance=max_bsj_distance,
+        enable_host_gene_match=enable_host_gene_match,
+        update_h5ad=update_h5ad,
+    )
+    typer.echo(f"Annotated circ table: {out}")
+    if summary_out is None:
+        summary_out = out.with_name("annotation_summary.json")
+    typer.echo(f"Annotation summary: {summary_out}")
+    typer.echo(
+        f"Status counts: novel={summary['novel_count']} total={summary['total_circRNAs']}"
     )
 
 

@@ -316,6 +316,7 @@ Artifacts:
 Circyto also supports:
 
 - `annotate-host-genes` to map circ features to host genes using a GTF
+- `annotate-circs` to label known versus novel circRNAs against generic circRNA database TSVs
 - `export-multimodal` to create an `.h5ad` that combines:
   - existing mRNA expression (`.X`)
   - circRNA counts (in `obsm["X_circ"]`)
@@ -325,6 +326,7 @@ Because these commands evolve, rely on `--help` for exact flags:
 
 ```bash
 circyto annotate-host-genes --help
+circyto annotate-circs --help
 circyto export-multimodal --help
 ```
 
