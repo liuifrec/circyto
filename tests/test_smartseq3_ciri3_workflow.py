@@ -460,6 +460,56 @@ def test_qc_summary_generation_from_small_matrix(tmp_path: Path) -> None:
     assert numeric_summary([2, 1, 0]) == {"min": 0.0, "median": 1.0, "mean": 1.0, "max": 2.0}
 
 
+def test_circ_qc_blank_host_gene_preserves_columns_and_cell_bounds(tmp_path: Path) -> None:
+    circ_ids = ["circA", "circB"]
+    feature_path = tmp_path / "circ_feature_table.tsv"
+    feature_path.write_text(
+        "circ_id\tchrom\tstart\tend\tstrand\thost_gene\n"
+        "circA\tchr1\t1\t5\t+\t\n"
+        "circB\tchr1\t11\t15\t-\tGENE2\n",
+        encoding="utf-8",
+    )
+
+    feature_df = load_circ_feature_table(circ_ids, feature_path)
+    X_cells_by_circ = sp.csr_matrix([[5, 1], [2, 0], [0, 0]], dtype=int)
+    circ_qc = build_circ_qc_table(circ_ids=circ_ids, feature_df=feature_df, X_cells_by_circ=X_cells_by_circ)
+
+    assert circ_qc.columns.tolist() == [
+        "chrom",
+        "start",
+        "end",
+        "strand",
+        "host_gene",
+        "n_cells_detected",
+        "total_support",
+        "max_support",
+        "mean_support_detected_cells",
+    ]
+    assert circ_qc.loc["circA", "host_gene"] == ""
+    assert int(circ_qc["n_cells_detected"].max()) <= X_cells_by_circ.shape[0]
+
+    out_path = tmp_path / "circ_qc.tsv"
+    circ_qc.reset_index().to_csv(out_path, sep="\t", index=False)
+    written = pd.read_csv(out_path, sep="\t", keep_default_na=False)
+
+    assert written.columns.tolist() == [
+        "circ_id",
+        "chrom",
+        "start",
+        "end",
+        "strand",
+        "host_gene",
+        "n_cells_detected",
+        "total_support",
+        "max_support",
+        "mean_support_detected_cells",
+    ]
+    assert written.loc[0, "host_gene"] == ""
+    assert written.loc[0, "n_cells_detected"] == 2
+    assert written.loc[0, "total_support"] == 7
+    assert written.loc[0, "max_support"] == 5
+
+
 def test_h5ad_export_shape_orientation_and_indices(tmp_path: Path) -> None:
     import anndata as ad
 

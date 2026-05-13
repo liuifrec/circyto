@@ -132,14 +132,19 @@ def load_circ_feature_table(circ_ids: list[str], feature_path: Path) -> pd.DataF
     ).set_index("circ_id")
     if not feature_path.exists():
         return default_df
-    df = pd.read_csv(feature_path, sep="\t")
+    df = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
     if "circ_id" not in df.columns:
         return default_df
     df = df.set_index("circ_id")
     for column in ("chrom", "start", "end", "strand", "host_gene"):
         if column not in df.columns:
             df[column] = pd.NA if column in {"start", "end"} else ""
-    return df.reindex(circ_ids)[["chrom", "start", "end", "strand", "host_gene"]]
+    df = df.reindex(circ_ids)[["chrom", "start", "end", "strand", "host_gene"]]
+    for column in ("chrom", "strand", "host_gene"):
+        df[column] = df[column].fillna("")
+    for column in ("start", "end"):
+        df[column] = pd.to_numeric(df[column], errors="coerce")
+    return df
 
 
 def build_cell_qc_table(
@@ -180,32 +185,33 @@ def build_circ_qc_table(
     feature_df: pd.DataFrame,
     X_cells_by_circ: sp.csr_matrix,
 ) -> pd.DataFrame:
+    output_columns = [
+        "chrom",
+        "start",
+        "end",
+        "strand",
+        "host_gene",
+        "n_cells_detected",
+        "total_support",
+        "max_support",
+        "mean_support_detected_cells",
+    ]
     if not circ_ids:
-        return pd.DataFrame(
-            columns=[
-                "chrom",
-                "start",
-                "end",
-                "strand",
-                "host_gene",
-                "n_cells_detected",
-                "total_support",
-                "max_support",
-                "mean_support_detected_cells",
-            ]
-        ).rename_axis("circ_id")
+        return pd.DataFrame(columns=output_columns).rename_axis("circ_id")
 
     total_support = np.asarray(X_cells_by_circ.sum(axis=0)).ravel()
     n_cells = np.asarray(X_cells_by_circ.getnnz(axis=0)).ravel()
     max_support = np.asarray(X_cells_by_circ.max(axis=0).toarray()).ravel() if X_cells_by_circ.shape[0] else np.zeros(len(circ_ids), dtype=int)
     mean_support = np.divide(total_support, n_cells, out=np.zeros_like(total_support, dtype=float), where=n_cells > 0)
-    df = feature_df.copy()
+    df = feature_df.reindex(circ_ids).copy()
     df["n_cells_detected"] = n_cells.astype(int)
     df["total_support"] = total_support.astype(int)
     df["max_support"] = max_support.astype(int)
     df["mean_support_detected_cells"] = mean_support.astype(float)
     df.index.name = "circ_id"
-    return df
+    if len(n_cells) and int(n_cells.max()) > X_cells_by_circ.shape[0]:
+        raise AssertionError("n_cells_detected cannot exceed the number of cells in the matrix")
+    return df[output_columns]
 
 
 def matrix_section(X_cells_by_circ: sp.csr_matrix, circ_qc: pd.DataFrame) -> dict[str, Any]:
