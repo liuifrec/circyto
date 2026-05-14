@@ -12,104 +12,45 @@
   <a href="https://pypi.org/project/circyto/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
 </p>
 
-## circyto
+# circyto
 
+A workflow and analysis framework for single-cell circRNA detection, with detector adapters, alignment-first execution, SMART-Seq3 demultiplexing, QC reporting, AnnData export, and circRNA database annotation.
 
-A single-cell circRNA detection CLI for SMART-Seq3 workflows, QC, AnnData export, and circRNA database annotation.
+## Status
 
-## Current status
+`circyto` `v0.9.0` is the current experimental milestone.
 
-`circyto` `v0.9.0` is the current experimental release line.
+- The validated end-to-end path is SMART-Seq3 FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
+- The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
+- Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
+- Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
 
-- The public SMART-Seq3 workflow is manifest-driven and stable enough for routine use.
-- `circyto doctor` and `circyto detectors` are live commands, not planned features.
-- Bundled detector asset resolution is intended to be **cwd-independent**.
-- Detector integrations are still heterogeneous; detector-specific limits are documented rather than hidden.
-- CIRI3 is a real alignment-first backend with direct `java -jar` support when its local runtime contract is available.
-- The end-to-end SMART-Seq3 + CIRI3 + QC + AnnData + annotation path remains experimental and should be treated as release-candidate software rather than a frozen `v1.0` contract.
+## Installation
 
----
-
-## What it is
-
-`circyto` provides a reproducible command-line interface over multiple circRNA detectors (currently **CIRI-full**, **CIRI2**, **find-circ3**, and an alignment-first **CIRI3** backend) and standardizes outputs for downstream single-cell analysis (Scanpy / Seurat / scVI).
-
-If you're new, your fastest path is:
-
-1) install `circyto` + one detector  
-2) run the bundled smoke test  
-3) collect a `circ_counts.mtx` matrix  
-4) move on to your own reference/manifest
-
----
-
-## Install
-
-### System prerequisites (high level)
-
-You will need:
-
-- **Python 3.10+**
-- For `find-circ3` workflows: **bowtie2** and **samtools**
-- For `ciri-full` workflows: **bwa** and **Java (JRE)**
-- For `ciri3` workflows: **Java** plus a usable **CIRI3 jar**
-- For `ciri3` BWA alignment-first workflows: **bwa** and **samtools**
-- For `ciri3` STAR alignment-first workflows: **STAR**, **bwa**, and **samtools**
-
-> Tip: if something fails with “command not found”, jump to `docs/getting_started.md#external-dependencies`.
-
-### Install `circyto` from source
+### Source install
 
 ```bash
 git clone https://github.com/liuifrec/circyto
 cd circyto
 
-# supported baseline on Linux / WSL / HPC
 conda env create -f environment.yml
 conda activate circyto
-
-# installs the repo itself into that environment
-pip install -e .
+python -m pip install -e .
 ```
 
-The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported source-install baseline. It targets **Python 3.10** and keeps the default solve limited to the core Python runtime stack on `conda-forge`: `numpy`, `scipy`, `pandas`, `anndata`, `h5py`, `typer`, `rich`, and `tqdm`.
+The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported baseline for source installs. It provides the Python scientific stack and CLI dependencies, but it intentionally does not install external detector executables.
 
-It intentionally does **not** install detector executables such as `bwa`, `samtools`, `STAR`, `bowtie2`, `find-circ3`, `perl`, or Java. Those tools are workflow-specific, much more solver-fragile on mixed Linux/HPC systems, and are better installed separately through site modules, `apt`, `brew`, or a detector-specific conda environment. The default environment is meant to support:
+### External tools
 
-- `pip install -e .`
-- `circyto --help`
-- `circyto doctor`
-- `circyto detectors --json`
+Install only the external tools needed for the workflow you plan to run:
 
-### Install at least one detector
+- `STAR` for STAR-based alignment preparation
+- `bwa` for CIRI3 rescue alignment and BWA-based workflows
+- `samtools` for alignment handling
+- `java` >= 12 for the bundled CIRI3 jar; Java 17 recommended
+- detector-specific tools such as `bowtie2` or `find-circ3` only when using those detector paths
 
-#### Option A: find-circ3 (recommended for your first smoke test)
-
-```bash
-git clone https://github.com/liuifrec/find_circ3.git
-pip install -e ./find_circ3
-
-find-circ3 --help
-```
-
-#### Option B: CIRI-full
-
-`circyto` expects the **CIRI-full JAR** to be available under `tools/` (see repository `tools/` layout).
-You also need `bwa` and a Java runtime.
-
-See: `docs/detectors.md#ciri-full`.
-
-#### Option C: CIRI3
-
-CIRI3 requires:
-
-- `java` >= 12 for the bundled CIRI3 jar (`java` 17 recommended)
-- a local CIRI3 jar, either vendored under `tools/CIRI3/` or configured explicitly
-- `bwa` for BWA-based alignment-first runs
-- `STAR` only for STAR-based runs
-- `samtools` for alignment handling and inspection
-
-Supported environment variables:
+For bundled CIRI3 direct mode, supported environment variables include:
 
 - `CIRCYTO_CIRI3_HOME`
 - `CIRCYTO_CIRI3_JAR`
@@ -125,273 +66,104 @@ tools/
     CIRI3_Java_*.jar
 ```
 
-Minimal setup example:
+## Quick checks
+
+After installation, verify the package and runtime detection:
 
 ```bash
-conda activate circyto
-export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
+circyto --version
 circyto doctor
 circyto detectors
 ```
 
-STAR alignment-first note:
+What these checks mean:
 
-- `circyto` treats `CIRI3 + STAR` as the official upstream hybrid workflow, not as STAR-only.
-- The STAR prepare stage must emit `Aligned.out.sam`, `Chimeric.out.junction`, `Unmapped.out.mate1`, and `Unmapped.out.mate2`.
-- `circyto` then runs `bwa mem -T 19` on the unmapped mates and passes `Chimeric.out.junction,Aligned.out.sam,bwa_rescue.sam` into CIRI3 with `-Ma 1`.
-- STAR alignment prep now runs STAR inside a local Linux temp directory and then copies the required artifacts back into the cache. Override the temp base with `CIRCYTO_STAR_TMPDIR` if your cluster requires a specific local scratch path.
-- This STAR alignment-first contract is currently specific to `ciri3`. Other bundled detectors should be considered BWA-oriented or FASTQ-native unless documented otherwise.
+- `circyto --version` should report `0.9.0`.
+- `circyto doctor` checks Python/runtime setup and external dependencies.
+- `circyto detectors` reports detector readiness and required external tools.
 
----
-## Quick check (recommended)
+## Core workflows
 
-After installation, verify your environment and detector availability:
+### 1. SMART-Seq3 to CIRI3 end-to-end workflow
 
-```bash
-circyto doctor
-circyto detectors
-```
-
-- **circyto doctor** checks required external dependencies.
-- **circyto detectors** shows which detectors are ready to run.
-- In the default baseline environment, missing detector executables are reported as optional warnings rather than a failed installation.
-- For bundled CIRI3 direct mode, readiness now requires both `java` on `PATH` and a detected Java major version new enough for the jar (`>=12`, `17` recommended).
-
-For CIRI3 specifically:
-
-- `READY` means circyto found a usable CIRI3 jar and `java`, and the detected Java major version is new enough for direct `java -jar` execution.
-- `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
-- `PARTIAL` means local CIRI3 assets were found but the runtime contract is incomplete.
-
-These commands should work regardless of your current working directory as long as the installed package can see the bundled assets you configured.
-
-## Minimal example (bundled chr21 smoke test)
-
-The recommended installation smoke path is:
+This is the main `v0.9.0` workflow. The command below is a realistic example shape for a real dataset run; the paths are examples and should be replaced with your own files.
 
 ```bash
-circyto smoke --detector ciri3 --aligner bwa-mem
+circyto workflow smartseq3-ciri3 \
+  --read1 raw/Smartseq3.diySpike.R1.fastq.gz \
+  --read2 raw/Smartseq3.diySpike.R2.fastq.gz \
+  --index1 raw/Smartseq3.diySpike.I1.fastq.gz \
+  --index2 raw/Smartseq3.diySpike.I2.fastq.gz \
+  --annotation metadata/Smartseq3.diySpike.sample_annotation.normalized.tsv \
+  --cell-id-column cell_id \
+  --index1-column index1 \
+  --index2-column index2 \
+  --ref-fa /path/to/hg38.fa \
+  --star-index /path/to/star_index \
+  --outdir work/diySpike_workflow_all192 \
+  --threads 24 \
+  --parallel 1 \
+  --chunk-size 1 \
+  --resume \
+  --export-h5ad
 ```
 
-If STAR prerequisites are present, you can also exercise the official hybrid route:
+What it does:
 
-```bash
-circyto smoke --detector ciri3 --aligner star
-```
+- demultiplexes pooled SMART-Seq3 reads with `circyto demux smartseq3`
+- writes selected manifests under `OUTDIR/manifests/`
+- prepares STAR+CIRI3 hybrid alignment artifacts
+- runs CIRI3 from the alignment manifest
+- collects a circRNA matrix with QC tables
+- exports `OUTDIR/anndata/circ_counts.h5ad`
+- writes `workflow_summary.json`
 
-The smoke command builds a tiny local chr21 subset, runs the current alignment-first CIRI3 workflow, and writes a compact `smoke_summary.json` under the chosen `--outdir`.
+Main outputs:
 
-What this smoke test proves:
+- `demux/`
+- `manifests/`
+- `align/`
+- `ciri3/`
+- `matrix/`
+- `qc/`
+- `anndata/`
+- `mudata/` when `--export-mudata` is enabled
+- `workflow_summary.json`
 
-- runtime resolution is usable
-- the alignment-first workflow can complete
-- per-cell outputs can be collected into a sparse matrix
-- the normalized TSV and matrix plumbing are working
+### 2. Low-level alignment-first CIRI3 workflow
 
-What it does **not** prove:
-
-- broad biological validity
-- performance on your full dataset
-- equivalence between different detector algorithms
-- guaranteed non-empty biological calls on a tiny subset
-
-By default, smoke treats an empty detector output or empty matrix as a PASS if the full workflow completed correctly. Use `--require-nonempty` when you want smoke to fail on all-zero outputs.
-
-## Detector behavior note
-
-`ciri-full` does **not** use one identical internal execution path for every layout:
-
-- **paired-end manifest rows**: `circyto` runs the upstream bundled **CIRI-full Java Pipeline**
-- **single-end manifest rows**: upstream CIRI-full Pipeline is paired-end only, so `circyto` falls back to the bundled **CIRI2-based detection path** and normalizes the output to the same TSV schema
-
-This preserves manifest compatibility and downstream collection, but **single-end `ciri-full` runs are not identical to upstream CIRI-full full-length reconstruction**.
-
----
-
-## Alignment-first workflow
-
-For large demultiplexed datasets, circyto now includes an alignment-first execution track so alignments can be prepared once and reused across downstream detector runs.
-
-### CIRI3 setup
-
-Expected repo-local layout:
-
-```text
-tools/
-  CIRI3/
-    CIRI3_Java_*.jar
-```
-
-Supported environment variables:
-
-- `CIRCYTO_CIRI3_HOME`
-- `CIRCYTO_CIRI3_JAR`
-- `CIRCYTO_CIRI3_JAVA`
-- `CIRCYTO_CIRI3_EXTRA_ARGS`
-- `CIRCYTO_CIRI3_CMD_TEMPLATE`
-
-Verify the runtime contract before a real alignment-first CIRI3 run:
-
-```bash
-export CIRCYTO_CIRI3_HOME=/path/to/CIRI3
-circyto doctor
-circyto detectors
-```
-
-Mode-specific minimum tools:
-
-- BWA mode: `bwa`, `samtools`, `java`
-- STAR mode: `STAR`, `samtools`, `java`
-
-Readiness semantics:
-
-- `READY`: CIRI3 jar and Java were detected, and the detected Java major version is `>=12`, so direct `java -jar` execution is usable.
-- `NOT READY`: circyto could not find a usable CIRI3 jar or execution path.
-- `PARTIAL`: local CIRI3 assets were detected, but the direct or template execution contract is incomplete.
-
-Direct CIRI3 execution requires a detected CIRI3 jar plus Java. For the bundled jar, Java `>=12` is required and Java `17` is recommended. `STAR` is not required unless STAR mode is used. Template execution remains available through `--command-template` or `CIRCYTO_CIRI3_CMD_TEMPLATE`; template mode does not require `--ref-fa` unless the template itself uses `{ref_fa}`.
-
-Validated local BWA + CIRI3 example:
-
-```bash
-circyto plan-alignment-cache \
-  --manifest manifest.tsv \
-  --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
-  --detector ciri3 \
-  --outdir work/alignment_cache
-
-circyto prepare-alignment-cache \
-  --manifest manifest.tsv \
-  --aligner bwa-mem \
-  --ref-fa ref/genome.fa \
-  --detector ciri3 \
-  --outdir work/alignment_cache \
-  --sentinel-cells 8 \
-  --chunk-size 48
-
-circyto run-detector-from-alignments \
-  --detector ciri3 \
-  --manifest work/alignment_cache/alignment_manifest.tsv \
-  --outdir work/ciri3_run \
-  --ref-fa ref/genome.fa \
-  --chunk-size 64
-```
-
-Assumptions:
-
-- the `bwa` index matches `ref/genome.fa`
-- the alignment manifest rows resolve to unsorted SAM for direct CIRI3 execution
-- the same reference build is used for alignment preparation and detector execution
-
-Validated local settings:
-
-- aligner: `bwa mem -k 15 -T 15`
-- CIRI3: `-S 0 -Ma 0`
-
-STAR + CIRI3 example:
+Use this path when you want explicit control over alignment preparation, detector execution, and matrix collection. The commands below are example command shapes; replace paths and references with your own files.
 
 ```bash
 circyto prepare-alignment-cache \
   --manifest manifest.tsv \
   --aligner star \
-  --ref-fa ref/genome.fa \
   --detector ciri3 \
-  --outdir work/alignment_cache_star
+  --ref-fa /path/to/hg38.fa \
+  --outdir work/alignment_cache \
+  --extra-flags "--genomeDir /path/to/star_index --readFilesCommand zcat"
 
 circyto run-detector-from-alignments \
   --detector ciri3 \
-  --manifest work/alignment_cache_star/alignment_manifest.tsv \
-  --outdir work/ciri3_star_run \
-  --ref-fa ref/genome.fa
+  --manifest work/alignment_cache/alignment_manifest.tsv \
+  --outdir work/ciri3_run \
+  --ref-fa /path/to/hg38.fa
+
+circyto collect-matrix \
+  --detector ciri3 \
+  --indir work/ciri3_run \
+  --outdir work/ciri3_matrix
 ```
 
-STAR assumptions:
+Notes:
 
-- a matching STAR genome index is available to the alignment step
-- STAR chimeric outputs are present in the alignment manifest
-- the same reference build is used throughout
+- `prepare-alignment-cache --aligner star --detector ciri3` uses the official STAR + BWA rescue hybrid contract implemented for CIRI3.
+- For CIRI3 STAR tuple mode, the alignment manifest must carry STAR outputs plus `bwa_sam`.
+- `collect-matrix` is the current unified matrix collector; older `collect` examples are not the recommended public interface.
 
-BWA + CIRI3 is the validated local production path. STAR + CIRI3 is supported in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
+### 3. CircRNA annotation
 
-## Experimental SMART-Seq3 demux and workflow
-
-`circyto demux smartseq3` is an experimental pooled-read demultiplexing path for SMART-Seq3-style data with transcript FASTQs (`R1`/`R2`) plus dual index FASTQs (`I1`/`I2`).
-
-- It reads all four FASTQs in lockstep and fails fast on malformed FASTQ structure or desynchronized read IDs.
-- It maps `I1+I2` index pairs to cell IDs from a user-supplied TSV/CSV annotation table.
-- It writes per-cell transcript FASTQs plus `manifest.tsv`, so the output can feed `prepare-alignment-cache` and downstream STAR + CIRI3 runs.
-- This mode is for engineering validation and downstream compatibility first. Use local `chr21` resources only for smoke tests, not for biological completeness.
-
-An experimental high-level workflow command is also available:
-
-```bash
-circyto workflow smartseq3-ciri3 \
-  --read1 emtab8735/subset_100k/diySpike.R1.100k.fastq.gz \
-  --read2 emtab8735/subset_100k/diySpike.R2.100k.fastq.gz \
-  --index1 emtab8735/subset_100k/diySpike.I1.100k.fastq.gz \
-  --index2 emtab8735/subset_100k/diySpike.I2.100k.fastq.gz \
-  --annotation path/to/emtab8735_annotation.tsv \
-  --cell-id-column cell_id \
-  --index1-column index1 \
-  --index2-column index2 \
-  --ref-fa ref/chr21.fa \
-  --star-index ref/star_index_chr21 \
-  --outdir work/emtab8735_smartseq3_ciri3 \
-  --top-n 20 \
-  --export-h5ad \
-  --threads 8 \
-  --parallel 1 \
-  --chunk-size 1 \
-  --resume
-```
-
-This command stages:
-
-- `OUTDIR/demux`
-- `OUTDIR/manifests`
-- `OUTDIR/align`
-- `OUTDIR/ciri3`
-- `OUTDIR/matrix`
-- `OUTDIR/qc`
-- `OUTDIR/anndata`
-- `OUTDIR/mudata` when `--export-mudata` is requested
-- `OUTDIR/logs`
-
-It runs SMART-Seq3 demux, selects either all cells or top `N` by `reads_per_cell` and writes `manifests/top<N>_manifest.tsv`, prepares STAR+CIRI3 alignments, runs CIRI3 from alignments, collects the matrix, writes QC tables, exports analysis-ready AnnData, and writes `workflow_summary.json`.
-
-Workflow outputs now include:
-
-- `matrix/` with `circ_counts.mtx`, `circ_index.txt`, `cell_index.txt`, `circ_feature_table.tsv`
-- `qc/` with `cell_qc.tsv` and `circ_qc.tsv`
-- `anndata/` with `circ_counts.h5ad`
-- `mudata/` with `circyto_multimodal.h5mu` when gene counts are provided and `--export-mudata` is enabled
-- `workflow_summary.json` with stage timing, demux/alignment/detector QC, matrix sparsity, and recurrent circRNA summaries
-
-Server-validated DIY spike result summary for E-MTAB-8735:
-
-- full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
-- all192 hg38 STAR+CIRI3: completed successfully
-- all192 final result: `192` cells, `2503` circRNAs, `2659` nonzero entries
-- top20 STAR+CIRI3: all `20` cells succeeded
-- matrix: `588` circRNAs x `20` cells, `600` nonzero entries
-
-The exported `circ_counts.h5ad` is organized for Scanpy-style downstream analysis:
-
-- `adata.X`: sparse circRNA count matrix with shape `cells x circRNAs`
-- `adata.obs`: `cell_qc.tsv` indexed by `cell_id`
-- `adata.var`: `circ_qc.tsv` / `circ_feature_table.tsv` indexed by `circ_id`
-- `adata.uns["circyto"]`: workflow provenance and paths
-
-You can summarize the exported AnnData with:
-
-```bash
-circyto analyze summarize-h5ad \
-  --input work/emtab8735_smartseq3_ciri3/anndata/circ_counts.h5ad \
-  --outdir work/emtab8735_smartseq3_ciri3/anndata_summary
-```
-
-You can annotate `circ_qc.tsv` against known circRNA resources with the standalone database annotator:
+Annotate the workflow `circ_qc.tsv` against known circRNA databases. The command shape below is current and verified; the database paths are examples.
 
 ```bash
 circyto annotate-circs \
@@ -403,111 +175,108 @@ circyto annotate-circs \
   --update-h5ad work/diySpike_workflow_all192/anndata/circ_counts.h5ad
 ```
 
-The `--annotation-db` option is generic: use `name:path` only when the database already uses canonical column names `chrom`, `start`, `end`, `strand`, `id`, and `host_gene`.
+Annotation semantics:
 
-Observed real-data annotation summary for the E-MTAB-8735 `all192` result:
+- exact BSJ matches are reported as `known_exact_bsj`
+- near-BSJ matches can be enabled with `--max-bsj-distance`
+- unmatched entries remain `novel`
+- annotation columns are added without changing matrix semantics
 
-- `192` cells
-- `2503` circRNAs
-- `2659` nonzero entries
-- circAtlas v3 exact matches: `518`
-- novel count: `1985`
-- recurrent known: `51`
-- recurrent novel: `26`
+### 4. AnnData downstream summary
 
-For future multimodal analysis, the workflow can also emit MuData:
+```bash
+circyto analyze summarize-h5ad \
+  --input work/diySpike_workflow_all192/anndata/circ_counts.h5ad \
+  --outdir work/diySpike_workflow_all192/anndata_summary
+```
+
+### 5. Optional MuData export
+
+If you also have a gene-count matrix, the workflow can export MuData:
 
 ```bash
 circyto workflow smartseq3-ciri3 \
-  ... \
-  --export-h5ad \
-  --gene-counts path/to/gene_counts.tsv \
-  --gene-counts-format tsv \
-  --export-mudata
-```
-
-When MuData export is enabled:
-
-- `mdata.mod["rna"]` stores gene expression as `cells x genes`
-- `mdata.mod["circ"]` stores circRNA counts as `cells x circRNAs`
-- shared cell IDs are aligned with `--cell-join inner|outer` (default `inner`)
-- `mdata.uns["circyto"]` stores workflow provenance
-
-Local E-MTAB-8735-style example with the shipped subset:
-
-```bash
-circyto demux smartseq3 \
-  --read1 emtab8735/subset_100k/diySpike.R1.100k.fastq.gz \
-  --read2 emtab8735/subset_100k/diySpike.R2.100k.fastq.gz \
-  --index1 emtab8735/subset_100k/diySpike.I1.100k.fastq.gz \
-  --index2 emtab8735/subset_100k/diySpike.I2.100k.fastq.gz \
-  --annotation path/to/emtab8735_annotation.tsv \
+  --read1 raw/Smartseq3.diySpike.R1.fastq.gz \
+  --read2 raw/Smartseq3.diySpike.R2.fastq.gz \
+  --index1 raw/Smartseq3.diySpike.I1.fastq.gz \
+  --index2 raw/Smartseq3.diySpike.I2.fastq.gz \
+  --annotation metadata/Smartseq3.diySpike.sample_annotation.normalized.tsv \
   --cell-id-column cell_id \
   --index1-column index1 \
   --index2-column index2 \
-  --outdir work/emtab8735_smartseq3_demux \
-  --max-records 5000
+  --ref-fa /path/to/hg38.fa \
+  --star-index /path/to/star_index \
+  --outdir work/diySpike_workflow_all192 \
+  --gene-counts path/to/gene_counts.tsv \
+  --gene-counts-format tsv \
+  --export-h5ad \
+  --export-mudata
 ```
 
-Downstream chr21-only smoke after demux:
+## Outputs and data model
+
+Key output directories from the SMART-Seq3 workflow:
+
+- `matrix/` contains `circ_counts.mtx`, `circ_index.txt`, `cell_index.txt`, and `circ_feature_table.tsv`
+- `qc/` contains `cell_qc.tsv` and `circ_qc.tsv`
+- `anndata/` contains `circ_counts.h5ad`
+- `mudata/` contains `circyto_multimodal.h5mu` when enabled
+
+Data model:
+
+- MatrixMarket output represents circRNA counts indexed by the accompanying circ and cell index files.
+- In `circ_counts.h5ad`, `adata.X` is `cells x circRNAs`.
+- `adata.obs` contains cell-level QC indexed by `cell_id`.
+- `adata.var` contains circRNA QC and, after annotation, circRNA database labels indexed by `circ_id`.
+- `adata.uns["circyto"]` stores workflow provenance and related metadata.
+
+## Validated benchmark result
+
+Validated real-data result for E-MTAB-8735 diySpike `all192`:
+
+- total reads: `75,015,128`
+- assigned reads: `68,649,627`
+- assignment rate: `~91.5%`
+- detected cells: `192`
+- aligned cells: `192`
+- final `h5ad`: `192` cells, `2503` circRNAs, `2659` nonzero entries
+- biologically non-empty cells: `191`
+- empty cells: `1`
+- circAtlas v3 exact matches: `518`
+- novel count: `1985`
+- recurrent known circRNAs: `51`
+- recurrent novel circRNAs: `26`
+
+This is still an experimental release, but the SMART-Seq3 + STAR + CIRI3 + annotation workflow has been validated on real data rather than only synthetic smoke assets.
+
+## Testing
+
+Run the default test suite with:
 
 ```bash
-circyto prepare-alignment-cache \
-  --manifest work/emtab8735_smartseq3_demux/manifest.tsv \
-  --aligner star \
-  --detector ciri3 \
-  --ref-fa ref/chr21.fa \
-  --outdir work/emtab8735_smartseq3_align_chr21 \
-  --extra-flags "--genomeDir ref/star_index_chr21 --readFilesCommand zcat"
+pytest -q .
 ```
 
-If no real SMART-Seq3 annotation table is available locally, use synthetic annotations for tests and treat the E-MTAB-8735 command above as a documented manual workflow scaffold.
+Notes:
 
-Recover after a partial failure:
+- This is the same default path used by the cleaned-up CI workflow.
+- External detector integration tests are gated and skipped by default in CI.
+- Heavy detector/runtime validation should be treated as explicit opt-in work rather than part of every routine push.
 
-```bash
-circyto summarize-run-state \
-  --manifest work/alignment_cache/alignment_manifest.tsv \
-  --run-dir work/ciri3_run \
-  --mode detector
+## Documentation
 
-circyto export-run-subset \
-  --manifest work/alignment_cache/alignment_manifest.tsv \
-  --run-dir work/ciri3_run \
-  --subset incomplete \
-  --out work/ciri3_incomplete.tsv
+Additional references:
 
-# For stale outputs only:
-circyto export-run-subset \
-  --manifest work/alignment_cache/alignment_manifest.tsv \
-  --run-dir work/ciri3_run \
-  --subset stale \
-  --out work/ciri3_stale.tsv
-```
+- **Getting started guide**: [docs/getting_started.md](/mnt/d/circyto/docs/getting_started.md)
+- **Detector catalog**: [docs/detectors.md](/mnt/d/circyto/docs/detectors.md)
+- **Alignment-first execution details**: [docs/alignment_first_execution.md](/mnt/d/circyto/docs/alignment_first_execution.md)
+- **CLI contract notes**: [docs/cli_policy.md](/mnt/d/circyto/docs/cli_policy.md)
+- **Roadmap and milestone status**: [ROADMAP.md](/mnt/d/circyto/ROADMAP.md)
 
-Validate the local plumbing with repo-shipped assets:
-
-```bash
-circyto smoke --detector ciri3 --aligner bwa-mem --outdir work/smoke_bwa
-circyto smoke --detector ciri3 --aligner star --outdir work/smoke_star
-```
-
-See `docs/alignment_first_execution.md` for cache keys, resume behavior, chunk recovery, and CIRI3 execution-mode details.
-
----
-
-## Next steps
-
-- **Getting started guide** (full workflows, references/manifests): `docs/getting_started.md`
-- **Detector catalog** (what each detector needs & produces): `docs/detectors.md`
-- **Alignment-first execution** (shared preprocessing and reusable BAM/SAM manifests): `docs/alignment_first_execution.md`
-- **CLI contract** (“where do detector/outdir go?”): `docs/cli_policy.md`
-- **Project strategy & milestones**: `ROADMAP.md`
-
----
+Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-only shell-style examples are not part of the recommended `v0.9.0` public path and are intentionally omitted from this README.
 
 ## Citation
 
 A methods manuscript is under preparation. In the meantime, please cite this repository:
 
-> Liu, Y.-C. et al. “circyto: a unified CLI for single-cell circRNA detection and multimodal matrices.” GitHub repository: https://github.com/liuifrec/circyto
+> Liu, Y.-C. et al. "circyto: a unified CLI for single-cell circRNA detection and multimodal matrices." GitHub repository: https://github.com/liuifrec/circyto
