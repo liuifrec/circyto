@@ -34,6 +34,11 @@ from circyto.pipeline.align_manifest import (
 )
 from circyto.pipeline.run_detector import run_detector_manifest
 from circyto.pipeline.run_multidetector import run_multidetector_pipeline
+from circyto.pipeline.run_ciri3 import RunCiri3Params, run_ciri3_workflow
+from circyto.pipeline.scomatic_interop import (
+    export_scomatic_inputs,
+    join_circ_snv_summary,
+)
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
 from circyto.pipeline.compare_detectors import compare_detectors as _compare_detectors
 from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
@@ -68,6 +73,7 @@ app = typer.Typer(
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
         "  [WORKFLOW] workflow smartseq3-ciri3 (experimental)\n"
         "  [ANNOTATE] annotate-circs\n"
+        "  [INTEROP] export-scomatic-inputs, join-circ-snv-summary\n"
         "  [ANALYZE] analyze summarize-h5ad\n"
         "  [MERGE]  merge-detectors\n"
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
@@ -588,6 +594,52 @@ def export_multimodal_cmd(
     )
 
 
+@app.command("export-scomatic-inputs")
+def export_scomatic_inputs_cmd(
+    bam_manifest: Path = typer.Option(..., "--bam-manifest", exists=True, help="TSV with per-cell BAM paths"),
+    cell_metadata: Path = typer.Option(..., "--cell-metadata", exists=True, help="TSV with per-cell metadata"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="Output directory"),
+    reference_fasta: Path = typer.Option(..., "--reference-fasta", exists=True, help="Reference FASTA for external SComatic runs"),
+    protocol: str = typer.Option(..., "--protocol", help="One of: smartseq3, ramda, shin-ramda"),
+) -> None:
+    """
+    Export lightweight interoperability tables for an external SComatic run.
+    """
+    allowed = {"smartseq3", "ramda", "shin-ramda"}
+    if protocol not in allowed:
+        raise typer.BadParameter(f"--protocol must be one of: {', '.join(sorted(allowed))}")
+
+    export_scomatic_inputs(
+        bam_manifest=bam_manifest,
+        cell_metadata=cell_metadata,
+        outdir=outdir,
+        reference_fasta=reference_fasta,
+        protocol=protocol,
+    )
+    typer.echo(f"Wrote SComatic interoperability scaffold to {outdir}")
+
+
+@app.command("join-circ-snv-summary")
+def join_circ_snv_summary_cmd(
+    circ_matrix: Path = typer.Option(..., "--circ-matrix", exists=True, help="Wide circRNA-by-cell TSV"),
+    circ_feature_table: Path = typer.Option(..., "--circ-feature-table", exists=True, help="circ_feature_table.tsv or similar"),
+    scomatic_candidates: Path = typer.Option(..., "--scomatic-candidates", exists=True, help="Exploratory SComatic candidate SNV TSV"),
+    cell_metadata: Path = typer.Option(..., "--cell-metadata", exists=True, help="TSV with per-cell metadata"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="Output directory"),
+) -> None:
+    """
+    Join circRNA summaries with exploratory SComatic candidate SNV tables.
+    """
+    join_circ_snv_summary(
+        circ_matrix=circ_matrix,
+        circ_feature_table=circ_feature_table,
+        scomatic_candidates=scomatic_candidates,
+        cell_metadata=cell_metadata,
+        outdir=outdir,
+    )
+    typer.echo(f"Wrote circ/SNV summary tables to {outdir}")
+
+
 @app.command("annotate-host-genes")
 def annotate_host_genes_cmd(
     circ_feature_table: Path = typer.Option(..., exists=True, help="circ_feature_table.tsv"),
@@ -779,6 +831,56 @@ def run_batch_cmd(
         gtf=gtf,
         threads=threads,
         parallel=parallel,
+    )
+
+
+@app.command("run-ciri3")
+def run_ciri3_cmd(
+    manifest: Path = typer.Option(..., "--manifest", exists=True, help="Manifest TSV with FASTQ rows"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="Workflow output directory"),
+    genome_fasta: Path = typer.Option(..., "--genome-fasta", exists=True, help="Reference FASTA"),
+    gtf: Path = typer.Option(..., "--gtf", exists=True, help="Annotation GTF"),
+    star_index: Path = typer.Option(..., "--star-index", exists=True, help="STAR genomeDir for paired-end rows"),
+    protocol: str | None = typer.Option(
+        None,
+        "--protocol",
+        help="Protocol preset: smartseq3, ramda, shin-ramda. If omitted, use manifest protocol/platform.",
+    ),
+    strandedness: str | None = typer.Option(
+        None,
+        "--strandedness",
+        help="Explicit strandedness override/preset metadata: forward, reverse, or unstranded.",
+    ),
+    threads: int = typer.Option(8, "--threads", help="Threads per alignment/detector task"),
+    parallel: int = typer.Option(1, "--parallel", help="Concurrent alignment/detector tasks"),
+    chunk_size: int = typer.Option(1, "--chunk-size", help="Chunk size for resumable execution"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Print planned STAR/BWA and CIRI3 commands without executing"),
+    fail_fast: bool = typer.Option(False, "--fail-fast", help="Stop after the first failed chunk"),
+    command_template: str | None = typer.Option(None, "--command-template", help="Optional CIRI3 command template override"),
+) -> None:
+    """
+    Run a protocol-aware CIRI3 alignment-first workflow.
+
+    Paired-end rows use STAR+CIRI3 hybrid preparation.
+    Single-end rows use BWA+CIRI3 while preserving the same output layout.
+    """
+    run_ciri3_workflow(
+        RunCiri3Params(
+            manifest=manifest,
+            outdir=outdir,
+            genome_fasta=genome_fasta,
+            gtf=gtf,
+            star_index=star_index,
+            protocol=protocol,
+            strandedness=strandedness,
+            threads=threads,
+            parallel=parallel,
+            chunk_size=chunk_size,
+            dry_run=dry_run,
+            fail_fast=fail_fast,
+            command_template=command_template,
+        ),
+        progress=typer.echo,
     )
 
 

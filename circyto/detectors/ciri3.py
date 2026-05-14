@@ -535,6 +535,36 @@ class Ciri3Detector(DetectorBase):
             "log_path": log_path,
         }
 
+    def preview_command(self, inputs: DetectorRunInputs, *, raw_output: Path, run_dir: Path, log_path: Path) -> str:
+        context = self.build_template_context(inputs, raw_output=raw_output, run_dir=run_dir, log_path=log_path)
+        template = self.resolve_command_template()
+        if template:
+            return template.format(**context)
+
+        if inputs.ref_fa is None:
+            return "<ciri3 preview requires ref_fa>"
+
+        resolution = resolve_ciri3_installation()
+        runtime = inspect_ciri3_runtime(command_template=self.command_template)
+        if not runtime.get("direct_ready"):
+            return "<ciri3 runtime unavailable for preview>"
+
+        cli_args = _resolve_ciri3_cli_args(
+            extra_args=self.resolve_extra_args(),
+            mapper_mode=str(context.get("mapper_mode") or "0"),
+        )
+        cmd = _build_direct_ciri3_command(
+            resolution=resolution,
+            alignment_input=str(context["alignment_input"]),
+            raw_output=raw_output,
+            ref_fa=inputs.ref_fa,
+            gtf=inputs.gtf,
+            threads=inputs.threads,
+            cli_args=cli_args,
+            internal_log=run_dir / "ciri3.internal.log",
+        )
+        return _shell_join(cmd)
+
     def run(self, inputs: DetectorRunInputs) -> DetectorResult:
         if inputs.input_mode != "alignment":
             raise ValueError("CIRI3 requires alignment input mode")

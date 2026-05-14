@@ -1,0 +1,4 @@
+circ_id	chrom	start	end	strand	host_gene
+circ1	chr1	100	200	+	GENE1
+circ2	chr1	300	400	-	GENE2
+circ3	chr2	500	600	+	GENE1

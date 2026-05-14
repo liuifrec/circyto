@@ -174,19 +174,19 @@ def read_manifest(path: Path, *, validate_files: bool = True) -> List[Tuple[str,
             raise ValueError(f"Manifest has no header row: {path}")
 
         # Normalize header expectation
-        if "cell_id" not in rd.fieldnames:
-            raise KeyError(f"Manifest missing required column 'cell_id': {path}")
+        if "cell_id" not in rd.fieldnames and "sample_id" not in rd.fieldnames:
+            raise KeyError(f"Manifest missing required column 'cell_id' or 'sample_id': {path}")
 
         for i, r in enumerate(rd, start=2):  # header is line 1
-            cell = (r.get("cell_id") or "").strip()
+            cell = (r.get("cell_id") or r.get("sample_id") or "").strip()
             if not cell:
                 raise ValueError(f"Empty cell_id at {path}:{i}")
             if cell in seen_cells:
                 raise ValueError(f"Duplicate cell_id '{cell}' at {path}:{i}")
             seen_cells.add(cell)
 
-            r1_key = _pick_col(r, ("r1", "read1"))
-            r2_key = _pick_col(r, ("r2", "read2"))
+            r1_key = _pick_col(r, ("r1", "read1", "fastq_1"))
+            r2_key = _pick_col(r, ("r2", "read2", "fastq_2"))
 
             if r1_key is None:
                 raise KeyError(f"Manifest missing r1/read1 for cell_id={cell} at {path}:{i}")

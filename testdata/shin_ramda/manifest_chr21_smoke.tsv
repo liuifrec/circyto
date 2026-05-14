@@ -1,0 +1,2 @@
+sample_id	fastq_1	fastq_2	protocol	strandedness	read_layout
+shin_ramda_chr21_se	shin_ramda_se_R1.fastq		shin-ramda	forward	single-end

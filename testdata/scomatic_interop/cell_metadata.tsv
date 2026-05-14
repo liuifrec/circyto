@@ -1,0 +1,4 @@
+cell_id	cell_type	donor
+cellA	neuron	D1
+cellB	astrocyte	D1
+cellC	neuron	D2

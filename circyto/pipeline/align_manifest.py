@@ -65,6 +65,8 @@ class SourceManifestRow:
     read2: Optional[Path] = None
     bam: Optional[Path] = None
     platform: str = ""
+    protocol: str = ""
+    strandedness: str = ""
     library_id: str = ""
     group_id: str = ""
     declared_read_layout: str = ""
@@ -163,19 +165,20 @@ def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[Sou
     seen_ids: set[str] = set()
     with path.open("r", encoding="utf-8", newline="") as handle:
         reader = csv.DictReader(handle, delimiter="\t")
-        if reader.fieldnames is None or "cell_id" not in reader.fieldnames:
-            raise KeyError(f"Manifest missing required column 'cell_id': {path}")
+        fieldnames = reader.fieldnames or []
+        if not fieldnames or ("cell_id" not in fieldnames and "sample_id" not in fieldnames):
+            raise KeyError(f"Manifest missing required column 'cell_id' or 'sample_id': {path}")
 
         for i, raw in enumerate(reader, start=2):
-            cell_id = (raw.get("cell_id") or "").strip()
+            cell_id = (raw.get("cell_id") or raw.get("sample_id") or "").strip()
             if not cell_id:
                 raise ValueError(f"Empty cell_id at {path}:{i}")
             if cell_id in seen_ids:
                 raise ValueError(f"Duplicate cell_id '{cell_id}' at {path}:{i}")
             seen_ids.add(cell_id)
 
-            read1_raw = _manifest_value(raw, "read1", "r1")
-            read2_raw = _manifest_value(raw, "read2", "r2")
+            read1_raw = _manifest_value(raw, "read1", "r1", "fastq_1")
+            read2_raw = _manifest_value(raw, "read2", "r2", "fastq_2")
             read_layout = _validated_read_layout(raw, path=path, line_number=i, cell_id=cell_id)
             read1 = resolve_manifest_path(path, read1_raw) if read1_raw else None
             read2 = resolve_manifest_path(path, read2_raw) if read2_raw else None
@@ -195,7 +198,24 @@ def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[Sou
             extras = {
                 key: value
                 for key, value in raw.items()
-                if key not in {"cell_id", "read1", "read2", "r1", "r2", "bam", "platform", "library_id", "group_id"}
+                if key
+                not in {
+                    "cell_id",
+                    "sample_id",
+                    "read1",
+                    "read2",
+                    "r1",
+                    "r2",
+                    "fastq_1",
+                    "fastq_2",
+                    "bam",
+                    "platform",
+                    "protocol",
+                    "strandedness",
+                    "library_id",
+                    "group_id",
+                    "read_layout",
+                }
                 and value not in (None, "")
             }
             rows.append(
@@ -205,6 +225,8 @@ def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[Sou
                     read2=read2,
                     bam=bam,
                     platform=(raw.get("platform") or "").strip(),
+                    protocol=(raw.get("protocol") or raw.get("platform") or "").strip(),
+                    strandedness=(raw.get("strandedness") or "").strip(),
                     library_id=(raw.get("library_id") or "").strip(),
                     group_id=(raw.get("group_id") or raw.get("library_id") or "").strip(),
                     declared_read_layout=read_layout,
@@ -1690,8 +1712,8 @@ def run_detector_alignment_manifest(
     dry_run: bool = False,
     fail_fast: bool = False,
 ) -> List[DetectorResult]:
-    rows = read_alignment_manifest_tsv(manifest, validate_files=True)
-    errors = _validate_alignment_rows(rows, detector=detector, ref_fa=ref_fa, gtf=gtf)
+    rows = read_alignment_manifest_tsv(manifest, validate_files=not dry_run)
+    errors = [] if dry_run else _validate_alignment_rows(rows, detector=detector, ref_fa=ref_fa, gtf=gtf)
     if chunk_size < 1:
         errors.append("chunk_size must be >= 1")
     if errors:
@@ -1700,33 +1722,31 @@ def run_detector_alignment_manifest(
     if dry_run:
         preview: list[dict[str, Any]] = []
         if isinstance(detector, Ciri3Detector):
-            template = detector.resolve_command_template()
             for row in rows[:3]:
-                if template:
-                    preview.append(
-                        {
-                            "cell_id": row.cell_id,
-                            "command": template.format(
-                                **detector.build_template_context(
-                                    DetectorRunInputs(
-                                        cell_id=row.cell_id,
-                                        bam=Path(row.alignment_path) if row.bam else None,
-                                        sam=Path(row.alignment_path) if row.sam else None,
-                                        outdir=outdir,
-                                        ref_fa=ref_fa,
-                                        gtf=gtf,
-                                        threads=threads,
-                                        input_mode="alignment",
-                                        read_layout=row.read_layout or None,
-                                        alignment_group=row.group_id or None,
-                                    ),
-                                    raw_output=(outdir / f"{row.cell_id}.ciri3_run" / "ciri3_raw.tsv"),
-                                    run_dir=(outdir / f"{row.cell_id}.ciri3_run"),
-                                    log_path=(outdir / f"{row.cell_id}.ciri3.log"),
-                                )
-                            ),
-                        }
-                    )
+                inputs = DetectorRunInputs(
+                    cell_id=row.cell_id,
+                    bam=Path(row.alignment_path) if row.bam else None,
+                    sam=Path(row.alignment_path) if row.sam else None,
+                    outdir=outdir,
+                    ref_fa=ref_fa,
+                    gtf=gtf,
+                    threads=threads,
+                    input_mode="alignment",
+                    read_layout=row.read_layout or None,
+                    alignment_group=row.group_id or None,
+                    extra={"alignment_manifest_row": row.to_dict()},
+                )
+                preview.append(
+                    {
+                        "cell_id": row.cell_id,
+                        "command": detector.preview_command(
+                            inputs,
+                            raw_output=(outdir / f"{row.cell_id}.ciri3_run" / "ciri3_raw.tsv"),
+                            run_dir=(outdir / f"{row.cell_id}.ciri3_run"),
+                            log_path=(outdir / f"{row.cell_id}.ciri3.log"),
+                        ),
+                    }
+                )
         _write_json(
             outdir / "detector_alignment_plan.json",
             {

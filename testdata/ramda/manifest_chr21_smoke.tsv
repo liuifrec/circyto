@@ -1,0 +1,2 @@
+sample_id	fastq_1	fastq_2	protocol	strandedness	read_layout
+ramda_chr21_pe	ramda_pe_R1.fastq	ramda_pe_R2.fastq	ramda	reverse	paired-end
