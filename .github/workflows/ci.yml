@@ -1,20 +1,22 @@
-name: CI (quiet)
+name: CI
 
 on:
   pull_request:
     branches: [ main ]
   workflow_dispatch:
-  push:
-    tags:
-      - "v*"
+
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
 jobs:
-  unit:
+  test:
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    env:
+      # Detector-backed integration tests are intentionally gated in default CI.
+      # They require external tools and larger reference assets than this workflow installs.
+      CIRCYTO_SKIP_INTEGRATION: "1"
 
     steps:
       - uses: actions/checkout@v4
@@ -26,9 +28,7 @@ jobs:
       - name: Install
         run: |
           python -m pip install --upgrade pip
-          pip install -e .
-          pip install pytest
+          python -m pip install -e . pytest
 
-      - name: Run unit tests (skip slow/integration)
-        run: |
-          pytest -q -m "not slow and not integration" || true
+      - name: Run test suite
+        run: pytest -q .

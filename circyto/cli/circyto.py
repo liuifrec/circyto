@@ -7,6 +7,7 @@ from typing import List, Optional, Tuple
 
 import typer
 from rich.console import Console
+from circyto import __version__
 from circyto.cli.analyze import analyze_app
 from circyto.cli.demux import demux_app
 from circyto.cli.manifest import manifest_app
@@ -73,6 +74,28 @@ app = typer.Typer(
     ),
 )
 console = Console()
+
+
+def _version_callback(value: bool) -> None:
+    if not value:
+        return
+    typer.echo(__version__)
+    raise typer.Exit()
+
+
+@app.callback()
+def app_callback(
+    version: bool = typer.Option(
+        False,
+        "--version",
+        help="Print the installed circyto version and exit.",
+        callback=_version_callback,
+        is_eager=True,
+    ),
+) -> None:
+    """
+    Top-level CLI callback for global options.
+    """
 
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(detectors_app, name="detectors")

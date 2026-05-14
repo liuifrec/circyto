@@ -169,15 +169,22 @@ def _join_unique(values: list[str]) -> str:
     return "|".join(ordered)
 
 
+def _clean_tsv_cell_text(value: Any) -> str:
+    text = str(value)
+    if text == "":
+        return ""
+    return text.replace("\t", " ").replace("\r", " ").replace("\n", " ")
+
+
 def _build_extra_summary(matches: pd.DataFrame, extra_columns: tuple[str, ...]) -> str:
     if matches.empty or not extra_columns:
         return ""
     parts: list[str] = []
     for _, row in matches.iterrows():
         values = [
-            f"{column}={str(row[column])}"
+            f"{column}={_clean_tsv_cell_text(row[column])}"
             for column in extra_columns
-            if str(row[column]) != ""
+            if _clean_tsv_cell_text(row[column]) != ""
         ]
         if values:
             parts.append(",".join(values))
@@ -277,9 +284,14 @@ def annotate_circ_table(
                     best_status = match_type
             values[f"{spec.name}_known"] = bool(known)
             values[f"{spec.name}_match_type"] = match_type
-            values[f"{spec.name}_ids"] = _join_unique(matches["_db_id"].astype(str).tolist())
+            values[f"{spec.name}_ids"] = _join_unique(
+                [_clean_tsv_cell_text(item) for item in matches["_db_id"].astype(str).tolist()]
+            )
             values[f"{spec.name}_host_genes"] = _join_unique(
-                matches["_db_host_gene"].astype(str).tolist()
+                [
+                    _clean_tsv_cell_text(item)
+                    for item in matches["_db_host_gene"].astype(str).tolist()
+                ]
             )
             values[f"{spec.name}_extra_summary"] = _build_extra_summary(
                 matches, spec.extra_columns
@@ -296,7 +308,7 @@ def annotate_circ_table(
     annotated["best_annotation_status"] = best_statuses
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    annotated.to_csv(out_path, sep="\t", index=False)
+    annotated.to_csv(out_path, sep="\t", index=False, lineterminator="\n")
 
     if summary_path is None:
         summary_path = out_path.with_name("annotation_summary.json")

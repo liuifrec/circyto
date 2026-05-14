@@ -10,7 +10,7 @@ For step-by-step usage, see `docs/getting_started.md`.
 
 **A new user can go from “I have FASTQs” → “I have a circRNA × cell matrix”** without reading developer logs, spelunking through source code, or guessing CLI conventions.
 
-Current release line: **v0.8.x** (`pyproject.toml` currently reports `0.8.3`).
+Current release line: **v0.9.0** (experimental).
 
 ---
 
@@ -32,7 +32,7 @@ Current release line: **v0.8.x** (`pyproject.toml` currently reports `0.8.3`).
 
 ## Milestones
 
-### v0.8.x — “Docs + usability to 100%” (current priority)
+### v0.8.x — “Docs + usability to 100%” (completed)
 
 **Goals**
 - README becomes a single “golden path” entry point (install → minimal example → next steps).
@@ -54,16 +54,19 @@ Current release line: **v0.8.x** (`pyproject.toml` currently reports `0.8.3`).
 
 ---
 
-### v0.9.0 — “Detector plugin ergonomics”
+### v0.9.0 — “SMART-Seq3 workflow + QC + AnnData + annotation” (completed)
 
 **Goals**
-- Make it easier to add detectors without touching unrelated code.
-- Strengthen validation around input formats (manifest schema, reference files, etc.).
+- Ship a usable end-to-end SMART-Seq3 workflow around CIRI3.
+- Export analysis-ready QC tables and AnnData artifacts.
+- Annotate circRNAs against external databases while preserving the existing matrix semantics.
 
-**Possible deliverables**
-- A more explicit detector registration / metadata model (name, version, dependencies, capabilities).
-- Structured output for `circyto detectors --json` to support tooling.
-- Compatibility checks between detector outputs and downstream collectors.
+**Completed deliverables**
+- `workflow smartseq3-ciri3` with demux, alignment-cache preparation, detector execution, matrix collection, and resumable stage outputs.
+- QC outputs including `cell_qc.tsv`, `circ_qc.tsv`, and workflow summaries.
+- AnnData export via `circ_counts.h5ad`.
+- `annotate-circs` for generic circRNA database annotation and known-versus-novel labeling.
+- Documentation for real-data E-MTAB-8735 usage and annotation summaries.
 
 ---
 

@@ -338,3 +338,83 @@ def test_annotate_circs_cli_writes_outputs(tmp_path: Path) -> None:
     summary = json.loads(summary_path.read_text(encoding="utf-8"))
     assert annotated.loc[0, "testdb_match_type"] == "known_exact_bsj"
     assert summary["exact_matches_per_database"]["testdb"] == 1
+
+
+def test_annotate_circs_tsv_output_preserves_blank_fields_and_column_count(tmp_path: Path) -> None:
+    circ_table = tmp_path / "circ_qc.tsv"
+    db = tmp_path / "db.tsv"
+    out = tmp_path / "annotated.tsv"
+
+    pd.DataFrame(
+        [
+            {
+                "circ_id": "circA",
+                "chrom": "chr1",
+                "start": 100,
+                "end": 200,
+                "strand": "+",
+                "host_gene": "GENE1",
+                "n_cells_detected": 3,
+                "total_support": 4,
+            },
+            {
+                "circ_id": "circB",
+                "chrom": "chr9",
+                "start": 300,
+                "end": 400,
+                "strand": "+",
+                "host_gene": "",
+                "n_cells_detected": 1,
+                "total_support": 1,
+            },
+        ]
+    ).to_csv(circ_table, sep="\t", index=False)
+    pd.DataFrame(
+        [
+            {
+                "chrom": "chr1",
+                "start": 100,
+                "end": 200,
+                "strand": "+",
+                "id": "dbA",
+                "host_gene": "GENE1",
+                "source_note": "brain\nvalidated",
+            }
+        ]
+    ).to_csv(db, sep="\t", index=False)
+
+    annotate_circ_table(
+        circ_table=circ_table,
+        db_specs=[
+            parse_annotation_db_spec(
+                f"name=testdb;path={db};chrom=chrom;start=start;end=end;strand=strand;id=id;host_gene=host_gene;extra=source_note"
+            )
+        ],
+        out_path=out,
+    )
+
+    lines = out.read_text(encoding="utf-8").splitlines()
+    header_fields = lines[0].split("\t")
+    expected_columns = len(header_fields)
+    assert "known_database_count" in header_fields
+    assert "known_databases" in header_fields
+    assert "best_annotation_status" in header_fields
+    assert "testdb_known" in header_fields
+    assert "testdb_match_type" in header_fields
+    assert "testdb_ids" in header_fields
+    assert "testdb_host_genes" in header_fields
+    assert "testdb_extra_summary" in header_fields
+    for line in lines[1:]:
+        assert len(line.split("\t")) == expected_columns
+
+    row_fields = dict(zip(header_fields, lines[2].split("\t")))
+    assert row_fields["testdb_ids"] == ""
+    assert row_fields["testdb_host_genes"] == ""
+    assert row_fields["testdb_extra_summary"] == ""
+
+    annotated = pd.read_csv(out, sep="\t", keep_default_na=False)
+    assert list(annotated.columns) == header_fields
+    assert annotated.loc[1, "testdb_ids"] == ""
+    assert annotated.loc[1, "testdb_host_genes"] == ""
+    assert annotated.loc[1, "testdb_extra_summary"] == ""
+    assert annotated.loc[0, "testdb_extra_summary"] == "source_note=brain validated"

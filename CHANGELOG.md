@@ -9,7 +9,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 
 ### Changed
 
-- Clarify public documentation for the current **v0.8.x** release line instead of older prototype/planning framing.
+- Clarify public documentation for the current experimental release line instead of older prototype/planning framing.
 - Document that `circyto doctor` and `circyto detectors` are live commands and that bundled asset resolution is intended to be cwd-independent.
 - Align README and workflow docs with the current CLI examples and flag names, including `--ref-fa`.
 - Document alignment-first execution and real CIRI3 integration with explicit environment and setup guidance.
@@ -18,6 +18,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Document explicit CIRI3 external requirements: Java, a CIRI3 jar, `samtools`, and mode-specific `bwa` or `STAR`.
 - Document validated local BWA + CIRI3 settings for single-cell alignment-first runs: unsorted SAM, `-S 0`, `-Ma 0`, and `bwa mem -k 15 -T 15`.
 - Document STAR + CIRI3 as supported in code for alignment-first workflows, but not yet validated end-to-end in this release.
+- Replace the old GitHub Actions shell-script workflow with one Python 3.12 CI job that installs `circyto` and runs `pytest -q .` with external detector integrations gated by `CIRCYTO_SKIP_INTEGRATION`.
 
 ### Fixed
 
@@ -28,11 +29,29 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 - Record the recent `ciri-full` runtime diagnostics improvements in user-facing release notes.
 - Fix CIRI3 alignment-first execution selection so an explicit `--command-template` takes precedence over direct `java -jar` mode.
 - Clarify that explicit template execution does not require `--ref-fa` unless the template itself uses `{ref_fa}`, while direct execution still requires `--ref-fa`.
+- Remove obsolete workflow files and shell-based legacy CLI/integration scripts that no longer reflect the current project.
 
 ### Notes
 
 - BWA + CIRI3 has been validated locally on a chr21 pilot with non-zero output.
 - STAR + CIRI3 support is present in code for alignment-first workflows, but is not yet fully validated end-to-end in this release.
+
+## [0.9.0] - 2026-05-14
+
+### Added
+
+- Add `annotate-circs` output coverage tests for stable TSV column counts, preserved blank fields, and pandas round-tripping with `keep_default_na=False`.
+- Add installed-package version reporting through `circyto.__version__` and the top-level `circyto --version` CLI option.
+
+### Changed
+
+- Bump package metadata from `0.8.3` to `0.9.0` so editable installs and installed distribution metadata report the release correctly.
+- Update README and ROADMAP to describe `v0.9.0` as the experimental SMART-Seq3 workflow + QC + AnnData export + circRNA annotation milestone.
+- Document real E-MTAB-8735 `all192` annotation summary numbers and normalized database-spec examples for circAtlas v3 and circSC.
+
+### Fixed
+
+- Preserve structurally valid annotation TSV output even when annotation text contains embedded newlines or blank trailing fields.
 
 ## [0.8.3] – 2025-12-17
 - Add `circyto doctor` to validate external dependencies and report detector readiness.

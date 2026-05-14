@@ -234,7 +234,7 @@ Server-validated E-MTAB-8735 diySpike summary:
 
 - full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
 - all192 hg38 STAR+CIRI3: completed successfully
-- all192 final matrix: `191` cells, `2503` circRNAs, `2659` nonzero entries, `1` empty cell
+- all192 final result: `192` cells, `2503` circRNAs, `2659` nonzero entries
 - top20 STAR+CIRI3: all `20` cells succeeded
 - matrix: `588` circRNAs x `20` cells, `600` nonzero entries
 

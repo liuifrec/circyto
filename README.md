@@ -15,17 +15,18 @@
 ## circyto
 
 
-A single-cell circRNA detection CLI to orchestrate detectors, build circRNA×cell matrices, and export multimodal AnnData.
+A single-cell circRNA detection CLI for SMART-Seq3 workflows, QC, AnnData export, and circRNA database annotation.
 
 ## Current status
 
-`circyto` is currently on the **v0.8.x** release line (`pyproject.toml` currently reports `0.8.3`).
+`circyto` `v0.9.0` is the current experimental release line.
 
-- The public detector workflow is manifest-driven and stable enough for routine use.
+- The public SMART-Seq3 workflow is manifest-driven and stable enough for routine use.
 - `circyto doctor` and `circyto detectors` are live commands, not planned features.
 - Bundled detector asset resolution is intended to be **cwd-independent**.
 - Detector integrations are still heterogeneous; detector-specific limits are documented rather than hidden.
 - CIRI3 is a real alignment-first backend with direct `java -jar` support when its local runtime contract is available.
+- The end-to-end SMART-Seq3 + CIRI3 + QC + AnnData + annotation path remains experimental and should be treated as release-candidate software rather than a frozen `v1.0` contract.
 
 ---
 
@@ -371,7 +372,7 @@ Server-validated DIY spike result summary for E-MTAB-8735:
 
 - full demux: `75,015,128` reads processed, `68,649,627` assigned, `192` cells detected
 - all192 hg38 STAR+CIRI3: completed successfully
-- all192 final matrix: `191` cells, `2503` circRNAs, `2659` nonzero entries, `1` empty cell
+- all192 final result: `192` cells, `2503` circRNAs, `2659` nonzero entries
 - top20 STAR+CIRI3: all `20` cells succeeded
 - matrix: `588` circRNAs x `20` cells, `600` nonzero entries
 
@@ -395,14 +396,24 @@ You can annotate `circ_qc.tsv` against known circRNA resources with the standalo
 ```bash
 circyto annotate-circs \
   --circ-table work/diySpike_workflow_all192/qc/circ_qc.tsv \
-  --annotation-db "name=circatlas;path=path/to/circatlas.tsv;chrom=chrom;start=start;end=end;strand=strand;id=circatlas_id;host_gene=host_gene;extra=tissue" \
-  --annotation-db "name=circsc;path=path/to/circsc.tsv;chrom=chromosome;start=bsj_start;end=bsj_end;id=circsc_id;host_gene=gene_symbol;extra=celltype" \
+  --annotation-db "name=circatlas;path=path/to/circAtlas_v3.tsv;chrom=seqnames;start=donor;end=acceptor;strand=bsj_strand;id=atlas_id;host_gene=gene_symbol;extra=tissue" \
+  --annotation-db "name=circsc;path=path/to/circSC_normalized.tsv;chrom=chromosome;start=start_1based;end=end_1based;id=circsc_id;host_gene=gene_label;extra=celltype" \
   --out work/diySpike_workflow_all192/qc/circ_qc.annotated.tsv \
   --summary-out work/diySpike_workflow_all192/qc/annotation_summary.json \
   --update-h5ad work/diySpike_workflow_all192/anndata/circ_counts.h5ad
 ```
 
 The `--annotation-db` option is generic: use `name:path` only when the database already uses canonical column names `chrom`, `start`, `end`, `strand`, `id`, and `host_gene`.
+
+Observed real-data annotation summary for the E-MTAB-8735 `all192` result:
+
+- `192` cells
+- `2503` circRNAs
+- `2659` nonzero entries
+- circAtlas v3 exact matches: `518`
+- novel count: `1985`
+- recurrent known: `51`
+- recurrent novel: `26`
 
 For future multimodal analysis, the workflow can also emit MuData:
 
