@@ -1,0 +1,4 @@
+cell_id	platform	read1	read2	bam	library_id	n_input_reads	group_id
+ERR1042025	subset-ramda	/mnt/d/circyto/ramda/subset_1m/ERR1042025.1m.fastq.gz			ramda_subset1m	1000000	plate1
+ERR1042044	subset-ramda	/mnt/d/circyto/ramda/subset_1m/ERR1042044.1m.fastq.gz			ramda_subset1m	1000000	plate1
+ERR1042084	subset-ramda	/mnt/d/circyto/ramda/subset_1m/ERR1042084.1m.fastq.gz			ramda_subset1m	1000000	plate1

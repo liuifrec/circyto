@@ -72,7 +72,7 @@ app = typer.Typer(
         "  [RUN]    run-detector / run-batch / run-multidetector\n"
         "  [ALIGN]  prepare-alignment-cache / plan-alignment-cache / align-manifest / run-detector-from-alignments\n"
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
-        "  [WORKFLOW] workflow smartseq3-ciri3 (experimental)\n"
+        "  [WORKFLOW] workflow smartseq3-ciri3 / full-length-circrna (experimental)\n"
         "  [ANNOTATE] annotate-circs\n"
         "  [INTEROP] export-scomatic-inputs, join-circ-snv-summary\n"
         "  [ANALYZE] analyze summarize-h5ad\n"

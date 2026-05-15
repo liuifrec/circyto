@@ -4,6 +4,10 @@ from pathlib import Path
 
 import typer
 
+from circyto.pipeline.workflow_full_length_circrna import (
+    FullLengthCircRNAWorkflowParams,
+    run_full_length_circrna_workflow,
+)
 from circyto.pipeline.workflow_smartseq3_ciri3 import (
     SmartSeq3Ciri3WorkflowParams,
     run_smartseq3_ciri3_workflow,
@@ -11,6 +15,49 @@ from circyto.pipeline.workflow_smartseq3_ciri3 import (
 
 
 workflow_app = typer.Typer(help="Experimental high-level workflows.")
+
+
+@workflow_app.command("full-length-circrna")
+def full_length_circrna(
+    manifest: Path = typer.Option(..., "--manifest", exists=True, help="[EXPERIMENTAL] Per-cell FASTQ manifest TSV"),
+    outdir: Path = typer.Option(..., "--outdir", "-o", help="[EXPERIMENTAL] Workflow output directory"),
+    protocol: str = typer.Option(..., "--protocol", help="[EXPERIMENTAL] One of: smartseq3, ramda, shin-ramda"),
+    genome_fasta: Path = typer.Option(..., "--genome-fasta", exists=True, help="[EXPERIMENTAL] Reference FASTA"),
+    gtf: Path = typer.Option(..., "--gtf", exists=True, help="[EXPERIMENTAL] Annotation GTF"),
+    detector: str = typer.Option("ciri3", "--detector", help="[EXPERIMENTAL] Detector backend; currently only ciri3"),
+    star_index: Path | None = typer.Option(None, "--star-index", exists=True, help="[EXPERIMENTAL] STAR genomeDir for paired-end rows"),
+    threads: int = typer.Option(8, "--threads", help="[EXPERIMENTAL] Threads per alignment/detector task"),
+    parallel: int = typer.Option(1, "--parallel", help="[EXPERIMENTAL] Concurrent alignment/detector tasks"),
+    chunk_size: int = typer.Option(1, "--chunk-size", help="[EXPERIMENTAL] Resumable chunk size"),
+    skip_demux: bool = typer.Option(False, "--skip-demux", help="[EXPERIMENTAL] Skip demux stage. Implied for ramda/shin-ramda."),
+    export_h5ad: bool = typer.Option(True, "--export-h5ad/--no-export-h5ad", help="[EXPERIMENTAL] Write OUTDIR/anndata/circ_counts.h5ad"),
+    dry_run: bool = typer.Option(False, "--dry-run", help="[EXPERIMENTAL] Plan stages and underlying commands without executing"),
+    fail_fast: bool = typer.Option(False, "--fail-fast", help="[EXPERIMENTAL] Stop after the first failed chunk"),
+    command_template: str | None = typer.Option(None, "--command-template", help="[EXPERIMENTAL] Optional CIRI3 command template override"),
+) -> None:
+    """
+    Experimental manifest-driven full-length circRNA workflow.
+    """
+    run_full_length_circrna_workflow(
+        FullLengthCircRNAWorkflowParams(
+            manifest=manifest,
+            outdir=outdir,
+            protocol=protocol,
+            genome_fasta=genome_fasta,
+            gtf=gtf,
+            detector=detector,
+            star_index=star_index,
+            threads=threads,
+            parallel=parallel,
+            chunk_size=chunk_size,
+            skip_demux=skip_demux,
+            export_h5ad=export_h5ad,
+            dry_run=dry_run,
+            fail_fast=fail_fast,
+            command_template=command_template,
+        ),
+        progress=typer.echo,
+    )
 
 
 @workflow_app.command("smartseq3-ciri3")
