@@ -1,0 +1,3 @@
+dataset_id	run_id	sample_id	protocol	source	fastq_1	fastq_2	notes
+E-MTAB-8735	TODO_REAL_ACCESSION_EMTAB8735_001	EMTAB8735_cell_001	smartseq3	Local curated planning table for E-MTAB-8735	TODO_REAL_ACCESSION_FASTQ_1	TODO_REAL_ACCESSION_FASTQ_2	TODO_REAL_ACCESSION curated Smart-seq3 row. Replace with confirmed ENA / ArrayExpress accessions when available locally.
+GSE98664	TODO_REAL_ACCESSION_GSE98664_001	GSE98664_cell_001	ramda	Local curated planning table for GSE98664			TODO_REAL_ACCESSION curated RamDA row. Replace with confirmed GEO / SRA SRR accessions when available locally.

@@ -32,7 +32,7 @@ class RunCiri3Params:
     outdir: Path
     genome_fasta: Path
     gtf: Path
-    star_index: Path
+    star_index: Path | None
     protocol: Optional[str] = None
     strandedness: Optional[str] = None
     threads: int = 8
@@ -100,16 +100,23 @@ def _resolve_row_strandedness(row, default_strandedness: str | None) -> str:
 def _build_subset_rows(
     rows: list[dict[str, str]],
     *,
+    source_manifest: Path,
     keep_cell_ids: set[str],
     protocol_by_cell: dict[str, str],
     strandedness_by_cell: dict[str, str],
 ) -> list[dict[str, str]]:
     subset: list[dict[str, str]] = []
+    path_columns = ("read1", "r1", "fastq_1", "read2", "r2", "fastq_2", "bam")
     for row in rows:
         cell_id = (row.get("cell_id") or row.get("sample_id") or "").strip()
         if cell_id not in keep_cell_ids:
             continue
         payload = dict(row)
+        for column in path_columns:
+            value = str(payload.get(column, "") or "").strip()
+            if not value:
+                continue
+            payload[column] = str((source_manifest.parent / value).resolve()) if not Path(value).is_absolute() else value
         payload["cell_id"] = cell_id
         payload["protocol"] = protocol_by_cell[cell_id]
         payload["strandedness"] = strandedness_by_cell[cell_id]
@@ -220,7 +227,7 @@ def run_ciri3_workflow(params: RunCiri3Params, *, progress: ProgressFn = print) 
     for path in root_dirs.values():
         path.mkdir(parents=True, exist_ok=True)
 
-    source_rows = read_source_manifest(params.manifest, validate_files=True)
+    source_rows = read_source_manifest(params.manifest, validate_files=not params.dry_run)
     header, raw_rows = _read_manifest_rows(params.manifest)
     if len(source_rows) != len(raw_rows):
         raise ValueError("Manifest parsing mismatch between structured and raw readers")
@@ -247,6 +254,7 @@ def run_ciri3_workflow(params: RunCiri3Params, *, progress: ProgressFn = print) 
             subset_header,
             _build_subset_rows(
                 raw_rows,
+                source_manifest=params.manifest,
                 keep_cell_ids=paired_cells,
                 protocol_by_cell=protocol_by_cell,
                 strandedness_by_cell=strandedness_by_cell,
@@ -261,12 +269,16 @@ def run_ciri3_workflow(params: RunCiri3Params, *, progress: ProgressFn = print) 
             subset_header,
             _build_subset_rows(
                 raw_rows,
+                source_manifest=params.manifest,
                 keep_cell_ids=single_cells,
                 protocol_by_cell=protocol_by_cell,
                 strandedness_by_cell=strandedness_by_cell,
             ),
         )
         subset_manifests.append(("bwa-mem", single_manifest, single_rows))
+
+    if paired_cells and params.star_index is None:
+        raise ValueError("run-ciri3 requires --star-index when the manifest contains paired-end rows.")
 
     det = Ciri3Detector(command_template=params.command_template)
     manifest_paths: list[Path] = []
@@ -288,6 +300,7 @@ def run_ciri3_workflow(params: RunCiri3Params, *, progress: ProgressFn = print) 
                 parallel=params.parallel,
                 chunk_size=params.chunk_size,
                 extra_flags=extra_flags,
+                validate_files=False,
             )
             if plan.get("errors"):
                 raise RuntimeError("Alignment preflight failed: " + "; ".join(plan["errors"]))
@@ -330,10 +343,10 @@ def run_ciri3_workflow(params: RunCiri3Params, *, progress: ProgressFn = print) 
         )
         return
 
-        for aligner, subset_manifest, rows in subset_manifests:
-            subdir = root_dirs["align"] / aligner.replace("-", "_")
-            extra_flags = _star_extra_flags(rows).format(star_index=str(params.star_index.resolve())) if aligner == "star" else ""
-            manifest_path = prepare_alignment_cache(
+    for aligner, subset_manifest, rows in subset_manifests:
+        subdir = root_dirs["align"] / aligner.replace("-", "_")
+        extra_flags = _star_extra_flags(rows).format(star_index=str(params.star_index.resolve())) if aligner == "star" else ""
+        manifest_path = prepare_alignment_cache(
             manifest=subset_manifest,
             outdir=subdir,
             aligner=aligner,

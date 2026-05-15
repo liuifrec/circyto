@@ -45,6 +45,7 @@ from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
 from circyto.pipeline.collect_circexplorer2_matrix import (
     collect_circexplorer2_matrix as collect_circexplorer2_matrix_from_dir,
 )
+from circyto.pipeline.public_dataset_prepare import prepare_public_dataset
 from circyto.detectors import build_default_engines, get_detector_capabilities
 from circyto.detectors.ciri3 import Ciri3Detector
 from circyto.paths import get_repo_root, get_tools_dir
@@ -203,6 +204,68 @@ def prepare(
         chemistry=chemistry,
         batch_size=batch_size,
         min_reads_per_cell=min_reads_per_cell,
+    )
+
+
+@app.command("prepare-public-dataset")
+def prepare_public_dataset_command(
+    dataset_id: str = typer.Option(..., "--dataset-id", help="Public dataset identifier to plan."),
+    outdir: Path = typer.Option(..., "--outdir", help="Output directory for planning artifacts."),
+    max_runs: Optional[int] = typer.Option(None, "--max-runs", help="Limit the number of selected runs."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Write planning artifacts only; do not attempt downloads."),
+    protocol: str = typer.Option(
+        ...,
+        "--protocol",
+        help="Expected protocol for the requested dataset: smartseq3, ramda, shin-ramda, or scrr.",
+    ),
+    download_method: str = typer.Option(
+        "sra",
+        "--download-method",
+        help="How to render the download plan: sra, ena, or none.",
+    ),
+) -> None:
+    """
+    Prepare a lightweight public-dataset download plan without fetching large files.
+    """
+    try:
+        summary = prepare_public_dataset(
+            dataset_id=dataset_id,
+            outdir=outdir,
+            max_runs=max_runs,
+            dry_run=dry_run,
+            protocol=protocol,
+            download_method=download_method,
+        )
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    warnings = list(summary.get("warnings", []))
+    if dry_run and warnings:
+        typer.echo("WARNING:")
+        for warning in warnings:
+            typer.echo(warning)
+        typer.echo("")
+
+    console.print(
+        json.dumps(
+            {
+                "dataset_id": summary["dataset_id"],
+                "protocol": summary["protocol"],
+                "organism": summary["organism"],
+                "expected_read_layout": summary["expected_read_layout"],
+                "expected_reference": summary["expected_reference"],
+                "recommended_route": summary["recommended_route"],
+                "download_method": summary["download_method"],
+                "dry_run": summary["dry_run"],
+                "row_mode": summary["row_mode"],
+                "warnings": summary["warnings"],
+                "selected_run_count": summary["selected_run_count"],
+                "selected_runs_tsv": str(summary["selected_runs_path"]),
+                "download_plan_sh": str(summary["download_plan_path"]),
+                "readme_next_steps_md": str(summary["readme_path"]),
+            },
+            indent=2,
+        )
     )
 
 
@@ -840,7 +903,7 @@ def run_ciri3_cmd(
     outdir: Path = typer.Option(..., "--outdir", "-o", help="Workflow output directory"),
     genome_fasta: Path = typer.Option(..., "--genome-fasta", exists=True, help="Reference FASTA"),
     gtf: Path = typer.Option(..., "--gtf", exists=True, help="Annotation GTF"),
-    star_index: Path = typer.Option(..., "--star-index", exists=True, help="STAR genomeDir for paired-end rows"),
+    star_index: Path | None = typer.Option(None, "--star-index", exists=True, help="STAR genomeDir for paired-end rows"),
     protocol: str | None = typer.Option(
         None,
         "--protocol",

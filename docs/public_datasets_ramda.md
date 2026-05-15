@@ -4,6 +4,37 @@ This page is a lightweight reference for public RamDA-family datasets that may b
 
 It is intentionally limited to metadata templates. It does not add download automation.
 
+## Preparing a small smoke-test dataset
+
+Use `GSE98664` only as a mouse RamDA engineering fixture when you want a lightweight planning target before dealing with scRepli-RamDA / scRR complexity.
+
+Example:
+
+```bash
+circyto prepare-public-dataset \
+  --dataset-id GSE98664 \
+  --protocol ramda \
+  --download-method sra \
+  --max-runs 2 \
+  --dry-run \
+  --outdir work/public_gse98664_plan
+```
+
+Dry-run mode writes planning artifacts only:
+
+- `selected_runs.tsv`
+- `download_plan.sh`
+- `README_next_steps.md`
+
+For `GSE98664`, the generated shell plan uses SRA Toolkit style commands such as `prefetch <SRR>` and `fasterq-dump <SRR> --split-files`. The command remains metadata/planning-only and does not fetch FASTQ files automatically in tests.
+
+Scientific caution:
+
+- `GSE98664` is `Mus musculus`, not human
+- expected references are `mm10/mm39`
+- recommended route is `BWA+CIRI3 single-end`
+- it should not be used as the first true `hg38` biological validation dataset
+
 ## Current recommendations
 
 - For the first CIRI3 smoke test, prefer a small protocol-aware RamDA/Shin-RamDA example with tiny manifests and a chr21-scale reference subset.
@@ -24,7 +55,7 @@ It is intentionally limited to metadata templates. It does not add download auto
 
 ### RamDA-seq
 
-`GSE98664` is the original RamDA-seq GEO series. GEO describes it as single-cell full-length total RNA sequencing and reports mouse ES / PrE-related material across multiple experimental settings. This makes it useful as protocol background and for understanding expected full-length total-RNA behavior, though it is not the smallest first-pass CIRI3 smoke target.
+`GSE98664` is the original RamDA-seq GEO series. GEO describes it as single-cell full-length total RNA sequencing and reports mouse ES / PrE-related material across multiple experimental settings. It remains useful as protocol background and a mouse engineering fixture, but it is not a biologically correct human `hg38` validation target.
 
 ### scRepli-RamDA-seq / scRR-seq
 

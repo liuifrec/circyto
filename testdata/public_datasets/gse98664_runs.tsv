@@ -1,0 +1,5 @@
+dataset_id	run_id	sample_id	protocol	source	fastq_1	fastq_2	notes
+GSE98664	SRR5516584	GSM2608325_RamDA_mESC_S_H01	ramda	NCBI SRA/GEO: GSM2608325 / SRX2789961			Real public SRA run for a RamDA-seq single-cell mESC S-phase sample in GSE98664.
+GSE98664	SRR5516900	GSM2608852_RamDA_mESC_24h_C09	ramda	NCBI SRA/GEO: GSM2608852 / SRX2790277			Real public SRA run for a RamDA-seq single-cell mESC 24 h differentiation time-course sample in GSE98664.
+GSE98664	TODO_REAL_ACCESSION_GSE98664_003	GSE98664_cell_003	ramda	Local curated planning table for GSE98664			TODO_REAL_ACCESSION unresolved curated RamDA row. Accessible GEO/SRA metadata in this session did not expose a confirmed SRR for this row.
+GSE98664	TODO_REAL_ACCESSION_GSE98664_004	GSE98664_cell_004	ramda	Local curated planning table for GSE98664			TODO_REAL_ACCESSION unresolved curated RamDA row. Accessible GEO/SRA metadata in this session did not expose a confirmed SRR for this row.

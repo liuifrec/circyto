@@ -44,3 +44,23 @@ def test_public_ramda_dataset_metadata_covers_ramda_shin_ramda_and_scrr() -> Non
     assert "shin-ramda" in protocols
     assert "screpli-ramda-seq" in protocols
     assert any(dataset_id.startswith("gse278") for dataset_id in dataset_ids)
+
+
+def test_human_ramda_candidate_runs_fixture_exists() -> None:
+    path = Path("testdata/public_datasets/human_ramda_candidate_runs.tsv")
+    assert path.exists(), f"Missing candidate fixture TSV: {path}"
+
+    header, rows = _read_rows(path)
+    assert rows, "Human candidate fixture must contain at least one data row"
+    for column in [
+        "dataset_id",
+        "accession_kind",
+        "accession",
+        "sample_or_system",
+        "protocol",
+        "organism",
+        "likely_read_layout",
+        "public_source",
+        "notes",
+    ]:
+        assert column in header, f"Missing required column: {column}"

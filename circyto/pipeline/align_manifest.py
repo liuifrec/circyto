@@ -25,6 +25,12 @@ from circyto.manifest.alignment import (
 from circyto.paths import resolve_manifest_path
 
 VALID_READ_LAYOUTS = {"single-end", "paired-end"}
+READ_LAYOUT_ALIASES = {
+    "single": "single-end",
+    "single-end": "single-end",
+    "paired": "paired-end",
+    "paired-end": "paired-end",
+}
 VALID_SUBSETS = {"failed", "missing", "stale", "incomplete", "all-failed-chunks"}
 
 
@@ -151,10 +157,11 @@ def _manifest_value(raw: dict[str, str], *keys: str) -> str:
 
 
 def _validated_read_layout(raw: dict[str, str], *, path: Path, line_number: int, cell_id: str) -> str:
-    read_layout = (raw.get("read_layout") or "").strip()
-    if read_layout and read_layout not in VALID_READ_LAYOUTS:
+    read_layout = (raw.get("read_layout") or "").strip().lower()
+    normalized = READ_LAYOUT_ALIASES.get(read_layout, read_layout)
+    if normalized and normalized not in VALID_READ_LAYOUTS:
         raise ValueError(f"Invalid read_layout '{read_layout}' for cell_id={cell_id} at {path}:{line_number}")
-    return read_layout
+    return normalized
 
 
 def read_source_manifest(path: Path, *, validate_files: bool = True) -> List[SourceManifestRow]:
@@ -1064,8 +1071,9 @@ def plan_alignment_cache(
     extra_flags: str = "",
     output_format: str = "bam",
     preview_rows: int = 3,
+    validate_files: bool = True,
 ) -> dict[str, Any]:
-    rows = read_source_manifest(manifest, validate_files=True)
+    rows = read_source_manifest(manifest, validate_files=validate_files)
     effective_extra_flags = _effective_alignment_extra_flags(
         detector_hint=detector_hint,
         aligner=aligner,

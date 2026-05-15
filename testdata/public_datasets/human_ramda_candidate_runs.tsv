@@ -1,0 +1,5 @@
+dataset_id	accession_kind	accession	sample_or_system	protocol	organism	likely_read_layout	public_source	notes
+GSE278952	GSE	GSE278952	HAP1 mid-S single cells	scRepli-RamDA-seq	Homo sapiens	likely paired-end	GEO	Confirmed human candidate dataset for hg38 planning.
+GSE278952	GSM	GSM8558695	DNA_HAP1_scRR1_MidS_103	scRepli-RamDA-seq	Homo sapiens	likely paired-end	GEO	Sample accession resolved in lightweight lookup; GEO page points to SRA experiment accessions.
+GSE278952	SRX	SRX26315019	DNA_HAP1_scRR1_MidS_103	scRepli-RamDA-seq	Homo sapiens	likely paired-end	SRA	Confirmed experiment accession from GEO sample metadata; RNA-side SRR run accession was not cleanly resolved in this session.
+GSE278958	GSE	GSE278958	IMR-90 G1 single cells	scRepli-RamDA-seq	Homo sapiens	likely paired-end	GEO	Confirmed human candidate dataset for hg38 planning.
