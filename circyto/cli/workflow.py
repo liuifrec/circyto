@@ -34,6 +34,12 @@ def full_length_circrna(
     dry_run: bool = typer.Option(False, "--dry-run", help="[EXPERIMENTAL] Plan stages and underlying commands without executing"),
     fail_fast: bool = typer.Option(False, "--fail-fast", help="[EXPERIMENTAL] Stop after the first failed chunk"),
     command_template: str | None = typer.Option(None, "--command-template", help="[EXPERIMENTAL] Optional CIRI3 command template override"),
+    allow_paired_ramda: bool = typer.Option(
+        False,
+        "--allow-paired-ramda",
+        "--experimental-paired-ramda",
+        help="Allow real paired-end ramda/shin-ramda execution through the validated STAR+CIRI3 path. --experimental-paired-ramda is accepted as a deprecated alias.",
+    ),
 ) -> None:
     """
     Experimental manifest-driven full-length circRNA workflow.
@@ -55,6 +61,7 @@ def full_length_circrna(
             dry_run=dry_run,
             fail_fast=fail_fast,
             command_template=command_template,
+            experimental_paired_ramda=allow_paired_ramda,
         ),
         progress=typer.echo,
     )

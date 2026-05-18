@@ -48,6 +48,7 @@ class FullLengthCircRNAWorkflowParams:
     dry_run: bool = False
     fail_fast: bool = False
     command_template: Optional[str] = None
+    experimental_paired_ramda: bool = False
 
 
 def _workflow_paths(outdir: Path) -> dict[str, Path]:
@@ -161,6 +162,8 @@ def _build_dry_run_summary(
         "read_layout_counts": read_layout_counts,
         "protocols": sorted(set(resolved_protocols.values())),
         "strandedness": sorted({value for value in resolved_strandedness.values() if value}),
+        "allow_paired_ramda": params.experimental_paired_ramda,
+        "experimental_paired_ramda": params.experimental_paired_ramda,
         "warnings": warnings,
         "paths": {
             "manifest": str(params.manifest.resolve()),
@@ -247,6 +250,8 @@ def _build_execution_summary(
                 "manifest": str(params.manifest.resolve()),
                 "skip_demux_effective": skip_demux_effective,
                 "dry_run": False,
+                "allow_paired_ramda": params.experimental_paired_ramda,
+                "experimental_paired_ramda": params.experimental_paired_ramda,
             },
         )
         h5ad_status = str(exported_h5ad.resolve()) if exported_h5ad is not None else None
@@ -267,6 +272,8 @@ def _build_execution_summary(
         "warnings": warnings,
         "protocols": sorted(set(resolved_protocols.values())),
         "strandedness": sorted({value for value in resolved_strandedness.values() if value}),
+        "allow_paired_ramda": params.experimental_paired_ramda,
+        "experimental_paired_ramda": params.experimental_paired_ramda,
         "alignment_status_counts": {
             str(key): int(value)
             for key, value in dict(alignment_summary.get("status_counts", {})).items()
@@ -354,14 +361,22 @@ def run_full_length_circrna_workflow(
     paired_end_rows = [row for row in source_rows if row.read_layout == "paired-end"]
     if paired_end_rows and effective_protocol in {"ramda", "shin-ramda"}:
         message = (
-            f"Protocol {effective_protocol} has paired-end rows. The validated executable route remains "
-            "single-end BWA+CIRI3. Paired-end rows currently use the existing STAR+CIRI3 hybrid path only as planning."
+            f"Protocol {effective_protocol} has paired-end rows. Paired-end rows use the validated STAR+CIRI3 paired-end "
+            "route, which was locally validated on a real GSE278952 chr21 subset. Use --allow-paired-ramda for explicit "
+            "opt-in before full hg38-scale biological validation."
         )
         if params.dry_run:
             warnings.append(message)
             _emit(progress, f"warning: {message}")
+        elif not params.experimental_paired_ramda:
+            raise ValueError(
+                message
+                + " Re-run with --allow-paired-ramda for real execution, or use --dry-run to inspect the planned commands. "
+                + "--experimental-paired-ramda remains accepted as a deprecated alias."
+            )
         else:
-            raise ValueError(message + " Re-run with --dry-run to inspect the planned commands.")
+            warnings.append(message)
+            _emit(progress, f"warning: {message}")
 
     _emit(progress, f"protocol={effective_protocol} cells={len(source_rows)} skip_demux={skip_demux_effective} dry_run={params.dry_run}")
     run_ciri3_workflow(

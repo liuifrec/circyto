@@ -1,141 +1,100 @@
-# Human RamDA / Shin-RamDA Candidate Datasets
+# Human scRR RNA Candidate Datasets
 
-This note ranks human full-length total-RNA datasets that are plausible next-step validation targets for `circyto` on `hg38`.
+This note resolves public human RNA-side scRepli-RamDA/scRR runs for the next `circyto` validation step.
 
-The immediate purpose is pragmatic:
+Scope:
 
-- pick a biologically correct human dataset after the mouse `GSE98664` engineering smoke test
-- keep the first `hg38` validation small enough to debug
-- prefer public sources with enough metadata to infer layout and reference compatibility
+- human only
+- RNA-side runs only
+- `GSE278952` and `GSE278958`
+- first server pilot constrained to 2 cells
 
-## Recommendation hierarchy
+Non-goals:
 
-### BEST_FIRST_HG38_TARGET
+- no DNA-side runs
+- no mouse biological validation
+- no full production download
 
-`GSE278952`
-
-- dataset_id: `GSE278952`
-- protocol: `scRepli-RamDA-seq`
-- species: `Homo sapiens`
-- cell type/system: `HAP1 mid-S single cells`
-- public source: GEO / SRA
-- likely read layout: likely paired-end
-- expected compatibility with CIRI3: moderate
-- pros: clearly human; explicitly analyzed against `hg38`/human GENCODE in the associated GEO/sample metadata; public raw data are available in SRA; focused human cell-line system
-- caveats: this is a DNA+RNA multi-omics dataset rather than plain single-cell RamDA; lightweight lookup surfaced a human sample/SRA experiment accession (`GSM8558695`, `SRX26315019`) but did not cleanly expose a matched RNA-side run accession in this session; likely paired-end rather than the single-end RamDA route already validated locally
-- suitable for first hg38 validation: yes, if the first goal is true human full-length total-RNA compatibility rather than strict single-end continuity
-
-### SECONDARY_TARGET
-
-`GSE278958`
-
-- dataset_id: `GSE278958`
-- protocol: `scRepli-RamDA-seq`
-- species: `Homo sapiens`
-- cell type/system: `IMR-90 G1 single cells`
-- public source: GEO / SRA
-- likely read layout: likely paired-end
-- expected compatibility with CIRI3: moderate
-- pros: clearly human; associated paper and GEO metadata reference `hg38` and human GENCODE-based analysis; fibroblast system may be useful for later CNV/circRNA interpretation
-- caveats: same scRR multi-omics complexity as `GSE278952`; accessions were easier to confirm at dataset/series level than at clean RNA run level in a lightweight lookup
-- suitable for first hg38 validation: yes, but slightly less convenient than `GSE278952` because the HAP1 system is a tighter first-pass benchmark
-
-### FUTURE_LARGE_SCALE_TARGET
-
-`shin-ramda-riken` workflow resources
-
-- dataset_id: `shin-ramda-riken-HEK293T_benchmark`
-- protocol: `shin-ramda`
-- species: `Homo sapiens`
-- cell type/system: `HEK293T benchmark workflow`
-- public source: GitHub workflow repository
-- likely read layout: likely single-end for primary Shin-RamDA RNA use, but accession-level verification is still needed
-- expected compatibility with CIRI3: potentially high once accession-level FASTQs are confirmed
-- pros: directly relevant to Shin-RamDA; the repository explicitly contains `HEK293T_benchmark`, `Detection_of_genomic_breakpoints`, and `Lineage_estimation_using_etoposide_K562`; human cell systems match the next biological validation goal
-- caveats: the GitHub repository says accession numbers are described in the manuscript rather than directly listing them in the repo README; lightweight lookup did not recover a clean public FASTQ run list in this session
-- suitable for first hg38 validation: not yet; better treated as a second-phase target once accession-level FASTQs are pinned down
-
-## Candidate table
+## Series-level resolution
 
 ### `GSE278952`
 
-- dataset_id: `GSE278952`
-- protocol: `scRepli-RamDA-seq`
-- species: `Homo sapiens`
-- cell type/system: `HAP1 mid-S single cells`
-- public source: GEO / SRA
-- likely read layout: paired-end is likely
-- expected compatibility with CIRI3: workable, but probably through the paired-end route rather than the already-validated single-end BWA path
-- pros: human; public; associated metadata explicitly references `hg38`; manageable focused cell-line system
-- caveats: RNA and DNA are paired in one multi-omics workflow; not the simplest plain RamDA example
-- whether suitable for first hg38 validation: yes
+- title: `Genome-wide DNA replication profiling and full-length total RNA sequencing from the same single cell [HAP1 mid-S]`
+- BioProject: `PRJNA1169834`
+- organism: `Homo sapiens`
+- assay family: `scRR-seq` / `scRepli-RamDA-seq`
+- RNA reference clues from GEO: HAP1 RNA supplementary files are labeled `hg38`
+- practical status for `circyto`: public, biologically important, and now aligned with the validated paired-end `STAR+CIRI3` full-length workflow route
 
 ### `GSE278958`
 
-- dataset_id: `GSE278958`
-- protocol: `scRepli-RamDA-seq`
-- species: `Homo sapiens`
-- cell type/system: `IMR-90 G1 single cells`
-- public source: GEO / SRA
-- likely read layout: paired-end is likely
-- expected compatibility with CIRI3: workable for human total-RNA validation, but not ideal for preserving the exact single-end route already debugged
-- pros: human; public; biologically distinct fibroblast system
-- caveats: likely larger and somewhat less convenient than `GSE278952` for an initial small validation
-- whether suitable for first hg38 validation: yes, secondary
+- title: `Genome-wide DNA replication profiling and full-length total RNA sequencing from the same single cell [IMR-90 G1]`
+- BioProject: `PRJNA1169833`
+- organism: `Homo sapiens`
+- assay family: `scRR-seq` / `scRepli-RamDA-seq`
+- RNA reference clues from GEO: sample processing says `Assembly: hg38`
+- practical status for `circyto`: public and immediately usable for a first 2-cell server pilot because confirmed RNA runs are single-end
 
-### `shin-ramda-riken-HEK293T_benchmark`
+## Confirmed RNA-side candidates
 
-- dataset_id: `shin-ramda-riken-HEK293T_benchmark`
-- protocol: `shin-ramda`
-- species: `Homo sapiens`
-- cell type/system: `HEK293T`
-- public source: GitHub workflow repository plus manuscript
-- likely read layout: likely single-end or protocol-specific; verify accession metadata before use
-- expected compatibility with CIRI3: promising, especially if accession-level FASTQs prove to be ordinary stranded total-RNA libraries
-- pros: directly aligned with the Shin-RamDA method family; human; benchmark framing is attractive for `circyto`
-- caveats: public accession discovery remains incomplete from lightweight lookup
-- whether suitable for first hg38 validation: not until accession-level runs are confirmed
+| dataset_id | gsm | srx | srr | assay_side | organism | cell_type | protocol | read_layout | expected_reference | recommended_route | status | notes |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `GSE278958` | `GSM8558852` | `SRX26321174` | `SRR30918126` | RNA | `Homo sapiens` | IMR-90, aphidicolin-treated G1 | scRR-seq / scRamDA-seq RNA side | single-end, 151 bp | `hg38` + human GENCODE v38 | execute with `circyto workflow full-length-circrna` using the validated single-end RamDA route | `ready_for_execution` | Best first pilot cell. SRA XML shows `LIBRARY_LAYOUT SINGLE`, `is_public=true`, one original FASTQ file. |
+| `GSE278958` | `GSM8558853` | `SRX26321183` | `SRR30918117` | RNA | `Homo sapiens` | IMR-90, aphidicolin-treated G1 | scRR-seq / scRamDA-seq RNA side | single-end, 151 bp | `hg38` + human GENCODE v38 | execute with `circyto workflow full-length-circrna` using the validated single-end RamDA route | `ready_for_execution` | Good second pilot cell. Same single-end public layout as `GSM8558852`. |
+| `GSE278952` | `GSM8558630` | `SRX26315002` | `SRR30911454` | RNA | `Homo sapiens` | HAP1 mid-S | scRR-seq / scRamDA-seq RNA side | paired-end, 2 x 151 bp | `hg38` + human GENCODE v38 | execute with `circyto workflow full-length-circrna --star-index ... --allow-paired-ramda` using the validated STAR+CIRI3 paired-end path | `validated_chr21_subset_route` | SRA XML shows `LIBRARY_LAYOUT PAIRED`, two original FASTQs, `is_public=true`. Local chr21 subset execution on `SRR30911454` completed end-to-end with STAR, BWA rescue, CIRI3, matrix, and h5ad. |
+| `GSE278952` | `GSM8558631` | `SRX26315003` | `SRR30911453` | RNA | `Homo sapiens` | HAP1 mid-S | scRR-seq / scRamDA-seq RNA side | paired-end, 2 x 151 bp | `hg38` + human GENCODE v38 | execute with `circyto workflow full-length-circrna --star-index ... --allow-paired-ramda` using the validated STAR+CIRI3 paired-end path | `ready_for_paired_execution` | Slightly smaller than `GSM8558630`; still paired-end. |
+| `GSE278952` | `GSM8558632` | `SRX26315028` | `SRR30911559` | RNA | `Homo sapiens` | HAP1 mid-S | scRR-seq / scRamDA-seq RNA side | paired-end, 2 x 151 bp | `hg38` + human GENCODE v38 | execute with `circyto workflow full-length-circrna --star-index ... --allow-paired-ramda` using the validated STAR+CIRI3 paired-end path | `ready_for_paired_execution` | Another public HAP1 RNA run suitable for later paired-end validation at larger scale. |
 
-### `shin-ramda-riken-etoposide-K562-lineage`
+## Explicit exclusions
 
-- dataset_id: `shin-ramda-riken-etoposide-K562-lineage`
-- protocol: `shin-ramda`
-- species: `Homo sapiens`
-- cell type/system: `etoposide-treated K562`
-- public source: GitHub workflow repository plus manuscript
-- likely read layout: likely single-end or protocol-specific; verify accession metadata before use
-- expected compatibility with CIRI3: potentially useful later, especially for integration with genome instability and breakpoint analysis
-- pros: human K562 system is attractive for later SComatic-style follow-up
-- caveats: more biologically complex than a first validation target; accession-level FASTQ confirmation still missing
-- whether suitable for first hg38 validation: no, better as a future integration target
+Exclude these from the first circRNA pilot:
 
-## Small curated accession note
+- `DNA_*` samples from the same series, for example `GSM8558695 / SRX26315019 / SRR30911568`
+- replication-only DNA libraries
+- any non-RNA assay rows with `Sample_molecule = genomic DNA`, `LIBRARY_SOURCE = GENOMIC`, or `LIBRARY_STRATEGY = OTHER`
 
-Lightweight lookup in this session confirmed these public human accessions:
+## Immediate recommendation
 
-- `GSE278952`
-- `GSE278958`
-- `GSM8558695`
-- `SRX26315019`
+Use `GSE278958` first for the real server pilot.
 
-These are sufficient to justify human scRepli-RamDA follow-up planning, but they do not yet provide a clean, confirmed list of RNA-side `SRR` run accessions for a minimal first pull.
+Reason:
 
-## Conclusion
+- RNA-side runs are confirmed public
+- actual SRA layout is single-end
+- single-end RamDA aligns with the already validated `BWA-MEM -> direct SAM -> CIRI3` route
+- 2-cell download size is modest relative to the current disk limit
 
-For the first true human `hg38` RamDA-family validation, use `GSE278952` first.
+Do not start biological validation with `GSE278952` before the smaller IMR-90 pilot.
 
-Reasoning:
+Reason:
 
-- human
-- public
-- explicit `hg38` compatibility in associated metadata
-- focused cell-line system
-- less ambiguous than the Shin-RamDA GitHub workflows, where the repo points back to the manuscript for accession numbers
+- the RNA-side HAP1 runs are clearly paired-end in SRA
+- the paired-end route now has a real `GSE278952 / SRR30911454` chr21 subset execution proof
+- HAP1 remains the intended next human validation target once the smaller IMR-90 server pilot has confirmed the environment
 
-For later SComatic integration exploration, prefer the human Shin-RamDA / K562 direction once accession-level FASTQs are pinned down, with `shin-ramda-riken-etoposide-K562-lineage` as the most interesting future target.
+## Storage and execution notes
+
+Observed public object sizes from SRA XML:
+
+- `SRR30918126`: one original FASTQ object about `242 MB`; normalized SRA about `183 MB`
+- `SRR30918117`: one original FASTQ object about `248 MB`; normalized SRA about `190 MB`
+- `SRR30911454`: original FASTQs about `424 MB` and `473 MB`; normalized SRA about `688 MB`
+- `SRR30911453`: original FASTQs about `382 MB` and `425 MB`; normalized SRA about `613 MB`
+- `SRR30911559`: original FASTQs about `433 MB` and `478 MB`; normalized SRA about `696 MB`
+
+Practical implication:
+
+- the 2-cell IMR-90 pilot is low-risk for `~290 GB` free disk
+- the 2-cell HAP1 paired-end pull is still feasible, and is now a realistic validated-route follow-up after the IMR-90 pilot
 
 ## Source notes
 
-- The `GSE98664` GEO record is clearly mouse and should remain an engineering fixture rather than a human validation target.
-- The `shin-ramda-seq-paper` repository explicitly documents `HEK293T_benchmark`, `Detection_of_genomic_breakpoints`, and `Lineage_estimation_using_etoposide_K562`, but says accession numbers are described in the manuscript.
-- The scRepli-RamDA-seq paper and related GEO/SRA sample metadata indicate human `hg38` and human GENCODE-based analysis for the human subseries.
+Primary records inspected:
+
+- GEO series text for `GSE278952` and `GSE278958`
+- GEO sample text for `GSM8558630`, `GSM8558631`, `GSM8558632`, `GSM8558852`, `GSM8558853`
+- SRA XML for `SRX26315002`, `SRX26315003`, `SRX26315028`, `SRX26321174`, `SRX26321183`
+
+Key inference boundary:
+
+- use SRA XML `LIBRARY_LAYOUT` as the deciding layout field when generic protocol prose and per-run layout disagree

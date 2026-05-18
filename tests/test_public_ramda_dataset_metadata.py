@@ -61,6 +61,7 @@ def test_human_ramda_candidate_runs_fixture_exists() -> None:
         "organism",
         "likely_read_layout",
         "public_source",
+        "status",
         "notes",
     ]:
         assert column in header, f"Missing required column: {column}"

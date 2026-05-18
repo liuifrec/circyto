@@ -14,6 +14,7 @@ circyto workflow full-length-circrna \
   --genome-fasta ref.fa \
   --gtf genes.gtf \
   --detector ciri3 \
+  --star-index /path/to/star_index \
   --threads 8 \
   --export-h5ad
 ```
@@ -55,13 +56,21 @@ For SMART-Seq3:
 
 - demux skipped implicitly
 - single-end rows use `bwa-mem` plus direct `CIRI3` SAM mode
-- paired-end rows are only supported as `--dry-run` planning at present
+- paired-end rows reuse the existing STAR+CIRI3 paired-end path
+- real paired-end execution requires `--allow-paired-ramda`
+- dry-run planning does not require `--allow-paired-ramda`
+- paired-end rows also require `--star-index`
+- the paired-end route is now locally validated on a real `GSE278952 / SRR30911454` chr21 subset
 
 ### `shin-ramda`
 
 - demux skipped implicitly
 - single-end rows use `bwa-mem` plus direct `CIRI3` SAM mode
-- paired-end rows are only supported as `--dry-run` planning at present
+- paired-end rows reuse the existing STAR+CIRI3 paired-end path
+- real paired-end execution requires `--allow-paired-ramda`
+- dry-run planning does not require `--allow-paired-ramda`
+- paired-end rows also require `--star-index`
+- the paired-end route is now locally validated on a real `GSE278952 / SRR30911454` chr21 subset
 
 ### `smartseq3`
 
@@ -79,6 +88,43 @@ The workflow writes:
 - `qc/circ_qc.tsv`
 - `anndata/circ_counts.h5ad` when `--export-h5ad`
 - `workflow_summary.json`
+
+## Paired-End RamDA
+
+The paired-end RamDA/Shin-RamDA execution path remains opt-in, but it is no longer only a dry-run scaffold:
+
+- dry-run is always allowed so you can inspect the STAR+CIRI3 route
+- real execution requires `--allow-paired-ramda`
+- `--experimental-paired-ramda` still works as a deprecated alias
+- the executable route was locally validated on a real `GSE278952 / SRR30911454` chr21 subset
+- full hg38-scale biological validation against human paired-end scRR data is still in progress
+
+Example paired-end dry-run:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest paired_manifest.tsv \
+  --outdir work/full_length_pe_plan \
+  --protocol ramda \
+  --genome-fasta ref.fa \
+  --gtf genes.gtf \
+  --star-index /path/to/star_index \
+  --dry-run
+```
+
+Example paired-end real execution:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest paired_manifest.tsv \
+  --outdir work/full_length_pe_run \
+  --protocol ramda \
+  --genome-fasta ref.fa \
+  --gtf genes.gtf \
+  --star-index /path/to/star_index \
+  --allow-paired-ramda \
+  --export-h5ad
+```
 
 ## Dry Run
 

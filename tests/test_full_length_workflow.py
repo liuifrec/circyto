@@ -111,6 +111,91 @@ def test_full_length_workflow_dry_run_ramda_lists_demux_matrix_and_h5ad(tmp_path
     assert stages["h5ad_export"] == "planned"
 
 
+def test_full_length_workflow_dry_run_paired_ramda_plans_star_ciri3_route(tmp_path: Path, monkeypatch) -> None:
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_paired_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    star_index = tmp_path / "star_index"
+    star_index.mkdir()
+    seen: dict[str, object] = {}
+
+    def fake_run_ciri3_workflow(params, *, progress):
+        seen["star_index"] = params.star_index
+        seen["dry_run"] = params.dry_run
+        seen["protocol"] = params.protocol
+        logs = params.outdir / "logs"
+        logs.mkdir(parents=True, exist_ok=True)
+        (logs / "run_ciri3_summary.json").write_text(
+            json.dumps({"workflow": "run-ciri3", "dry_run": True}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
+
+    outdir = tmp_path / "run"
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(outdir),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--star-index",
+            str(star_index),
+            "--dry-run",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))
+    assert summary["dry_run"] is True
+    assert summary["read_layout_counts"]["paired-end"] == 1
+    assert summary["allow_paired_ramda"] is False
+    assert summary["experimental_paired_ramda"] is False
+    assert any("validated STAR+CIRI3 paired-end route" in warning for warning in summary["warnings"])
+    assert seen["dry_run"] is True
+    assert seen["protocol"] == "ramda"
+    assert seen["star_index"] == star_index
+
+
+def test_full_length_workflow_real_run_paired_ramda_requires_allow_flag(tmp_path: Path) -> None:
+    manifest = _write_paired_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    star_index = tmp_path / "star_index"
+    star_index.mkdir()
+
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(tmp_path / "run"),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--star-index",
+            str(star_index),
+        ],
+    )
+    assert result.exit_code != 0
+    assert result.exception is not None
+    assert "--allow-paired-ramda" in str(result.exception)
+
+
 def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkeypatch) -> None:
     pytest.importorskip("anndata")
     import anndata as ad
@@ -217,6 +302,223 @@ def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkey
     assert adata.obs["protocol"].tolist() == ["ramda"]
     assert adata.obs["read_layout"].tolist() == ["single-end"]
     assert list(adata.var_names) == ["circ1"]
+
+
+def test_full_length_workflow_paired_ramda_with_allow_flag_writes_h5ad_and_qc(tmp_path: Path, monkeypatch) -> None:
+    pytest.importorskip("anndata")
+    import anndata as ad
+
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_paired_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    star_index = tmp_path / "star_index"
+    star_index.mkdir()
+    seen: dict[str, object] = {}
+
+    def fake_run_ciri3_workflow(params, *, progress):
+        seen["star_index"] = params.star_index
+        seen["dry_run"] = params.dry_run
+        align = params.outdir / "align"
+        ciri3 = params.outdir / "ciri3"
+        matrix = params.outdir / "matrix"
+        logs = params.outdir / "logs"
+        for path in (align, ciri3, matrix, logs):
+            path.mkdir(parents=True, exist_ok=True)
+        (align / "alignment_manifest.tsv").write_text(
+            "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\tchimeric_junction\tunmapped_mate1\tunmapped_mate2\tbwa_sam\n"
+            "cell1\t\t/tmp/cell1.star.sam\tgrp\tpaired-end\tstar\t/tmp/ref.fa\tk1\t/tmp/source.tsv\t1\tstar\tunsorted\t/tmp/cell1.Chimeric.out.junction\t/tmp/cell1.Unmapped.out.mate1\t/tmp/cell1.Unmapped.out.mate2\t/tmp/cell1.bwa_rescue.sam\n",
+            encoding="utf-8",
+        )
+        (align / "alignment_prepare_summary.json").write_text(
+            json.dumps(
+                {
+                    "status_counts": {"aligned": 1},
+                    "completed_cells": 1,
+                    "failed_cells": 0,
+                    "cells": [{"cell_id": "cell1", "status": "aligned", "seconds": 1.5}],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "cell1.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\ncirc1\tchr21\t10\t20\t+\t4\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "detector_run_summary.json").write_text(
+            json.dumps(
+                {
+                    "status_counts": {"success": 1},
+                    "completed_cells": 1,
+                    "failed_cells": 0,
+                    "elapsed_seconds": 2.7,
+                    "cells": [
+                        {
+                            "cell_id": "cell1",
+                            "status": "success",
+                            "seconds": 2.7,
+                            "raw_row_count": 1,
+                            "normalized_row_count": 1,
+                        }
+                    ],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        X = sp.csr_matrix([[4]], dtype=int)
+        mmwrite(matrix / "circ_counts.mtx", X)
+        (matrix / "circ_index.txt").write_text("circ1\n", encoding="utf-8")
+        (matrix / "cell_index.txt").write_text("cell1\n", encoding="utf-8")
+        (matrix / "circ_feature_table.tsv").write_text(
+            "circ_id\tchrom\tstart\tend\tstrand\thost_gene\ncirc1\tchr21\t10\t20\t+\tGENE1\n",
+            encoding="utf-8",
+        )
+        (logs / "run_ciri3_summary.json").write_text(
+            json.dumps({"workflow": "run-ciri3", "dry_run": False}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
+
+    outdir = tmp_path / "run"
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(outdir),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--star-index",
+            str(star_index),
+            "--allow-paired-ramda",
+            "--export-h5ad",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert seen["dry_run"] is False
+    assert seen["star_index"] == star_index
+    h5ad_path = outdir / "anndata" / "circ_counts.h5ad"
+    assert h5ad_path.exists()
+    summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))
+    assert summary["allow_paired_ramda"] is True
+    assert summary["experimental_paired_ramda"] is True
+    assert summary["paths"]["h5ad"] == str(h5ad_path.resolve())
+    assert any("validated STAR+CIRI3 paired-end route" in warning for warning in summary["warnings"])
+    adata = ad.read_h5ad(h5ad_path)
+    assert adata.obs["protocol"].tolist() == ["ramda"]
+    assert adata.obs["read_layout"].tolist() == ["paired-end"]
+    assert list(adata.var_names) == ["circ1"]
+
+
+def test_full_length_workflow_paired_ramda_deprecated_flag_alias_still_works(tmp_path: Path, monkeypatch) -> None:
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_paired_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    star_index = tmp_path / "star_index"
+    star_index.mkdir()
+    seen: dict[str, object] = {}
+
+    def fake_run_ciri3_workflow(params, *, progress):
+        seen["star_index"] = params.star_index
+        align = params.outdir / "align"
+        ciri3 = params.outdir / "ciri3"
+        matrix = params.outdir / "matrix"
+        logs = params.outdir / "logs"
+        for path in (align, ciri3, matrix, logs):
+            path.mkdir(parents=True, exist_ok=True)
+        (align / "alignment_manifest.tsv").write_text(
+            "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\n"
+            "cell1\t\t/tmp/cell1.star.sam\tgrp\tpaired-end\tstar\t/tmp/ref.fa\tk1\t/tmp/source.tsv\t1\tstar\tunsorted\n",
+            encoding="utf-8",
+        )
+        (align / "alignment_prepare_summary.json").write_text(
+            json.dumps(
+                {
+                    "status_counts": {"aligned": 1},
+                    "completed_cells": 1,
+                    "failed_cells": 0,
+                    "cells": [{"cell_id": "cell1", "status": "aligned", "seconds": 1.5}],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "cell1.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\ncirc1\tchr21\t10\t20\t+\t4\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "detector_run_summary.json").write_text(
+            json.dumps(
+                {
+                    "status_counts": {"success": 1},
+                    "completed_cells": 1,
+                    "failed_cells": 0,
+                    "elapsed_seconds": 1.0,
+                    "cells": [
+                        {
+                            "cell_id": "cell1",
+                            "status": "success",
+                            "seconds": 1.0,
+                            "raw_row_count": 1,
+                            "normalized_row_count": 1,
+                        }
+                    ],
+                },
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        mmwrite(matrix / "circ_counts.mtx", sp.csr_matrix([[4]], dtype=int))
+        (matrix / "circ_index.txt").write_text("circ1\n", encoding="utf-8")
+        (matrix / "cell_index.txt").write_text("cell1\n", encoding="utf-8")
+        (matrix / "circ_feature_table.tsv").write_text(
+            "circ_id\tchrom\tstart\tend\tstrand\thost_gene\ncirc1\tchr21\t10\t20\t+\tGENE1\n",
+            encoding="utf-8",
+        )
+        (logs / "run_ciri3_summary.json").write_text(
+            json.dumps({"workflow": "run-ciri3", "dry_run": False}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
+
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(tmp_path / "run"),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--star-index",
+            str(star_index),
+            "--experimental-paired-ramda",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert seen["star_index"] == star_index
 
 
 def test_full_length_workflow_smartseq3_requires_skip_demux(tmp_path: Path) -> None:
