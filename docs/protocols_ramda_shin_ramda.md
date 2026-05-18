@@ -1,6 +1,14 @@
 # RamDA-seq / Shin-RamDA-seq with CIRI3
 
-`circyto run-ciri3` now supports protocol presets for:
+Recommended user-facing workflow:
+
+- `circyto workflow full-length-circrna`
+
+Advanced lower-level path:
+
+- `circyto run-ciri3`
+
+`circyto run-ciri3` supports protocol presets for:
 
 - `--protocol ramda`
 - `--protocol shin-ramda`
@@ -12,8 +20,14 @@ For RamDA and Shin-RamDA, circyto treats the inputs as full-length total-RNA lib
 - no 3-prime counting assumption
 - `read_layout` is taken from the manifest
 - `strandedness` stays explicit metadata
-- paired-end rows use STAR with chimeric output enabled for CIRI3
-- single-end rows fall back to BWA-based CIRI3-compatible alignment prep
+- paired-end rows use the validated `STAR+CIRI3` route
+- single-end rows use the validated `BWA+CIRI3` route
+
+For the high-level workflow:
+
+- single-end real execution is direct
+- paired-end real execution requires `--allow-paired-ramda`
+- `--experimental-paired-ramda` remains accepted as a deprecated alias
 
 Minimal manifest columns accepted by `run-ciri3`:
 
@@ -24,6 +38,18 @@ sample_id	fastq_1	fastq_2	protocol	strandedness	read_layout
 `fastq_2` may be empty for single-end runs.
 
 Example:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest manifest.tsv \
+  --outdir runs/ramda_full_length \
+  --protocol ramda \
+  --genome-fasta /path/to/chr21.fa \
+  --gtf /path/to/chr21.gtf \
+  --export-h5ad
+```
+
+Advanced lower-level example:
 
 ```bash
 circyto run-ciri3 \

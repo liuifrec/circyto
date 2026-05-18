@@ -74,6 +74,11 @@ Dry-run CLI output may also print a warning block when the selected dataset is s
   Protocol: `shin-ramda`
   Use: Shin-RamDA workflow reference from `rikenbit/shin-ramda-seq-paper`
 
+Important scope note:
+
+- human scRR accession resolution for `GSE278952` and `GSE278958` is currently documented in `docs/human_ramda_candidate_datasets.md`
+- those human dataset notes are not yet surfaced as first-class `prepare-public-dataset` dataset IDs
+
 ## Dataset-specific behavior
 
 ### E-MTAB-8735

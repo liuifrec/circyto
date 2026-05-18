@@ -20,7 +20,9 @@ A workflow and analysis framework for single-cell circRNA detection, with detect
 
 `circyto` `v0.9.0` is the current experimental milestone.
 
-- The validated end-to-end path is SMART-Seq3 FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
+- The validated pooled SMART-Seq3 end-to-end path is FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
+- The validated single-end full-length RamDA/scRR path is FASTQ -> BWA-MEM -> CIRI3 direct SAM -> matrix -> `h5ad`.
+- The validated paired-end full-length RamDA/scRR path is FASTQ pair -> STAR -> CIRI3 STAR tuple mode -> matrix -> `h5ad`, with `--allow-paired-ramda` required for explicit opt-in. `--experimental-paired-ramda` remains accepted as a deprecated alias.
 - The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
 - Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
@@ -83,6 +85,87 @@ What these checks mean:
 - `circyto detectors` reports detector readiness and required external tools.
 
 ## Core workflows
+
+### Current CLI map
+
+Recommended user-facing entry points:
+
+| Command | Purpose | Main use case | Status |
+| --- | --- | --- | --- |
+| `circyto workflow smartseq3-ciri3` | One-command SMART-Seq3 workflow | pooled Smart-seq3 / E-MTAB-8735-style runs | validated workflow, still versioned as experimental CLI |
+| `circyto workflow full-length-circrna` | One-command full-length circRNA workflow | RamDA, Shin-RamDA, human scRR per-cell FASTQs | validated single-end and paired-end routes, still versioned as experimental CLI |
+| `circyto prepare-public-dataset` | Reproducible planning artifacts for benchmark datasets | benchmark planning without downloading large files | planning utility |
+
+Advanced / lower-level entry points:
+
+| Command | Purpose | Main use case | Status |
+| --- | --- | --- | --- |
+| `circyto run-ciri3` | Protocol-aware alignment-first CIRI3 runner | advanced manual RamDA / Shin-RamDA / SMART-Seq3 CIRI3 execution | advanced |
+| `circyto prepare-alignment-cache` | Build reusable STAR/BWA alignment artifacts | alignment-first multi-step runs | advanced |
+| `circyto run-detector-from-alignments` | Run detector from prepared alignment manifest | manual alignment-first runs | advanced |
+| `circyto collect-matrix` | Build circRNA matrix from per-cell outputs | manual collection / detector comparisons | advanced |
+| `circyto export-scomatic-inputs` | Emit interoperability tables for external SComatic runs | exploratory circRNA/SNV interoperability | exploratory |
+| `circyto join-circ-snv-summary` | Join circ summaries with exploratory SComatic candidate tables | exploratory circRNA/SNV summaries | exploratory |
+
+### Examples
+
+Smart-seq3 one-command workflow:
+
+```bash
+circyto workflow smartseq3-ciri3 \
+  --read1 raw/Smartseq3.diySpike.R1.fastq.gz \
+  --read2 raw/Smartseq3.diySpike.R2.fastq.gz \
+  --index1 raw/Smartseq3.diySpike.I1.fastq.gz \
+  --index2 raw/Smartseq3.diySpike.I2.fastq.gz \
+  --annotation metadata/Smartseq3.diySpike.sample_annotation.normalized.tsv \
+  --cell-id-column cell_id \
+  --index1-column index1 \
+  --index2-column index2 \
+  --ref-fa /path/to/hg38.fa \
+  --star-index /path/to/star_index \
+  --outdir work/diySpike_workflow_all192 \
+  --threads 24 \
+  --resume \
+  --export-h5ad
+```
+
+Single-end RamDA/scRR full-length workflow:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest manifest_single.tsv \
+  --outdir work/full_length_single \
+  --protocol ramda \
+  --genome-fasta /path/to/hg38.fa \
+  --gtf /path/to/gencode.v38.annotation.gtf \
+  --export-h5ad
+```
+
+Paired-end scRR workflow:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest manifest_paired.tsv \
+  --outdir work/full_length_paired \
+  --protocol ramda \
+  --genome-fasta /path/to/hg38.fa \
+  --gtf /path/to/gencode.v38.annotation.gtf \
+  --star-index /path/to/star_index \
+  --allow-paired-ramda \
+  --export-h5ad
+```
+
+Public dataset planning:
+
+```bash
+circyto prepare-public-dataset \
+  --dataset-id E-MTAB-8735 \
+  --protocol smartseq3 \
+  --download-method ena \
+  --max-runs 2 \
+  --dry-run \
+  --outdir work/public_emtab8735_plan
+```
 
 ### 1. SMART-Seq3 to CIRI3 end-to-end workflow
 
@@ -161,7 +244,20 @@ Notes:
 - For CIRI3 STAR tuple mode, the alignment manifest must carry STAR outputs plus `bwa_sam`.
 - `collect-matrix` is the current unified matrix collector; older `collect` examples are not the recommended public interface.
 
-### 3. CircRNA annotation
+### 3. Full-length RamDA / Shin-RamDA / scRR workflow
+
+Use `circyto workflow full-length-circrna` for per-cell full-length total RNA manifests.
+
+Route selection:
+
+- single-end RamDA / Shin-RamDA / scRR rows use `BWA-MEM -> direct SAM -> CIRI3`
+- paired-end RamDA / Shin-RamDA / scRR rows use `STAR -> CIRI3 STAR tuple mode`
+- paired-end real execution requires `--allow-paired-ramda`
+- `--experimental-paired-ramda` still works as a deprecated alias
+
+See [`docs/full_length_workflow.md`](docs/full_length_workflow.md) for the full manifest contract and workflow behavior.
+
+### 4. CircRNA annotation
 
 Annotate the workflow `circ_qc.tsv` against known circRNA databases. The command shape below is current and verified; the database paths are examples.
 
@@ -182,7 +278,7 @@ Annotation semantics:
 - unmatched entries remain `novel`
 - annotation columns are added without changing matrix semantics
 
-### 4. AnnData downstream summary
+### 5. AnnData downstream summary
 
 ```bash
 circyto analyze summarize-h5ad \
@@ -190,7 +286,7 @@ circyto analyze summarize-h5ad \
   --outdir work/diySpike_workflow_all192/anndata_summary
 ```
 
-### 5. Optional MuData export
+### 6. Optional MuData export
 
 If you also have a gene-count matrix, the workflow can export MuData:
 

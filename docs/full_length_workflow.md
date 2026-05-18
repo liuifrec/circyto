@@ -56,7 +56,7 @@ For SMART-Seq3:
 
 - demux skipped implicitly
 - single-end rows use `bwa-mem` plus direct `CIRI3` SAM mode
-- paired-end rows reuse the existing STAR+CIRI3 paired-end path
+- paired-end rows use the validated STAR+CIRI3 paired-end path
 - real paired-end execution requires `--allow-paired-ramda`
 - dry-run planning does not require `--allow-paired-ramda`
 - paired-end rows also require `--star-index`
@@ -66,7 +66,7 @@ For SMART-Seq3:
 
 - demux skipped implicitly
 - single-end rows use `bwa-mem` plus direct `CIRI3` SAM mode
-- paired-end rows reuse the existing STAR+CIRI3 paired-end path
+- paired-end rows use the validated STAR+CIRI3 paired-end path
 - real paired-end execution requires `--allow-paired-ramda`
 - dry-run planning does not require `--allow-paired-ramda`
 - paired-end rows also require `--star-index`
