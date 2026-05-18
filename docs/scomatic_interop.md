@@ -79,3 +79,7 @@ circyto join-circ-snv-summary \
 - No SComatic installation is required for these commands.
 - No SComatic execution occurs inside `circyto`.
 - The joined outputs are summary tables for exploratory interpretation, not validation artifacts.
+
+For the longer-term integrated study direction, see:
+
+- [SComatic-integrated circRNA study design](scomatic_circrna_study_design.md)

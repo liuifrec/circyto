@@ -15,6 +15,7 @@ Welcome to the `circyto` documentation.
 - [Human RamDA candidate datasets](human_ramda_candidate_datasets.md)
 - [Human scRR server test plan](human_scrr_server_test_plan.md)
 - [SComatic interoperability](scomatic_interop.md)
+- [SComatic-integrated circRNA study design](scomatic_circrna_study_design.md)
 - [CIRI-full chr21 example](ciri_full_chr21_example.md)
 - SMART-Seq3 workflow: see [Getting started](getting_started.md#workflow-1b-experimental-smart-seq3-to-ciri3)
 

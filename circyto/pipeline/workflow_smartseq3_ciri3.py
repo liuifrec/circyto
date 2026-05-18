@@ -19,9 +19,11 @@ from circyto.pipeline.collect import collect_matrix
 from circyto.pipeline.workflow_reporting import (
     build_cell_qc_table,
     build_circ_qc_table,
+    directory_size_bytes,
     expand_cells,
     export_circ_h5ad,
     export_mudata_bundle,
+    largest_files_under,
     load_circ_feature_table,
     load_circ_matrix,
     load_json,
@@ -306,6 +308,11 @@ def _build_workflow_summary(
         if record.get("seconds") is not None
     ]
     matrix_payload = matrix_section(X_selected_cells_by_circ, circ_qc)
+    workdir_size_bytes = directory_size_bytes(paths["root"])
+    align_size_bytes = directory_size_bytes(paths["align"])
+    ciri3_size_bytes = directory_size_bytes(paths["ciri3"])
+    matrix_size_bytes = directory_size_bytes(paths["matrix"])
+    anndata_size_bytes = directory_size_bytes(paths["anndata"])
     h5ad_path = paths["anndata"] / "circ_counts.h5ad"
     h5ad_status = None
     if params.export_h5ad:
@@ -435,6 +442,12 @@ def _build_workflow_summary(
             **matrix_stats,
             **matrix_payload,
         },
+        "workdir_size_bytes": workdir_size_bytes,
+        "align_size_bytes": align_size_bytes,
+        "ciri3_size_bytes": ciri3_size_bytes,
+        "matrix_size_bytes": matrix_size_bytes,
+        "anndata_size_bytes": anndata_size_bytes,
+        "largest_files": largest_files_under(paths["root"]),
         "workflow_timing": {
             "elapsed_seconds_per_stage": stage_seconds,
             "total_elapsed_seconds": round(sum(stage_seconds.values()), 3),

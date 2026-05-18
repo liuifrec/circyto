@@ -16,8 +16,10 @@ from circyto.pipeline.run_ciri3 import (
 from circyto.pipeline.workflow_reporting import (
     build_cell_qc_table,
     build_circ_qc_table,
+    directory_size_bytes,
     expand_cells,
     export_circ_h5ad,
+    largest_files_under,
     load_circ_feature_table,
     load_circ_matrix,
     load_json,
@@ -258,6 +260,11 @@ def _build_execution_summary(
 
     circ_counts_by_cell = {cell_id: int(value) for cell_id, value in zip(selected_cell_ids, cell_qc["circRNA_count"].tolist())}
     detector_status_counts = _detector_status_counts(detector_summary_path)
+    workdir_size_bytes = directory_size_bytes(paths["root"])
+    align_size_bytes = directory_size_bytes(paths["align"])
+    ciri3_size_bytes = directory_size_bytes(paths["ciri3"])
+    matrix_size_bytes = directory_size_bytes(paths["matrix"])
+    anndata_size_bytes = directory_size_bytes(paths["anndata"])
 
     return {
         "workflow": "full-length-circrna",
@@ -292,6 +299,12 @@ def _build_execution_summary(
             **_matrix_stats_header(matrix_path),
             **matrix_section(X_selected_cells_by_circ, circ_qc),
         },
+        "workdir_size_bytes": workdir_size_bytes,
+        "align_size_bytes": align_size_bytes,
+        "ciri3_size_bytes": ciri3_size_bytes,
+        "matrix_size_bytes": matrix_size_bytes,
+        "anndata_size_bytes": anndata_size_bytes,
+        "largest_files": largest_files_under(paths["root"]),
         "paths": {
             "manifest": str(params.manifest.resolve()),
             "alignment_manifest": str((paths["align"] / "alignment_manifest.tsv").resolve()),

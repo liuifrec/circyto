@@ -89,6 +89,59 @@ The workflow writes:
 - `anndata/circ_counts.h5ad` when `--export-h5ad`
 - `workflow_summary.json`
 
+## Inspecting Completed Runs
+
+Use the read-only helper script:
+
+```bash
+python scripts/check_full_length_workflow_outputs.py /path/to/workflow_outdir
+```
+
+It summarizes:
+
+- stage graph
+- planned / completed / failed cells
+- circRNAs per cell
+- matrix dimensions
+- top recurrent circRNAs
+- `h5ad` existence
+- largest files
+- obvious error lines from logs
+
+JSON mode is also available:
+
+```bash
+python scripts/check_full_length_workflow_outputs.py \
+  /path/to/workflow_outdir \
+  --json
+```
+
+Example: IMR90 single-end full-length scRR run
+
+```bash
+python scripts/check_full_length_workflow_outputs.py \
+  work/human_scrr_imr90_2cell/run/full_length_ciri3_imr90_2cell
+```
+
+Expected route for that run:
+
+```text
+single-end FASTQ -> BWA-MEM -> direct SAM -> CIRI3 -> matrix + h5ad
+```
+
+Example: HAP1 paired-end full-length scRR run
+
+```bash
+python scripts/check_full_length_workflow_outputs.py \
+  work/human_scrr_hap1_2cell/run/full_length_ciri3_hap1_2cell
+```
+
+Expected route for that run:
+
+```text
+paired-end FASTQ -> STAR -> CIRI3 STAR tuple mode -> matrix + h5ad
+```
+
 ## Paired-End RamDA
 
 The paired-end RamDA/Shin-RamDA execution path remains opt-in, but it is no longer only a dry-run scaffold:

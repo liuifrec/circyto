@@ -4,6 +4,7 @@ from pathlib import Path
 from statistics import median
 from typing import Any, Optional
 import json
+import os
 
 import numpy as np
 import pandas as pd
@@ -239,6 +240,42 @@ def matrix_section(X_cells_by_circ: sp.csr_matrix, circ_qc: pd.DataFrame) -> dic
         "cells_per_circRNA_summary": numeric_summary(circ_ncells),
         "top_recurrent_circRNAs": recurrent.head(10).to_dict("records"),
     }
+
+
+def directory_size_bytes(path: Path) -> int:
+    if not path.exists():
+        return 0
+    total = 0
+    for root, _, filenames in os.walk(path):
+        for filename in filenames:
+            file_path = Path(root) / filename
+            try:
+                total += file_path.stat().st_size
+            except OSError:
+                continue
+    return int(total)
+
+
+def largest_files_under(root: Path, *, limit: int = 10) -> list[dict[str, Any]]:
+    if not root.exists():
+        return []
+    ranked: list[tuple[Path, int]] = []
+    for walk_root, _, filenames in os.walk(root):
+        for filename in filenames:
+            file_path = Path(walk_root) / filename
+            try:
+                size = file_path.stat().st_size
+            except OSError:
+                continue
+            ranked.append((file_path, int(size)))
+    ranked.sort(key=lambda item: (-item[1], str(item[0])))
+    return [
+        {
+            "path": str(path.resolve()),
+            "bytes": size,
+        }
+        for path, size in ranked[: max(1, limit)]
+    ]
 
 
 def load_gene_counts(

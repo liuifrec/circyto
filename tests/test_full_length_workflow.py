@@ -63,6 +63,24 @@ def _write_paired_manifest(tmp_path: Path, *, protocol: str = "smartseq3") -> Pa
     return manifest
 
 
+def _assert_disk_usage_summary(summary: dict[str, object]) -> None:
+    for key in (
+        "workdir_size_bytes",
+        "align_size_bytes",
+        "ciri3_size_bytes",
+        "matrix_size_bytes",
+        "anndata_size_bytes",
+    ):
+        assert key in summary
+        assert isinstance(summary[key], int)
+        assert int(summary[key]) >= 0
+    largest_files = summary.get("largest_files")
+    assert isinstance(largest_files, list)
+    assert largest_files
+    assert {"path", "bytes"}.issubset(largest_files[0].keys())
+    assert int(largest_files[0]["bytes"]) >= 0
+
+
 def test_full_length_workflow_dry_run_ramda_lists_demux_matrix_and_h5ad(tmp_path: Path, monkeypatch) -> None:
     from circyto.pipeline import workflow_full_length_circrna as workflow
 
@@ -297,6 +315,9 @@ def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkey
     assert summary["paths"]["h5ad"] == str(h5ad_path.resolve())
     assert (outdir / "qc" / "cell_qc.tsv").exists()
     assert (outdir / "qc" / "circ_qc.tsv").exists()
+    _assert_disk_usage_summary(summary)
+    assert summary["workdir_size_bytes"] >= summary["matrix_size_bytes"]
+    assert summary["anndata_size_bytes"] > 0
     adata = ad.read_h5ad(h5ad_path)
     assert list(adata.obs_names) == ["cell1"]
     assert adata.obs["protocol"].tolist() == ["ramda"]
@@ -416,6 +437,9 @@ def test_full_length_workflow_paired_ramda_with_allow_flag_writes_h5ad_and_qc(tm
     assert summary["experimental_paired_ramda"] is True
     assert summary["paths"]["h5ad"] == str(h5ad_path.resolve())
     assert any("validated STAR+CIRI3 paired-end route" in warning for warning in summary["warnings"])
+    _assert_disk_usage_summary(summary)
+    assert summary["workdir_size_bytes"] >= summary["align_size_bytes"]
+    assert summary["anndata_size_bytes"] > 0
     adata = ad.read_h5ad(h5ad_path)
     assert adata.obs["protocol"].tolist() == ["ramda"]
     assert adata.obs["read_layout"].tolist() == ["paired-end"]

@@ -240,3 +240,40 @@ Local validation note:
 - `SRR30911454` completed a real `chr21` subset run in `circyto` with STAR alignment, BWA rescue, CIRI3, matrix export, and `h5ad` export
 - the validated subset run used `10k` read pairs because the initial `100k` subset was slower than desirable on the reduced `chr21` reference
 - the validated subset produced zero circRNA rows, so the route is executable but not yet biologically benchmarked
+
+## Post-run inspection
+
+For any completed `full-length-circrna` run, use the read-only inspector:
+
+IMR90 single-end BWA route:
+
+```bash
+python scripts/check_full_length_workflow_outputs.py \
+  work/human_scrr_imr90_2cell/run/full_length_ciri3_imr90_2cell
+```
+
+HAP1 paired-end STAR route:
+
+```bash
+python scripts/check_full_length_workflow_outputs.py \
+  work/human_scrr_hap1_2cell/run/full_length_ciri3_hap1_2cell
+```
+
+JSON output for machine-friendly inspection:
+
+```bash
+python scripts/check_full_length_workflow_outputs.py \
+  work/human_scrr_hap1_2cell/run/full_length_ciri3_hap1_2cell \
+  --json
+```
+
+The inspector is read-only and reports:
+
+- stage graph
+- planned / completed / failed cells
+- circRNAs per cell
+- matrix dimensions
+- top recurrent circRNAs
+- `h5ad` existence
+- largest files
+- obvious error lines in logs

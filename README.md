@@ -107,6 +107,8 @@ Advanced / lower-level entry points:
 | `circyto export-scomatic-inputs` | Emit interoperability tables for external SComatic runs | exploratory circRNA/SNV interoperability | exploratory |
 | `circyto join-circ-snv-summary` | Join circ summaries with exploratory SComatic candidate tables | exploratory circRNA/SNV summaries | exploratory |
 
+SComatic-related functionality remains exploratory. Use conservative terms such as `RNA-derived candidate somatic variants` or `candidate variant signals`, and see [`docs/scomatic_circrna_study_design.md`](docs/scomatic_circrna_study_design.md) for the future integrated study design.
+
 ### Examples
 
 Smart-seq3 one-command workflow:
