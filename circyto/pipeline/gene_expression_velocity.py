@@ -10,6 +10,7 @@ import pandas as pd
 
 VALID_GENE_EXPRESSION_METHODS = {"none", "featurecounts", "velocyto"}
 VALID_VELOCITY_LAYERS = {"none", "velocyto"}
+SUPPORTED_CLEANUP_SCOPES = ("alignments", "demux", "all")
 REGENERABLE_ALIGNMENT_SUFFIXES = (
     ".sam",
     ".bam",
@@ -23,6 +24,47 @@ REGENERABLE_ALIGNMENT_NAMES = (
     "Unmapped.out.mate2",
     "bwa_rescue.sam",
 )
+REGENERABLE_DEMUX_SUFFIXES = (
+    ".fastq",
+    ".fq",
+    ".fastq.gz",
+    ".fq.gz",
+)
+REGENERABLE_CHUNK_SUFFIXES = (
+    ".chunk",
+    ".chunks",
+    ".part",
+    ".tmp",
+)
+MUST_KEEP_OUTPUTS = [
+    "workflow_summary.json",
+    "detector summaries",
+    "matrix/",
+    "anndata/",
+    "mudata/",
+    "qc/",
+    "manifests/",
+    "logs/",
+    "provenance JSON",
+    "final detector TSVs",
+]
+USER_INPUTS_NEVER_DELETE = [
+    "original raw FASTQs",
+    "original pooled Smart-seq FASTQs",
+    "user-supplied manifests",
+    "user-supplied gene_counts.tsv",
+]
+SAFE_TO_DELETE_ALIGNMENTS = [
+    "align/cache/",
+    "large *.sam / *.bam / *.bai intermediates",
+    "STAR temporary outputs",
+    "BWA rescue SAM/BAM",
+    "temporary chunk files if reproducible",
+]
+SAFE_TO_DELETE_DEMUX = [
+    "demux per-cell FASTQs generated from pooled Smart-seq2/3 input",
+    "temporary chunk files if reproducible",
+]
 
 VALID_VELOCITY_LAYOUT_FILES = {
     "barcodes.tsv",
@@ -212,29 +254,31 @@ def validate_velocity_layers_schema(path: Path) -> dict[str, Any]:
     }
 
 
-def build_cleanup_plan(*, outdir: Path) -> dict[str, Any]:
+def _collect_cleanup_candidates(outdir: Path, *, include_demux_fastq: bool) -> list[dict[str, Any]]:
     candidates: list[dict[str, Any]] = []
-    preserved = [
-        "workflow_summary.json",
-        "detector summaries",
-        "matrix/",
-        "anndata/",
-        "mudata/",
-        "qc/",
-        "manifests/",
-        "logs/",
-        "provenance",
-    ]
-    for subdir_name in ("align", "ciri3"):
+    for subdir_name in ("align", "ciri3", "demux"):
         subdir = outdir / subdir_name
         if not subdir.exists():
             continue
         for root, _, filenames in os.walk(subdir):
             for filename in filenames:
                 path = Path(root) / filename
-                if (
+                suffixes = "".join(path.suffixes[-2:]).lower()
+                include_alignment = (
                     path.suffix.lower() in REGENERABLE_ALIGNMENT_SUFFIXES
                     or filename in REGENERABLE_ALIGNMENT_NAMES
+                    or path.suffix.lower() in REGENERABLE_CHUNK_SUFFIXES
+                )
+                include_demux = include_demux_fastq and (
+                    suffixes in REGENERABLE_DEMUX_SUFFIXES
+                    or path.suffix.lower() in REGENERABLE_CHUNK_SUFFIXES
+                )
+                if (
+                    include_alignment
+                    or (
+                        subdir_name == "demux"
+                        and include_demux
+                    )
                 ):
                     try:
                         size = int(path.stat().st_size)
@@ -242,11 +286,61 @@ def build_cleanup_plan(*, outdir: Path) -> dict[str, Any]:
                         size = 0
                     candidates.append({"path": str(path.resolve()), "bytes": size})
     candidates.sort(key=lambda item: (-int(item["bytes"]), str(item["path"])))
+    return candidates
+
+
+def build_cleanup_plan(
+    *,
+    outdir: Path,
+    scope: str = "all",
+    workflow_succeeded: bool = True,
+) -> dict[str, Any]:
+    if scope not in SUPPORTED_CLEANUP_SCOPES:
+        raise ValueError(
+            f"Unsupported cleanup scope: {scope}. "
+            f"Choose from: {', '.join(SUPPORTED_CLEANUP_SCOPES)}"
+        )
+
+    safe_to_delete_after_success: list[str] = []
+    include_demux_fastq = scope in {"demux", "all"}
+    if scope in {"alignments", "all"}:
+        safe_to_delete_after_success.extend(SAFE_TO_DELETE_ALIGNMENTS)
+    if scope in {"demux", "all"}:
+        safe_to_delete_after_success.extend(SAFE_TO_DELETE_DEMUX)
+
+    if not workflow_succeeded:
+        return {
+            "enabled": True,
+            "mode": "planned-only",
+            "workflow_succeeded": False,
+            "planned_scope": scope,
+            "supported_scopes": list(SUPPORTED_CLEANUP_SCOPES),
+            "must_keep": list(MUST_KEEP_OUTPUTS),
+            "user_inputs_never_delete": list(USER_INPUTS_NEVER_DELETE),
+            "safe_to_delete_after_success": safe_to_delete_after_success,
+            "candidate_count": 0,
+            "candidate_bytes": 0,
+            "delete_candidates": [],
+            "reason": "Cleanup planning is disabled for failed workflows.",
+        }
+
+    candidates = _collect_cleanup_candidates(outdir, include_demux_fastq=include_demux_fastq)
+    if scope == "alignments":
+        candidates = [item for item in candidates if "/demux/" not in str(item["path"]).replace("\\", "/")]
+    elif scope == "demux":
+        candidates = [item for item in candidates if "/demux/" in str(item["path"]).replace("\\", "/")]
+
+    candidates.sort(key=lambda item: (-int(item["bytes"]), str(item["path"])))
     return {
         "enabled": True,
         "mode": "planned-only",
-        "would_delete_only_regenerable_alignment_intermediates": True,
-        "preserve": preserved,
+        "workflow_succeeded": True,
+        "planned_scope": scope,
+        "supported_scopes": list(SUPPORTED_CLEANUP_SCOPES),
+        "would_delete_only_regenerable_workflow_intermediates": True,
+        "must_keep": list(MUST_KEEP_OUTPUTS),
+        "user_inputs_never_delete": list(USER_INPUTS_NEVER_DELETE),
+        "safe_to_delete_after_success": safe_to_delete_after_success,
         "candidate_count": len(candidates),
         "candidate_bytes": int(sum(int(item["bytes"]) for item in candidates)),
         "delete_candidates": candidates[:20],
