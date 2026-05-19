@@ -21,6 +21,7 @@ from circyto.pipeline.run_ciri3 import (
     run_ciri3_workflow,
 )
 from circyto.pipeline.workflow_reporting import (
+    apply_standard_provenance,
     build_cell_qc_table,
     build_circ_qc_table,
     directory_size_bytes,
@@ -33,6 +34,8 @@ from circyto.pipeline.workflow_reporting import (
     matrix_section,
     numeric_summary,
     top_mapping_items,
+    summarize_read_layouts,
+    utc_now_iso,
     write_json,
 )
 
@@ -162,13 +165,14 @@ def _build_dry_run_summary(
     skip_demux_effective: bool,
     warnings: list[str],
     rna_import: dict[str, Any] | None,
+    started_at: str,
+    completed_at: str,
 ) -> dict[str, Any]:
     read_layout_counts = {"single-end": 0, "paired-end": 0}
     for row in source_rows:
         read_layout_counts[row.read_layout] = read_layout_counts.get(row.read_layout, 0) + 1
-    return {
+    summary = {
         "workflow": "full-length-circrna",
-        "command_name": "circyto workflow full-length-circrna",
         "dry_run": True,
         "detector": params.detector,
         "protocol": params.protocol,
@@ -199,6 +203,21 @@ def _build_dry_run_summary(
             "run_ciri3_summary": str((paths["logs"] / "run_ciri3_summary.json").resolve()),
         },
     }
+    return apply_standard_provenance(
+        summary,
+        command_name="circyto workflow full-length-circrna",
+        workflow_type="full-length-circrna",
+        protocol=params.protocol,
+        read_layout=summarize_read_layouts([row.read_layout for row in source_rows]),
+        genome_fasta=str(params.genome_fasta.resolve()),
+        gtf=str(params.gtf.resolve()),
+        detector_backend=params.detector,
+        started_at=started_at,
+        completed_at=completed_at,
+        elapsed_seconds=0.0,
+        cleanup=summary.get("cleanup"),
+        cleanup_scope=params.cleanup_intermediates,
+    )
 
 
 def _build_execution_summary(
@@ -213,6 +232,8 @@ def _build_execution_summary(
     elapsed_seconds: float,
     warnings: list[str],
     rna_import: dict[str, Any] | None,
+    started_at: str,
+    completed_at: str,
 ) -> dict[str, Any]:
     selected_cell_ids = [row.cell_id for row in source_rows]
     assigned_reads = _n_input_reads_by_cell(raw_rows)
@@ -290,9 +311,8 @@ def _build_execution_summary(
     matrix_size_bytes = directory_size_bytes(paths["matrix"])
     anndata_size_bytes = directory_size_bytes(paths["anndata"])
 
-    return {
+    summary = {
         "workflow": "full-length-circrna",
-        "command_name": "circyto workflow full-length-circrna",
         "dry_run": False,
         "detector_backend": params.detector,
         "protocol": params.protocol,
@@ -354,7 +374,25 @@ def _build_execution_summary(
         "workflow_timing": {
             "total_elapsed_seconds": round(elapsed_seconds, 3),
         },
-}
+    }
+    return apply_standard_provenance(
+        summary,
+        command_name="circyto workflow full-length-circrna",
+        workflow_type="full-length-circrna",
+        protocol=params.protocol,
+        read_layout=summarize_read_layouts([row.read_layout for row in source_rows]),
+        genome_fasta=str(params.genome_fasta.resolve()),
+        gtf=str(params.gtf.resolve()),
+        detector_backend=params.detector,
+        started_at=started_at,
+        completed_at=completed_at,
+        elapsed_seconds=elapsed_seconds,
+        cleanup=summary.get("cleanup"),
+        cleanup_scope=params.cleanup_intermediates,
+        cleanup_performed=bool(summary.get("cleanup_performed", False)),
+        cleanup_deleted_paths=list(summary.get("cleanup_deleted_paths", [])),
+        cleanup_reclaimed_bytes=int(summary.get("cleanup_reclaimed_bytes", 0) or 0),
+    )
 
 
 def _refresh_disk_usage_fields(summary: dict[str, Any], paths: dict[str, Path]) -> None:
@@ -396,6 +434,7 @@ def run_full_length_circrna_workflow(
             path.mkdir(parents=True, exist_ok=True)
 
     started = time.perf_counter()
+    started_at = utc_now_iso()
     source_rows = read_source_manifest(params.manifest, validate_files=not params.dry_run)
     _, raw_rows = _read_manifest_rows(params.manifest)
     if len(source_rows) != len(raw_rows):
@@ -508,6 +547,8 @@ def run_full_length_circrna_workflow(
             skip_demux_effective=skip_demux_effective,
             warnings=warnings,
             rna_import=rna_import,
+            started_at=started_at,
+            completed_at=utc_now_iso(),
         )
         if params.cleanup_intermediates:
             summary["cleanup"] = build_cleanup_plan(
@@ -515,6 +556,7 @@ def run_full_length_circrna_workflow(
                 scope=params.cleanup_intermediates,
                 workflow_succeeded=True,
             )
+            summary["cleanup_summary"] = summary["cleanup"]
     else:
         summary = _build_execution_summary(
             params=params,
@@ -527,6 +569,8 @@ def run_full_length_circrna_workflow(
             elapsed_seconds=time.perf_counter() - started,
             warnings=warnings,
             rna_import=rna_import,
+            started_at=started_at,
+            completed_at=utc_now_iso(),
         )
         if params.cleanup_intermediates:
             cleanup_result = execute_cleanup_plan(
@@ -545,6 +589,43 @@ def run_full_length_circrna_workflow(
             summary["cleanup_deleted_paths"] = []
             summary["cleanup_reclaimed_bytes"] = 0
             summary["cleanup_scope"] = None
+        summary = apply_standard_provenance(
+            summary,
+            command_name="circyto workflow full-length-circrna",
+            workflow_type="full-length-circrna",
+            protocol=params.protocol,
+            read_layout=summarize_read_layouts([row.read_layout for row in source_rows]),
+            genome_fasta=str(params.genome_fasta.resolve()),
+            gtf=str(params.gtf.resolve()),
+            detector_backend=params.detector,
+            started_at=started_at,
+            completed_at=utc_now_iso(),
+            elapsed_seconds=float(summary.get("workflow_timing", {}).get("total_elapsed_seconds", time.perf_counter() - started)),
+            cleanup=summary.get("cleanup"),
+            cleanup_scope=params.cleanup_intermediates,
+            cleanup_performed=bool(summary.get("cleanup_performed", False)),
+            cleanup_deleted_paths=list(summary.get("cleanup_deleted_paths", [])),
+            cleanup_reclaimed_bytes=int(summary.get("cleanup_reclaimed_bytes", 0) or 0),
+            workflow_uuid=summary.get("workflow_uuid"),
+        )
+
+    if params.dry_run:
+        summary = apply_standard_provenance(
+            summary,
+            command_name="circyto workflow full-length-circrna",
+            workflow_type="full-length-circrna",
+            protocol=params.protocol,
+            read_layout=summarize_read_layouts([row.read_layout for row in source_rows]),
+            genome_fasta=str(params.genome_fasta.resolve()),
+            gtf=str(params.gtf.resolve()),
+            detector_backend=params.detector,
+            started_at=started_at,
+            completed_at=utc_now_iso(),
+            elapsed_seconds=0.0,
+            cleanup=summary.get("cleanup"),
+            cleanup_scope=params.cleanup_intermediates,
+            workflow_uuid=summary.get("workflow_uuid"),
+        )
 
     write_json(paths["workflow_summary"], summary)
     _emit(progress, f"workflow summary: {paths['workflow_summary']}")

@@ -11,6 +11,13 @@ from typing import Any
 import pandas as pd
 
 from circyto.manifest.alignment import read_alignment_manifest_tsv
+from circyto.pipeline.workflow_reporting import (
+    apply_standard_provenance,
+    load_json,
+    summarize_read_layouts,
+    utc_now_iso,
+    write_json,
+)
 
 
 VALID_GENE_EXPRESSION_METHODS = {"none", "simple-overlap", "featurecounts", "velocyto"}
@@ -529,10 +536,23 @@ def add_posthoc_rna_profile(
 ) -> dict[str, Any]:
     plan = build_posthoc_rna_profile_plan(workdir=workdir, gtf_path=gtf_path, method=method)
     if dry_run:
-        return plan
+        return apply_standard_provenance(
+            dict(plan),
+            command_name="circyto add-rna-profile",
+            workflow_type="posthoc-rna-profile",
+            protocol="unknown",
+            read_layout="unknown",
+            genome_fasta=None,
+            gtf=str(gtf_path.resolve()),
+            detector_backend=None,
+            started_at=utc_now_iso(),
+            completed_at=utc_now_iso(),
+            elapsed_seconds=0.0,
+        )
 
     alignment_manifest_path = Path(plan["alignment_manifest"])
     rows = read_alignment_manifest_tsv(alignment_manifest_path, validate_files=True)
+    started_at = utc_now_iso()
     rna_import = count_gene_expression_from_alignments(
         alignment_manifest_path=alignment_manifest_path,
         gtf_path=gtf_path,
@@ -541,17 +561,44 @@ def add_posthoc_rna_profile(
     )
 
     workflow_summary_path = workdir / "workflow_summary.json"
+    workflow_uuid = None
+    protocol = "unknown"
+    read_layout = summarize_read_layouts([row.read_layout for row in rows])
+    genome_fasta = None
+    detector_backend = None
     if workflow_summary_path.exists():
         try:
-            workflow_summary = json.loads(workflow_summary_path.read_text(encoding="utf-8"))
+            workflow_summary = load_json(workflow_summary_path)
         except json.JSONDecodeError as exc:
             raise ValueError(f"Could not parse existing workflow summary: {workflow_summary_path}") from exc
-        workflow_summary["command_name"] = "circyto add-rna-profile"
+        workflow_uuid = workflow_summary.get("workflow_uuid")
+        protocol = str(workflow_summary.get("protocol", protocol))
+        read_layout = str(workflow_summary.get("read_layout", read_layout))
+        genome_fasta = workflow_summary.get("genome_fasta")
+        detector_backend = workflow_summary.get("detector_backend")
         workflow_summary["rna_import"] = rna_import
-        workflow_summary_path.write_text(json.dumps(workflow_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+        workflow_summary = apply_standard_provenance(
+            workflow_summary,
+            command_name="circyto add-rna-profile",
+            workflow_type=str(workflow_summary.get("workflow_type", workflow_summary.get("workflow", "posthoc-rna-profile"))),
+            protocol=protocol,
+            read_layout=read_layout,
+            genome_fasta=str(genome_fasta) if genome_fasta else None,
+            gtf=str(gtf_path.resolve()),
+            detector_backend=str(detector_backend) if detector_backend else None,
+            started_at=workflow_summary.get("started_at", started_at),
+            completed_at=utc_now_iso(),
+            elapsed_seconds=float(workflow_summary.get("elapsed_seconds", 0.0) or 0.0),
+            cleanup=workflow_summary.get("cleanup"),
+            cleanup_scope=workflow_summary.get("cleanup_scope"),
+            cleanup_performed=bool(workflow_summary.get("cleanup_performed", False)),
+            cleanup_deleted_paths=list(workflow_summary.get("cleanup_deleted_paths", [])),
+            cleanup_reclaimed_bytes=int(workflow_summary.get("cleanup_reclaimed_bytes", 0) or 0),
+            workflow_uuid=str(workflow_uuid) if workflow_uuid else None,
+        )
+        write_json(workflow_summary_path, workflow_summary)
 
-    return {
-        "command_name": "circyto add-rna-profile",
+    result = {
         "dry_run": False,
         "workdir": str(workdir.resolve()),
         "method": method,
@@ -559,6 +606,20 @@ def add_posthoc_rna_profile(
         "rna_import": rna_import,
         "workflow_summary_updated": workflow_summary_path.exists(),
     }
+    return apply_standard_provenance(
+        result,
+        command_name="circyto add-rna-profile",
+        workflow_type="posthoc-rna-profile",
+        protocol=protocol,
+        read_layout=read_layout,
+        genome_fasta=str(genome_fasta) if genome_fasta else None,
+        gtf=str(gtf_path.resolve()),
+        detector_backend=str(detector_backend) if detector_backend else None,
+        started_at=started_at,
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+        workflow_uuid=str(workflow_uuid) if workflow_uuid else None,
+    )
 
 
 def validate_velocity_layers_schema(path: Path) -> dict[str, Any]:

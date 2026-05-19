@@ -120,6 +120,23 @@ def test_full_length_workflow_dry_run_ramda_lists_demux_matrix_and_h5ad(tmp_path
     summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))
     assert summary["workflow"] == "full-length-circrna"
     assert summary["dry_run"] is True
+    for key in (
+        "command_name",
+        "circyto_version",
+        "workflow_type",
+        "workflow_uuid",
+        "started_at",
+        "completed_at",
+        "elapsed_seconds",
+        "hostname",
+        "python_version",
+        "cleanup_summary",
+        "completed_stages",
+        "skipped_stages",
+        "failed_stages",
+        "partial_outputs_detected",
+    ):
+        assert key in summary
     assert summary["skip_demux_effective"] is True
     stages = {item["stage"]: item["status"] for item in summary["stage_graph"]}
     assert stages["demux"] == "skipped"
@@ -705,6 +722,10 @@ def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkey
     assert (outdir / "qc" / "cell_qc.tsv").exists()
     assert (outdir / "qc" / "circ_qc.tsv").exists()
     _assert_disk_usage_summary(summary)
+    assert summary["workflow_type"] == "full-length-circrna"
+    assert summary["cleanup_summary"]["performed"] is False
+    assert isinstance(summary["workflow_uuid"], str)
+    assert "summary_qc" in summary["completed_stages"]
     assert summary["workdir_size_bytes"] >= summary["matrix_size_bytes"]
     assert summary["anndata_size_bytes"] > 0
     adata = ad.read_h5ad(h5ad_path)

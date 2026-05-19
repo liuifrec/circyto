@@ -40,6 +40,7 @@ from circyto.pipeline.scomatic_interop import (
     join_circ_snv_summary,
 )
 from circyto.pipeline.gene_expression_velocity import add_posthoc_rna_profile
+from circyto.pipeline.workflow_integrity import check_workflow_integrity
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
 from circyto.pipeline.compare_detectors import compare_detectors as _compare_detectors
 from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
@@ -290,6 +291,19 @@ def add_rna_profile_command(
     except (FileNotFoundError, ValueError, NotImplementedError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("check-workflow")
+def check_workflow_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Workflow directory to inspect."),
+) -> None:
+    """
+    Read-only integrity check for a workflow directory.
+    """
+    summary = check_workflow_integrity(workdir)
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+    if not summary.get("ok", False):
+        raise typer.Exit(code=1)
 
 
 @app.command()

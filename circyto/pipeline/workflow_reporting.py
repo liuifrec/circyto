@@ -5,11 +5,17 @@ from statistics import median
 from typing import Any, Optional
 import json
 import os
+import socket
+import sys
+import uuid
+from datetime import datetime, timezone
 
 import numpy as np
 import pandas as pd
 from scipy import io as scio
 from scipy import sparse as sp
+
+from circyto import __version__
 
 
 try:
@@ -34,6 +40,133 @@ def load_json(path: Path) -> dict[str, Any]:
 def write_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
+def utc_now_iso() -> str:
+    return datetime.now(timezone.utc).replace(microsecond=0).isoformat()
+
+
+def generate_workflow_uuid() -> str:
+    return str(uuid.uuid4())
+
+
+def summarize_read_layouts(read_layouts: list[str]) -> str:
+    normalized = sorted({str(item).strip() for item in read_layouts if str(item).strip()})
+    if not normalized:
+        return "unknown"
+    if len(normalized) == 1:
+        return normalized[0]
+    return "mixed"
+
+
+def stage_status_lists(stage_graph: list[dict[str, Any]]) -> dict[str, list[str]]:
+    completed: list[str] = []
+    skipped: list[str] = []
+    failed: list[str] = []
+    for item in stage_graph:
+        stage = str(item.get("stage", "")).strip()
+        status = str(item.get("status", "")).strip().lower()
+        if not stage:
+            continue
+        if status == "completed":
+            completed.append(stage)
+        elif status in {"skipped", "disabled", "delegated"}:
+            skipped.append(stage)
+        elif status == "failed":
+            failed.append(stage)
+    return {
+        "completed_stages": completed,
+        "skipped_stages": skipped,
+        "failed_stages": failed,
+    }
+
+
+def detect_partial_outputs(paths: dict[str, Any]) -> list[str]:
+    missing: list[str] = []
+    for label, value in dict(paths).items():
+        if value in (None, ""):
+            continue
+        path = Path(str(value))
+        if not path.exists():
+            missing.append(label)
+    return sorted(missing)
+
+
+def cleanup_summary_block(
+    *,
+    cleanup: dict[str, Any] | None,
+    cleanup_scope: str | None = None,
+    cleanup_performed: bool = False,
+    cleanup_deleted_paths: list[str] | None = None,
+    cleanup_reclaimed_bytes: int = 0,
+) -> dict[str, Any]:
+    deleted = list(cleanup_deleted_paths or [])
+    if cleanup is None:
+        return {
+            "enabled": cleanup_scope is not None,
+            "scope": cleanup_scope,
+            "performed": cleanup_performed,
+            "deleted_paths": deleted,
+            "reclaimed_bytes": int(cleanup_reclaimed_bytes),
+        }
+    return {
+        "enabled": bool(cleanup.get("enabled", cleanup_scope is not None)),
+        "scope": cleanup.get("cleanup_scope", cleanup.get("planned_scope", cleanup_scope)),
+        "performed": bool(cleanup.get("cleanup_performed", cleanup_performed)),
+        "deleted_paths": list(cleanup.get("cleanup_deleted_paths", deleted)),
+        "reclaimed_bytes": int(cleanup.get("cleanup_reclaimed_bytes", cleanup_reclaimed_bytes) or 0),
+        "candidate_count": int(cleanup.get("candidate_count", 0) or 0),
+        "candidate_bytes": int(cleanup.get("candidate_bytes", 0) or 0),
+    }
+
+
+def apply_standard_provenance(
+    payload: dict[str, Any],
+    *,
+    command_name: str,
+    workflow_type: str,
+    protocol: str,
+    read_layout: str,
+    genome_fasta: str | None,
+    gtf: str | None,
+    detector_backend: str | None,
+    started_at: str,
+    completed_at: str,
+    elapsed_seconds: float,
+    cleanup: dict[str, Any] | None = None,
+    cleanup_scope: str | None = None,
+    cleanup_performed: bool = False,
+    cleanup_deleted_paths: list[str] | None = None,
+    cleanup_reclaimed_bytes: int = 0,
+    workflow_uuid: str | None = None,
+) -> dict[str, Any]:
+    payload["command_name"] = command_name
+    payload["circyto_version"] = __version__
+    payload["workflow_type"] = workflow_type
+    payload["protocol"] = protocol
+    payload["read_layout"] = read_layout
+    payload["genome_fasta"] = genome_fasta
+    payload["gtf"] = gtf
+    payload["detector_backend"] = detector_backend
+    payload["started_at"] = started_at
+    payload["completed_at"] = completed_at
+    payload["elapsed_seconds"] = round(float(elapsed_seconds), 3)
+    payload["hostname"] = socket.gethostname()
+    payload["python_version"] = sys.version.split()[0]
+    payload["workflow_uuid"] = workflow_uuid or payload.get("workflow_uuid") or generate_workflow_uuid()
+    payload["cleanup_summary"] = cleanup_summary_block(
+        cleanup=cleanup,
+        cleanup_scope=cleanup_scope,
+        cleanup_performed=cleanup_performed,
+        cleanup_deleted_paths=cleanup_deleted_paths,
+        cleanup_reclaimed_bytes=cleanup_reclaimed_bytes,
+    )
+    stage_lists = stage_status_lists(list(payload.get("stage_graph", [])))
+    payload["completed_stages"] = stage_lists["completed_stages"]
+    payload["skipped_stages"] = stage_lists["skipped_stages"]
+    payload["failed_stages"] = stage_lists["failed_stages"]
+    payload["partial_outputs_detected"] = detect_partial_outputs(dict(payload.get("paths", {})))
+    return payload
 
 
 def read_index_lines(path: Path) -> list[str]:

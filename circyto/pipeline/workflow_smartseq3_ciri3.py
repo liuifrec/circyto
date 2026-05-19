@@ -17,6 +17,7 @@ from circyto.pipeline.align_manifest import (
 )
 from circyto.pipeline.collect import collect_matrix
 from circyto.pipeline.workflow_reporting import (
+    apply_standard_provenance,
     build_cell_qc_table,
     build_circ_qc_table,
     directory_size_bytes,
@@ -30,6 +31,8 @@ from circyto.pipeline.workflow_reporting import (
     matrix_section,
     numeric_summary,
     top_mapping_items,
+    summarize_read_layouts,
+    utc_now_iso,
     write_json,
 )
 
@@ -253,6 +256,9 @@ def _build_workflow_summary(
     selected_manifest_path: Path,
     completed_stages: list[str],
     stage_seconds: dict[str, float],
+    started_at: str,
+    completed_at: str,
+    workflow_uuid: str | None = None,
 ) -> dict[str, Any]:
     demux_summary = load_json(paths["demux"] / "demux_summary.json")
     alignment_summary = load_json(paths["align"] / "alignment_prepare_summary.json")
@@ -382,7 +388,7 @@ def _build_workflow_summary(
             cell_join=params.cell_join,
         )
 
-    return {
+    summary = {
         "workflow": "smartseq3-ciri3",
         "experimental": True,
         "command_options": {
@@ -471,6 +477,20 @@ def _build_workflow_summary(
         },
         "multimodal": mudata_summary,
     }
+    return apply_standard_provenance(
+        summary,
+        command_name="circyto workflow smartseq3-ciri3",
+        workflow_type="smartseq3-ciri3",
+        protocol="smartseq3",
+        read_layout=summarize_read_layouts([row.read_layout for row in selected_rows]),
+        genome_fasta=str(params.ref_fa.resolve()),
+        gtf=None,
+        detector_backend="ciri3",
+        started_at=started_at,
+        completed_at=completed_at,
+        elapsed_seconds=stage_seconds.get("workflow_total", sum(stage_seconds.values())),
+        workflow_uuid=workflow_uuid,
+    )
 
 
 def run_smartseq3_ciri3_workflow(
@@ -501,6 +521,7 @@ def run_smartseq3_ciri3_workflow(
     completed_stages: list[str] = []
     stage_seconds: dict[str, float] = {}
     workflow_started = time.perf_counter()
+    started_at = utc_now_iso()
 
     demux_summary_path = paths["demux"] / "demux_summary.json"
     demux_manifest = paths["demux"] / "manifest.tsv"
@@ -627,6 +648,8 @@ def run_smartseq3_ciri3_workflow(
         selected_manifest_path=selected_manifest,
         completed_stages=completed_stages,
         stage_seconds=stage_seconds,
+        started_at=started_at,
+        completed_at=utc_now_iso(),
     )
     stage_seconds["reporting_export"] = round(time.perf_counter() - stage_started, 3)
     stage_seconds["workflow_total"] = round(time.perf_counter() - workflow_started, 3)

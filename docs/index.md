@@ -12,6 +12,7 @@ Welcome to the `circyto` documentation.
 - [RNA and velocity contract](rna_velocity_contract.md)
 - [Post-hoc RNA profile](posthoc_rna_profile.md)
 - [Intermediate cleanup policy](intermediate_cleanup_policy.md)
+- [Workflow integrity and provenance](workflow_integrity_and_provenance.md)
 - [RamDA / Shin-RamDA protocol notes](protocols_ramda_shin_ramda.md)
 - [Server install and RamDA hg38 run](server_install_and_ramda_hg38.md)
 - [Detectors](detectors.md)
