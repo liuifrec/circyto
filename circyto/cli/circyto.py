@@ -39,6 +39,7 @@ from circyto.pipeline.scomatic_interop import (
     export_scomatic_inputs,
     join_circ_snv_summary,
 )
+from circyto.pipeline.gene_expression_velocity import add_posthoc_rna_profile
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
 from circyto.pipeline.compare_detectors import compare_detectors as _compare_detectors
 from circyto.pipeline.collect_find_circ3 import collect_find_circ3_matrix
@@ -267,6 +268,28 @@ def prepare_public_dataset_command(
             indent=2,
         )
     )
+
+
+@app.command("add-rna-profile")
+def add_rna_profile_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory."),
+    gtf: Path = typer.Option(..., "--gtf", exists=True, help="Annotation GTF for simple-overlap profiling."),
+    method: str = typer.Option("simple-overlap", "--method", help="RNA profiling method. Currently only simple-overlap is supported."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Discover the existing alignment manifest and planned RNA outputs without writing files."),
+) -> None:
+    """
+    Add a lightweight post-hoc RNA profile to an already completed workflow directory.
+    """
+    try:
+        summary = add_posthoc_rna_profile(
+            workdir=workdir,
+            gtf_path=gtf,
+            method=method,
+            dry_run=dry_run,
+        )
+    except (FileNotFoundError, ValueError, NotImplementedError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command()

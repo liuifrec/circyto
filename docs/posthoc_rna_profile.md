@@ -1,0 +1,97 @@
+# Post-hoc RNA Profile
+
+`circyto add-rna-profile` adds a lightweight RNA gene-count snapshot to an already completed workflow directory without rerunning alignment, detector, matrix, or `h5ad` export stages.
+
+Current supported method:
+
+- `simple-overlap`
+
+## Command shape
+
+```bash
+circyto add-rna-profile \
+  --workdir /path/to/completed_workflow \
+  --gtf /path/to/annotation.gtf \
+  --method simple-overlap
+```
+
+Dry-run:
+
+```bash
+circyto add-rna-profile \
+  --workdir /path/to/completed_workflow \
+  --gtf /path/to/annotation.gtf \
+  --method simple-overlap \
+  --dry-run
+```
+
+## What it does
+
+1. discovers an existing alignment manifest under the completed workflow
+2. reuses the existing aligned SAM or BAM paths from that manifest
+3. runs lightweight `simple-overlap` gene counting with the supplied GTF
+4. writes RNA snapshot outputs under `WORKDIR/rna/`
+5. updates `workflow_summary.json` if present
+
+It does not:
+
+- rerun demux
+- rerun STAR
+- rerun BWA
+- rerun CIRI3
+- rerun matrix collection
+- rerun `h5ad` export
+- delete any files
+
+## Manifest discovery
+
+The command searches these paths in order:
+
+- `WORKDIR/align/alignment_manifest.tsv`
+- `WORKDIR/align/star/alignment_manifest.tsv`
+- `WORKDIR/align/bwa_mem/alignment_manifest.tsv`
+
+## Outputs
+
+The command writes:
+
+- `WORKDIR/rna/gene_counts.tsv`
+- `WORKDIR/rna/gene_feature_table.tsv`
+- `WORKDIR/rna/rna_import_summary.json`
+
+If `WORKDIR/workflow_summary.json` exists, it is updated in place:
+
+- existing fields are preserved
+- `command_name` becomes `circyto add-rna-profile`
+- `rna_import` is added or replaced
+
+## `simple-overlap` behavior
+
+- parse `gene` features from the GTF when present
+- if the GTF lacks explicit `gene` features, fall back to gene intervals aggregated from exon records sharing the same `gene_id`
+- count one read or read-pair template if its primary alignment overlaps exactly one gene interval
+- exclude ambiguous multi-gene overlaps
+- group paired-end records by QNAME per cell to reduce mate double-counting when possible
+
+This is a lightweight sanity profile, not a production replacement for `featureCounts` or velocity-aware quantification.
+
+## Example server command
+
+For the completed Smart-seq3 all192 workflow folder:
+
+```bash
+circyto add-rna-profile \
+  --workdir /user/ifrec/liuyuchen/circyto_redo/emtab8735/work/diySpike_workflow_all192 \
+  --gtf /path/to/gencode_or_refseq_annotation.gtf \
+  --method simple-overlap
+```
+
+Dry-run first:
+
+```bash
+circyto add-rna-profile \
+  --workdir /user/ifrec/liuyuchen/circyto_redo/emtab8735/work/diySpike_workflow_all192 \
+  --gtf /path/to/gencode_or_refseq_annotation.gtf \
+  --method simple-overlap \
+  --dry-run
+```

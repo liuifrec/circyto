@@ -482,6 +482,85 @@ def count_gene_expression_from_alignments(
     return payload
 
 
+def find_completed_workflow_alignment_manifest(workdir: Path) -> Path:
+    candidates = [
+        workdir / "align" / "alignment_manifest.tsv",
+        workdir / "align" / "star" / "alignment_manifest.tsv",
+        workdir / "align" / "bwa_mem" / "alignment_manifest.tsv",
+    ]
+    for path in candidates:
+        if path.exists():
+            return path
+    tried = ", ".join(str(path) for path in candidates)
+    raise FileNotFoundError(
+        f"Could not find alignment manifest under completed workflow directory {workdir}. "
+        f"Tried: {tried}"
+    )
+
+
+def build_posthoc_rna_profile_plan(
+    *,
+    workdir: Path,
+    gtf_path: Path,
+    method: str,
+) -> dict[str, Any]:
+    if method != "simple-overlap":
+        raise ValueError(f"Unsupported post-hoc RNA profiling method: {method}")
+    alignment_manifest_path = find_completed_workflow_alignment_manifest(workdir)
+    return {
+        "command_name": "circyto add-rna-profile",
+        "dry_run": True,
+        "workdir": str(workdir.resolve()),
+        "method": method,
+        "alignment_manifest": str(alignment_manifest_path.resolve()),
+        "gtf": str(gtf_path.resolve()),
+        "output_gene_counts": str((workdir / "rna" / "gene_counts.tsv").resolve()),
+        "output_gene_feature_table": str((workdir / "rna" / "gene_feature_table.tsv").resolve()),
+        "output_rna_import_summary": str((workdir / "rna" / "rna_import_summary.json").resolve()),
+    }
+
+
+def add_posthoc_rna_profile(
+    *,
+    workdir: Path,
+    gtf_path: Path,
+    method: str,
+    dry_run: bool,
+) -> dict[str, Any]:
+    plan = build_posthoc_rna_profile_plan(workdir=workdir, gtf_path=gtf_path, method=method)
+    if dry_run:
+        return plan
+
+    alignment_manifest_path = Path(plan["alignment_manifest"])
+    rows = read_alignment_manifest_tsv(alignment_manifest_path, validate_files=True)
+    rna_import = count_gene_expression_from_alignments(
+        alignment_manifest_path=alignment_manifest_path,
+        gtf_path=gtf_path,
+        expected_cell_ids=[row.cell_id for row in rows],
+        outdir=workdir / "rna",
+    )
+
+    workflow_summary_path = workdir / "workflow_summary.json"
+    if workflow_summary_path.exists():
+        try:
+            workflow_summary = json.loads(workflow_summary_path.read_text(encoding="utf-8"))
+        except json.JSONDecodeError as exc:
+            raise ValueError(f"Could not parse existing workflow summary: {workflow_summary_path}") from exc
+        workflow_summary["command_name"] = "circyto add-rna-profile"
+        workflow_summary["rna_import"] = rna_import
+        workflow_summary_path.write_text(json.dumps(workflow_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    return {
+        "command_name": "circyto add-rna-profile",
+        "dry_run": False,
+        "workdir": str(workdir.resolve()),
+        "method": method,
+        "alignment_manifest": str(alignment_manifest_path.resolve()),
+        "rna_import": rna_import,
+        "workflow_summary_updated": workflow_summary_path.exists(),
+    }
+
+
 def validate_velocity_layers_schema(path: Path) -> dict[str, Any]:
     if not path.exists() or not path.is_dir():
         raise FileNotFoundError(f"Velocity layer directory not found: {path}")
