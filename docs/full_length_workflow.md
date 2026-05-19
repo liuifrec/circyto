@@ -84,10 +84,29 @@ The workflow writes:
 - `align/`
 - `ciri3/`
 - `matrix/`
+- `rna/` when `--gene-counts` is supplied
 - `qc/cell_qc.tsv`
 - `qc/circ_qc.tsv`
 - `anndata/circ_counts.h5ad` when `--export-h5ad`
 - `workflow_summary.json`
+
+Current validated export behavior:
+
+- `circ_counts.h5ad` is circRNA-focused
+- `X` contains circRNA counts
+- `obs` contains cell metadata and QC
+- `var` contains circRNA feature metadata
+- optional `--gene-counts` import writes validated RNA snapshots only:
+  - `rna/gene_counts.tsv`
+  - `rna/gene_feature_table.tsv`
+  - `rna/rna_import_summary.json`
+- imported gene counts are not yet merged into `circ_counts.h5ad`
+
+Planned future export behavior:
+
+- optional MuData with `rna` and `circ` modalities
+- optional velocity-compatible RNA layers
+- current full-length workflows do not yet produce gene-expression or velocity layers
 
 ## Inspecting Completed Runs
 
@@ -141,6 +160,29 @@ Expected route for that run:
 ```text
 paired-end FASTQ -> STAR -> CIRI3 STAR tuple mode -> matrix + h5ad
 ```
+
+## Planned multimodal integration
+
+Planned future flags for `full-length-circrna`:
+
+- `--gene-counts`
+- `--export-mudata`
+- `--gene-expression-method featurecounts|velocyto|none`
+- `--velocity-layers none|velocyto`
+- `--cleanup-intermediates`
+
+Current implementation status:
+
+- current circ-only `h5ad` behavior is unchanged
+- normalized `gene_counts.tsv` import is implemented for validated snapshotting under `OUTDIR/rna/`
+- non-default gene-expression or velocity modes are not implemented yet
+- cleanup is currently dry-run planning only
+
+See:
+
+- [Gene expression and velocity integration](gene_expression_velocity_integration.md)
+- [RNA and velocity contract](rna_velocity_contract.md)
+- [Intermediate cleanup policy](intermediate_cleanup_policy.md)
 
 ## Paired-End RamDA
 

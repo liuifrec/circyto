@@ -7,6 +7,11 @@ import csv
 import time
 
 from circyto.pipeline.align_manifest import read_source_manifest
+from circyto.pipeline.gene_expression_velocity import (
+    build_cleanup_plan,
+    import_gene_counts_table,
+    validate_full_length_future_options,
+)
 from circyto.pipeline.run_ciri3 import (
     RunCiri3Params,
     _resolve_row_protocol,
@@ -47,6 +52,11 @@ class FullLengthCircRNAWorkflowParams:
     chunk_size: int = 1
     skip_demux: bool = False
     export_h5ad: bool = True
+    gene_counts: Optional[Path] = None
+    export_mudata: bool = False
+    gene_expression_method: str = "none"
+    velocity_layers: str = "none"
+    cleanup_intermediates: bool = False
     dry_run: bool = False
     fail_fast: bool = False
     command_template: Optional[str] = None
@@ -60,6 +70,7 @@ def _workflow_paths(outdir: Path) -> dict[str, Path]:
         "ciri3": outdir / "ciri3",
         "matrix": outdir / "matrix",
         "qc": outdir / "qc",
+        "rna": outdir / "rna",
         "anndata": outdir / "anndata",
         "logs": outdir / "logs",
         "manifests": outdir / "manifests",
@@ -148,6 +159,7 @@ def _build_dry_run_summary(
     resolved_strandedness: dict[str, str],
     skip_demux_effective: bool,
     warnings: list[str],
+    rna_import: dict[str, Any] | None,
 ) -> dict[str, Any]:
     read_layout_counts = {"single-end": 0, "paired-end": 0}
     for row in source_rows:
@@ -167,11 +179,20 @@ def _build_dry_run_summary(
         "allow_paired_ramda": params.experimental_paired_ramda,
         "experimental_paired_ramda": params.experimental_paired_ramda,
         "warnings": warnings,
+        "planned_multimodal": {
+            "gene_counts": str(params.gene_counts.resolve()) if params.gene_counts else None,
+            "export_mudata": params.export_mudata,
+            "gene_expression_method": params.gene_expression_method,
+            "velocity_layers": params.velocity_layers,
+            "cleanup_intermediates": params.cleanup_intermediates,
+        },
+        "rna_import": rna_import,
         "paths": {
             "manifest": str(params.manifest.resolve()),
             "align_dir": str(paths["align"].resolve()),
             "ciri3_dir": str(paths["ciri3"].resolve()),
             "matrix_dir": str(paths["matrix"].resolve()),
+            "rna_dir": str(paths["rna"].resolve()),
             "anndata_dir": str(paths["anndata"].resolve()) if params.export_h5ad else None,
             "run_ciri3_summary": str((paths["logs"] / "run_ciri3_summary.json").resolve()),
         },
@@ -189,6 +210,7 @@ def _build_execution_summary(
     skip_demux_effective: bool,
     elapsed_seconds: float,
     warnings: list[str],
+    rna_import: dict[str, Any] | None,
 ) -> dict[str, Any]:
     selected_cell_ids = [row.cell_id for row in source_rows]
     assigned_reads = _n_input_reads_by_cell(raw_rows)
@@ -305,6 +327,14 @@ def _build_execution_summary(
         "matrix_size_bytes": matrix_size_bytes,
         "anndata_size_bytes": anndata_size_bytes,
         "largest_files": largest_files_under(paths["root"]),
+        "planned_multimodal": {
+            "gene_counts": str(params.gene_counts.resolve()) if params.gene_counts else None,
+            "export_mudata": params.export_mudata,
+            "gene_expression_method": params.gene_expression_method,
+            "velocity_layers": params.velocity_layers,
+            "cleanup_intermediates": params.cleanup_intermediates,
+        },
+        "rna_import": rna_import,
         "paths": {
             "manifest": str(params.manifest.resolve()),
             "alignment_manifest": str((paths["align"] / "alignment_manifest.tsv").resolve()),
@@ -317,6 +347,7 @@ def _build_execution_summary(
             "cell_qc": str(cell_qc_path.resolve()),
             "circ_qc": str(circ_qc_path.resolve()),
             "h5ad": h5ad_status,
+            "rna_dir": str(paths["rna"].resolve()),
         },
         "workflow_timing": {
             "total_elapsed_seconds": round(elapsed_seconds, 3),
@@ -337,6 +368,14 @@ def run_full_length_circrna_workflow(
         raise ValueError("parallel must be > 0")
     if params.chunk_size <= 0:
         raise ValueError("chunk_size must be > 0")
+    validate_full_length_future_options(
+        export_mudata=params.export_mudata,
+        gene_counts=params.gene_counts,
+        gene_expression_method=params.gene_expression_method,
+        velocity_layers=params.velocity_layers,
+        cleanup_intermediates=params.cleanup_intermediates,
+        dry_run=params.dry_run,
+    )
 
     paths = _workflow_paths(params.outdir)
     for path in paths.values():
@@ -411,6 +450,23 @@ def run_full_length_circrna_workflow(
         progress=progress,
     )
 
+    rna_import = None
+    if params.gene_counts is not None:
+        if params.dry_run:
+            rna_import = {
+                "planned": True,
+                "input_gene_counts": str(params.gene_counts.resolve()),
+                "output_gene_counts": str((paths["rna"] / "gene_counts.tsv").resolve()),
+                "output_gene_feature_table": str((paths["rna"] / "gene_feature_table.tsv").resolve()),
+                "output_rna_import_summary": str((paths["rna"] / "rna_import_summary.json").resolve()),
+            }
+        else:
+            rna_import = import_gene_counts_table(
+                path=params.gene_counts,
+                expected_cell_ids=[row.cell_id for row in source_rows],
+                outdir=paths["rna"],
+            )
+
     if params.dry_run:
         summary = _build_dry_run_summary(
             params=params,
@@ -420,7 +476,10 @@ def run_full_length_circrna_workflow(
             resolved_strandedness=resolved_strandedness,
             skip_demux_effective=skip_demux_effective,
             warnings=warnings,
+            rna_import=rna_import,
         )
+        if params.cleanup_intermediates:
+            summary["cleanup"] = build_cleanup_plan(outdir=params.outdir)
     else:
         summary = _build_execution_summary(
             params=params,
@@ -432,6 +491,7 @@ def run_full_length_circrna_workflow(
             skip_demux_effective=skip_demux_effective,
             elapsed_seconds=time.perf_counter() - started,
             warnings=warnings,
+            rna_import=rna_import,
         )
 
     write_json(paths["workflow_summary"], summary)
