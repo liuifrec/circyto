@@ -48,6 +48,25 @@ Current implemented behavior in `full-length-circrna`:
   - `rna/rna_import_summary.json`
 - does not yet merge the RNA counts into `circ_counts.h5ad`
 
+### A2. Internal simple-overlap counting
+
+Implemented lightweight contract:
+
+- `--gene-expression-method simple-overlap`
+- consumes the workflow-owned `align/alignment_manifest.tsv`
+- parses `gene` features from the supplied GTF
+- writes:
+  - `rna/gene_counts.tsv`
+  - `rna/gene_feature_table.tsv`
+  - `rna/rna_import_summary.json`
+
+Rules:
+
+- count one read or read-pair template if its primary alignment overlaps exactly one gene interval
+- exclude ambiguous multi-gene overlaps
+- group paired-end records by QNAME per cell to reduce mate double-counting when possible
+- treat this as a lightweight sanity profile, not a production replacement for `featureCounts`
+
 Example:
 
 ```tsv
@@ -104,7 +123,8 @@ Future import contract:
 
 Current status:
 
-- not implemented
+- `simple-overlap` is implemented for lightweight SAM-first sanity counting
+- production-grade BAM / featureCounts-style counting remains future work
 - no velocyto dependency is required
 
 ### D. featureCounts-style gene-count import
@@ -235,6 +255,15 @@ Minimum fields:
 - `gene_expression_method`
 - `velocity_layers`
 - `cleanup_intermediates`
+
+Current lightweight RNA import summaries should also record:
+
+- `method`
+- `counting_rule`
+- `paired_end_rule`
+- `assigned_templates`
+- `ambiguous_templates_excluded`
+- `unassigned_templates`
 
 Recommended future fields:
 

@@ -100,7 +100,12 @@ Current validated export behavior:
   - `rna/gene_counts.tsv`
   - `rna/gene_feature_table.tsv`
   - `rna/rna_import_summary.json`
+- optional `--gene-expression-method simple-overlap` writes a lightweight internal RNA sanity profile from workflow-owned alignments:
+  - `rna/gene_counts.tsv`
+  - `rna/gene_feature_table.tsv`
+  - `rna/rna_import_summary.json`
 - imported gene counts are not yet merged into `circ_counts.h5ad`
+- internally counted gene counts are not yet merged into `circ_counts.h5ad`
 
 Planned future export behavior:
 
@@ -167,16 +172,19 @@ Planned future flags for `full-length-circrna`:
 
 - `--gene-counts`
 - `--export-mudata`
-- `--gene-expression-method featurecounts|velocyto|none`
+- `--gene-expression-method none|simple-overlap|featurecounts|velocyto`
 - `--velocity-layers none|velocyto`
-- `--cleanup-intermediates`
+- `--cleanup-intermediates alignments|demux|all`
 
 Current implementation status:
 
 - current circ-only `h5ad` behavior is unchanged
 - normalized `gene_counts.tsv` import is implemented for validated snapshotting under `OUTDIR/rna/`
-- non-default gene-expression or velocity modes are not implemented yet
-- cleanup is currently dry-run planning only
+- `simple-overlap` is implemented as a lightweight internal sanity profile from alignment outputs and GTF gene intervals
+- `simple-overlap` counts only uniquely overlapping gene-level read or read-pair templates and excludes ambiguous multi-gene overlaps
+- `featurecounts` and `velocyto` remain future production-grade paths
+- cleanup execution is implemented as an explicit opt-in post-success step
+- cleanup never touches user inputs and dry-run still shows the planned deletion set without deleting files
 
 See:
 
@@ -221,6 +229,28 @@ circyto workflow full-length-circrna \
   --export-h5ad
 ```
 
+## Lightweight RNA sanity profile
+
+Example internal gene-count generation from workflow alignments:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest manifest.tsv \
+  --outdir work/full_length_run \
+  --protocol ramda \
+  --genome-fasta ref.fa \
+  --gtf genes.gtf \
+  --gene-expression-method simple-overlap
+```
+
+Current `simple-overlap` behavior:
+
+- parses `gene` features from the supplied GTF
+- counts one read or read-pair template when its primary alignment overlaps exactly one gene interval
+- excludes ambiguous templates that overlap multiple genes
+- groups paired-end records by QNAME to reduce mate double-counting when possible
+- is intended as a small-reference sanity profile, not a production replacement for `featureCounts`
+
 ## Dry Run
 
 Use `--dry-run` to plan alignment and detector stages without executing them:
@@ -236,3 +266,16 @@ circyto workflow full-length-circrna \
 ```
 
 The dry run still writes `workflow_summary.json` and preserves the stage graph, planned outputs, and underlying alignment and detector plans.
+
+Example cleanup dry-run:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest manifest.tsv \
+  --outdir work/full_length_plan \
+  --protocol ramda \
+  --genome-fasta ref.fa \
+  --gtf genes.gtf \
+  --cleanup-intermediates alignments \
+  --dry-run
+```

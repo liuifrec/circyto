@@ -4,8 +4,8 @@ This document defines the intended cleanup policy for large regenerable workflow
 
 Current status:
 
-- cleanup execution is not implemented yet
-- cleanup planning is dry-run only
+- cleanup execution is implemented for explicit `full-length-circrna` opt-in
+- dry-run still reports the cleanup plan without deleting files
 - the current scaffold is limited to workflow-owned files under the output directory
 
 ## Goals
@@ -62,10 +62,14 @@ The long-term CLI should support selective cleanup scopes:
 - `--cleanup-intermediates demux`
 - `--cleanup-intermediates all`
 
-Current scaffold note:
+Current implementation note:
 
-- the implemented CLI surface still uses a single `--cleanup-intermediates` opt-in switch
-- dry-run summaries document the future cleanup scope model even though real deletion is not implemented
+- `full-length-circrna` accepts:
+  - `--cleanup-intermediates alignments`
+  - `--cleanup-intermediates demux`
+  - `--cleanup-intermediates all`
+- cleanup runs only after successful workflow completion
+- failed runs skip cleanup entirely
 
 ## Guardrails
 
@@ -94,5 +98,9 @@ The current implementation supports:
 - summary of candidate regenerable files and bytes
 - distinction between alignment-like intermediates and generated demux FASTQs
 - explicit reporting that failed workflows should not plan deletion
-
-The current implementation does not yet perform deletion.
+- execution of scoped cleanup for workflow-owned regenerable intermediates
+- workflow summary fields:
+  - `cleanup_performed`
+  - `cleanup_deleted_paths`
+  - `cleanup_reclaimed_bytes`
+  - `cleanup_scope`

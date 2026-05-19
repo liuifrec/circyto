@@ -6,6 +6,8 @@ import pytest
 
 from circyto.pipeline.gene_expression_velocity import (
     build_cleanup_plan,
+    count_gene_expression_from_alignments,
+    execute_cleanup_plan,
     import_gene_counts_table,
     validate_cell_id_consistency,
     validate_feature_id_uniqueness,
@@ -101,6 +103,77 @@ def test_import_gene_counts_table_fails_on_cell_id_mismatch(tmp_path: Path) -> N
         import_gene_counts_table(path=path, expected_cell_ids=["cellA", "cellB"], outdir=tmp_path / "rna")
 
 
+def _write_gtf(path: Path) -> None:
+    path.write_text(
+        'chr21\ttest\tgene\t10\t30\t.\t+\t.\tgene_id "ENSG1"; gene_name "GENE1";\n'
+        'chr21\ttest\tgene\t40\t60\t.\t+\t.\tgene_id "ENSG2"; gene_name "GENE2";\n'
+        'chr21\ttest\tgene\t50\t70\t.\t+\t.\tgene_id "ENSG3"; gene_name "GENE3";\n',
+        encoding="utf-8",
+    )
+
+
+def _write_alignment_manifest(path: Path, sam_path: Path, *, cell_id: str = "cellA", read_layout: str = "single-end") -> None:
+    path.write_text(
+        "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\n"
+        f"{cell_id}\t\t{sam_path}\tgrp\t{read_layout}\tbwa-mem\t/tmp/ref.fa\tk1\t/tmp/source.tsv\t0\tbwa_mem\tunsorted\n",
+        encoding="utf-8",
+    )
+
+
+def test_count_gene_expression_from_alignments_counts_unique_gene_overlaps(tmp_path: Path) -> None:
+    gtf = tmp_path / "genes.gtf"
+    _write_gtf(gtf)
+    sam = tmp_path / "cellA.sam"
+    sam.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "read1\t0\tchr21\t12\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n"
+        "read2\t0\tchr21\t40\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "alignment_manifest.tsv"
+    _write_alignment_manifest(manifest, sam)
+
+    summary = count_gene_expression_from_alignments(
+        alignment_manifest_path=manifest,
+        gtf_path=gtf,
+        expected_cell_ids=["cellA"],
+        outdir=tmp_path / "rna",
+    )
+
+    counts = (tmp_path / "rna" / "gene_counts.tsv").read_text(encoding="utf-8")
+    assert "ENSG1\tGENE1\t1" in counts
+    assert "ENSG2\tGENE2\t1" in counts
+    assert summary["assigned_templates"] == 2
+    assert summary["ambiguous_templates_excluded"] == 0
+
+
+def test_count_gene_expression_from_alignments_excludes_ambiguous_overlaps(tmp_path: Path) -> None:
+    gtf = tmp_path / "genes.gtf"
+    _write_gtf(gtf)
+    sam = tmp_path / "cellA.sam"
+    sam.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "ambig1\t0\tchr21\t52\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "alignment_manifest.tsv"
+    _write_alignment_manifest(manifest, sam)
+
+    summary = count_gene_expression_from_alignments(
+        alignment_manifest_path=manifest,
+        gtf_path=gtf,
+        expected_cell_ids=["cellA"],
+        outdir=tmp_path / "rna",
+    )
+
+    counts = (tmp_path / "rna" / "gene_counts.tsv").read_text(encoding="utf-8")
+    assert "ENSG2\tGENE2\t0" in counts
+    assert "ENSG3\tGENE3\t0" in counts
+    assert summary["assigned_templates"] == 0
+    assert summary["ambiguous_templates_excluded"] == 1
+    assert (tmp_path / "rna" / "rna_import_summary.json").exists()
+
+
 def test_build_cleanup_plan_distinguishes_user_raw_fastq_from_generated_demux_fastq(tmp_path: Path) -> None:
     outdir = tmp_path / "work"
     demux_fastq = outdir / "demux" / "fastq" / "cellA_R1.fastq.gz"
@@ -154,3 +227,34 @@ def test_build_cleanup_plan_for_failed_workflow_does_not_plan_deletion(tmp_path:
     assert plan["candidate_count"] == 0
     assert plan["candidate_bytes"] == 0
     assert plan["delete_candidates"] == []
+
+
+def test_execute_cleanup_plan_deletes_only_alignment_intermediates(tmp_path: Path) -> None:
+    outdir = tmp_path / "work"
+    align_sam = outdir / "align" / "cache.sam"
+    matrix = outdir / "matrix" / "circ_counts.mtx"
+    align_sam.parent.mkdir(parents=True, exist_ok=True)
+    matrix.parent.mkdir(parents=True, exist_ok=True)
+    align_sam.write_text("sam", encoding="utf-8")
+    matrix.write_text("matrix", encoding="utf-8")
+
+    result = execute_cleanup_plan(outdir=outdir, scope="alignments", workflow_succeeded=True)
+
+    assert result["cleanup_performed"] is True
+    assert not align_sam.exists()
+    assert matrix.exists()
+    assert result["cleanup_reclaimed_bytes"] >= 3
+    assert any(path.endswith("cache.sam") for path in result["cleanup_deleted_paths"])
+
+
+def test_execute_cleanup_plan_skips_failed_workflow(tmp_path: Path) -> None:
+    outdir = tmp_path / "work"
+    align_sam = outdir / "align" / "failed.sam"
+    align_sam.parent.mkdir(parents=True, exist_ok=True)
+    align_sam.write_text("sam", encoding="utf-8")
+
+    result = execute_cleanup_plan(outdir=outdir, scope="alignments", workflow_succeeded=False)
+
+    assert result["cleanup_performed"] is False
+    assert align_sam.exists()
+    assert result["cleanup_deleted_paths"] == []

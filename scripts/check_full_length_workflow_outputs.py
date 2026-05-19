@@ -147,6 +147,7 @@ def build_summary(root: Path, *, top_files: int, top_errors: int) -> dict[str, A
         "workflow": workflow_summary.get("workflow"),
         "protocol": workflow_summary.get("protocol"),
         "dry_run": bool(workflow_summary.get("dry_run", False)),
+        "warnings": workflow_summary.get("warnings", []),
         "stage_graph": workflow_summary.get("stage_graph", []),
         "planned_cells": int(workflow_summary.get("planned_cells", 0) or 0),
         "completed_cells": int(workflow_summary.get("completed_cells", 0) or 0),
@@ -157,6 +158,8 @@ def build_summary(root: Path, *, top_files: int, top_errors: int) -> dict[str, A
         "top_recurrent_circRNAs": _top_recurrent(workflow_summary),
         "h5ad_exists": h5ad_exists,
         "h5ad_path": h5ad_path,
+        "workdir_size_bytes": int(workflow_summary.get("workdir_size_bytes", 0) or 0),
+        "align_size_bytes": int(workflow_summary.get("align_size_bytes", 0) or 0),
         "largest_files": [
             {"path": str(path.relative_to(root)), "bytes": size, "size_human": _format_bytes(size)}
             for path, size in _largest_files(root, limit=top_files)

@@ -239,7 +239,7 @@ def test_full_length_workflow_future_gene_expression_flags_fail_clearly(tmp_path
     )
     assert result.exit_code != 0
     assert result.exception is not None
-    assert "circ-only h5ad" in str(result.exception)
+    assert "featureCounts/velocyto-based" in str(result.exception)
 
 
 def test_full_length_workflow_gene_counts_import_writes_rna_snapshot(tmp_path: Path, monkeypatch) -> None:
@@ -388,6 +388,7 @@ def test_full_length_workflow_cleanup_intermediates_dry_run_plans_without_deleti
             "--gtf",
             str(gtf),
             "--cleanup-intermediates",
+            "alignments",
             "--dry-run",
         ],
     )
@@ -397,8 +398,209 @@ def test_full_length_workflow_cleanup_intermediates_dry_run_plans_without_deleti
     cleanup = summary["cleanup"]
     assert cleanup["enabled"] is True
     assert cleanup["mode"] == "planned-only"
+    assert cleanup["planned_scope"] == "alignments"
     assert cleanup["candidate_count"] >= 1
     assert any(item["path"].endswith("planned.sam") for item in cleanup["delete_candidates"])
+
+
+def test_full_length_workflow_simple_overlap_writes_rna_snapshot(tmp_path: Path, monkeypatch) -> None:
+    pytest.importorskip("anndata")
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_single_end_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    gtf.write_text(
+        'chr21\ttest\tgene\t1\t10\t.\t+\t.\tgene_id "ENSG1"; gene_name "GENE1";\n',
+        encoding="utf-8",
+    )
+    sam = tmp_path / "cell1.sam"
+    sam.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "read1\t0\tchr21\t1\t255\t4M\t*\t0\t0\tACGT\t!!!!\n",
+        encoding="utf-8",
+    )
+
+    def fake_run_ciri3_workflow(params, *, progress):
+        align = params.outdir / "align"
+        ciri3 = params.outdir / "ciri3"
+        matrix = params.outdir / "matrix"
+        logs = params.outdir / "logs"
+        for path in (align, ciri3, matrix, logs):
+            path.mkdir(parents=True, exist_ok=True)
+        (align / "alignment_manifest.tsv").write_text(
+            "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\n"
+            f"cell1\t\t{sam}\tgrp\tsingle-end\tbwa-mem\t{ref}\tk1\t/tmp/source.tsv\t0\tbwa_mem\tunsorted\n",
+            encoding="utf-8",
+        )
+        (align / "alignment_prepare_summary.json").write_text(
+            json.dumps(
+                {"status_counts": {"aligned": 1}, "completed_cells": 1, "failed_cells": 0, "cells": [{"cell_id": "cell1", "status": "aligned"}]},
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "cell1.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\ncirc1\tchr21\t1\t4\t+\t1\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "detector_run_summary.json").write_text(
+            json.dumps(
+                {"status_counts": {"success": 1}, "completed_cells": 1, "failed_cells": 0, "elapsed_seconds": 0.1, "cells": [{"cell_id": "cell1", "status": "success", "raw_row_count": 1, "normalized_row_count": 1}]},
+                indent=2,
+            )
+            + "\n",
+            encoding="utf-8",
+        )
+        X = sp.csr_matrix([[1]], dtype=int)
+        mmwrite(matrix / "circ_counts.mtx", X)
+        (matrix / "circ_index.txt").write_text("circ1\n", encoding="utf-8")
+        (matrix / "cell_index.txt").write_text("cell1\n", encoding="utf-8")
+        (matrix / "circ_feature_table.tsv").write_text(
+            "circ_id\tchrom\tstart\tend\tstrand\thost_gene\ncirc1\tchr21\t1\t4\t+\tGENE1\n",
+            encoding="utf-8",
+        )
+        (logs / "run_ciri3_summary.json").write_text(json.dumps({"workflow": "run-ciri3", "dry_run": False}) + "\n", encoding="utf-8")
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
+
+    outdir = tmp_path / "run"
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(outdir),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--gene-expression-method",
+            "simple-overlap",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert (outdir / "rna" / "gene_counts.tsv").exists()
+    assert (outdir / "rna" / "gene_feature_table.tsv").exists()
+    assert (outdir / "rna" / "rna_import_summary.json").exists()
+    summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))
+    assert summary["rna_import"]["method"] == "simple-overlap"
+    assert summary["rna_import"]["assigned_templates"] == 1
+
+
+def test_full_length_workflow_cleanup_execution_deletes_alignment_intermediates(tmp_path: Path, monkeypatch) -> None:
+    pytest.importorskip("anndata")
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_single_end_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+
+    def fake_run_ciri3_workflow(params, *, progress):
+        align = params.outdir / "align"
+        ciri3 = params.outdir / "ciri3"
+        matrix = params.outdir / "matrix"
+        logs = params.outdir / "logs"
+        for path in (align, ciri3, matrix, logs):
+            path.mkdir(parents=True, exist_ok=True)
+        doomed = align / "planned.sam"
+        doomed.write_text("sam", encoding="utf-8")
+        (align / "alignment_manifest.tsv").write_text(
+            "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\n"
+            f"cell1\t\t{doomed}\tgrp\tsingle-end\tbwa-mem\t{ref}\tk1\t/tmp/source.tsv\t0\tbwa_mem\tunsorted\n",
+            encoding="utf-8",
+        )
+        (align / "alignment_prepare_summary.json").write_text(
+            json.dumps({"status_counts": {"aligned": 1}, "completed_cells": 1, "failed_cells": 0, "cells": [{"cell_id": "cell1", "status": "aligned"}]}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "cell1.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\ncirc1\tchr21\t1\t4\t+\t1\n",
+            encoding="utf-8",
+        )
+        (ciri3 / "detector_run_summary.json").write_text(
+            json.dumps({"status_counts": {"success": 1}, "completed_cells": 1, "failed_cells": 0, "elapsed_seconds": 0.1, "cells": [{"cell_id": "cell1", "status": "success", "raw_row_count": 1, "normalized_row_count": 1}]}, indent=2) + "\n",
+            encoding="utf-8",
+        )
+        X = sp.csr_matrix([[1]], dtype=int)
+        mmwrite(matrix / "circ_counts.mtx", X)
+        (matrix / "circ_index.txt").write_text("circ1\n", encoding="utf-8")
+        (matrix / "cell_index.txt").write_text("cell1\n", encoding="utf-8")
+        (matrix / "circ_feature_table.tsv").write_text(
+            "circ_id\tchrom\tstart\tend\tstrand\thost_gene\ncirc1\tchr21\t1\t4\t+\tGENE1\n",
+            encoding="utf-8",
+        )
+        (logs / "run_ciri3_summary.json").write_text(json.dumps({"workflow": "run-ciri3", "dry_run": False}) + "\n", encoding="utf-8")
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
+
+    outdir = tmp_path / "run"
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(outdir),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--cleanup-intermediates",
+            "alignments",
+        ],
+    )
+    assert result.exit_code == 0, result.stdout
+    assert not (outdir / "align" / "planned.sam").exists()
+    summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))
+    assert summary["cleanup_performed"] is True
+    assert summary["cleanup_scope"] == "alignments"
+    assert summary["cleanup_reclaimed_bytes"] >= 3
+
+
+def test_full_length_workflow_failed_run_does_not_delete_intermediates(tmp_path: Path, monkeypatch) -> None:
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_single_end_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    doomed = tmp_path / "run" / "align" / "failed.sam"
+    doomed.parent.mkdir(parents=True, exist_ok=True)
+    doomed.write_text("sam", encoding="utf-8")
+
+    def fake_run_ciri3_workflow(params, *, progress):
+        raise RuntimeError("synthetic failure")
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
+
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(tmp_path / "run"),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--cleanup-intermediates",
+            "alignments",
+        ],
+    )
+    assert result.exit_code != 0
+    assert doomed.exists()
 
 
 def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkeypatch) -> None:

@@ -84,15 +84,17 @@ Future full-length workflow flags:
 
 - `--export-h5ad`
 - `--export-mudata`
-- `--gene-expression-method featurecounts|velocyto|none`
+- `--gene-expression-method none|simple-overlap|featurecounts|velocyto`
 - `--velocity-layers none|velocyto`
-- `--cleanup-intermediates`
+- `--cleanup-intermediates alignments|demux|all`
 
 Current scaffold status:
 
-- these flags are planned for `full-length-circrna`
-- current implementation only validates and documents them
-- non-default gene-expression or velocity modes are not implemented yet
+- `simple-overlap` is implemented for lightweight internal gene-expression sanity counting from workflow alignments plus GTF gene intervals
+- `--gene-counts` external RNA snapshot import is implemented
+- `featurecounts` and `velocyto` remain planned, not production
+- cleanup execution is implemented as explicit opt-in post-success retention control
+- velocity-compatible layers are still planned only
 
 Formal contract reference:
 
@@ -112,6 +114,10 @@ FASTQ/BAM
 
 Proposed RNA-side quantification sources:
 
+- `simple-overlap`
+  - lightweight internal sanity profile
+  - useful for chr21-scale testing and contract validation
+  - not a replacement for production-grade RNA quantification
 - `featurecounts`
   - practical total-gene matrix bridge
   - easier initial implementation
@@ -126,8 +132,10 @@ Implemented safely now:
 
 - design and schema documentation
 - future flag validation for `full-length-circrna`
-- explicit `NotImplementedError` for non-default gene-expression or velocity modes
-- dry-run-only cleanup planning scaffold
+- external `gene_counts.tsv` RNA snapshot import
+- internal `simple-overlap` RNA sanity counting
+- explicit `NotImplementedError` for `featurecounts` / `velocyto` / velocity layers
+- scoped cleanup planning and post-success cleanup execution
 
 ## What remains future work
 

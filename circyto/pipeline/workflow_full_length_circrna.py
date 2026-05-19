@@ -9,6 +9,8 @@ import time
 from circyto.pipeline.align_manifest import read_source_manifest
 from circyto.pipeline.gene_expression_velocity import (
     build_cleanup_plan,
+    count_gene_expression_from_alignments,
+    execute_cleanup_plan,
     import_gene_counts_table,
     validate_full_length_future_options,
 )
@@ -56,7 +58,7 @@ class FullLengthCircRNAWorkflowParams:
     export_mudata: bool = False
     gene_expression_method: str = "none"
     velocity_layers: str = "none"
-    cleanup_intermediates: bool = False
+    cleanup_intermediates: Optional[str] = None
     dry_run: bool = False
     fail_fast: bool = False
     command_template: Optional[str] = None
@@ -352,7 +354,16 @@ def _build_execution_summary(
         "workflow_timing": {
             "total_elapsed_seconds": round(elapsed_seconds, 3),
         },
-    }
+}
+
+
+def _refresh_disk_usage_fields(summary: dict[str, Any], paths: dict[str, Path]) -> None:
+    summary["workdir_size_bytes"] = directory_size_bytes(paths["root"])
+    summary["align_size_bytes"] = directory_size_bytes(paths["align"])
+    summary["ciri3_size_bytes"] = directory_size_bytes(paths["ciri3"])
+    summary["matrix_size_bytes"] = directory_size_bytes(paths["matrix"])
+    summary["anndata_size_bytes"] = directory_size_bytes(paths["anndata"])
+    summary["largest_files"] = largest_files_under(paths["root"])
 
 
 def run_full_length_circrna_workflow(
@@ -455,6 +466,7 @@ def run_full_length_circrna_workflow(
         if params.dry_run:
             rna_import = {
                 "planned": True,
+                "method": "external-tsv-import",
                 "input_gene_counts": str(params.gene_counts.resolve()),
                 "output_gene_counts": str((paths["rna"] / "gene_counts.tsv").resolve()),
                 "output_gene_feature_table": str((paths["rna"] / "gene_feature_table.tsv").resolve()),
@@ -463,6 +475,25 @@ def run_full_length_circrna_workflow(
         else:
             rna_import = import_gene_counts_table(
                 path=params.gene_counts,
+                expected_cell_ids=[row.cell_id for row in source_rows],
+                outdir=paths["rna"],
+            )
+    elif params.gene_expression_method == "simple-overlap":
+        alignment_manifest_path = paths["align"] / "alignment_manifest.tsv"
+        if params.dry_run:
+            rna_import = {
+                "planned": True,
+                "method": "simple-overlap",
+                "input_alignment_manifest": str(alignment_manifest_path.resolve()),
+                "input_gtf": str(params.gtf.resolve()),
+                "output_gene_counts": str((paths["rna"] / "gene_counts.tsv").resolve()),
+                "output_gene_feature_table": str((paths["rna"] / "gene_feature_table.tsv").resolve()),
+                "output_rna_import_summary": str((paths["rna"] / "rna_import_summary.json").resolve()),
+            }
+        else:
+            rna_import = count_gene_expression_from_alignments(
+                alignment_manifest_path=alignment_manifest_path,
+                gtf_path=params.gtf,
                 expected_cell_ids=[row.cell_id for row in source_rows],
                 outdir=paths["rna"],
             )
@@ -479,7 +510,11 @@ def run_full_length_circrna_workflow(
             rna_import=rna_import,
         )
         if params.cleanup_intermediates:
-            summary["cleanup"] = build_cleanup_plan(outdir=params.outdir)
+            summary["cleanup"] = build_cleanup_plan(
+                outdir=params.outdir,
+                scope=params.cleanup_intermediates,
+                workflow_succeeded=True,
+            )
     else:
         summary = _build_execution_summary(
             params=params,
@@ -493,6 +528,23 @@ def run_full_length_circrna_workflow(
             warnings=warnings,
             rna_import=rna_import,
         )
+        if params.cleanup_intermediates:
+            cleanup_result = execute_cleanup_plan(
+                outdir=params.outdir,
+                scope=params.cleanup_intermediates,
+                workflow_succeeded=True,
+            )
+            summary["cleanup"] = cleanup_result
+            summary["cleanup_performed"] = bool(cleanup_result.get("cleanup_performed", False))
+            summary["cleanup_deleted_paths"] = cleanup_result.get("cleanup_deleted_paths", [])
+            summary["cleanup_reclaimed_bytes"] = int(cleanup_result.get("cleanup_reclaimed_bytes", 0) or 0)
+            summary["cleanup_scope"] = cleanup_result.get("cleanup_scope")
+            _refresh_disk_usage_fields(summary, paths)
+        else:
+            summary["cleanup_performed"] = False
+            summary["cleanup_deleted_paths"] = []
+            summary["cleanup_reclaimed_bytes"] = 0
+            summary["cleanup_scope"] = None
 
     write_json(paths["workflow_summary"], summary)
     _emit(progress, f"workflow summary: {paths['workflow_summary']}")
