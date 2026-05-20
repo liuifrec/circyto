@@ -43,6 +43,7 @@ from circyto.pipeline.gene_expression_velocity import (
     SUPPORTED_CLEANUP_SCOPES,
     add_posthoc_rna_profile,
     cleanup_completed_workflow,
+    export_completed_workflow_mudata,
     refresh_rna_qc_from_existing_outputs,
     summarize_rna_circ_integration,
 )
@@ -385,6 +386,26 @@ def summarize_rna_circ_command(
             ]
         )
     )
+
+
+@app.command("export-mudata")
+def export_mudata_completed_workflow_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory with RNA and circ outputs."),
+    output: Optional[Path] = typer.Option(None, "--output", help="Output h5mu path. Defaults to WORKDIR/mudata/full_length.h5mu."),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite an existing h5mu output path."),
+) -> None:
+    """
+    Export a completed RNA+circ workflow directory as a MuData multimodal bundle.
+    """
+    try:
+        summary = export_completed_workflow_mudata(
+            workdir=workdir,
+            out_path=output,
+            overwrite=overwrite,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command()

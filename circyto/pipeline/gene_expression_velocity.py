@@ -14,6 +14,7 @@ from typing import Any, Iterator
 import numpy as np
 import pandas as pd
 
+from circyto import __version__
 from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
@@ -21,11 +22,26 @@ from circyto.pipeline.workflow_reporting import (
     load_circ_matrix,
     load_json,
     read_index_lines,
+    sanitize_frame_for_anndata,
     summarize_read_layouts,
     utc_now_iso,
     write_json,
 )
 from circyto.pipeline.workflow_integrity import check_workflow_integrity
+
+try:
+    import anndata as ad  # type: ignore
+
+    HAS_ANNDATA = True
+except Exception:
+    HAS_ANNDATA = False
+
+try:
+    import mudata as mu  # type: ignore
+
+    HAS_MUDATA = True
+except Exception:
+    HAS_MUDATA = False
 
 
 VALID_GENE_EXPRESSION_METHODS = {"none", "simple-overlap", "featurecounts", "velocyto"}
@@ -967,6 +983,238 @@ def summarize_rna_circ_integration(
         completed_at=utc_now_iso(),
         elapsed_seconds=0.0,
     )
+
+
+def _build_rna_circ_joined_table(workdir: Path) -> tuple[pd.DataFrame, dict[str, Any]]:
+    rna_dir = workdir / "rna"
+    qc_dir = workdir / "qc"
+    gene_counts_path = rna_dir / "gene_counts.tsv"
+    if not gene_counts_path.exists():
+        raise FileNotFoundError(f"Missing RNA gene-count table: {gene_counts_path}")
+    counts_df = pd.read_csv(gene_counts_path, sep="\t", keep_default_na=False)
+    required_columns = {"gene_id", "gene_name"}
+    missing = sorted(required_columns - set(counts_df.columns))
+    if missing:
+        raise ValueError(f"{gene_counts_path} is missing required columns: {', '.join(missing)}")
+
+    rna_qc_path = qc_dir / "rna_qc.tsv"
+    feature_path = rna_dir / "gene_feature_table.tsv"
+    if rna_qc_path.exists():
+        rna_qc_df = pd.read_csv(rna_qc_path, sep="\t", keep_default_na=False)
+    else:
+        if not feature_path.exists():
+            raise FileNotFoundError(
+                f"Missing RNA gene feature table for RNA QC fallback: {feature_path}"
+            )
+        feature_df = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
+        rna_qc_df, _, _ = _build_rna_qc_tables(
+            counts_df=counts_df,
+            feature_df=feature_df,
+            work_root=workdir,
+        )
+
+    if "cell_id" not in rna_qc_df.columns:
+        raise ValueError(f"{rna_qc_path if rna_qc_path.exists() else 'derived RNA QC'} must contain a cell_id column.")
+
+    rna_cells = [str(cell_id) for cell_id in rna_qc_df["cell_id"].astype(str).tolist()]
+    validate_feature_id_uniqueness(rna_cells, label="cell")
+
+    circ_metrics = _circ_metrics_by_cell(workdir)
+    circ_counts = dict(circ_metrics.get("circRNA_count", {}))
+    circ_support = dict(circ_metrics.get("circRNA_total_support", {}))
+    circ_cells = _matrix_cell_ids(workdir)
+
+    shared_cells = sorted(set(rna_cells) & set(circ_cells))
+    rna_only_cells = sorted(set(rna_cells) - set(circ_cells))
+    circ_only_cells = sorted(set(circ_cells) - set(rna_cells))
+    all_cells = list(rna_cells) + [cell_id for cell_id in circ_cells if cell_id not in set(rna_cells)]
+
+    rna_qc_indexed = rna_qc_df.set_index("cell_id", drop=False)
+    rows: list[dict[str, Any]] = []
+    for cell_id in all_cells:
+        if cell_id in rna_qc_indexed.index:
+            row = rna_qc_indexed.loc[cell_id]
+            if isinstance(row, pd.DataFrame):
+                row = row.iloc[0]
+            total_counts = int(float(row.get("total_counts", 0) or 0))
+            detected_genes = int(float(row.get("detected_genes", 0) or 0))
+            mitochondrial_fraction = float(row.get("mitochondrial_fraction", 0.0) or 0.0)
+            ribosomal_fraction = float(row.get("ribosomal_fraction", 0.0) or 0.0)
+        else:
+            total_counts = 0
+            detected_genes = 0
+            mitochondrial_fraction = 0.0
+            ribosomal_fraction = 0.0
+        circ_count = int(circ_counts.get(cell_id, 0))
+        circ_total_support = int(circ_support.get(cell_id, 0))
+        if cell_id in shared_cells:
+            membership = "shared"
+        elif cell_id in rna_only_cells:
+            membership = "rna_only"
+        else:
+            membership = "circ_only"
+        rows.append(
+            {
+                "cell_id": cell_id,
+                "membership": membership,
+                "total_rna_counts": total_counts,
+                "detected_genes": detected_genes,
+                "mitochondrial_fraction": mitochondrial_fraction,
+                "ribosomal_fraction": ribosomal_fraction,
+                "circRNA_count": circ_count,
+                "circRNA_total_support": circ_total_support,
+            }
+        )
+
+    joined_df = pd.DataFrame(rows)
+    relationship = {
+        "shared_cells_considered": int(len(shared_cells)),
+        "pearson_correlation_total_rna_vs_circ_count": None,
+    }
+    if len(shared_cells) >= 2:
+        shared_df = joined_df[joined_df["membership"] == "shared"]
+        if shared_df["total_rna_counts"].nunique() > 1 and shared_df["circRNA_count"].nunique() > 1:
+            relationship["pearson_correlation_total_rna_vs_circ_count"] = float(
+                shared_df["total_rna_counts"].corr(shared_df["circRNA_count"])
+            )
+
+    summary = {
+        "workdir": str(workdir.resolve()),
+        "n_rna_cells": int(len(rna_cells)),
+        "n_circ_cells": int(len(circ_cells)),
+        "n_shared_cells": int(len(shared_cells)),
+        "n_rna_only_cells": int(len(rna_only_cells)),
+        "n_circ_only_cells": int(len(circ_only_cells)),
+        "rna_only_cells": rna_only_cells,
+        "circ_only_cells": circ_only_cells,
+        "rna_total_count_vs_circRNA_count_relationship": relationship,
+        "joined_rows": int(joined_df.shape[0]),
+        "joined_columns": list(joined_df.columns),
+        "joined_preview": joined_df.head(10).to_dict(orient="records"),
+    }
+    return joined_df, summary
+
+
+def export_completed_workflow_mudata(
+    *,
+    workdir: Path,
+    out_path: Path | None = None,
+    overwrite: bool = False,
+) -> dict[str, Any]:
+    if out_path is None:
+        out_path = workdir / "mudata" / "full_length.h5mu"
+    if out_path.exists() and not overwrite:
+        raise ValueError(f"Output already exists: {out_path}. Use --overwrite to replace it.")
+
+    rna_dir = workdir / "rna"
+    matrix_dir = workdir / "matrix"
+    gene_counts_path = rna_dir / "gene_counts.tsv"
+    gene_feature_path = rna_dir / "gene_feature_table.tsv"
+    circ_matrix_path = matrix_dir / "circ_counts.mtx"
+    circ_index_path = matrix_dir / "circ_index.txt"
+    cell_index_path = matrix_dir / "cell_index.txt"
+    circ_feature_path = matrix_dir / "circ_feature_table.tsv"
+    if not gene_counts_path.exists():
+        raise FileNotFoundError(f"Missing RNA gene-count table: {gene_counts_path}")
+    if not gene_feature_path.exists():
+        raise FileNotFoundError(f"Missing RNA gene feature table: {gene_feature_path}")
+    if not circ_matrix_path.exists():
+        raise FileNotFoundError(f"Missing circ matrix: {circ_matrix_path}")
+    if not circ_index_path.exists():
+        raise FileNotFoundError(f"Missing circ index: {circ_index_path}")
+    if not cell_index_path.exists():
+        raise FileNotFoundError(f"Missing circ cell index: {cell_index_path}")
+    if not HAS_ANNDATA:
+        raise RuntimeError("anndata is required for MuData export")
+    if not HAS_MUDATA:
+        raise RuntimeError("mudata is not installed; install circyto[mudata] or pip install mudata")
+
+    joined_df, rna_circ_summary = _build_rna_circ_joined_table(workdir)
+    joined_df = joined_df.set_index("cell_id", drop=True)
+
+    rna_counts_df = pd.read_csv(gene_counts_path, sep="\t", keep_default_na=False)
+    rna_feature_df = pd.read_csv(gene_feature_path, sep="\t", keep_default_na=False)
+    validate_feature_id_uniqueness(rna_counts_df["gene_id"].astype(str).tolist(), label="gene")
+    rna_cell_ids = [column for column in rna_counts_df.columns if column not in {"gene_id", "gene_name"}]
+    rna_count_matrix = sp.csr_matrix(rna_counts_df[rna_cell_ids].apply(pd.to_numeric, errors="raise").to_numpy().T)
+    rna_var = rna_feature_df.copy()
+    if "gene_biotype" not in rna_var.columns:
+        rna_var["gene_biotype"] = ""
+    if "gene_id" in rna_var.columns:
+        rna_var = rna_var.set_index("gene_id", drop=False)
+    else:
+        raise ValueError(f"{gene_feature_path} must contain a gene_id column.")
+    if list(rna_var["gene_id"].astype(str)) != list(rna_counts_df["gene_id"].astype(str)):
+        rna_var = rna_var.reindex(rna_counts_df["gene_id"].astype(str).tolist())
+    union_cell_ids = list(joined_df.index.astype(str))
+    rna_pos = {cell_id: idx for idx, cell_id in enumerate(rna_cell_ids)}
+    zero_rna_row = sp.csr_matrix((1, rna_count_matrix.shape[1]), dtype=rna_count_matrix.dtype)
+    rna_rows = [rna_count_matrix[rna_pos[cell_id]] if cell_id in rna_pos else zero_rna_row for cell_id in union_cell_ids]
+    rna_aligned = sp.vstack(rna_rows, format="csr")
+
+    circ_X_by_cell, circ_ids, circ_cell_ids = load_circ_matrix(
+        matrix_path=circ_matrix_path,
+        circ_index_path=circ_index_path,
+        cell_index_path=cell_index_path,
+    )
+    circ_pos = {cell_id: idx for idx, cell_id in enumerate(circ_cell_ids)}
+    zero_circ_row = sp.csr_matrix((1, circ_X_by_cell.shape[1]), dtype=circ_X_by_cell.dtype)
+    circ_rows = [circ_X_by_cell[circ_pos[cell_id]] if cell_id in circ_pos else zero_circ_row for cell_id in union_cell_ids]
+    circ_aligned = sp.vstack(circ_rows, format="csr")
+
+    if circ_feature_path.exists():
+        circ_var = pd.read_csv(circ_feature_path, sep="\t", keep_default_na=False)
+        circ_id_col = "circ_id" if "circ_id" in circ_var.columns else circ_var.columns[0]
+        circ_var = circ_var.set_index(circ_id_col, drop=False).reindex(circ_ids)
+    else:
+        circ_var = pd.DataFrame({"circ_id": circ_ids}, index=circ_ids)
+
+    shared_obs = joined_df.copy()
+    shared_obs.index = union_cell_ids
+    shared_obs.index.name = None
+    shared_obs_clean = sanitize_frame_for_anndata(shared_obs.reset_index(names="cell_id").set_index("cell_id"))
+
+    rna_adata = ad.AnnData(
+        X=rna_aligned.tocsr().astype(np.int32),
+        obs=shared_obs_clean.copy(),
+        var=sanitize_frame_for_anndata(rna_var),
+    )
+    circ_adata = ad.AnnData(
+        X=circ_aligned.tocsr().astype(np.int32),
+        obs=shared_obs_clean.copy(),
+        var=sanitize_frame_for_anndata(circ_var),
+    )
+    mdata = mu.MuData({"rna": rna_adata, "circ": circ_adata})
+    mdata.obs = shared_obs_clean.copy()
+    provenance = {
+        "command_name": "circyto export-mudata",
+        "circyto_version": __version__,
+        "source_workdir": str(workdir.resolve()),
+    }
+    for name, path in (
+        ("workflow_summary", workdir / "workflow_summary.json"),
+        ("rna_import_summary", rna_dir / "rna_import_summary.json"),
+        ("rna_circ_summary", workdir / "qc" / "rna_circ_summary.json"),
+    ):
+        if path.exists():
+            provenance[name] = load_json(path)
+    mdata.uns["circyto"] = provenance
+    out_path.parent.mkdir(parents=True, exist_ok=True)
+    mdata.write_h5mu(str(out_path))
+    return {
+        "path": str(out_path.resolve()),
+        "n_obs": int(mdata.n_obs),
+        "n_rna_cells": int(rna_aligned.shape[0]),
+        "n_rna_features": int(rna_aligned.shape[1]),
+        "n_circ_cells": int(circ_aligned.shape[0]),
+        "n_circ_features": int(circ_aligned.shape[1]),
+        "n_shared_cells": int(rna_circ_summary["n_shared_cells"]),
+        "n_rna_only_cells": int(rna_circ_summary["n_rna_only_cells"]),
+        "n_circ_only_cells": int(rna_circ_summary["n_circ_only_cells"]),
+        "rna_only_cells": list(rna_circ_summary["rna_only_cells"]),
+        "circ_only_cells": list(rna_circ_summary["circ_only_cells"]),
+        "rna_only_cell_handling": "Included in shared mdata.obs and RNA modality; circ modality is zero-filled for missing cells.",
+    }
 
 
 def find_completed_workflow_alignment_manifest(workdir: Path) -> Path:

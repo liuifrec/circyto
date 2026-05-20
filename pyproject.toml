@@ -23,6 +23,7 @@ dependencies = [
 
 [project.optional-dependencies]
 loom = ["loompy>=3.0"]
+mudata = ["mudata>=0.3"]
 
 [project.scripts]
 circyto = "circyto.cli.circyto:app"

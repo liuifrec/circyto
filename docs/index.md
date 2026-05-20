@@ -13,6 +13,7 @@ Welcome to the `circyto` documentation.
 - [RNA and velocity contract](rna_velocity_contract.md)
 - [Post-hoc RNA profile](posthoc_rna_profile.md)
 - [RNA circ integration](rna_circ_integration.md)
+- [MuData export](mudata_export.md)
 - [Intermediate cleanup policy](intermediate_cleanup_policy.md)
 - [Workflow integrity and provenance](workflow_integrity_and_provenance.md)
 - [RamDA / Shin-RamDA protocol notes](protocols_ramda_shin_ramda.md)

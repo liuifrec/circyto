@@ -66,6 +66,17 @@ With `--write-summary`, the command writes:
 
 Without `--write-summary`, the command is read-only.
 
+## Downstream MuData Export
+
+After RNA and circ summaries are in place, export a multimodal `.h5mu` bundle with:
+
+```bash
+circyto export-mudata \
+  --workdir /path/to/completed_workflow
+```
+
+This preserves RNA-only cells in the shared observation table and zero-fills the circ modality for cells without circ matrix rows.
+
 ## RNA-only Cells
 
 RNA-only cells are preserved in the joined summary. For cells such as `DIYHEK_192` that appear in RNA profiling outputs but not in the circRNA matrix:
