@@ -22,6 +22,7 @@ from circyto.pipeline.workflow_reporting import (
     cleanup_summary_block,
     load_circ_matrix,
     load_json,
+    numeric_summary,
     read_index_lines,
     sanitize_frame_for_anndata,
     summarize_read_layouts,
@@ -665,6 +666,86 @@ def sanitize_for_h5ad_uns(obj: Any) -> Any:
             return ["" if item is None else item for item in obj]
         return json.dumps(obj, sort_keys=True, default=str)
     return json.dumps(obj, sort_keys=True, default=str)
+
+
+def _require_mudata_for_readers() -> None:
+    if not HAS_ANNDATA:
+        raise RuntimeError("anndata is required for MuData inspection")
+    if not HAS_MUDATA:
+        raise RuntimeError("mudata is not installed; install circyto[mudata] or pip install mudata")
+
+
+def inspect_mudata_file(input_path: Path) -> dict[str, Any]:
+    _require_mudata_for_readers()
+    if not input_path.exists():
+        raise FileNotFoundError(f"MuData input not found: {input_path}")
+
+    mdata = mu.read_h5mu(str(input_path))
+    modalities = list(mdata.mod.keys())
+    rna = mdata.mod["rna"] if "rna" in mdata.mod else None
+    circ = mdata.mod["circ"] if "circ" in mdata.mod else None
+    membership_counts: dict[str, int] = {}
+    if "membership" in mdata.obs.columns:
+        membership_counts = {
+            str(key): int(value)
+            for key, value in mdata.obs["membership"].astype(str).value_counts().to_dict().items()
+        }
+
+    circyto_uns = mdata.uns.get("circyto", {})
+    if isinstance(circyto_uns, dict):
+        uns_keys = sorted(str(key) for key in circyto_uns.keys())
+    else:
+        uns_keys = []
+
+    return {
+        "input": str(input_path.resolve()),
+        "modalities": modalities,
+        "n_obs": int(mdata.n_obs),
+        "rna_shape": list(rna.shape) if rna is not None else None,
+        "circ_shape": list(circ.shape) if circ is not None else None,
+        "obs_columns": [str(column) for column in mdata.obs.columns.tolist()],
+        "rna_var_columns": [str(column) for column in rna.var.columns.tolist()] if rna is not None else [],
+        "circ_var_columns": [str(column) for column in circ.var.columns.tolist()] if circ is not None else [],
+        "circyto_uns_keys": uns_keys,
+        "membership_counts": membership_counts,
+        "n_shared_cells": int(membership_counts.get("shared", 0)),
+        "n_rna_only_cells": int(membership_counts.get("rna_only", 0)),
+        "n_circ_only_cells": int(membership_counts.get("circ_only", 0)),
+    }
+
+
+def summarize_mudata_qc(input_path: Path) -> dict[str, Any]:
+    _require_mudata_for_readers()
+    if not input_path.exists():
+        raise FileNotFoundError(f"MuData input not found: {input_path}")
+    mdata = mu.read_h5mu(str(input_path))
+    obs = mdata.obs.copy()
+
+    summary: dict[str, Any] = {
+        "input": str(input_path.resolve()),
+        "n_obs": int(mdata.n_obs),
+    }
+    for column in (
+        "total_rna_counts",
+        "detected_genes",
+        "mitochondrial_fraction",
+        "ribosomal_fraction",
+        "circRNA_count",
+        "circRNA_total_support",
+    ):
+        if column in obs.columns:
+            values = pd.to_numeric(obs[column], errors="coerce").dropna().tolist()
+            summary[column] = numeric_summary(values)
+        else:
+            summary[column] = None
+
+    correlation = None
+    if "total_rna_counts" in obs.columns and "circRNA_count" in obs.columns:
+        pair_df = obs[["total_rna_counts", "circRNA_count"]].apply(pd.to_numeric, errors="coerce").dropna()
+        if len(pair_df) >= 2 and pair_df["total_rna_counts"].nunique() > 1 and pair_df["circRNA_count"].nunique() > 1:
+            correlation = float(pair_df["total_rna_counts"].corr(pair_df["circRNA_count"]))
+    summary["pearson_total_rna_vs_circRNA_count"] = correlation
+    return summary
 
 
 def _orient_circ_matrix_cells_by_circ(

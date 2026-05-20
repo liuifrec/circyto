@@ -44,7 +44,9 @@ from circyto.pipeline.gene_expression_velocity import (
     add_posthoc_rna_profile,
     cleanup_completed_workflow,
     export_completed_workflow_mudata,
+    inspect_mudata_file,
     refresh_rna_qc_from_existing_outputs,
+    summarize_mudata_qc,
     summarize_rna_circ_integration,
 )
 from circyto.pipeline.workflow_integrity import check_workflow_integrity
@@ -406,6 +408,71 @@ def export_mudata_completed_workflow_command(
     except (FileNotFoundError, ValueError, RuntimeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("inspect-mudata")
+def inspect_mudata_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="MuData .h5mu file to inspect."),
+    json_output: bool = typer.Option(False, "--json", help="Emit the full inspection payload as JSON."),
+) -> None:
+    """
+    Read-only structural inspection of a circyto MuData output.
+    """
+    try:
+        summary = inspect_mudata_file(input)
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    if json_output:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+        return
+    typer.echo(
+        "\n".join(
+            [
+                f"modalities={','.join(summary['modalities']) if summary['modalities'] else '-'} n_obs={summary['n_obs']}",
+                f"rna_shape={summary['rna_shape']} circ_shape={summary['circ_shape']}",
+                f"obs_columns={', '.join(summary['obs_columns']) if summary['obs_columns'] else '-'}",
+                f"rna_var_columns={', '.join(summary['rna_var_columns']) if summary['rna_var_columns'] else '-'}",
+                f"circ_var_columns={', '.join(summary['circ_var_columns']) if summary['circ_var_columns'] else '-'}",
+                f"circyto_uns_keys={', '.join(summary['circyto_uns_keys']) if summary['circyto_uns_keys'] else '-'}",
+                f"membership: shared={summary['n_shared_cells']} rna_only={summary['n_rna_only_cells']} circ_only={summary['n_circ_only_cells']}",
+            ]
+        )
+    )
+
+
+@app.command("summarize-mudata-qc")
+def summarize_mudata_qc_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="MuData .h5mu file to summarize."),
+    json_output: bool = typer.Option(False, "--json", help="Emit the full QC summary payload as JSON."),
+) -> None:
+    """
+    Read-only QC summary over a circyto MuData output.
+    """
+    try:
+        summary = summarize_mudata_qc(input)
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    if json_output:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+        return
+    lines = [f"n_obs={summary['n_obs']}"]
+    for column in (
+        "total_rna_counts",
+        "detected_genes",
+        "mitochondrial_fraction",
+        "ribosomal_fraction",
+        "circRNA_count",
+        "circRNA_total_support",
+    ):
+        value = summary.get(column)
+        if value is None:
+            lines.append(f"{column}=NA")
+        else:
+            lines.append(
+                f"{column}: min={value['min']} median={value['median']} mean={value['mean']} max={value['max']}"
+            )
+    lines.append(f"pearson_total_rna_vs_circRNA_count={summary['pearson_total_rna_vs_circRNA_count']}")
+    typer.echo("\n".join(lines))
 
 
 @app.command()

@@ -88,3 +88,12 @@ For the circ modality, these cells are retained with zero-filled circ rows. This
 ```text
 mudata is not installed; install circyto[mudata] or pip install mudata
 ```
+
+## Read-only Downstream Inspection
+
+After export, inspect the object structure and QC summaries with:
+
+```bash
+circyto inspect-mudata --input /path/to/full_length.h5mu
+circyto summarize-mudata-qc --input /path/to/full_length.h5mu
+```
