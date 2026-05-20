@@ -95,3 +95,35 @@ circyto add-rna-profile \
   --method simple-overlap \
   --dry-run
 ```
+
+## Inspecting RNA outputs
+
+After profiling completes, inspect the RNA snapshot with:
+
+```bash
+python scripts/check_rna_profile_outputs.py \
+  --workdir /path/to/completed_workflow
+```
+
+JSON mode:
+
+```bash
+python scripts/check_rna_profile_outputs.py \
+  --workdir /path/to/completed_workflow \
+  --json
+```
+
+The script reports:
+
+- whether `rna/gene_counts.tsv` exists
+- whether `rna/gene_feature_table.tsv` exists
+- whether `rna/rna_import_summary.json` exists
+- `n_genes`
+- `n_cells`
+- `total_counts_sum`
+- `assigned_templates`
+- `ambiguous_templates_excluded`
+- `unassigned_templates`
+- top expressed genes by total count
+- lowest / highest total RNA count cells
+- whether RNA cell IDs match `matrix/cell_index.txt` when present
