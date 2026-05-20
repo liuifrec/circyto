@@ -96,6 +96,13 @@ def test_add_rna_profile_real_run_writes_rna_outputs_and_updates_summary(tmp_pat
     sam = workdir / "align" / "cache" / "alignment.sam"
     _write_sam(sam)
     _write_alignment_manifest(workdir / "align" / "alignment_manifest.tsv", sam, cell_id="cellA")
+    (workdir / "matrix").mkdir(parents=True, exist_ok=True)
+    (workdir / "matrix" / "circ_counts.mtx").write_text(
+        "%%MatrixMarket matrix coordinate integer general\n%\n2 1 1\n1 1 1\n",
+        encoding="utf-8",
+    )
+    (workdir / "matrix" / "circ_index.txt").write_text("circ1\ncirc2\n", encoding="utf-8")
+    (workdir / "matrix" / "cell_index.txt").write_text("cellA\n", encoding="utf-8")
     (workdir / "workflow_summary.json").write_text(
         json.dumps({"workflow": "full-length-circrna", "existing": {"keep": 1}}, indent=2) + "\n",
         encoding="utf-8",
@@ -111,17 +118,23 @@ def test_add_rna_profile_real_run_writes_rna_outputs_and_updates_summary(tmp_pat
     assert (workdir / "rna" / "gene_counts.tsv").exists()
     assert (workdir / "rna" / "gene_feature_table.tsv").exists()
     assert (workdir / "rna" / "rna_import_summary.json").exists()
+    assert (workdir / "qc" / "rna_qc.tsv").exists()
+    assert (workdir / "qc" / "rna_gene_qc.tsv").exists()
 
     payload = json.loads(result.stdout)
     assert payload["dry_run"] is False
     assert payload["rna_import"]["method"] == "simple-overlap"
     assert payload["rna_import"]["assigned_templates"] == 2
+    assert payload["rna_import"]["genes_detected_ge_1_cell"] == 2
+    assert payload["rna_import"]["median_genes_per_cell"] == 2.0
 
     summary = json.loads((workdir / "workflow_summary.json").read_text(encoding="utf-8"))
     assert summary["command_name"] == "circyto add-rna-profile"
     assert summary["existing"] == {"keep": 1}
     assert summary["rna_import"]["n_cells"] == 1
     assert summary["rna_import"]["n_genes"] == 2
+    qc_text = (workdir / "qc" / "rna_qc.tsv").read_text(encoding="utf-8")
+    assert "circRNA_count" in qc_text
 
 
 def test_add_rna_profile_missing_manifest_gives_clear_error(tmp_path: Path) -> None:

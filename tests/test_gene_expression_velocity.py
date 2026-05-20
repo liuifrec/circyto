@@ -80,17 +80,35 @@ def test_import_gene_counts_table_writes_normalized_snapshot(tmp_path: Path) -> 
     path = tmp_path / "gene_counts.tsv"
     path.write_text(
         "gene_id\tgene_name\tcellA\tcellB\n"
-        "ENSG1\tGENE1\t1\t0\n"
-        "ENSG2\tGENE2\t0\t2\n",
+        "ENSG1\tMT-CO1\t1\t0\n"
+        "ENSG2\tRPLP0\t0\t2\n",
         encoding="utf-8",
     )
     outdir = tmp_path / "rna"
+    (tmp_path / "matrix").mkdir(parents=True, exist_ok=True)
+    (tmp_path / "matrix" / "circ_counts.mtx").write_text(
+        "%%MatrixMarket matrix coordinate integer general\n%\n2 2 2\n1 1 1\n2 2 3\n",
+        encoding="utf-8",
+    )
+    (tmp_path / "matrix" / "circ_index.txt").write_text("circ1\ncirc2\n", encoding="utf-8")
+    (tmp_path / "matrix" / "cell_index.txt").write_text("cellA\ncellB\n", encoding="utf-8")
     summary = import_gene_counts_table(path=path, expected_cell_ids=["cellA", "cellB"], outdir=outdir)
     assert (outdir / "gene_counts.tsv").exists()
     assert (outdir / "gene_feature_table.tsv").exists()
     assert (outdir / "rna_import_summary.json").exists()
+    assert (tmp_path / "qc" / "rna_qc.tsv").exists()
+    assert (tmp_path / "qc" / "rna_gene_qc.tsv").exists()
     assert summary["n_genes"] == 2
     assert summary["n_cells"] == 2
+    assert summary["genes_detected_ge_1_cell"] == 2
+    assert summary["genes_detected_ge_3_cells"] == 0
+    assert summary["median_genes_per_cell"] == 1.0
+    assert summary["filtering_report"]["automatic_filtering_applied"] is False
+    qc_df = pd.read_csv(tmp_path / "qc" / "rna_qc.tsv", sep="\t")
+    assert set(qc_df.columns) >= {"cell_id", "total_counts", "detected_genes", "mitochondrial_fraction", "ribosomal_fraction", "circRNA_count"}
+    assert int(qc_df.loc[qc_df["cell_id"] == "cellA", "circRNA_count"].iloc[0]) == 1
+    gene_qc_df = pd.read_csv(tmp_path / "qc" / "rna_gene_qc.tsv", sep="\t")
+    assert set(gene_qc_df.columns) >= {"gene_id", "gene_name", "n_cells_detected", "total_counts", "mean_counts_nonzero", "gene_biotype"}
 
 
 def test_import_gene_counts_table_fails_on_cell_id_mismatch(tmp_path: Path) -> None:
@@ -106,9 +124,9 @@ def test_import_gene_counts_table_fails_on_cell_id_mismatch(tmp_path: Path) -> N
 
 def _write_gtf(path: Path) -> None:
     path.write_text(
-        'chr21\ttest\tgene\t10\t30\t.\t+\t.\tgene_id "ENSG1"; gene_name "GENE1";\n'
-        'chr21\ttest\tgene\t40\t60\t.\t+\t.\tgene_id "ENSG2"; gene_name "GENE2";\n'
-        'chr21\ttest\tgene\t50\t70\t.\t+\t.\tgene_id "ENSG3"; gene_name "GENE3";\n',
+        'chr21\ttest\tgene\t10\t30\t.\t+\t.\tgene_id "ENSG1"; gene_name "MT-CO1"; gene_biotype "protein_coding";\n'
+        'chr21\ttest\tgene\t40\t60\t.\t+\t.\tgene_id "ENSG2"; gene_name "RPLP0"; gene_biotype "protein_coding";\n'
+        'chr21\ttest\tgene\t50\t70\t.\t+\t.\tgene_id "ENSG3"; gene_name "GENE3"; gene_biotype "lncRNA";\n',
         encoding="utf-8",
     )
 
@@ -142,12 +160,17 @@ def test_count_gene_expression_from_alignments_counts_unique_gene_overlaps(tmp_p
     )
 
     counts = (tmp_path / "rna" / "gene_counts.tsv").read_text(encoding="utf-8")
-    assert "ENSG1\tGENE1\t1" in counts
-    assert "ENSG2\tGENE2\t1" in counts
+    assert "ENSG1\tMT-CO1\t1" in counts
+    assert "ENSG2\tRPLP0\t1" in counts
     assert summary["assigned_templates"] == 2
     assert summary["ambiguous_templates_excluded"] == 0
     assert summary["templates_seen"] == 2
     assert summary["cells_processed"] == 1
+    assert (tmp_path / "qc" / "rna_qc.tsv").exists()
+    assert (tmp_path / "qc" / "rna_gene_qc.tsv").exists()
+    gene_qc_df = pd.read_csv(tmp_path / "qc" / "rna_gene_qc.tsv", sep="\t")
+    assert "gene_biotype" in gene_qc_df.columns
+    assert gene_qc_df.loc[gene_qc_df["gene_id"] == "ENSG1", "gene_biotype"].iloc[0] == "protein_coding"
 
 
 def test_count_gene_expression_from_alignments_excludes_ambiguous_overlaps(tmp_path: Path) -> None:
@@ -170,7 +193,7 @@ def test_count_gene_expression_from_alignments_excludes_ambiguous_overlaps(tmp_p
     )
 
     counts = (tmp_path / "rna" / "gene_counts.tsv").read_text(encoding="utf-8")
-    assert "ENSG2\tGENE2\t0" in counts
+    assert "ENSG2\tRPLP0\t0" in counts
     assert "ENSG3\tGENE3\t0" in counts
     assert summary["assigned_templates"] == 0
     assert summary["ambiguous_templates_excluded"] == 1

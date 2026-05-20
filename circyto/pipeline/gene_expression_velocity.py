@@ -11,13 +11,16 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterator
 
+import numpy as np
 import pandas as pd
 
 from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
     cleanup_summary_block,
+    load_circ_matrix,
     load_json,
+    read_index_lines,
     summarize_read_layouts,
     utc_now_iso,
     write_json,
@@ -241,6 +244,13 @@ def import_gene_counts_table(
         "count_table_columns": ["gene_id", "gene_name", *[str(column) for column in cell_columns]],
         "total_counts_sum": float(numeric.to_numpy().sum()),
     }
+    payload.update(
+        _write_rna_qc_outputs(
+            counts_df=normalized_counts,
+            feature_df=feature_table,
+            work_root=outdir.parent,
+        )
+    )
     summary_out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     payload["output_rna_import_summary"] = str(summary_out.resolve())
     return payload
@@ -265,6 +275,11 @@ def _load_gene_features_from_gtf(path: Path) -> list[dict[str, Any]]:
                 continue
             attrs = _parse_gtf_attributes(fields[8])
             gene_id = attrs.get("gene_id", "").strip()
+            gene_biotype = (
+                attrs.get("gene_biotype", "").strip()
+                or attrs.get("gene_type", "").strip()
+                or attrs.get("biotype", "").strip()
+            )
             feature_type = fields[2]
             if feature_type == "gene":
                 if not gene_id:
@@ -277,6 +292,7 @@ def _load_gene_features_from_gtf(path: Path) -> list[dict[str, Any]]:
                         "start": int(fields[3]),
                         "end": int(fields[4]),
                         "strand": fields[6].strip(),
+                        "gene_biotype": gene_biotype,
                     }
                 )
             elif feature_type == "exon" and gene_id:
@@ -292,10 +308,13 @@ def _load_gene_features_from_gtf(path: Path) -> list[dict[str, Any]]:
                         "start": start,
                         "end": end,
                         "strand": fields[6].strip(),
+                        "gene_biotype": gene_biotype,
                     }
                 else:
                     existing["start"] = min(int(existing["start"]), start)
                     existing["end"] = max(int(existing["end"]), end)
+                    if not str(existing.get("gene_biotype", "")).strip() and gene_biotype:
+                        existing["gene_biotype"] = gene_biotype
     if not genes:
         genes = list(exon_spans.values())
     if not genes:
@@ -505,7 +524,7 @@ def count_gene_expression_from_alignments(
                 per_cell_unassigned[cell_id] += 1
         per_cell_elapsed_seconds[cell_id] = round(time.perf_counter() - cell_started, 3)
 
-    feature_df = pd.DataFrame(genes, columns=["gene_id", "gene_name", "chrom", "start", "end", "strand"])
+    feature_df = pd.DataFrame(genes, columns=["gene_id", "gene_name", "chrom", "start", "end", "strand", "gene_biotype"])
     count_rows: list[dict[str, Any]] = []
     for gene in genes:
         row = {
@@ -534,7 +553,7 @@ def count_gene_expression_from_alignments(
         "cell_ids": list(expected_cell_ids),
         "feature_id_column": "gene_id",
         "feature_name_column": "gene_name",
-        "feature_table_columns": ["gene_id", "gene_name", "chrom", "start", "end", "strand"],
+        "feature_table_columns": ["gene_id", "gene_name", "chrom", "start", "end", "strand", "gene_biotype"],
         "count_table_columns": ["gene_id", "gene_name", *expected_cell_ids],
         "output_gene_counts": str(gene_counts_out.resolve()),
         "output_gene_feature_table": str(feature_out.resolve()),
@@ -552,8 +571,121 @@ def count_gene_expression_from_alignments(
         "per_cell_elapsed_seconds": per_cell_elapsed_seconds,
         "elapsed_seconds": round(time.perf_counter() - started, 3),
     }
+    payload.update(
+        _write_rna_qc_outputs(
+            counts_df=counts_df,
+            feature_df=feature_df,
+            work_root=outdir.parent,
+        )
+    )
     summary_out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return payload
+
+
+def _circ_counts_by_cell(work_root: Path) -> dict[str, int]:
+    matrix_dir = work_root / "matrix"
+    matrix_path = matrix_dir / "circ_counts.mtx"
+    circ_index_path = matrix_dir / "circ_index.txt"
+    cell_index_path = matrix_dir / "cell_index.txt"
+    if not matrix_path.exists() or not cell_index_path.exists():
+        return {}
+    X, _, cell_ids = load_circ_matrix(
+        matrix_path=matrix_path,
+        circ_index_path=circ_index_path if circ_index_path.exists() else cell_index_path,
+        cell_index_path=cell_index_path,
+    )
+    if not cell_ids:
+        return {}
+    if X.shape[1] == len(cell_ids):
+        detected = np.asarray((X > 0).sum(axis=0)).ravel()
+    elif X.shape[0] == len(cell_ids):
+        detected = np.asarray((X > 0).sum(axis=1)).ravel()
+    else:
+        return {}
+    return {str(cell_id): int(detected[idx]) for idx, cell_id in enumerate(cell_ids)}
+
+
+def _mitochondrial_gene_mask(feature_df: pd.DataFrame) -> pd.Series:
+    names = feature_df.get("gene_name", pd.Series([""] * len(feature_df))).astype(str).str.upper()
+    ids = feature_df.get("gene_id", pd.Series([""] * len(feature_df))).astype(str).str.upper()
+    return names.str.startswith("MT-") | ids.str.startswith("MT-")
+
+
+def _ribosomal_gene_mask(feature_df: pd.DataFrame) -> pd.Series:
+    names = feature_df.get("gene_name", pd.Series([""] * len(feature_df))).astype(str).str.upper()
+    prefixes = ("RPL", "RPS", "MRPL", "MRPS")
+    return names.str.startswith(prefixes)
+
+
+def _write_rna_qc_outputs(
+    *,
+    counts_df: pd.DataFrame,
+    feature_df: pd.DataFrame,
+    work_root: Path,
+) -> dict[str, Any]:
+    qc_dir = work_root / "qc"
+    qc_dir.mkdir(parents=True, exist_ok=True)
+    cell_columns = [column for column in counts_df.columns if column not in {"gene_id", "gene_name"}]
+    count_matrix = counts_df[cell_columns].apply(pd.to_numeric, errors="raise")
+    feature_qc = feature_df.copy()
+    if "gene_biotype" not in feature_qc.columns:
+        feature_qc["gene_biotype"] = ""
+    mt_mask = _mitochondrial_gene_mask(feature_qc)
+    ribo_mask = _ribosomal_gene_mask(feature_qc)
+
+    total_counts = count_matrix.sum(axis=0)
+    detected_genes = (count_matrix > 0).sum(axis=0)
+    mt_counts = count_matrix.loc[mt_mask, cell_columns].sum(axis=0) if mt_mask.any() else pd.Series(0, index=cell_columns)
+    ribo_counts = count_matrix.loc[ribo_mask, cell_columns].sum(axis=0) if ribo_mask.any() else pd.Series(0, index=cell_columns)
+    circ_counts = _circ_counts_by_cell(work_root)
+
+    per_cell = pd.DataFrame(
+        {
+            "cell_id": cell_columns,
+            "total_counts": [int(total_counts[cell_id]) for cell_id in cell_columns],
+            "detected_genes": [int(detected_genes[cell_id]) for cell_id in cell_columns],
+            "mitochondrial_fraction": [
+                float(mt_counts[cell_id] / total_counts[cell_id]) if float(total_counts[cell_id]) > 0 else 0.0
+                for cell_id in cell_columns
+            ],
+            "ribosomal_fraction": [
+                float(ribo_counts[cell_id] / total_counts[cell_id]) if float(total_counts[cell_id]) > 0 else 0.0
+                for cell_id in cell_columns
+            ],
+            "circRNA_count": [circ_counts.get(str(cell_id)) for cell_id in cell_columns],
+        }
+    )
+
+    gene_totals = count_matrix.sum(axis=1)
+    gene_detected = (count_matrix > 0).sum(axis=1)
+    nonzero_means: list[float] = []
+    for row_idx in range(count_matrix.shape[0]):
+        nonzero = count_matrix.iloc[row_idx]
+        nonzero = nonzero[nonzero > 0]
+        nonzero_means.append(float(nonzero.mean()) if not nonzero.empty else 0.0)
+    per_gene = feature_qc[["gene_id", "gene_name", "gene_biotype"]].copy()
+    per_gene["n_cells_detected"] = gene_detected.astype(int)
+    per_gene["total_counts"] = gene_totals.astype(int)
+    per_gene["mean_counts_nonzero"] = nonzero_means
+
+    cell_qc_path = qc_dir / "rna_qc.tsv"
+    gene_qc_path = qc_dir / "rna_gene_qc.tsv"
+    per_cell.to_csv(cell_qc_path, sep="\t", index=False)
+    per_gene.to_csv(gene_qc_path, sep="\t", index=False)
+
+    genes_detected = gene_detected.astype(int)
+    return {
+        "output_rna_qc": str(cell_qc_path.resolve()),
+        "output_rna_gene_qc": str(gene_qc_path.resolve()),
+        "genes_detected_ge_1_cell": int((genes_detected >= 1).sum()),
+        "genes_detected_ge_3_cells": int((genes_detected >= 3).sum()),
+        "genes_detected_ge_10_cells": int((genes_detected >= 10).sum()),
+        "median_genes_per_cell": float(detected_genes.median()) if len(detected_genes) else 0.0,
+        "filtering_report": {
+            "automatic_filtering_applied": False,
+            "threshold_summary_only": True,
+        },
+    }
 
 
 def find_completed_workflow_alignment_manifest(workdir: Path) -> Path:
