@@ -4,9 +4,12 @@ import csv
 import os
 import json
 import re
+import time
+from bisect import bisect_left, bisect_right
 from collections import defaultdict
+from functools import lru_cache
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterator
 
 import pandas as pd
 
@@ -299,13 +302,37 @@ def _load_gene_features_from_gtf(path: Path) -> list[dict[str, Any]]:
     return genes
 
 
-def _gene_index_by_chrom(genes: list[dict[str, Any]]) -> dict[str, list[dict[str, Any]]]:
+def _gtf_cache_key(path: Path) -> tuple[str, int, int]:
+    stat = path.stat()
+    return (str(path.resolve()), int(stat.st_mtime_ns), int(stat.st_size))
+
+
+@lru_cache(maxsize=8)
+def _load_cached_gene_index(cache_key: tuple[str, int, int]) -> tuple[list[dict[str, Any]], dict[str, dict[str, Any]]]:
+    path = Path(cache_key[0])
+    genes = _load_gene_features_from_gtf(path)
+    return genes, _gene_index_by_chrom(genes)
+
+
+def _gene_index_by_chrom(genes: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
     by_chrom: dict[str, list[dict[str, Any]]] = defaultdict(list)
     for gene in genes:
         by_chrom[str(gene["chrom"])].append(gene)
-    for chrom in by_chrom:
-        by_chrom[chrom].sort(key=lambda item: (int(item["start"]), int(item["end"]), str(item["gene_id"])))
-    return dict(by_chrom)
+    indexed: dict[str, dict[str, Any]] = {}
+    for chrom, chrom_genes in by_chrom.items():
+        ordered = sorted(chrom_genes, key=lambda item: (int(item["start"]), int(item["end"]), str(item["gene_id"])))
+        starts = [int(item["start"]) for item in ordered]
+        prefix_max_ends: list[int] = []
+        running_max = -1
+        for item in ordered:
+            running_max = max(running_max, int(item["end"]))
+            prefix_max_ends.append(running_max)
+        indexed[chrom] = {
+            "genes": ordered,
+            "starts": starts,
+            "prefix_max_ends": prefix_max_ends,
+        }
+    return indexed
 
 
 def _cigar_reference_blocks(pos: int, cigar: str) -> list[tuple[int, int]]:
@@ -331,24 +358,32 @@ def _overlapping_gene_ids(
     *,
     chrom: str,
     blocks: list[tuple[int, int]],
-    genes_by_chrom: dict[str, list[dict[str, Any]]],
+    genes_by_chrom: dict[str, dict[str, Any]],
 ) -> set[str]:
     overlaps: set[str] = set()
-    for gene in genes_by_chrom.get(chrom, []):
-        gene_start = int(gene["start"])
-        gene_end = int(gene["end"])
-        for block_start, block_end in blocks:
-            if block_end < gene_start:
-                continue
-            if block_start > gene_end:
+    chrom_index = genes_by_chrom.get(chrom)
+    if chrom_index is None:
+        return overlaps
+    genes = chrom_index["genes"]
+    starts = chrom_index["starts"]
+    prefix_max_ends = chrom_index["prefix_max_ends"]
+    for block_start, block_end in blocks:
+        hi = bisect_right(starts, int(block_end))
+        if hi <= 0:
+            continue
+        lo = bisect_left(prefix_max_ends, int(block_start), 0, hi)
+        for gene in genes[lo:hi]:
+            gene_start = int(gene["start"])
+            gene_end = int(gene["end"])
+            if gene_end < block_start or gene_start > block_end:
                 continue
             overlaps.add(str(gene["gene_id"]))
-            break
     return overlaps
 
 
-def _iter_sam_templates(path: Path) -> dict[str, set[str]]:
-    templates: dict[str, set[str]] = defaultdict(set)
+def _iter_sam_templates(path: Path) -> Iterator[set[tuple[str, int, str]]]:
+    current_qname: str | None = None
+    current_spans: set[tuple[str, int, str]] = set()
     with path.open("r", encoding="utf-8", errors="replace") as handle:
         reader = csv.reader(handle, delimiter="\t")
         for row in reader:
@@ -365,39 +400,60 @@ def _iter_sam_templates(path: Path) -> dict[str, set[str]]:
                 continue
             if flag & 0x4 or flag & 0x100 or flag & 0x800 or flag & 0x200 or flag & 0x400:
                 continue
-            templates[qname].add(f"{rname}\t{pos}\t{cigar}")
-    return templates
+            if current_qname is None:
+                current_qname = qname
+            if qname != current_qname:
+                if current_spans:
+                    yield current_spans
+                current_qname = qname
+                current_spans = set()
+            current_spans.add((rname, pos, cigar))
+    if current_spans:
+        yield current_spans
 
 
-def _alignment_templates(path: Path) -> dict[str, set[str]]:
+def _iter_bam_templates(path: Path) -> Iterator[set[tuple[str, int, str]]]:
+    try:
+        import pysam  # type: ignore
+    except Exception as exc:  # pragma: no cover - optional dependency path
+        raise NotImplementedError(
+            "simple-overlap gene counting on BAM inputs requires optional pysam, which is not installed."
+        ) from exc
+    current_qname: str | None = None
+    current_spans: set[tuple[str, int, str]] = set()
+    with pysam.AlignmentFile(str(path), "rb") as handle:  # pragma: no cover - optional dependency path
+        for record in handle.fetch(until_eof=True):
+            if (
+                record.is_unmapped
+                or record.is_secondary
+                or record.is_supplementary
+                or record.is_qcfail
+                or record.is_duplicate
+            ):
+                continue
+            qname = str(record.query_name or "").strip()
+            if not qname:
+                continue
+            cigar = record.cigarstring or ""
+            rname = str(handle.get_reference_name(record.reference_id) or "")
+            pos = int(record.reference_start) + 1
+            if not rname or not cigar:
+                continue
+            if current_qname is None:
+                current_qname = qname
+            if qname != current_qname:
+                if current_spans:
+                    yield current_spans
+                current_qname = qname
+                current_spans = set()
+            current_spans.add((rname, pos, cigar))
+    if current_spans:
+        yield current_spans
+
+
+def _alignment_templates(path: Path) -> Iterator[set[tuple[str, int, str]]]:
     if path.suffix.lower() == ".bam":
-        try:
-            import pysam  # type: ignore
-        except Exception as exc:  # pragma: no cover - optional dependency path
-            raise NotImplementedError(
-                "simple-overlap gene counting on BAM inputs requires optional pysam, which is not installed."
-            ) from exc
-        templates: dict[str, set[str]] = defaultdict(set)
-        with pysam.AlignmentFile(str(path), "rb") as handle:  # pragma: no cover - optional dependency path
-            for record in handle.fetch(until_eof=True):
-                if (
-                    record.is_unmapped
-                    or record.is_secondary
-                    or record.is_supplementary
-                    or record.is_qcfail
-                    or record.is_duplicate
-                ):
-                    continue
-                qname = str(record.query_name or "").strip()
-                if not qname:
-                    continue
-                cigar = record.cigarstring or ""
-                rname = str(handle.get_reference_name(record.reference_id) or "")
-                pos = int(record.reference_start) + 1
-                if not rname or not cigar:
-                    continue
-                templates[qname].add(f"{rname}\t{pos}\t{cigar}")
-        return templates
+        return _iter_bam_templates(path)
     return _iter_sam_templates(path)
 
 
@@ -408,8 +464,8 @@ def count_gene_expression_from_alignments(
     expected_cell_ids: list[str],
     outdir: Path,
 ) -> dict[str, Any]:
-    genes = _load_gene_features_from_gtf(gtf_path)
-    genes_by_chrom = _gene_index_by_chrom(genes)
+    started = time.perf_counter()
+    genes, genes_by_chrom = _load_cached_gene_index(_gtf_cache_key(gtf_path))
     rows = read_alignment_manifest_tsv(alignment_manifest_path, validate_files=True)
     row_by_cell = {row.cell_id: row for row in rows}
     validate_cell_id_consistency(expected_cell_ids, list(row_by_cell.keys()), circ_label="circ", rna_label="alignment")
@@ -421,16 +477,19 @@ def count_gene_expression_from_alignments(
     per_cell_assigned: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
     per_cell_ambiguous: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
     per_cell_unassigned: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
+    per_cell_templates_seen: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
+    per_cell_elapsed_seconds: dict[str, float] = {cell_id: 0.0 for cell_id in expected_cell_ids}
 
     for cell_id in expected_cell_ids:
+        cell_started = time.perf_counter()
         row = row_by_cell[cell_id]
         alignment_path = Path(row.alignment_path)
-        templates = _alignment_templates(alignment_path)
-        for spans in templates.values():
+        for spans in _alignment_templates(alignment_path):
+            per_cell_templates_seen[cell_id] += 1
             overlapping_genes: set[str] = set()
             for span in spans:
-                chrom, pos_text, cigar = span.split("\t", 2)
-                blocks = _cigar_reference_blocks(int(pos_text), cigar)
+                chrom, pos, cigar = span
+                blocks = _cigar_reference_blocks(int(pos), cigar)
                 overlapping_genes.update(
                     _overlapping_gene_ids(chrom=chrom, blocks=blocks, genes_by_chrom=genes_by_chrom)
                 )
@@ -442,6 +501,7 @@ def count_gene_expression_from_alignments(
                 per_cell_ambiguous[cell_id] += 1
             else:
                 per_cell_unassigned[cell_id] += 1
+        per_cell_elapsed_seconds[cell_id] = round(time.perf_counter() - cell_started, 3)
 
     feature_df = pd.DataFrame(genes, columns=["gene_id", "gene_name", "chrom", "start", "end", "strand"])
     count_rows: list[dict[str, Any]] = []
@@ -478,12 +538,17 @@ def count_gene_expression_from_alignments(
         "output_gene_feature_table": str(feature_out.resolve()),
         "output_rna_import_summary": str(summary_out.resolve()),
         "total_counts_sum": int(counts_df[expected_cell_ids].to_numpy().sum()),
+        "cells_processed": int(len(expected_cell_ids)),
+        "templates_seen": int(sum(per_cell_templates_seen.values())),
         "assigned_templates": int(sum(per_cell_assigned.values())),
         "ambiguous_templates_excluded": int(sum(per_cell_ambiguous.values())),
         "unassigned_templates": int(sum(per_cell_unassigned.values())),
+        "per_cell_templates_seen": per_cell_templates_seen,
         "per_cell_assigned_templates": per_cell_assigned,
         "per_cell_ambiguous_templates_excluded": per_cell_ambiguous,
         "per_cell_unassigned_templates": per_cell_unassigned,
+        "per_cell_elapsed_seconds": per_cell_elapsed_seconds,
+        "elapsed_seconds": round(time.perf_counter() - started, 3),
     }
     summary_out.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
     return payload

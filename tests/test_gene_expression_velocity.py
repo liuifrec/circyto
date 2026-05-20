@@ -3,6 +3,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import pytest
+import pandas as pd
 
 from circyto.pipeline.gene_expression_velocity import (
     build_cleanup_plan,
@@ -145,6 +146,8 @@ def test_count_gene_expression_from_alignments_counts_unique_gene_overlaps(tmp_p
     assert "ENSG2\tGENE2\t1" in counts
     assert summary["assigned_templates"] == 2
     assert summary["ambiguous_templates_excluded"] == 0
+    assert summary["templates_seen"] == 2
+    assert summary["cells_processed"] == 1
 
 
 def test_count_gene_expression_from_alignments_excludes_ambiguous_overlaps(tmp_path: Path) -> None:
@@ -172,6 +175,64 @@ def test_count_gene_expression_from_alignments_excludes_ambiguous_overlaps(tmp_p
     assert summary["assigned_templates"] == 0
     assert summary["ambiguous_templates_excluded"] == 1
     assert (tmp_path / "rna" / "rna_import_summary.json").exists()
+
+
+def test_count_gene_expression_from_alignments_counts_paired_qname_once(tmp_path: Path) -> None:
+    gtf = tmp_path / "genes.gtf"
+    _write_gtf(gtf)
+    sam = tmp_path / "cellA.sam"
+    sam.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "pair1\t99\tchr21\t12\t255\t8M\t=\t18\t0\tACGTACGT\t!!!!!!!!\n"
+        "pair1\t147\tchr21\t18\t255\t8M\t=\t12\t0\tACGTACGT\t!!!!!!!!\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "alignment_manifest.tsv"
+    _write_alignment_manifest(manifest, sam, read_layout="paired-end")
+
+    summary = count_gene_expression_from_alignments(
+        alignment_manifest_path=manifest,
+        gtf_path=gtf,
+        expected_cell_ids=["cellA"],
+        outdir=tmp_path / "rna",
+    )
+
+    counts_df = pd.read_csv(tmp_path / "rna" / "gene_counts.tsv", sep="\t")
+    assert int(counts_df.loc[counts_df["gene_id"] == "ENSG1", "cellA"].iloc[0]) == 1
+    assert summary["templates_seen"] == 1
+    assert summary["assigned_templates"] == 1
+
+
+def test_count_gene_expression_from_alignments_matches_naive_expected_counts(tmp_path: Path) -> None:
+    gtf = tmp_path / "genes.gtf"
+    _write_gtf(gtf)
+    sam = tmp_path / "cellA.sam"
+    sam.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "read1\t0\tchr21\t12\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n"
+        "read2\t0\tchr21\t40\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n"
+        "read3\t0\tchr21\t52\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n"
+        "pair1\t99\tchr21\t12\t255\t8M\t=\t18\t0\tACGTACGT\t!!!!!!!!\n"
+        "pair1\t147\tchr21\t18\t255\t8M\t=\t12\t0\tACGTACGT\t!!!!!!!!\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "alignment_manifest.tsv"
+    _write_alignment_manifest(manifest, sam)
+
+    summary = count_gene_expression_from_alignments(
+        alignment_manifest_path=manifest,
+        gtf_path=gtf,
+        expected_cell_ids=["cellA"],
+        outdir=tmp_path / "rna",
+    )
+
+    counts_df = pd.read_csv(tmp_path / "rna" / "gene_counts.tsv", sep="\t")
+    expected = {"ENSG1": 2, "ENSG2": 1, "ENSG3": 0}
+    observed = {row["gene_id"]: int(row["cellA"]) for _, row in counts_df.iterrows()}
+    assert observed == expected
+    assert summary["assigned_templates"] == 3
+    assert summary["ambiguous_templates_excluded"] == 1
+    assert summary["unassigned_templates"] == 0
 
 
 def test_build_cleanup_plan_distinguishes_user_raw_fastq_from_generated_demux_fastq(tmp_path: Path) -> None:
