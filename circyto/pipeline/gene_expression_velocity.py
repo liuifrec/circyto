@@ -639,6 +639,34 @@ def _matrix_cell_ids(work_root: Path) -> list[str]:
     return read_index_lines(path)
 
 
+def sanitize_for_h5ad_uns(obj: Any) -> Any:
+    if obj is None:
+        return ""
+    if isinstance(obj, (str, int, float, bool, np.integer, np.floating, np.bool_)):
+        return obj
+    if isinstance(obj, Path):
+        return str(obj)
+    if isinstance(obj, dict):
+        safe: dict[str, Any] = {}
+        for key, value in obj.items():
+            key_str = str(key)
+            if isinstance(value, dict):
+                safe[key_str] = json.dumps(value, sort_keys=True, default=str)
+            elif isinstance(value, list):
+                if all(isinstance(item, (str, int, float, bool, np.integer, np.floating, np.bool_)) or item is None for item in value):
+                    safe[key_str] = ["" if item is None else item for item in value]
+                else:
+                    safe[key_str] = json.dumps(value, sort_keys=True, default=str)
+            else:
+                safe[key_str] = sanitize_for_h5ad_uns(value)
+        return safe
+    if isinstance(obj, list):
+        if all(isinstance(item, (str, int, float, bool, np.integer, np.floating, np.bool_)) or item is None for item in obj):
+            return ["" if item is None else item for item in obj]
+        return json.dumps(obj, sort_keys=True, default=str)
+    return json.dumps(obj, sort_keys=True, default=str)
+
+
 def _orient_circ_matrix_cells_by_circ(
     *,
     X: sp.csr_matrix,
@@ -1220,19 +1248,31 @@ def export_completed_workflow_mudata(
     )
     mdata = mu.MuData({"rna": rna_adata, "circ": circ_adata})
     mdata.obs = shared_obs_clean.copy()
+    workflow_summary_payload = load_json(workdir / "workflow_summary.json") if (workdir / "workflow_summary.json").exists() else {}
+    rna_import_summary_payload = load_json(rna_dir / "rna_import_summary.json") if (rna_dir / "rna_import_summary.json").exists() else {}
+    rna_circ_summary_payload = load_json(workdir / "qc" / "rna_circ_summary.json") if (workdir / "qc" / "rna_circ_summary.json").exists() else {}
+
     provenance = {
         "command_name": "circyto export-mudata",
         "circyto_version": __version__,
         "source_workdir": str(workdir.resolve()),
+        "workflow_uuid": str(workflow_summary_payload.get("workflow_uuid", "")),
+        "workflow_type": str(workflow_summary_payload.get("workflow_type", workflow_summary_payload.get("workflow", ""))),
+        "protocol": str(workflow_summary_payload.get("protocol", "")),
+        "read_layout": str(workflow_summary_payload.get("read_layout", "")),
+        "n_obs": int(len(union_cell_ids)),
+        "n_rna_cells": int(rna_aligned.shape[0]),
+        "n_rna_features": int(rna_aligned.shape[1]),
+        "n_circ_cells": int(circ_aligned.shape[0]),
+        "n_circ_features": int(circ_aligned.shape[1]),
+        "n_shared_cells": int(rna_circ_summary.get("n_shared_cells", 0)),
+        "n_rna_only_cells": int(rna_circ_summary.get("n_rna_only_cells", 0)),
+        "n_circ_only_cells": int(rna_circ_summary.get("n_circ_only_cells", 0)),
+        "workflow_summary_json": json.dumps(workflow_summary_payload, sort_keys=True, default=str),
+        "rna_import_summary_json": json.dumps(rna_import_summary_payload, sort_keys=True, default=str),
+        "rna_circ_summary_json": json.dumps(rna_circ_summary_payload, sort_keys=True, default=str),
     }
-    for name, path in (
-        ("workflow_summary", workdir / "workflow_summary.json"),
-        ("rna_import_summary", rna_dir / "rna_import_summary.json"),
-        ("rna_circ_summary", workdir / "qc" / "rna_circ_summary.json"),
-    ):
-        if path.exists():
-            provenance[name] = load_json(path)
-    mdata.uns["circyto"] = provenance
+    mdata.uns["circyto"] = sanitize_for_h5ad_uns(provenance)
     out_path.parent.mkdir(parents=True, exist_ok=True)
     mdata.write_h5mu(str(out_path))
     return {

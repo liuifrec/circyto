@@ -67,7 +67,24 @@ def _write_fixture_workdir(tmp_path: Path) -> Path:
         encoding="utf-8",
     )
     (root / "workflow_summary.json").write_text(
-        json.dumps({"workflow": "full-length-circrna", "protocol": "ramda"}, indent=2) + "\n",
+        json.dumps(
+            {
+                "workflow": "full-length-circrna",
+                "workflow_type": "full-length-circrna",
+                "workflow_uuid": "123e4567-e89b-12d3-a456-426614174000",
+                "protocol": "ramda",
+                "read_layout": "single-end",
+                "cleanup": {
+                    "delete_candidates": [
+                        {"path": "/tmp/a.sam", "bytes": 10},
+                        {"path": "/tmp/b.sam", "bytes": 20},
+                    ],
+                    "nested": {"status": None, "labels": ["a", "b"], "objects": [{"k": 1}]},
+                },
+            },
+            indent=2,
+        )
+        + "\n",
         encoding="utf-8",
     )
     return root
@@ -119,7 +136,11 @@ def test_export_mudata_creates_h5mu_and_preserves_metadata(tmp_path: Path) -> No
     assert int(mdata.obs.loc["DIYHEK_192", "circRNA_count"]) == 0
     assert "circyto" in mdata.uns
     assert mdata.uns["circyto"]["command_name"] == "circyto export-mudata"
-    assert "workflow_summary" in mdata.uns["circyto"]
+    assert "workflow_summary_json" in mdata.uns["circyto"]
+    workflow_summary = json.loads(mdata.uns["circyto"]["workflow_summary_json"])
+    assert workflow_summary["cleanup"]["delete_candidates"][0]["path"] == "/tmp/a.sam"
+    assert "rna_import_summary_json" in mdata.uns["circyto"]
+    assert "rna_circ_summary_json" in mdata.uns["circyto"]
 
 
 def test_export_mudata_transposes_circ_by_cell_matrix_to_cells_by_circ(tmp_path: Path) -> None:
