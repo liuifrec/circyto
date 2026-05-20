@@ -44,6 +44,7 @@ from circyto.pipeline.gene_expression_velocity import (
     add_posthoc_rna_profile,
     cleanup_completed_workflow,
     refresh_rna_qc_from_existing_outputs,
+    summarize_rna_circ_integration,
 )
 from circyto.pipeline.workflow_integrity import check_workflow_integrity
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
@@ -349,6 +350,41 @@ def refresh_rna_qc_command(
     except (FileNotFoundError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("summarize-rna-circ")
+def summarize_rna_circ_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory with RNA and circ outputs."),
+    write_summary: bool = typer.Option(False, "--write-summary", help="Write qc/rna_circ_cell_summary.tsv and qc/rna_circ_summary.json."),
+    json_output: bool = typer.Option(False, "--json", help="Emit the full summary payload as JSON."),
+) -> None:
+    """
+    Summarize RNA and circRNA overlap across cells in a completed workflow directory.
+    """
+    try:
+        summary = summarize_rna_circ_integration(
+            workdir=workdir,
+            write_summary=write_summary,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+
+    if json_output:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+        return
+
+    typer.echo(
+        "\n".join(
+            [
+                f"RNA cells={summary['n_rna_cells']} circ cells={summary['n_circ_cells']} shared={summary['n_shared_cells']}",
+                f"RNA-only={summary['n_rna_only_cells']} circ-only={summary['n_circ_only_cells']}",
+                f"RNA-only cell IDs: {', '.join(summary['rna_only_cells']) if summary['rna_only_cells'] else '-'}",
+                f"circ-only cell IDs: {', '.join(summary['circ_only_cells']) if summary['circ_only_cells'] else '-'}",
+                f"Relationship: shared_cells={summary['rna_total_count_vs_circRNA_count_relationship']['shared_cells_considered']} "
+                f"pearson={summary['rna_total_count_vs_circRNA_count_relationship']['pearson_correlation_total_rna_vs_circ_count']}",
+            ]
+        )
+    )
 
 
 @app.command()

@@ -583,26 +583,35 @@ def count_gene_expression_from_alignments(
 
 
 def _circ_counts_by_cell(work_root: Path) -> dict[str, int]:
+    return _circ_metrics_by_cell(work_root)["circRNA_count"]
+
+
+def _circ_metrics_by_cell(work_root: Path) -> dict[str, dict[str, int]] | dict[str, Any]:
     matrix_dir = work_root / "matrix"
     matrix_path = matrix_dir / "circ_counts.mtx"
     circ_index_path = matrix_dir / "circ_index.txt"
     cell_index_path = matrix_dir / "cell_index.txt"
     if not matrix_path.exists() or not cell_index_path.exists():
-        return {}
+        return {"circRNA_count": {}, "circRNA_total_support": {}}
     X, _, cell_ids = load_circ_matrix(
         matrix_path=matrix_path,
         circ_index_path=circ_index_path if circ_index_path.exists() else cell_index_path,
         cell_index_path=cell_index_path,
     )
     if not cell_ids:
-        return {}
+        return {"circRNA_count": {}, "circRNA_total_support": {}}
     if X.shape[1] == len(cell_ids):
         detected = np.asarray((X > 0).sum(axis=0)).ravel()
+        total_support = np.asarray(X.sum(axis=0)).ravel()
     elif X.shape[0] == len(cell_ids):
         detected = np.asarray((X > 0).sum(axis=1)).ravel()
+        total_support = np.asarray(X.sum(axis=1)).ravel()
     else:
-        return {}
-    return {str(cell_id): int(detected[idx]) for idx, cell_id in enumerate(cell_ids)}
+        return {"circRNA_count": {}, "circRNA_total_support": {}}
+    return {
+        "circRNA_count": {str(cell_id): int(detected[idx]) for idx, cell_id in enumerate(cell_ids)},
+        "circRNA_total_support": {str(cell_id): int(total_support[idx]) for idx, cell_id in enumerate(cell_ids)},
+    }
 
 
 def _matrix_cell_ids(work_root: Path) -> list[str]:
@@ -630,6 +639,30 @@ def _write_rna_qc_outputs(
 ) -> dict[str, Any]:
     qc_dir = work_root / "qc"
     qc_dir.mkdir(parents=True, exist_ok=True)
+    per_cell, per_gene, summary = _build_rna_qc_tables(
+        counts_df=counts_df,
+        feature_df=feature_df,
+        work_root=work_root,
+    )
+
+    cell_qc_path = qc_dir / "rna_qc.tsv"
+    gene_qc_path = qc_dir / "rna_gene_qc.tsv"
+    per_cell.to_csv(cell_qc_path, sep="\t", index=False)
+    per_gene.to_csv(gene_qc_path, sep="\t", index=False)
+
+    return {
+        "output_rna_qc": str(cell_qc_path.resolve()),
+        "output_rna_gene_qc": str(gene_qc_path.resolve()),
+        **summary,
+    }
+
+
+def _build_rna_qc_tables(
+    *,
+    counts_df: pd.DataFrame,
+    feature_df: pd.DataFrame,
+    work_root: Path,
+) -> tuple[pd.DataFrame, pd.DataFrame, dict[str, Any]]:
     cell_columns = [column for column in counts_df.columns if column not in {"gene_id", "gene_name"}]
     count_matrix = counts_df[cell_columns].apply(pd.to_numeric, errors="raise")
     feature_qc = feature_df.copy()
@@ -642,7 +675,8 @@ def _write_rna_qc_outputs(
     detected_genes = (count_matrix > 0).sum(axis=0)
     mt_counts = count_matrix.loc[mt_mask, cell_columns].sum(axis=0) if mt_mask.any() else pd.Series(0, index=cell_columns)
     ribo_counts = count_matrix.loc[ribo_mask, cell_columns].sum(axis=0) if ribo_mask.any() else pd.Series(0, index=cell_columns)
-    circ_counts = _circ_counts_by_cell(work_root)
+    circ_metrics = _circ_metrics_by_cell(work_root)
+    circ_counts = dict(circ_metrics.get("circRNA_count", {}))
     matrix_cell_ids = _matrix_cell_ids(work_root)
     shared_cells = sorted(set(cell_columns) & set(matrix_cell_ids))
     rna_only_cells = sorted(set(cell_columns) - set(matrix_cell_ids))
@@ -677,15 +711,8 @@ def _write_rna_qc_outputs(
     per_gene["total_counts"] = gene_totals.astype(int)
     per_gene["mean_counts_nonzero"] = nonzero_means
 
-    cell_qc_path = qc_dir / "rna_qc.tsv"
-    gene_qc_path = qc_dir / "rna_gene_qc.tsv"
-    per_cell.to_csv(cell_qc_path, sep="\t", index=False)
-    per_gene.to_csv(gene_qc_path, sep="\t", index=False)
-
     genes_detected = gene_detected.astype(int)
-    return {
-        "output_rna_qc": str(cell_qc_path.resolve()),
-        "output_rna_gene_qc": str(gene_qc_path.resolve()),
+    summary = {
         "genes_detected_ge_1_cell": int((genes_detected >= 1).sum()),
         "genes_detected_ge_3_cells": int((genes_detected >= 3).sum()),
         "genes_detected_ge_10_cells": int((genes_detected >= 10).sum()),
@@ -699,6 +726,7 @@ def _write_rna_qc_outputs(
             "threshold_summary_only": True,
         },
     }
+    return per_cell, per_gene, summary
 
 
 def refresh_rna_qc_from_existing_outputs(
@@ -794,6 +822,142 @@ def refresh_rna_qc_from_existing_outputs(
         },
         command_name="circyto refresh-rna-qc",
         workflow_type="refresh-rna-qc",
+        protocol="unknown",
+        read_layout="unknown",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
+
+
+def summarize_rna_circ_integration(
+    *,
+    workdir: Path,
+    write_summary: bool,
+) -> dict[str, Any]:
+    rna_dir = workdir / "rna"
+    qc_dir = workdir / "qc"
+    gene_counts_path = rna_dir / "gene_counts.tsv"
+    if not gene_counts_path.exists():
+        raise FileNotFoundError(f"Missing RNA gene-count table: {gene_counts_path}")
+    counts_df = pd.read_csv(gene_counts_path, sep="\t", keep_default_na=False)
+    required_columns = {"gene_id", "gene_name"}
+    missing = sorted(required_columns - set(counts_df.columns))
+    if missing:
+        raise ValueError(f"{gene_counts_path} is missing required columns: {', '.join(missing)}")
+
+    rna_qc_path = qc_dir / "rna_qc.tsv"
+    feature_path = rna_dir / "gene_feature_table.tsv"
+    if rna_qc_path.exists():
+        rna_qc_df = pd.read_csv(rna_qc_path, sep="\t", keep_default_na=False)
+    else:
+        if not feature_path.exists():
+            raise FileNotFoundError(
+                f"Missing RNA gene feature table for RNA QC fallback: {feature_path}"
+            )
+        feature_df = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
+        rna_qc_df, _, _ = _build_rna_qc_tables(
+            counts_df=counts_df,
+            feature_df=feature_df,
+            work_root=workdir,
+        )
+
+    if "cell_id" not in rna_qc_df.columns:
+        raise ValueError(f"{rna_qc_path if rna_qc_path.exists() else 'derived RNA QC'} must contain a cell_id column.")
+
+    rna_cells = [str(cell_id) for cell_id in rna_qc_df["cell_id"].astype(str).tolist()]
+    validate_feature_id_uniqueness(rna_cells, label="cell")
+
+    circ_metrics = _circ_metrics_by_cell(workdir)
+    circ_counts = dict(circ_metrics.get("circRNA_count", {}))
+    circ_support = dict(circ_metrics.get("circRNA_total_support", {}))
+    circ_cells = _matrix_cell_ids(workdir)
+
+    shared_cells = sorted(set(rna_cells) & set(circ_cells))
+    rna_only_cells = sorted(set(rna_cells) - set(circ_cells))
+    circ_only_cells = sorted(set(circ_cells) - set(rna_cells))
+    all_cells = list(rna_cells) + [cell_id for cell_id in circ_cells if cell_id not in set(rna_cells)]
+
+    rna_qc_indexed = rna_qc_df.set_index("cell_id", drop=False)
+    rows: list[dict[str, Any]] = []
+    for cell_id in all_cells:
+        if cell_id in rna_qc_indexed.index:
+            row = rna_qc_indexed.loc[cell_id]
+            if isinstance(row, pd.DataFrame):
+                row = row.iloc[0]
+            total_counts = int(float(row.get("total_counts", 0) or 0))
+            detected_genes = int(float(row.get("detected_genes", 0) or 0))
+            mitochondrial_fraction = float(row.get("mitochondrial_fraction", 0.0) or 0.0)
+            ribosomal_fraction = float(row.get("ribosomal_fraction", 0.0) or 0.0)
+        else:
+            total_counts = 0
+            detected_genes = 0
+            mitochondrial_fraction = 0.0
+            ribosomal_fraction = 0.0
+        circ_count = int(circ_counts.get(cell_id, 0))
+        circ_total_support = int(circ_support.get(cell_id, 0))
+        if cell_id in shared_cells:
+            membership = "shared"
+        elif cell_id in rna_only_cells:
+            membership = "rna_only"
+        else:
+            membership = "circ_only"
+        rows.append(
+            {
+                "cell_id": cell_id,
+                "membership": membership,
+                "total_rna_counts": total_counts,
+                "detected_genes": detected_genes,
+                "mitochondrial_fraction": mitochondrial_fraction,
+                "ribosomal_fraction": ribosomal_fraction,
+                "circRNA_count": circ_count,
+                "circRNA_total_support": circ_total_support,
+            }
+        )
+
+    joined_df = pd.DataFrame(rows)
+    relationship = {
+        "shared_cells_considered": int(len(shared_cells)),
+        "pearson_correlation_total_rna_vs_circ_count": None,
+    }
+    if len(shared_cells) >= 2:
+        shared_df = joined_df[joined_df["membership"] == "shared"]
+        if shared_df["total_rna_counts"].nunique() > 1 and shared_df["circRNA_count"].nunique() > 1:
+            relationship["pearson_correlation_total_rna_vs_circ_count"] = float(
+                shared_df["total_rna_counts"].corr(shared_df["circRNA_count"])
+            )
+
+    summary = {
+        "workdir": str(workdir.resolve()),
+        "n_rna_cells": int(len(rna_cells)),
+        "n_circ_cells": int(len(circ_cells)),
+        "n_shared_cells": int(len(shared_cells)),
+        "n_rna_only_cells": int(len(rna_only_cells)),
+        "n_circ_only_cells": int(len(circ_only_cells)),
+        "rna_only_cells": rna_only_cells,
+        "circ_only_cells": circ_only_cells,
+        "rna_total_count_vs_circRNA_count_relationship": relationship,
+        "joined_rows": int(joined_df.shape[0]),
+        "joined_columns": list(joined_df.columns),
+        "joined_preview": joined_df.head(10).to_dict(orient="records"),
+    }
+
+    if write_summary:
+        qc_dir.mkdir(parents=True, exist_ok=True)
+        cell_summary_path = qc_dir / "rna_circ_cell_summary.tsv"
+        summary_json_path = qc_dir / "rna_circ_summary.json"
+        joined_df.to_csv(cell_summary_path, sep="\t", index=False)
+        write_json(summary_json_path, summary)
+        summary["output_rna_circ_cell_summary"] = str(cell_summary_path.resolve())
+        summary["output_rna_circ_summary"] = str(summary_json_path.resolve())
+
+    return apply_standard_provenance(
+        summary,
+        command_name="circyto summarize-rna-circ",
+        workflow_type="rna-circ-integration-summary",
         protocol="unknown",
         read_layout="unknown",
         genome_fasta=None,

@@ -151,3 +151,20 @@ This command:
 - updates `workflow_summary.json` when present
 
 It does not require surviving alignment files and does not rewrite `gene_counts.tsv`.
+
+## RNA Circ Integration Summary
+
+After RNA profiling and circRNA matrix generation are both available, summarize overlap and per-cell joined metrics with:
+
+```bash
+circyto summarize-rna-circ \
+  --workdir /path/to/completed_workflow \
+  --write-summary
+```
+
+This writes:
+
+- `qc/rna_circ_cell_summary.tsv`
+- `qc/rna_circ_summary.json`
+
+RNA-only cells remain in the summary with `circRNA_count = 0`.
