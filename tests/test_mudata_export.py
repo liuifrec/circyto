@@ -95,6 +95,7 @@ def test_export_mudata_creates_h5mu_and_preserves_metadata(tmp_path: Path) -> No
     if not HAS_MUDATA:
         pytest.skip("mudata not installed")
     import mudata as mu
+    import scipy.sparse as sp
 
     root = _write_fixture_workdir(tmp_path)
     out_path = tmp_path / "full_length.h5mu"
@@ -111,6 +112,8 @@ def test_export_mudata_creates_h5mu_and_preserves_metadata(tmp_path: Path) -> No
     assert list(mdata.obs_names) == ["cellA", "DIYHEK_192"]
     assert mdata.mod["rna"].shape == (2, 3)
     assert mdata.mod["circ"].shape == (2, 3)
+    assert sp.issparse(mdata.mod["rna"].X)
+    assert sp.issparse(mdata.mod["circ"].X)
     assert int(mdata.mod["circ"][1, :].X.sum()) == 0
     assert mdata.obs.loc["DIYHEK_192", "membership"] == "rna_only"
     assert int(mdata.obs.loc["DIYHEK_192", "circRNA_count"]) == 0
