@@ -617,14 +617,17 @@ def _circ_metrics_by_cell(work_root: Path) -> dict[str, dict[str, int]] | dict[s
     )
     if not cell_ids:
         return {"circRNA_count": {}, "circRNA_total_support": {}}
-    if X.shape[1] == len(cell_ids):
-        detected = np.asarray((X > 0).sum(axis=0)).ravel()
-        total_support = np.asarray(X.sum(axis=0)).ravel()
-    elif X.shape[0] == len(cell_ids):
-        detected = np.asarray((X > 0).sum(axis=1)).ravel()
-        total_support = np.asarray(X.sum(axis=1)).ravel()
-    else:
+    try:
+        X_cells_by_circ = _orient_circ_matrix_cells_by_circ(
+            X=X,
+            circ_ids=read_index_lines(circ_index_path) if circ_index_path.exists() else [],
+            cell_ids=cell_ids,
+            matrix_path=matrix_path,
+        )
+    except ValueError:
         return {"circRNA_count": {}, "circRNA_total_support": {}}
+    detected = np.asarray((X_cells_by_circ > 0).sum(axis=1)).ravel()
+    total_support = np.asarray(X_cells_by_circ.sum(axis=1)).ravel()
     return {
         "circRNA_count": {str(cell_id): int(detected[idx]) for idx, cell_id in enumerate(cell_ids)},
         "circRNA_total_support": {str(cell_id): int(total_support[idx]) for idx, cell_id in enumerate(cell_ids)},
@@ -634,6 +637,24 @@ def _circ_metrics_by_cell(work_root: Path) -> dict[str, dict[str, int]] | dict[s
 def _matrix_cell_ids(work_root: Path) -> list[str]:
     path = work_root / "matrix" / "cell_index.txt"
     return read_index_lines(path)
+
+
+def _orient_circ_matrix_cells_by_circ(
+    *,
+    X: sp.csr_matrix,
+    circ_ids: list[str],
+    cell_ids: list[str],
+    matrix_path: Path,
+) -> sp.csr_matrix:
+    if X.shape == (len(circ_ids), len(cell_ids)):
+        return X.T.tocsr()
+    if X.shape == (len(cell_ids), len(circ_ids)):
+        return X.tocsr()
+    raise ValueError(
+        f"Circ matrix shape mismatch for {matrix_path}: matrix={X.shape}, "
+        f"circ_index={len(circ_ids)}, cell_index={len(cell_ids)}. "
+        "Expected either circRNAs x cells or cells x circRNAs."
+    )
 
 
 def _mitochondrial_gene_mask(feature_df: pd.DataFrame) -> pd.Series:
@@ -1158,6 +1179,12 @@ def export_completed_workflow_mudata(
         circ_index_path=circ_index_path,
         cell_index_path=cell_index_path,
     )
+    circ_X_by_cell = _orient_circ_matrix_cells_by_circ(
+        X=circ_X_by_cell,
+        circ_ids=circ_ids,
+        cell_ids=circ_cell_ids,
+        matrix_path=circ_matrix_path,
+    )
     circ_pos = {cell_id: idx for idx, cell_id in enumerate(circ_cell_ids)}
     zero_circ_row = sp.csr_matrix((1, circ_X_by_cell.shape[1]), dtype=circ_X_by_cell.dtype)
     circ_rows = [circ_X_by_cell[circ_pos[cell_id]] if cell_id in circ_pos else zero_circ_row for cell_id in union_cell_ids]
@@ -1169,6 +1196,12 @@ def export_completed_workflow_mudata(
         circ_var = circ_var.set_index(circ_id_col, drop=False).reindex(circ_ids)
     else:
         circ_var = pd.DataFrame({"circ_id": circ_ids}, index=circ_ids)
+    if circ_aligned.shape[1] != circ_var.shape[0]:
+        raise ValueError(
+            f"Circ AnnData axis mismatch after orientation: X has {circ_aligned.shape[1]} circRNA columns, "
+            f"but circ var has {circ_var.shape[0]} rows. "
+            f"matrix={circ_matrix_path}, circ_index={circ_index_path}, circ_feature_table={circ_feature_path if circ_feature_path.exists() else 'missing'}"
+        )
 
     shared_obs = joined_df.copy()
     shared_obs.index = union_cell_ids

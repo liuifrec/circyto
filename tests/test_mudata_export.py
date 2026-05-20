@@ -122,6 +122,58 @@ def test_export_mudata_creates_h5mu_and_preserves_metadata(tmp_path: Path) -> No
     assert "workflow_summary" in mdata.uns["circyto"]
 
 
+def test_export_mudata_transposes_circ_by_cell_matrix_to_cells_by_circ(tmp_path: Path) -> None:
+    if not HAS_MUDATA:
+        pytest.skip("mudata not installed")
+    import mudata as mu
+
+    root = tmp_path / "workflow"
+    (root / "rna").mkdir(parents=True)
+    (root / "matrix").mkdir(parents=True)
+    (root / "qc").mkdir(parents=True)
+
+    rna_cells = [f"cell{i:03d}" for i in range(191)] + ["DIYHEK_192"]
+    (root / "rna" / "gene_counts.tsv").write_text(
+        "gene_id\tgene_name\t" + "\t".join(rna_cells) + "\n"
+        + "G1\tGENE1\t" + "\t".join(["1"] * 191 + ["2"]) + "\n",
+        encoding="utf-8",
+    )
+    (root / "rna" / "gene_feature_table.tsv").write_text(
+        "gene_id\tgene_name\tgene_biotype\nG1\tGENE1\tprotein_coding\n",
+        encoding="utf-8",
+    )
+    qc_lines = ["cell_id\ttotal_counts\tdetected_genes\tmitochondrial_fraction\tribosomal_fraction\tcircRNA_count"]
+    qc_lines.extend(f"{cell_id}\t1\t1\t0.0\t0.0\t1" for cell_id in rna_cells[:-1])
+    qc_lines.append("DIYHEK_192\t2\t1\t0.0\t0.0\t0")
+    (root / "qc" / "rna_qc.tsv").write_text("\n".join(qc_lines) + "\n", encoding="utf-8")
+    (root / "matrix" / "circ_counts.mtx").write_text(
+        "%%MatrixMarket matrix coordinate integer general\n%\n2503 191 2\n1 1 1\n2503 191 2\n",
+        encoding="utf-8",
+    )
+    circ_ids = [f"circ{i:04d}" for i in range(2503)]
+    circ_cells = [f"cell{i:03d}" for i in range(191)]
+    (root / "matrix" / "circ_index.txt").write_text("\n".join(circ_ids) + "\n", encoding="utf-8")
+    (root / "matrix" / "cell_index.txt").write_text("\n".join(circ_cells) + "\n", encoding="utf-8")
+    circ_feature_lines = ["circ_id\tchrom\tstart\tend\tstrand\thost_gene"]
+    circ_feature_lines.extend(
+        f"{circ_id}\tchr1\t1\t2\t+\tGENE{i:04d}" for i, circ_id in enumerate(circ_ids, start=1)
+    )
+    (root / "matrix" / "circ_feature_table.tsv").write_text("\n".join(circ_feature_lines) + "\n", encoding="utf-8")
+    out_path = tmp_path / "full_length_large_oriented.h5mu"
+
+    result = runner.invoke(app, ["export-mudata", "--workdir", str(root), "--output", str(out_path)])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["n_obs"] == 192
+    assert payload["n_circ_features"] == 2503
+    assert payload["n_rna_only_cells"] == 1
+
+    mdata = mu.read_h5mu(out_path)
+    assert mdata.mod["circ"].shape == (192, 2503)
+    assert mdata.mod["rna"].shape == (192, 1)
+    assert int(mdata.mod["circ"][191, :].X.sum()) == 0
+
+
 def test_export_mudata_no_overwrite_without_flag(tmp_path: Path) -> None:
     if not HAS_MUDATA:
         pytest.skip("mudata not installed")
