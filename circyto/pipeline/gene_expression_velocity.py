@@ -759,8 +759,20 @@ def _collect_cleanup_candidates(outdir: Path, *, include_demux_fastq: bool) -> l
                     except OSError:
                         size = 0
                     candidates.append({"path": str(path.resolve()), "bytes": size})
-    candidates.sort(key=lambda item: (-int(item["bytes"]), str(item["path"])))
-    return candidates
+    return _deduplicate_cleanup_candidates(candidates)
+
+
+def _deduplicate_cleanup_candidates(candidates: list[dict[str, Any]]) -> list[dict[str, Any]]:
+    ordered = sorted(candidates, key=lambda item: (-int(item["bytes"]), str(item["path"])))
+    seen: set[str] = set()
+    unique: list[dict[str, Any]] = []
+    for item in ordered:
+        path = str(item.get("path", ""))
+        if not path or path in seen:
+            continue
+        seen.add(path)
+        unique.append({"path": path, "bytes": int(item.get("bytes", 0) or 0)})
+    return unique
 
 
 def _resolve_cleanup_candidates(
@@ -773,10 +785,14 @@ def _resolve_cleanup_candidates(
         return []
     candidates = _collect_cleanup_candidates(outdir, include_demux_fastq=scope in {"demux", "all"})
     if scope == "alignments":
-        return [item for item in candidates if "/demux/" not in str(item["path"]).replace("\\", "/")]
+        return _deduplicate_cleanup_candidates(
+            [item for item in candidates if "/demux/" not in str(item["path"]).replace("\\", "/")]
+        )
     if scope == "demux":
-        return [item for item in candidates if "/demux/" in str(item["path"]).replace("\\", "/")]
-    return candidates
+        return _deduplicate_cleanup_candidates(
+            [item for item in candidates if "/demux/" in str(item["path"]).replace("\\", "/")]
+        )
+    return _deduplicate_cleanup_candidates(candidates)
 
 
 def build_cleanup_plan(
@@ -815,7 +831,6 @@ def build_cleanup_plan(
         }
 
     candidates = _resolve_cleanup_candidates(outdir=outdir, scope=scope, workflow_succeeded=workflow_succeeded)
-    candidates.sort(key=lambda item: (-int(item["bytes"]), str(item["path"])))
     return {
         "enabled": True,
         "mode": "planned-only",

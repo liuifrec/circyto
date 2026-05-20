@@ -137,3 +137,29 @@ def test_cleanup_workflow_help_lists_expected_options() -> None:
     assert "--scope" in result.output
     assert "--dry-run" in result.output
     assert "--force" in result.output
+
+
+def test_cleanup_workflow_dry_run_deduplicates_planned_deletions_and_bytes(
+    tmp_path: Path,
+    monkeypatch,
+) -> None:
+    workdir = _write_fixture_workdir(tmp_path)
+    dup_path = workdir / "align" / "cell1.sam"
+
+    def _fake_collect(outdir: Path, *, include_demux_fastq: bool):
+        return [
+            {"path": str(dup_path.resolve()), "bytes": 20},
+            {"path": str(dup_path.resolve()), "bytes": 20},
+        ]
+
+    monkeypatch.setattr(
+        "circyto.pipeline.gene_expression_velocity._collect_cleanup_candidates",
+        _fake_collect,
+    )
+
+    result = runner.invoke(app, ["cleanup-workflow", "--workdir", str(workdir), "--scope", "alignments", "--dry-run"])
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["estimated_reclaimed_bytes"] == 20
+    assert payload["cleanup"]["candidate_count"] == 1
+    assert payload["planned_deletions"] == [{"path": str(dup_path.resolve()), "bytes": 20}]

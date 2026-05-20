@@ -319,3 +319,55 @@ def test_execute_cleanup_plan_skips_failed_workflow(tmp_path: Path) -> None:
     assert result["cleanup_performed"] is False
     assert align_sam.exists()
     assert result["cleanup_deleted_paths"] == []
+
+
+def test_build_cleanup_plan_deduplicates_duplicate_candidate_paths(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    outdir = tmp_path / "work"
+    dup_path = outdir / "align" / "alignment.sam"
+    dup_path.parent.mkdir(parents=True, exist_ok=True)
+    dup_path.write_text("abcdef", encoding="utf-8")
+
+    def _fake_collect(outdir: Path, *, include_demux_fastq: bool) -> list[dict[str, object]]:
+        return [
+            {"path": str(dup_path.resolve()), "bytes": 6},
+            {"path": str(dup_path.resolve()), "bytes": 6},
+        ]
+
+    monkeypatch.setattr(
+        "circyto.pipeline.gene_expression_velocity._collect_cleanup_candidates",
+        _fake_collect,
+    )
+
+    plan = build_cleanup_plan(outdir=outdir, scope="alignments", workflow_succeeded=True)
+
+    assert plan["candidate_count"] == 1
+    assert plan["candidate_bytes"] == 6
+    assert plan["delete_candidates"] == [{"path": str(dup_path.resolve()), "bytes": 6}]
+
+
+def test_execute_cleanup_plan_deduplicates_same_path_discovered_multiple_times(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    outdir = tmp_path / "work"
+    dup_path = outdir / "align" / "alignment.sam"
+    dup_path.parent.mkdir(parents=True, exist_ok=True)
+    dup_path.write_text("abcdef", encoding="utf-8")
+
+    def _fake_collect(outdir: Path, *, include_demux_fastq: bool) -> list[dict[str, object]]:
+        return [
+            {"path": str(dup_path.resolve()), "bytes": 6},
+            {"path": str(dup_path.resolve()), "bytes": 6},
+        ]
+
+    monkeypatch.setattr(
+        "circyto.pipeline.gene_expression_velocity._collect_cleanup_candidates",
+        _fake_collect,
+    )
+
+    result = execute_cleanup_plan(outdir=outdir, scope="alignments", workflow_succeeded=True)
+
+    assert result["cleanup_performed"] is True
+    assert result["cleanup_reclaimed_bytes"] == 6
+    assert result["cleanup_deleted_paths"] == [str(dup_path.resolve())]
+    assert not dup_path.exists()
