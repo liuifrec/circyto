@@ -27,6 +27,8 @@ A workflow and analysis framework for single-cell circRNA detection, with detect
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
 - Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
 
+A concise benchmark-oriented summary of validated and exploratory workflow tiers is available in [`docs/validated_workflows_summary.md`](docs/validated_workflows_summary.md).
+
 ## Installation
 
 ### Source install

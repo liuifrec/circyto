@@ -7,6 +7,7 @@ Welcome to the `circyto` documentation.
 ## Sections
 
 - [Getting started](getting_started.md)
+- [Validated workflows summary](validated_workflows_summary.md)
 - [Full-length circRNA workflow](full_length_workflow.md)
 - [Gene expression and velocity integration](gene_expression_velocity_integration.md)
 - [RNA and velocity contract](rna_velocity_contract.md)
