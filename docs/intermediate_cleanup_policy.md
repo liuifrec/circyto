@@ -5,6 +5,7 @@ This document defines the intended cleanup policy for large regenerable workflow
 Current status:
 
 - cleanup execution is implemented for explicit `full-length-circrna` opt-in
+- standalone cleanup is available with `circyto cleanup-workflow`
 - dry-run still reports the cleanup plan without deleting files
 - the current scaffold is limited to workflow-owned files under the output directory
 
@@ -68,8 +69,38 @@ Current implementation note:
   - `--cleanup-intermediates alignments`
   - `--cleanup-intermediates demux`
   - `--cleanup-intermediates all`
+- `cleanup-workflow` accepts:
+  - `--scope alignments`
+  - `--scope demux`
+  - `--scope all`
 - cleanup runs only after successful workflow completion
 - failed runs skip cleanup entirely
+
+## Standalone Cleanup Command
+
+Use the standalone command when a workflow has already completed and you want to reclaim disk without rerunning any pipeline stages:
+
+```bash
+circyto cleanup-workflow \
+  --workdir work/diySpike_workflow_all192 \
+  --scope alignments \
+  --dry-run
+```
+
+Real execution removes only approved workflow-owned intermediates:
+
+```bash
+circyto cleanup-workflow \
+  --workdir work/diySpike_workflow_all192 \
+  --scope all
+```
+
+Behavior:
+
+- `--dry-run` reports planned deletions and estimated reclaimed bytes
+- real execution updates `workflow_summary.json` `cleanup_summary`
+- `circyto check-workflow` must pass before cleanup unless `--force` is provided
+- cleanup never deletes `matrix/`, `anndata/`, `rna/`, `qc/`, `logs/`, user manifests, or raw FASTQs
 
 ## Guardrails
 

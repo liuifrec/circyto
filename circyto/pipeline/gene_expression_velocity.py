@@ -16,11 +16,13 @@ import pandas as pd
 from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
+    cleanup_summary_block,
     load_json,
     summarize_read_layouts,
     utc_now_iso,
     write_json,
 )
+from circyto.pipeline.workflow_integrity import check_workflow_integrity
 
 
 VALID_GENE_EXPRESSION_METHODS = {"none", "simple-overlap", "featurecounts", "velocyto"}
@@ -870,4 +872,92 @@ def execute_cleanup_plan(
         "cleanup_deleted_paths": deleted_paths,
         "cleanup_reclaimed_bytes": int(reclaimed_bytes),
         "cleanup_scope": scope,
+    }
+
+
+def _workflow_is_marked_successful(summary: dict[str, Any] | None) -> bool:
+    if not summary:
+        return False
+    failed_stages = [str(item).strip() for item in summary.get("failed_stages", []) if str(item).strip()]
+    partial_outputs = [str(item).strip() for item in summary.get("partial_outputs_detected", []) if str(item).strip()]
+    completed_at = str(summary.get("completed_at", "")).strip()
+    return bool(completed_at) and not failed_stages and not partial_outputs
+
+
+def cleanup_completed_workflow(
+    *,
+    workdir: Path,
+    scope: str,
+    dry_run: bool,
+    force: bool,
+) -> dict[str, Any]:
+    integrity = check_workflow_integrity(workdir)
+    workflow_summary_path = workdir / "workflow_summary.json"
+    workflow_summary: dict[str, Any] | None = None
+    if workflow_summary_path.exists():
+        try:
+            workflow_summary = load_json(workflow_summary_path)
+        except json.JSONDecodeError as exc:
+            if not force:
+                raise ValueError(f"Could not parse workflow summary: {workflow_summary_path}") from exc
+
+    if not integrity.get("ok", False) and not force:
+        raise ValueError(
+            "Workflow integrity check failed; refusing cleanup without --force. "
+            "Run `circyto check-workflow --workdir ...` to inspect the problems first."
+        )
+
+    eligible_for_cleanup = _workflow_is_marked_successful(workflow_summary) or force
+    plan = build_cleanup_plan(outdir=workdir, scope=scope, workflow_succeeded=eligible_for_cleanup)
+
+    if dry_run:
+        return {
+            "command_name": "circyto cleanup-workflow",
+            "dry_run": True,
+            "force": force,
+            "workdir": str(workdir.resolve()),
+            "scope": scope,
+            "workflow_integrity_ok": bool(integrity.get("ok", False)),
+            "workflow_succeeded": bool(eligible_for_cleanup),
+            "cleanup": plan,
+            "estimated_reclaimed_bytes": int(plan.get("candidate_bytes", 0) or 0),
+            "planned_deletions": list(plan.get("delete_candidates", [])),
+            "protected_paths": {
+                "must_keep": list(MUST_KEEP_OUTPUTS),
+                "user_inputs_never_delete": list(USER_INPUTS_NEVER_DELETE),
+            },
+            "integrity": integrity,
+        }
+
+    result = execute_cleanup_plan(outdir=workdir, scope=scope, workflow_succeeded=eligible_for_cleanup)
+    if workflow_summary is not None:
+        workflow_summary["cleanup"] = result
+        workflow_summary["cleanup_performed"] = bool(result.get("cleanup_performed", False))
+        workflow_summary["cleanup_deleted_paths"] = list(result.get("cleanup_deleted_paths", []))
+        workflow_summary["cleanup_reclaimed_bytes"] = int(result.get("cleanup_reclaimed_bytes", 0) or 0)
+        workflow_summary["cleanup_scope"] = result.get("cleanup_scope")
+        workflow_summary["cleanup_summary"] = cleanup_summary_block(
+            cleanup=result,
+            cleanup_scope=scope,
+            cleanup_performed=bool(result.get("cleanup_performed", False)),
+            cleanup_deleted_paths=list(result.get("cleanup_deleted_paths", [])),
+            cleanup_reclaimed_bytes=int(result.get("cleanup_reclaimed_bytes", 0) or 0),
+        )
+        write_json(workflow_summary_path, workflow_summary)
+
+    return {
+        "command_name": "circyto cleanup-workflow",
+        "dry_run": False,
+        "force": force,
+        "workdir": str(workdir.resolve()),
+        "scope": scope,
+        "workflow_integrity_ok": bool(integrity.get("ok", False)),
+        "workflow_succeeded": bool(eligible_for_cleanup),
+        "cleanup": result,
+        "protected_paths": {
+            "must_keep": list(MUST_KEEP_OUTPUTS),
+            "user_inputs_never_delete": list(USER_INPUTS_NEVER_DELETE),
+        },
+        "workflow_summary_updated": workflow_summary is not None,
+        "integrity": integrity,
     }

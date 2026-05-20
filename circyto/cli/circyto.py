@@ -39,7 +39,11 @@ from circyto.pipeline.scomatic_interop import (
     export_scomatic_inputs,
     join_circ_snv_summary,
 )
-from circyto.pipeline.gene_expression_velocity import add_posthoc_rna_profile
+from circyto.pipeline.gene_expression_velocity import (
+    SUPPORTED_CLEANUP_SCOPES,
+    add_posthoc_rna_profile,
+    cleanup_completed_workflow,
+)
 from circyto.pipeline.workflow_integrity import check_workflow_integrity
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
 from circyto.pipeline.compare_detectors import compare_detectors as _compare_detectors
@@ -304,6 +308,32 @@ def check_workflow_command(
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
     if not summary.get("ok", False):
         raise typer.Exit(code=1)
+
+
+@app.command("cleanup-workflow")
+def cleanup_workflow_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory to clean."),
+    scope: str = typer.Option("alignments", "--scope", help="Cleanup scope: alignments, demux, or all."),
+    dry_run: bool = typer.Option(False, "--dry-run", help="Report planned deletions and estimated reclaimed bytes without deleting anything."),
+    force: bool = typer.Option(False, "--force", help="Allow cleanup even if `circyto check-workflow` reports integrity problems."),
+) -> None:
+    """
+    Clean regenerable workflow-owned intermediates from a completed workflow directory.
+    """
+    if scope not in SUPPORTED_CLEANUP_SCOPES:
+        raise typer.BadParameter(
+            f"Unsupported cleanup scope: {scope}. Choose from: {', '.join(SUPPORTED_CLEANUP_SCOPES)}"
+        )
+    try:
+        summary = cleanup_completed_workflow(
+            workdir=workdir,
+            scope=scope,
+            dry_run=dry_run,
+            force=force,
+        )
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command()
