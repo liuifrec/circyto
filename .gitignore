@@ -71,6 +71,8 @@ scripts/
 !scripts/
 scripts/*
 !scripts/check_full_length_workflow_outputs.py
+!scripts/check_rna_profile_outputs.py
+!scripts/compare_full_length_workflow_runs.py
 tools/CIRI3/scripts/
 circyto/pipeline/detector_compare.py
 testdata/**/*.fastq.gz
