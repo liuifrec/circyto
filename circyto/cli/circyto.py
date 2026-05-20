@@ -43,6 +43,7 @@ from circyto.pipeline.gene_expression_velocity import (
     SUPPORTED_CLEANUP_SCOPES,
     add_posthoc_rna_profile,
     cleanup_completed_workflow,
+    refresh_rna_qc_from_existing_outputs,
 )
 from circyto.pipeline.workflow_integrity import check_workflow_integrity
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
@@ -332,6 +333,20 @@ def cleanup_workflow_command(
             force=force,
         )
     except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("refresh-rna-qc")
+def refresh_rna_qc_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory with existing WORKDIR/rna outputs."),
+) -> None:
+    """
+    Regenerate RNA QC summaries from existing RNA profile outputs without requiring alignments.
+    """
+    try:
+        summary = refresh_rna_qc_from_existing_outputs(workdir=workdir)
+    except (FileNotFoundError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 

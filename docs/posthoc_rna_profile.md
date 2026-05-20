@@ -43,6 +43,8 @@ It does not:
 - rerun `h5ad` export
 - delete any files
 
+`circyto add-rna-profile` still requires usable alignment inputs because it recomputes `gene_counts.tsv` from the completed workflow's alignment manifest.
+
 ## Manifest discovery
 
 The command searches these paths in order:
@@ -58,6 +60,8 @@ The command writes:
 - `WORKDIR/rna/gene_counts.tsv`
 - `WORKDIR/rna/gene_feature_table.tsv`
 - `WORKDIR/rna/rna_import_summary.json`
+- `WORKDIR/qc/rna_qc.tsv`
+- `WORKDIR/qc/rna_gene_qc.tsv`
 
 If `WORKDIR/workflow_summary.json` exists, it is updated in place:
 
@@ -127,3 +131,23 @@ The script reports:
 - top expressed genes by total count
 - lowest / highest total RNA count cells
 - whether RNA cell IDs match `matrix/cell_index.txt` when present
+
+## Refreshing RNA QC After Cleanup
+
+If cleanup has already removed alignment SAM/BAM intermediates, regenerate RNA QC from the existing RNA outputs instead of rerunning `add-rna-profile`:
+
+```bash
+circyto refresh-rna-qc \
+  --workdir /path/to/completed_workflow
+```
+
+This command:
+
+- reads existing `rna/gene_counts.tsv`
+- reads existing `rna/gene_feature_table.tsv`
+- updates `rna/rna_import_summary.json`
+- rewrites `qc/rna_qc.tsv`
+- rewrites `qc/rna_gene_qc.tsv`
+- updates `workflow_summary.json` when present
+
+It does not require surviving alignment files and does not rewrite `gene_counts.tsv`.

@@ -605,6 +605,11 @@ def _circ_counts_by_cell(work_root: Path) -> dict[str, int]:
     return {str(cell_id): int(detected[idx]) for idx, cell_id in enumerate(cell_ids)}
 
 
+def _matrix_cell_ids(work_root: Path) -> list[str]:
+    path = work_root / "matrix" / "cell_index.txt"
+    return read_index_lines(path)
+
+
 def _mitochondrial_gene_mask(feature_df: pd.DataFrame) -> pd.Series:
     names = feature_df.get("gene_name", pd.Series([""] * len(feature_df))).astype(str).str.upper()
     ids = feature_df.get("gene_id", pd.Series([""] * len(feature_df))).astype(str).str.upper()
@@ -638,6 +643,10 @@ def _write_rna_qc_outputs(
     mt_counts = count_matrix.loc[mt_mask, cell_columns].sum(axis=0) if mt_mask.any() else pd.Series(0, index=cell_columns)
     ribo_counts = count_matrix.loc[ribo_mask, cell_columns].sum(axis=0) if ribo_mask.any() else pd.Series(0, index=cell_columns)
     circ_counts = _circ_counts_by_cell(work_root)
+    matrix_cell_ids = _matrix_cell_ids(work_root)
+    shared_cells = sorted(set(cell_columns) & set(matrix_cell_ids))
+    rna_only_cells = sorted(set(cell_columns) - set(matrix_cell_ids))
+    circ_only_cells = sorted(set(matrix_cell_ids) - set(cell_columns))
 
     per_cell = pd.DataFrame(
         {
@@ -652,7 +661,7 @@ def _write_rna_qc_outputs(
                 float(ribo_counts[cell_id] / total_counts[cell_id]) if float(total_counts[cell_id]) > 0 else 0.0
                 for cell_id in cell_columns
             ],
-            "circRNA_count": [circ_counts.get(str(cell_id)) for cell_id in cell_columns],
+            "circRNA_count": [int(circ_counts.get(str(cell_id), 0)) for cell_id in cell_columns],
         }
     )
 
@@ -681,11 +690,119 @@ def _write_rna_qc_outputs(
         "genes_detected_ge_3_cells": int((genes_detected >= 3).sum()),
         "genes_detected_ge_10_cells": int((genes_detected >= 10).sum()),
         "median_genes_per_cell": float(detected_genes.median()) if len(detected_genes) else 0.0,
+        "matrix_cell_id_match": bool(matrix_cell_ids) and not rna_only_cells and not circ_only_cells,
+        "matrix_shared_cell_count": int(len(shared_cells)),
+        "matrix_rna_only_cell_count": int(len(rna_only_cells)),
+        "matrix_circ_only_cell_count": int(len(circ_only_cells)),
         "filtering_report": {
             "automatic_filtering_applied": False,
             "threshold_summary_only": True,
         },
     }
+
+
+def refresh_rna_qc_from_existing_outputs(
+    *,
+    workdir: Path,
+) -> dict[str, Any]:
+    rna_dir = workdir / "rna"
+    gene_counts_path = rna_dir / "gene_counts.tsv"
+    feature_path = rna_dir / "gene_feature_table.tsv"
+    summary_path = rna_dir / "rna_import_summary.json"
+    if not gene_counts_path.exists():
+        raise FileNotFoundError(f"Missing RNA gene-count table: {gene_counts_path}")
+    if not feature_path.exists():
+        raise FileNotFoundError(f"Missing RNA gene feature table: {feature_path}")
+
+    counts_df = pd.read_csv(gene_counts_path, sep="\t", keep_default_na=False)
+    feature_df = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
+    required_count_columns = {"gene_id", "gene_name"}
+    missing_counts = sorted(required_count_columns - set(counts_df.columns))
+    if missing_counts:
+        raise ValueError(
+            f"{gene_counts_path} is missing required columns: {', '.join(missing_counts)}"
+        )
+    if "gene_id" not in feature_df.columns or "gene_name" not in feature_df.columns:
+        raise ValueError(
+            f"{feature_path} must contain at least gene_id and gene_name columns."
+        )
+
+    count_cell_ids = [str(column) for column in counts_df.columns if column not in {"gene_id", "gene_name"}]
+    if not count_cell_ids:
+        raise ValueError(f"{gene_counts_path} contains no RNA cell columns.")
+    validate_feature_id_uniqueness(counts_df["gene_id"].astype(str).tolist(), label="gene")
+    validate_feature_id_uniqueness(count_cell_ids, label="cell")
+    if summary_path.exists():
+        existing_summary = load_json(summary_path)
+    else:
+        existing_summary = {}
+
+    qc_summary = _write_rna_qc_outputs(
+        counts_df=counts_df,
+        feature_df=feature_df,
+        work_root=workdir,
+    )
+
+    refreshed_summary = {
+        **existing_summary,
+        "method": existing_summary.get("method", "existing-rna-refresh"),
+        "n_cells": int(len(count_cell_ids)),
+        "n_genes": int(counts_df.shape[0]),
+        "cell_ids": count_cell_ids,
+        "output_gene_counts": str(gene_counts_path.resolve()),
+        "output_gene_feature_table": str(feature_path.resolve()),
+        "output_rna_import_summary": str(summary_path.resolve()),
+        **qc_summary,
+    }
+    summary_path.write_text(json.dumps(refreshed_summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+    workflow_summary_path = workdir / "workflow_summary.json"
+    workflow_summary_updated = False
+    if workflow_summary_path.exists():
+        workflow_summary = load_json(workflow_summary_path)
+        workflow_summary["rna_import"] = {
+            **dict(workflow_summary.get("rna_import", {})),
+            **refreshed_summary,
+        }
+        workflow_summary = apply_standard_provenance(
+            workflow_summary,
+            command_name="circyto refresh-rna-qc",
+            workflow_type=str(workflow_summary.get("workflow_type", workflow_summary.get("workflow", "posthoc-rna-profile"))),
+            protocol=str(workflow_summary.get("protocol", "unknown")),
+            read_layout=str(workflow_summary.get("read_layout", "unknown")),
+            genome_fasta=str(workflow_summary.get("genome_fasta")) if workflow_summary.get("genome_fasta") else None,
+            gtf=str(workflow_summary.get("gtf")) if workflow_summary.get("gtf") else None,
+            detector_backend=str(workflow_summary.get("detector_backend")) if workflow_summary.get("detector_backend") else None,
+            started_at=str(workflow_summary.get("started_at", utc_now_iso())),
+            completed_at=utc_now_iso(),
+            elapsed_seconds=float(workflow_summary.get("elapsed_seconds", 0.0) or 0.0),
+            cleanup=workflow_summary.get("cleanup"),
+            cleanup_scope=workflow_summary.get("cleanup_scope"),
+            cleanup_performed=bool(workflow_summary.get("cleanup_performed", False)),
+            cleanup_deleted_paths=list(workflow_summary.get("cleanup_deleted_paths", [])),
+            cleanup_reclaimed_bytes=int(workflow_summary.get("cleanup_reclaimed_bytes", 0) or 0),
+            workflow_uuid=str(workflow_summary.get("workflow_uuid")) if workflow_summary.get("workflow_uuid") else None,
+        )
+        write_json(workflow_summary_path, workflow_summary)
+        workflow_summary_updated = True
+
+    return apply_standard_provenance(
+        {
+            "workdir": str(workdir.resolve()),
+            "rna_import": refreshed_summary,
+            "workflow_summary_updated": workflow_summary_updated,
+        },
+        command_name="circyto refresh-rna-qc",
+        workflow_type="refresh-rna-qc",
+        protocol="unknown",
+        read_layout="unknown",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
 
 
 def find_completed_workflow_alignment_manifest(workdir: Path) -> Path:

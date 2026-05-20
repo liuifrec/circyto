@@ -149,3 +149,61 @@ def test_add_rna_profile_missing_manifest_gives_clear_error(tmp_path: Path) -> N
     )
     assert result.exit_code != 0
     assert "Could not find alignment manifest" in result.output
+
+
+def test_refresh_rna_qc_succeeds_from_existing_rna_outputs_without_alignments(tmp_path: Path) -> None:
+    workdir = tmp_path / "completed"
+    (workdir / "rna").mkdir(parents=True, exist_ok=True)
+    (workdir / "rna" / "gene_counts.tsv").write_text(
+        "gene_id\tgene_name\tcellA\tDIYHEK_192\n"
+        "GENE1\tMT-CO1\t2\t0\n"
+        "GENE2\tRPLP0\t1\t3\n",
+        encoding="utf-8",
+    )
+    (workdir / "rna" / "gene_feature_table.tsv").write_text(
+        "gene_id\tgene_name\tgene_biotype\n"
+        "GENE1\tMT-CO1\tprotein_coding\n"
+        "GENE2\tRPLP0\tprotein_coding\n",
+        encoding="utf-8",
+    )
+    (workdir / "rna" / "rna_import_summary.json").write_text(
+        json.dumps({"method": "simple-overlap", "assigned_templates": 3}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    (workdir / "matrix").mkdir(parents=True, exist_ok=True)
+    (workdir / "matrix" / "circ_counts.mtx").write_text(
+        "%%MatrixMarket matrix coordinate integer general\n%\n2 1 1\n1 1 4\n",
+        encoding="utf-8",
+    )
+    (workdir / "matrix" / "circ_index.txt").write_text("circ1\ncirc2\n", encoding="utf-8")
+    (workdir / "matrix" / "cell_index.txt").write_text("cellA\n", encoding="utf-8")
+    (workdir / "workflow_summary.json").write_text(
+        json.dumps({"workflow": "full-length-circrna", "rna_import": {"method": "simple-overlap"}}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+
+    result = runner.invoke(app, ["refresh-rna-qc", "--workdir", str(workdir)])
+    assert result.exit_code == 0, result.stdout
+    payload = json.loads(result.stdout)
+    assert payload["command_name"] == "circyto refresh-rna-qc"
+    assert (workdir / "qc" / "rna_qc.tsv").exists()
+    assert (workdir / "qc" / "rna_gene_qc.tsv").exists()
+    qc_text = (workdir / "qc" / "rna_qc.tsv").read_text(encoding="utf-8")
+    assert "DIYHEK_192" in qc_text
+    assert "\t0\n" in qc_text
+    refreshed = json.loads((workdir / "rna" / "rna_import_summary.json").read_text(encoding="utf-8"))
+    assert refreshed["genes_detected_ge_1_cell"] == 2
+    assert refreshed["genes_detected_ge_3_cells"] == 0
+    assert refreshed["median_genes_per_cell"] == 1.5
+    assert refreshed["matrix_rna_only_cell_count"] == 1
+    summary = json.loads((workdir / "workflow_summary.json").read_text(encoding="utf-8"))
+    assert summary["command_name"] == "circyto refresh-rna-qc"
+    assert summary["rna_import"]["output_rna_qc"].endswith("qc/rna_qc.tsv")
+
+
+def test_refresh_rna_qc_missing_rna_outputs_fails_clearly(tmp_path: Path) -> None:
+    workdir = tmp_path / "completed"
+    workdir.mkdir()
+    result = runner.invoke(app, ["refresh-rna-qc", "--workdir", str(workdir)])
+    assert result.exit_code != 0
+    assert "Missing RNA gene-count table" in result.output

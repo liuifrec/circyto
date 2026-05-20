@@ -102,6 +102,8 @@ Behavior:
 - `circyto check-workflow` must pass before cleanup unless `--force` is provided
 - cleanup never deletes `matrix/`, `anndata/`, `rna/`, `qc/`, `logs/`, user manifests, or raw FASTQs
 
+Because `add-rna-profile` recomputes RNA counts from alignments, it still requires surviving alignment files. After cleanup, use `circyto refresh-rna-qc --workdir ...` to regenerate RNA QC from the preserved `rna/` outputs without restoring SAM/BAM intermediates.
+
 ## Guardrails
 
 - cleanup is opt-in only
