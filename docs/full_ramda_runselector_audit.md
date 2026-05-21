@@ -13,7 +13,7 @@ Audited datasets:
   - `SRP537170`
   - GEO series text in repo notes also maps the HAP1 study to `PRJNA1169834`
 
-## Current validated RNA-side run set
+## Current validated and expected RNA-side run structure
 
 ### IMR90
 
@@ -22,7 +22,7 @@ Validated RNA-side single-end SRRs captured in the repo metadata:
 - `SRR30918126`
 - `SRR30918117`
 
-Estimated RNA-side cell count from the current public validated set:
+Estimated RNA-side cell count from the currently confirmed repo snapshot:
 
 - 2 cell libraries
 
@@ -42,7 +42,7 @@ Validated RNA-side paired-end SRRs captured in the repo metadata:
 - `SRR30911453`
 - `SRR30911559`
 
-Estimated RNA-side cell count from the current public validated set:
+Estimated RNA-side cell count from the currently confirmed repo snapshot:
 
 - 3 cell libraries
 
@@ -115,15 +115,25 @@ Outputs:
 
 ## Filtering strategy
 
-The scripts are intentionally conservative.
+The scripts are intentionally conservative, but they no longer hardcode only the pilot SRRs.
 
 They:
 
-- retain only the currently validated public RNA-side SRR set
+- retain RunSelector rows that match the RNA-side library structure
+- require:
+  - `Assay Type = RNA-Seq`
+  - `LibrarySource` containing `TRANSCRIPTOMIC`
+  - `LibrarySelection = cDNA`
+- exclude:
+  - `Assay Type = OTHER`
+  - `LibrarySource = GENOMIC`
+  - obvious DNA / exome rows from metadata text
+- enforce the dataset-expected layout:
+  - IMR90 single-end
+  - HAP1 paired-end
 - extract metadata fields from the RunInfo CSV where available
-- exclude rows whose metadata text contains `dna` or `exome`
 
-This is safer than trying to infer RNA-side eligibility from free text alone, because the present manuscript-scale public set is still small and explicitly known.
+This stays aligned with the currently validated public structure while allowing future manuscript-scale manifests to include all RNA-side rows exposed by the official RunSelector export.
 
 ## Manifest fields
 
