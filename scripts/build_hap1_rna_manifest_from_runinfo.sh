@@ -165,77 +165,81 @@ rows.sort(key=lambda r: r["srr"])
 if not rows:
     raise SystemExit("no HAP1 RNA-side rows were found in the supplied RunInfo CSV")
 
+manifest_fieldnames = [
+    "sample_id",
+    "fastq_1",
+    "fastq_2",
+    "protocol",
+    "strandedness",
+    "read_layout",
+    "srr",
+    "gsm",
+    "condition",
+    "cell_cycle_phase",
+]
+
 with manifest_out.open("w", newline="", encoding="utf-8") as handle:
-    writer = csv.writer(handle, delimiter="\t")
-    writer.writerow([
-        "sample_id",
-        "fastq_1",
-        "fastq_2",
-        "protocol",
-        "strandedness",
-        "read_layout",
-        "srr",
-        "gsm",
-        "condition",
-        "cell_cycle_phase",
-    ])
+    writer = csv.DictWriter(handle, fieldnames=manifest_fieldnames, delimiter="\t", lineterminator="\n")
+    writer.writeheader()
     for row in rows:
-        writer.writerow([
-            row["sample_id"],
-            f"raw/{row['srr']}_1.fastq.gz",
-            f"raw/{row['srr']}_2.fastq.gz",
-            "ramda",
-            "unstranded",
-            row["read_layout"],
-            row["srr"],
-            row["gsm"],
-            row["condition"],
-            row["cell_cycle_phase"],
-        ])
+        writer.writerow(
+            {
+                "sample_id": row["sample_id"],
+                "fastq_1": f"raw/{row['srr']}_1.fastq.gz",
+                "fastq_2": f"raw/{row['srr']}_2.fastq.gz",
+                "protocol": "ramda",
+                "strandedness": "unstranded",
+                "read_layout": "paired",
+                "srr": row["srr"],
+                "gsm": row["gsm"],
+                "condition": row["condition"],
+                "cell_cycle_phase": row["cell_cycle_phase"],
+            }
+        )
 
 with inventory_out.open("w", newline="", encoding="utf-8") as handle:
-    writer = csv.writer(handle, delimiter="\t")
-    writer.writerow([
-        "sample_id",
-        "srr",
-        "gsm",
-        "library_name",
-        "treatment",
-        "condition",
-        "cell_cycle_phase",
-        "biosample",
-        "experiment",
-        "read_layout",
-        "library_strategy",
-        "library_source",
-        "library_selection",
-        "organism",
-        "sample_name",
-        "title",
-        "spots",
-        "bases",
-    ])
+    writer = csv.DictWriter(
+        handle,
+        fieldnames=[
+            "sample_id",
+            "srr",
+            "gsm",
+            "library_name",
+            "treatment",
+            "condition",
+            "cell_cycle_phase",
+            "biosample",
+            "experiment",
+            "read_layout",
+            "library_strategy",
+            "library_source",
+            "library_selection",
+            "organism",
+            "sample_name",
+            "title",
+            "spots",
+            "bases",
+        ],
+        delimiter="\t",
+        lineterminator="\n",
+    )
+    writer.writeheader()
     for row in rows:
-        writer.writerow([
-            row["sample_id"],
-            row["srr"],
-            row["gsm"],
-            row["library_name"],
-            row["treatment"],
-            row["condition"],
-            row["cell_cycle_phase"],
-            row["biosample"],
-            row["experiment"],
-            row["read_layout"],
-            row["library_strategy"],
-            row["library_source"],
-            row["library_selection"],
-            row["organism"],
-            row["sample_name"],
-            row["title"],
-            row["spots"],
-            row["bases"],
-        ])
+        writer.writerow(row)
+
+with manifest_out.open(newline="", encoding="utf-8") as handle:
+    manifest_reader = csv.DictReader(handle, delimiter="\t")
+    for row in manifest_reader:
+        sample_id = (row.get("sample_id") or "").strip()
+        read_layout = (row.get("read_layout") or "").strip()
+        if read_layout not in {"paired", "paired-end"}:
+            raise SystemExit(
+                f"manifest validation failed for {sample_id or '<unknown>'}: invalid read_layout {read_layout!r}"
+            )
+        if not (row.get("fastq_1") or "").strip() or not (row.get("fastq_2") or "").strip():
+            raise SystemExit(
+                f"manifest validation failed for {sample_id or '<unknown>'}: paired FASTQ field is empty"
+            )
 
 print(f"[INFO] wrote {manifest_out}")
 print(f"[INFO] wrote {inventory_out}")

@@ -57,6 +57,12 @@ def test_build_imr90_rna_manifest_from_runinfo_includes_only_rnaseq_rows(tmp_pat
     assert "RNA-side rows retained: 2" in result.stdout
     assert "DNA/genomic/OTHER rows excluded: 1" in result.stdout
 
+    with (outdir / "manifest_imr90_rna_all.tsv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        rows = list(reader)
+    assert rows[0]["fastq_2"] == ""
+    assert rows[0]["read_layout"] == "single"
+
 
 def test_build_hap1_rna_manifest_from_runinfo_excludes_genomic_and_uses_paired_naming(tmp_path: Path) -> None:
     csv_path = tmp_path / "SraRunTable_hap1.csv"
@@ -93,6 +99,11 @@ def test_build_hap1_rna_manifest_from_runinfo_excludes_genomic_and_uses_paired_n
     assert "SRR12" not in set(inventory["srr"])
     assert "RNA-side rows retained: 2" in result.stdout
     assert "DNA/genomic/OTHER rows excluded: 1" in result.stdout
+
+    with (outdir / "manifest_hap1_rna_all.tsv").open(newline="", encoding="utf-8") as handle:
+        reader = csv.DictReader(handle, delimiter="\t")
+        rows = list(reader)
+    assert rows[0]["read_layout"] == "paired"
 
 
 def test_builders_require_rnaseq_transcriptomic_cdna_rules(tmp_path: Path) -> None:
