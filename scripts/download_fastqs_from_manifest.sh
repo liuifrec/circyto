@@ -29,6 +29,12 @@ echo "[INFO] raw_dir=${RAW_DIR}"
 echo "[INFO] tmp_dir=${TMP_DIR}"
 echo "[INFO] log_path=${LOG_PATH}"
 
+trim_cr() {
+  local value="$1"
+  value="${value%$'\r'}"
+  printf '%s' "${value}"
+}
+
 check_disk_space() {
   local root_dir="$1"
   local required_gb="$2"
@@ -79,10 +85,49 @@ download_paired_end_if_missing() {
   gzip -f "${RAW_DIR}/${srr}_1.fastq" "${RAW_DIR}/${srr}_2.fastq"
 }
 
-tail -n +2 "${MANIFEST}" | while IFS=$'\t' read -r sample_id fastq_1 fastq_2 protocol strandedness read_layout extra_rest; do
+header_line="$(head -n 1 "${MANIFEST}")"
+if [[ -z "${header_line}" ]]; then
+  echo "[ERROR] manifest is empty: ${MANIFEST}" >&2
+  exit 1
+fi
+
+IFS=$'\t' read -r -a header_fields <<< "${header_line}"
+sample_id_idx=-1
+fastq_1_idx=-1
+fastq_2_idx=-1
+read_layout_idx=-1
+
+for i in "${!header_fields[@]}"; do
+  column_name="$(trim_cr "${header_fields[$i]}")"
+  case "${column_name}" in
+    sample_id)
+      sample_id_idx="${i}"
+      ;;
+    fastq_1)
+      fastq_1_idx="${i}"
+      ;;
+    fastq_2)
+      fastq_2_idx="${i}"
+      ;;
+    read_layout)
+      read_layout_idx="${i}"
+      ;;
+  esac
+done
+
+if [[ "${sample_id_idx}" -lt 0 || "${fastq_1_idx}" -lt 0 || "${fastq_2_idx}" -lt 0 || "${read_layout_idx}" -lt 0 ]]; then
+  echo "[ERROR] manifest must contain header columns: sample_id, fastq_1, fastq_2, read_layout" >&2
+  exit 1
+fi
+
+tail -n +2 "${MANIFEST}" | while IFS=$'\t' read -r -a fields; do
+  sample_id="$(trim_cr "${fields[$sample_id_idx]:-}")"
   if [[ -z "${sample_id}" ]]; then
     continue
   fi
+  fastq_1="$(trim_cr "${fields[$fastq_1_idx]:-}")"
+  fastq_2="$(trim_cr "${fields[$fastq_2_idx]:-}")"
+  read_layout="$(trim_cr "${fields[$read_layout_idx]:-}")"
 
   layout_normalized="$(printf '%s' "${read_layout}" | tr '[:upper:]' '[:lower:]')"
   if [[ "${layout_normalized}" == "single" || "${layout_normalized}" == "single-end" ]]; then
