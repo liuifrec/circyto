@@ -84,6 +84,26 @@ Additional remaining IMR90 downloads from the current validated set:
 
 ## Staged scripts
 
+### Generic manifest-driven FASTQ download
+
+```bash
+bash scripts/download_fastqs_from_manifest.sh <manifest.tsv> <dataset_root>
+```
+
+Behavior:
+
+- reads a `circyto` manifest with `sample_id`, `fastq_1`, `fastq_2`, `protocol`, `strandedness`, `read_layout`
+- skips FASTQs that already exist
+- infers `SRR` from the expected `raw/` FASTQ path
+- uses `prefetch` then `fasterq-dump`
+- gzips outputs and preserves expected names
+- supports both single-end and paired-end manifests
+- writes logs under `dataset_root/logs`
+- uses temporary SRA staging under `dataset_root/tmp_downloads`
+- checks disk space before each SRR download
+- does not run any `circyto` workflow
+- does not delete existing FASTQs
+
 ### IMR90 full stack
 
 ```bash
@@ -99,6 +119,14 @@ Behavior:
 - uses the validated BWA single-end route
 - writes to:
   `/user/ifrec/liuyuchen/circyto_redo/scrr_imr90/work_hg38_fullstack`
+
+Full IMR90 manifest download command:
+
+```bash
+bash scripts/download_fastqs_from_manifest.sh \
+  /user/ifrec/liuyuchen/circyto_redo/scrr_imr90/manifest_all.tsv \
+  /user/ifrec/liuyuchen/circyto_redo/scrr_imr90
+```
 
 ### HAP1 remaining downloads and manifest expansion
 
@@ -119,6 +147,22 @@ Behavior:
   - `SRR30911559_2.fastq.gz`
 - writes:
   - `/user/ifrec/liuyuchen/circyto_redo/scrr_hap1/manifest_all.tsv`
+
+Generic HAP1 batch10 manifest download command:
+
+```bash
+bash scripts/download_fastqs_from_manifest.sh \
+  /user/ifrec/liuyuchen/circyto_redo/scrr_hap1/manifest_batch10.tsv \
+  /user/ifrec/liuyuchen/circyto_redo/scrr_hap1
+```
+
+If the intended full HAP1 run is the complete RNA-side set instead of a batch manifest, use:
+
+```bash
+bash scripts/download_fastqs_from_manifest.sh \
+  /user/ifrec/liuyuchen/circyto_redo/scrr_hap1/manifest_all.tsv \
+  /user/ifrec/liuyuchen/circyto_redo/scrr_hap1
+```
 
 ### HAP1 full stack
 
