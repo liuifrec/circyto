@@ -47,6 +47,20 @@ def test_validate_cell_id_consistency_fails_on_mismatch() -> None:
         validate_cell_id_consistency(["cellA", "cellB"], ["cellA", "cellC"])
 
 
+def test_validate_cell_id_consistency_allows_order_difference_by_default() -> None:
+    ordered = validate_cell_id_consistency(["cellA", "cellB"], ["cellB", "cellA"])
+    assert ordered == ["cellA", "cellB"]
+
+
+def test_validate_cell_id_consistency_can_require_ordered_equality() -> None:
+    with pytest.raises(ValueError, match="Cell ID order mismatch"):
+        validate_cell_id_consistency(
+            ["cellA", "cellB"],
+            ["cellB", "cellA"],
+            require_ordered_equality=True,
+        )
+
+
 def test_validate_feature_id_uniqueness_fails_on_duplicate_ids() -> None:
     with pytest.raises(ValueError, match="Duplicate gene IDs detected"):
         validate_feature_id_uniqueness(["ENSG1", "ENSG1"], label="gene")
@@ -120,6 +134,22 @@ def test_import_gene_counts_table_fails_on_cell_id_mismatch(tmp_path: Path) -> N
     )
     with pytest.raises(ValueError, match="Cell ID mismatch"):
         import_gene_counts_table(path=path, expected_cell_ids=["cellA", "cellB"], outdir=tmp_path / "rna")
+
+
+def test_import_gene_counts_table_reorders_columns_to_expected_cell_ids(tmp_path: Path) -> None:
+    path = tmp_path / "gene_counts.tsv"
+    path.write_text(
+        "gene_id\tgene_name\tcellB\tcellA\n"
+        "ENSG1\tGENE1\t2\t1\n",
+        encoding="utf-8",
+    )
+    outdir = tmp_path / "rna"
+    summary = import_gene_counts_table(path=path, expected_cell_ids=["cellA", "cellB"], outdir=outdir)
+    df = pd.read_csv(outdir / "gene_counts.tsv", sep="\t")
+    assert list(df.columns) == ["gene_id", "gene_name", "cellA", "cellB"]
+    assert int(df.loc[0, "cellA"]) == 1
+    assert int(df.loc[0, "cellB"]) == 2
+    assert summary["count_table_columns"] == ["gene_id", "gene_name", "cellA", "cellB"]
 
 
 def _write_gtf(path: Path) -> None:
@@ -256,6 +286,41 @@ def test_count_gene_expression_from_alignments_matches_naive_expected_counts(tmp
     assert summary["assigned_templates"] == 3
     assert summary["ambiguous_templates_excluded"] == 1
     assert summary["unassigned_templates"] == 0
+
+
+def test_count_gene_expression_from_alignments_preserves_expected_cell_order(tmp_path: Path) -> None:
+    gtf = tmp_path / "genes.gtf"
+    _write_gtf(gtf)
+    sam_a = tmp_path / "cellA.sam"
+    sam_a.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "readA\t0\tchr21\t12\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n",
+        encoding="utf-8",
+    )
+    sam_b = tmp_path / "cellB.sam"
+    sam_b.write_text(
+        "@SQ\tSN:chr21\tLN:1000\n"
+        "readB\t0\tchr21\t40\t255\t10M\t*\t0\t0\tACGTACGTAC\t!!!!!!!!!!\n",
+        encoding="utf-8",
+    )
+    manifest = tmp_path / "alignment_manifest.tsv"
+    manifest.write_text(
+        "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\n"
+        f"cellB\t\t{sam_b}\tgrp\tsingle-end\tbwa-mem\t/tmp/ref.fa\tk1\t/tmp/source.tsv\t0\tbwa_mem\tunsorted\n"
+        f"cellA\t\t{sam_a}\tgrp\tsingle-end\tbwa-mem\t/tmp/ref.fa\tk2\t/tmp/source.tsv\t0\tbwa_mem\tunsorted\n",
+        encoding="utf-8",
+    )
+
+    summary = count_gene_expression_from_alignments(
+        alignment_manifest_path=manifest,
+        gtf_path=gtf,
+        expected_cell_ids=["cellA", "cellB"],
+        outdir=tmp_path / "rna",
+    )
+
+    df = pd.read_csv(tmp_path / "rna" / "gene_counts.tsv", sep="\t")
+    assert list(df.columns) == ["gene_id", "gene_name", "cellA", "cellB"]
+    assert summary["cell_ids"] == ["cellA", "cellB"]
 
 
 def test_build_cleanup_plan_distinguishes_user_raw_fastq_from_generated_demux_fastq(tmp_path: Path) -> None:

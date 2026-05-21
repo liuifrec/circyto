@@ -184,20 +184,28 @@ def validate_cell_id_consistency(
     *,
     circ_label: str = "circ",
     rna_label: str = "rna",
-) -> None:
+    require_ordered_equality: bool = False,
+) -> list[str]:
     circ = [str(cell_id).strip() for cell_id in circ_cell_ids if str(cell_id).strip()]
     rna = [str(cell_id).strip() for cell_id in rna_cell_ids if str(cell_id).strip()]
     if not circ:
         raise ValueError(f"{circ_label} cell ID set is empty")
     if not rna:
         raise ValueError(f"{rna_label} cell ID set is empty")
-    if circ != rna:
+    if set(circ) != set(rna):
         only_circ = sorted(set(circ) - set(rna))
         only_rna = sorted(set(rna) - set(circ))
         raise ValueError(
             f"Cell ID mismatch between {circ_label} and {rna_label}. "
             f"Only in {circ_label}: {only_circ[:5]}. Only in {rna_label}: {only_rna[:5]}."
         )
+    if require_ordered_equality and circ != rna:
+        raise ValueError(
+            f"Cell ID order mismatch between {circ_label} and {rna_label}. "
+            f"Expected {circ_label} order starts with {circ[:5]}. "
+            f"Observed {rna_label} order starts with {rna[:5]}."
+        )
+    return list(circ)
 
 
 def validate_gene_expression_table_schema(path: Path) -> dict[str, Any]:
@@ -240,9 +248,15 @@ def import_gene_counts_table(
     summary = validate_gene_expression_table_schema(path)
     df = pd.read_csv(path, sep="\t", keep_default_na=False)
     cell_columns = [column for column in df.columns if column not in {"gene_id", "gene_name"}]
-    validate_cell_id_consistency(expected_cell_ids, [str(column) for column in cell_columns], circ_label="circ", rna_label="rna")
+    ordered_cell_ids = validate_cell_id_consistency(
+        expected_cell_ids,
+        [str(column) for column in cell_columns],
+        circ_label="circ",
+        rna_label="rna",
+    )
 
     numeric = df[cell_columns].apply(pd.to_numeric, errors="raise")
+    numeric = numeric[ordered_cell_ids]
     normalized_counts = pd.concat([df[["gene_id", "gene_name"]].copy(), numeric], axis=1)
     feature_table = df[["gene_id", "gene_name"]].copy()
 
@@ -255,11 +269,11 @@ def import_gene_counts_table(
 
     payload = {
         **summary,
-        "cell_ids": [str(column) for column in cell_columns],
+        "cell_ids": list(ordered_cell_ids),
         "output_gene_counts": str(gene_counts_out.resolve()),
         "output_gene_feature_table": str(feature_out.resolve()),
         "feature_table_columns": ["gene_id", "gene_name"],
-        "count_table_columns": ["gene_id", "gene_name", *[str(column) for column in cell_columns]],
+        "count_table_columns": ["gene_id", "gene_name", *ordered_cell_ids],
         "total_counts_sum": float(numeric.to_numpy().sum()),
     }
     payload.update(
@@ -507,19 +521,24 @@ def count_gene_expression_from_alignments(
     genes, genes_by_chrom = _load_cached_gene_index(_gtf_cache_key(gtf_path))
     rows = read_alignment_manifest_tsv(alignment_manifest_path, validate_files=True)
     row_by_cell = {row.cell_id: row for row in rows}
-    validate_cell_id_consistency(expected_cell_ids, list(row_by_cell.keys()), circ_label="circ", rna_label="alignment")
+    ordered_cell_ids = validate_cell_id_consistency(
+        expected_cell_ids,
+        list(row_by_cell.keys()),
+        circ_label="circ",
+        rna_label="alignment",
+    )
 
     counts_by_gene: dict[str, dict[str, int]] = {
-        str(gene["gene_id"]): {cell_id: 0 for cell_id in expected_cell_ids}
+        str(gene["gene_id"]): {cell_id: 0 for cell_id in ordered_cell_ids}
         for gene in genes
     }
-    per_cell_assigned: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
-    per_cell_ambiguous: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
-    per_cell_unassigned: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
-    per_cell_templates_seen: dict[str, int] = {cell_id: 0 for cell_id in expected_cell_ids}
-    per_cell_elapsed_seconds: dict[str, float] = {cell_id: 0.0 for cell_id in expected_cell_ids}
+    per_cell_assigned: dict[str, int] = {cell_id: 0 for cell_id in ordered_cell_ids}
+    per_cell_ambiguous: dict[str, int] = {cell_id: 0 for cell_id in ordered_cell_ids}
+    per_cell_unassigned: dict[str, int] = {cell_id: 0 for cell_id in ordered_cell_ids}
+    per_cell_templates_seen: dict[str, int] = {cell_id: 0 for cell_id in ordered_cell_ids}
+    per_cell_elapsed_seconds: dict[str, float] = {cell_id: 0.0 for cell_id in ordered_cell_ids}
 
-    for cell_id in expected_cell_ids:
+    for cell_id in ordered_cell_ids:
         cell_started = time.perf_counter()
         row = row_by_cell[cell_id]
         alignment_path = Path(row.alignment_path)
@@ -549,9 +568,9 @@ def count_gene_expression_from_alignments(
             "gene_id": gene["gene_id"],
             "gene_name": gene["gene_name"],
         }
-        row.update({cell_id: counts_by_gene[str(gene["gene_id"])][cell_id] for cell_id in expected_cell_ids})
+        row.update({cell_id: counts_by_gene[str(gene["gene_id"])][cell_id] for cell_id in ordered_cell_ids})
         count_rows.append(row)
-    counts_df = pd.DataFrame(count_rows, columns=["gene_id", "gene_name", *expected_cell_ids])
+    counts_df = pd.DataFrame(count_rows, columns=["gene_id", "gene_name", *ordered_cell_ids])
 
     outdir.mkdir(parents=True, exist_ok=True)
     gene_counts_out = outdir / "gene_counts.tsv"
@@ -567,17 +586,17 @@ def count_gene_expression_from_alignments(
         "path": str(alignment_manifest_path.resolve()),
         "gtf": str(gtf_path.resolve()),
         "n_genes": int(feature_df.shape[0]),
-        "n_cells": int(len(expected_cell_ids)),
-        "cell_ids": list(expected_cell_ids),
+        "n_cells": int(len(ordered_cell_ids)),
+        "cell_ids": list(ordered_cell_ids),
         "feature_id_column": "gene_id",
         "feature_name_column": "gene_name",
         "feature_table_columns": ["gene_id", "gene_name", "chrom", "start", "end", "strand", "gene_biotype"],
-        "count_table_columns": ["gene_id", "gene_name", *expected_cell_ids],
+        "count_table_columns": ["gene_id", "gene_name", *ordered_cell_ids],
         "output_gene_counts": str(gene_counts_out.resolve()),
         "output_gene_feature_table": str(feature_out.resolve()),
         "output_rna_import_summary": str(summary_out.resolve()),
-        "total_counts_sum": int(counts_df[expected_cell_ids].to_numpy().sum()),
-        "cells_processed": int(len(expected_cell_ids)),
+        "total_counts_sum": int(counts_df[ordered_cell_ids].to_numpy().sum()),
+        "cells_processed": int(len(ordered_cell_ids)),
         "templates_seen": int(sum(per_cell_templates_seen.values())),
         "assigned_templates": int(sum(per_cell_assigned.values())),
         "ambiguous_templates_excluded": int(sum(per_cell_ambiguous.values())),

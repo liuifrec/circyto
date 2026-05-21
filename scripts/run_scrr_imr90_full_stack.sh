@@ -3,7 +3,13 @@ set -euo pipefail
 
 DATE_TAG="$(date +%Y%m%d)"
 ROOT_DIR="/user/ifrec/liuyuchen/circyto_redo/scrr_imr90"
-MANIFEST="${ROOT_DIR}/manifest.tsv"
+MANIFEST_DEFAULT="${ROOT_DIR}/manifest.tsv"
+MANIFEST_ALL="${ROOT_DIR}/manifest_all.tsv"
+if [[ -f "${MANIFEST_ALL}" ]]; then
+  MANIFEST="${MANIFEST_ALL}"
+else
+  MANIFEST="${MANIFEST_DEFAULT}"
+fi
 RAW_DIR="${ROOT_DIR}/raw"
 OUTDIR="${ROOT_DIR}/work_hg38_fullstack"
 LOG_DIR="${ROOT_DIR}/logs"
@@ -20,6 +26,7 @@ echo "[INFO] $(date -Is) starting IMR90 full-stack run"
 echo "[INFO] root_dir=${ROOT_DIR}"
 echo "[INFO] raw_dir=${RAW_DIR}"
 echo "[INFO] manifest=${MANIFEST}"
+echo "[INFO] manifest_selection_rule=use manifest_all.tsv if present, else manifest.tsv"
 echo "[INFO] outdir=${OUTDIR}"
 echo "[INFO] expected_route=single-end FASTQ -> BWA-MEM -> direct SAM -> CIRI3 -> matrix -> h5ad"
 echo "[INFO] current available runs:"

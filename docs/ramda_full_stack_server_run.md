@@ -22,6 +22,16 @@ These correspond to the current completed IMR90 pilot:
 - `SRR30918117`
 - `SRR30918126`
 
+Current validated public IMR90 RNA-side set in the repo metadata:
+
+- `SRR30918117`
+- `SRR30918126`
+
+Practical implication:
+
+- the current IMR90 pilot already spans the full validated public IMR90 RNA-side candidate set captured in `circyto`
+- `manifest_all.tsv` for IMR90 is still useful as a stable full-dataset manifest, even if it currently contains the same two runs as the pilot manifest
+
 ### HAP1 paired-end pilot
 
 Directory:
@@ -52,6 +62,17 @@ Only the latter two remain to be downloaded if a larger HAP1 run is desired:
 - `SRR30911453`
 - `SRR30911559`
 
+## Remaining IMR90 candidate runs
+
+Candidate RNA-side single-end IMR90 runs from the current repo metadata:
+
+- `SRR30918117`
+- `SRR30918126`
+
+Additional remaining IMR90 downloads from the current validated set:
+
+- none
+
 ## References
 
 - genome FASTA:
@@ -66,12 +87,14 @@ Only the latter two remain to be downloaded if a larger HAP1 run is desired:
 ### IMR90 full stack
 
 ```bash
+bash scripts/prepare_scrr_imr90_remaining_downloads.sh
 bash scripts/run_scrr_imr90_full_stack.sh
 ```
 
 Behavior:
 
-- reuses current `manifest.tsv`
+- writes `manifest_all.tsv` for the complete validated IMR90 candidate set in the repo metadata
+- uses `manifest_all.tsv` if present, else falls back to `manifest.tsv`
 - expects single-end rows
 - uses the validated BWA single-end route
 - writes to:
@@ -163,6 +186,7 @@ Additional outputs written by the wrappers:
 Logs:
 
 - `logs/run_scrr_imr90_full_stack_YYYYMMDD.log`
+- `logs/prepare_scrr_imr90_remaining_downloads_YYYYMMDD.log`
 - `logs/run_scrr_hap1_full_stack_YYYYMMDD.log`
 - `logs/prepare_scrr_hap1_remaining_downloads_YYYYMMDD.log`
 
@@ -179,6 +203,7 @@ Conservative recommendation:
 
 - keep IMR90 as the lower-risk full-stack rerun
 - treat HAP1 full-stack execution as the storage-heavy step
+- IMR90 manifest preparation is low risk and mainly normalizes the full validated IMR90 set into `manifest_all.tsv`
 - run HAP1 download preparation first, confirm free space, then execute the full stack
 
 ## Cleanup plan
