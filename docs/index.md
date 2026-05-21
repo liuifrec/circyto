@@ -15,6 +15,7 @@ Welcome to the `circyto` documentation.
 - [RNA circ integration](rna_circ_integration.md)
 - [MuData export](mudata_export.md)
 - [MuData downstream](mudata_downstream.md)
+- [Scanpy downstream](scanpy_downstream.md)
 - [Intermediate cleanup policy](intermediate_cleanup_policy.md)
 - [Workflow integrity and provenance](workflow_integrity_and_provenance.md)
 - [RamDA / Shin-RamDA protocol notes](protocols_ramda_shin_ramda.md)

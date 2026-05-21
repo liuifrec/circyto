@@ -97,3 +97,5 @@ After export, inspect the object structure and QC summaries with:
 circyto inspect-mudata --input /path/to/full_length.h5mu
 circyto summarize-mudata-qc --input /path/to/full_length.h5mu
 ```
+
+For optional exploratory Scanpy analysis over the RNA modality, see [Scanpy downstream](scanpy_downstream.md).

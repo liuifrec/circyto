@@ -57,6 +57,7 @@ from circyto.pipeline.collect_circexplorer2_matrix import (
     collect_circexplorer2_matrix as collect_circexplorer2_matrix_from_dir,
 )
 from circyto.pipeline.public_dataset_prepare import prepare_public_dataset
+from circyto.pipeline.scanpy_downstream import scanpy_pca_workflow, scanpy_qc_report
 from circyto.detectors import build_default_engines, get_detector_capabilities
 from circyto.detectors.ciri3 import Ciri3Detector
 from circyto.paths import get_repo_root, get_tools_dir
@@ -473,6 +474,36 @@ def summarize_mudata_qc_command(
             )
     lines.append(f"pearson_total_rna_vs_circRNA_count={summary['pearson_total_rna_vs_circRNA_count']}")
     typer.echo("\n".join(lines))
+
+
+@app.command("scanpy-qc-report")
+def scanpy_qc_report_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="MuData .h5mu file to analyze."),
+    output_dir: Path = typer.Option(..., "--output-dir", file_okay=False, help="Directory for exploratory Scanpy QC outputs."),
+) -> None:
+    """
+    Exploratory Scanpy QC reporting over the RNA modality of a circyto MuData file.
+    """
+    try:
+        summary = scanpy_qc_report(input_path=input, output_dir=output_dir)
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("scanpy-pca")
+def scanpy_pca_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="MuData .h5mu file to analyze."),
+    output_dir: Path = typer.Option(..., "--output-dir", file_okay=False, help="Directory for exploratory Scanpy PCA/UMAP outputs."),
+) -> None:
+    """
+    Exploratory Scanpy PCA/UMAP/Leiden workflow over the RNA modality of a circyto MuData file.
+    """
+    try:
+        summary = scanpy_pca_workflow(input_path=input, output_dir=output_dir)
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command()
