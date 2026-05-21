@@ -35,6 +35,38 @@ trim_cr() {
   printf '%s' "${value}"
 }
 
+iter_manifest_records() {
+  python - "$MANIFEST" <<'PY'
+import csv
+import sys
+
+manifest = sys.argv[1]
+required = ["sample_id", "fastq_1", "fastq_2", "read_layout"]
+
+with open(manifest, newline="", encoding="utf-8-sig") as handle:
+    reader = csv.DictReader(handle, delimiter="\t")
+    if reader.fieldnames is None:
+        raise SystemExit("[ERROR] manifest is empty")
+    missing = [column for column in required if column not in reader.fieldnames]
+    if missing:
+        raise SystemExit(
+            "[ERROR] manifest must contain header columns: " + ", ".join(required)
+        )
+    for row in reader:
+        sample_id = (row.get("sample_id") or "").strip()
+        if not sample_id:
+            continue
+        fastq_1 = (row.get("fastq_1") or "").strip()
+        fastq_2 = (row.get("fastq_2") or "").strip()
+        read_layout = (row.get("read_layout") or "").strip().lower()
+        if read_layout not in {"single", "single-end", "paired", "paired-end"}:
+            raise SystemExit(
+                f"[ERROR] unsupported read_layout for sample {sample_id}: {row.get('read_layout', '')}"
+            )
+        print("\t".join([sample_id, fastq_1, fastq_2, read_layout]))
+PY
+}
+
 check_disk_space() {
   local root_dir="$1"
   local required_gb="$2"
@@ -85,49 +117,10 @@ download_paired_end_if_missing() {
   gzip -f "${RAW_DIR}/${srr}_1.fastq" "${RAW_DIR}/${srr}_2.fastq"
 }
 
-header_line="$(head -n 1 "${MANIFEST}")"
-if [[ -z "${header_line}" ]]; then
-  echo "[ERROR] manifest is empty: ${MANIFEST}" >&2
-  exit 1
-fi
-
-IFS=$'\t' read -r -a header_fields <<< "${header_line}"
-sample_id_idx=-1
-fastq_1_idx=-1
-fastq_2_idx=-1
-read_layout_idx=-1
-
-for i in "${!header_fields[@]}"; do
-  column_name="$(trim_cr "${header_fields[$i]}")"
-  case "${column_name}" in
-    sample_id)
-      sample_id_idx="${i}"
-      ;;
-    fastq_1)
-      fastq_1_idx="${i}"
-      ;;
-    fastq_2)
-      fastq_2_idx="${i}"
-      ;;
-    read_layout)
-      read_layout_idx="${i}"
-      ;;
-  esac
-done
-
-if [[ "${sample_id_idx}" -lt 0 || "${fastq_1_idx}" -lt 0 || "${fastq_2_idx}" -lt 0 || "${read_layout_idx}" -lt 0 ]]; then
-  echo "[ERROR] manifest must contain header columns: sample_id, fastq_1, fastq_2, read_layout" >&2
-  exit 1
-fi
-
-tail -n +2 "${MANIFEST}" | while IFS=$'\t' read -r -a fields; do
-  sample_id="$(trim_cr "${fields[$sample_id_idx]:-}")"
+iter_manifest_records | while IFS=$'\t' read -r sample_id fastq_1 fastq_2 read_layout; do
   if [[ -z "${sample_id}" ]]; then
     continue
   fi
-  fastq_1="$(trim_cr "${fields[$fastq_1_idx]:-}")"
-  fastq_2="$(trim_cr "${fields[$fastq_2_idx]:-}")"
-  read_layout="$(trim_cr "${fields[$read_layout_idx]:-}")"
 
   layout_normalized="$(printf '%s' "${read_layout}" | tr '[:upper:]' '[:lower:]')"
   if [[ "${layout_normalized}" == "single" || "${layout_normalized}" == "single-end" ]]; then
