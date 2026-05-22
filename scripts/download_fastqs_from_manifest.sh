@@ -42,6 +42,7 @@ import sys
 
 manifest = sys.argv[1]
 required = ["sample_id", "fastq_1", "fastq_2", "read_layout"]
+EMPTY_SENTINEL = "__EMPTY__"
 
 with open(manifest, newline="", encoding="utf-8-sig") as handle:
     reader = csv.DictReader(handle, delimiter="\t")
@@ -63,6 +64,8 @@ with open(manifest, newline="", encoding="utf-8-sig") as handle:
             raise SystemExit(
                 f"[ERROR] unsupported read_layout for sample {sample_id}: {row.get('read_layout', '')}"
             )
+        if not fastq_2:
+            fastq_2 = EMPTY_SENTINEL
         print("\t".join([sample_id, fastq_1, fastq_2, read_layout]))
 PY
 }
@@ -121,8 +124,12 @@ iter_manifest_records | while IFS=$'\t' read -r sample_id fastq_1 fastq_2 read_l
   if [[ -z "${sample_id}" ]]; then
     continue
   fi
+  if [[ "${fastq_2}" == "__EMPTY__" ]]; then
+    fastq_2=""
+  fi
 
   layout_normalized="$(printf '%s' "${read_layout}" | tr '[:upper:]' '[:lower:]')"
+  echo "[INFO] parsed manifest row sample_id=${sample_id} read_layout=${layout_normalized}"
   if [[ "${layout_normalized}" == "single" || "${layout_normalized}" == "single-end" ]]; then
     if [[ "${fastq_1}" =~ raw/(SRR[0-9]+)\.fastq\.gz$ ]]; then
       srr="${BASH_REMATCH[1]}"

@@ -44,8 +44,14 @@ from circyto.pipeline.gene_expression_velocity import (
     add_posthoc_rna_profile,
     cleanup_completed_workflow,
     export_completed_workflow_mudata,
+    export_circ_bed,
+    import_dna_snv_summary,
+    inspect_completed_workdir,
     inspect_mudata_file,
     refresh_rna_qc_from_existing_outputs,
+    summarize_benchmark_workdirs,
+    summarize_circ_host_genes,
+    summarize_dna_rna_circ,
     summarize_mudata_qc,
     summarize_rna_circ_integration,
 )
@@ -316,6 +322,33 @@ def check_workflow_command(
         raise typer.Exit(code=1)
 
 
+@app.command("inspect-workdir")
+def inspect_workdir_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory to inspect."),
+    json_output: bool = typer.Option(False, "--json", help="Emit the full inspection payload as JSON."),
+) -> None:
+    """
+    Read-only inspection of a completed workflow directory and its available modalities.
+    """
+    try:
+        summary = inspect_completed_workdir(workdir)
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    if json_output:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+        return
+    typer.echo(
+        "\n".join(
+            [
+                f"modalities={','.join(summary['available_modalities']) if summary['available_modalities'] else '-'}",
+                f"workflow_type={summary['source_workflow_type']} protocol={summary['source_protocol']} read_layout={summary['source_read_layout']}",
+                f"mudata_present={summary['mudata_present']} qc_present={summary['qc_present']}",
+                f"matrices_present={json.dumps(summary['matrices_present'], sort_keys=True)}",
+            ]
+        )
+    )
+
+
 @app.command("cleanup-workflow")
 def cleanup_workflow_command(
     workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory to clean."),
@@ -389,6 +422,22 @@ def summarize_rna_circ_command(
             ]
         )
     )
+
+
+@app.command("summarize-benchmark")
+def summarize_benchmark_command(
+    workdirs: list[Path] = typer.Option(..., "--workdirs", exists=True, file_okay=False, dir_okay=True, help="One or more completed workflow directories."),
+    output: Optional[Path] = typer.Option(None, "--output", help="Output TSV path for the benchmark summary table."),
+    json_output_path: Optional[Path] = typer.Option(None, "--json", help="Optional JSON summary path."),
+) -> None:
+    """
+    Summarize completed workflow directories into a manuscript-facing benchmark table.
+    """
+    try:
+        summary = summarize_benchmark_workdirs(workdirs=workdirs, output_tsv=output, output_json=json_output_path)
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command("export-mudata")
@@ -474,6 +523,84 @@ def summarize_mudata_qc_command(
             )
     lines.append(f"pearson_total_rna_vs_circRNA_count={summary['pearson_total_rna_vs_circRNA_count']}")
     typer.echo("\n".join(lines))
+
+
+@app.command("import-dna-snv-summary")
+def import_dna_snv_summary_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory."),
+    dna_cell_summary: Path = typer.Option(..., "--dna-cell-summary", exists=True, dir_okay=False, help="dna_cell_summary.tsv"),
+    dna_variant_summary: Optional[Path] = typer.Option(None, "--dna-variant-summary", exists=True, dir_okay=False, help="Optional dna_variant_summary.tsv"),
+    scomatic_candidate_summary: Optional[Path] = typer.Option(None, "--scomatic-candidate-summary", exists=True, dir_okay=False, help="Optional scomatic_candidate_summary.tsv"),
+) -> None:
+    """
+    Import lightweight DNA/CNV and RNA-derived candidate variant summaries into a completed workflow directory.
+    """
+    try:
+        summary = import_dna_snv_summary(
+            workdir=workdir,
+            dna_cell_summary_path=dna_cell_summary,
+            dna_variant_summary_path=dna_variant_summary,
+            scomatic_candidate_summary_path=scomatic_candidate_summary,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("summarize-dna-rna-circ")
+def summarize_dna_rna_circ_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory with RNA/circ and imported DNA summaries."),
+    write_summary: bool = typer.Option(False, "--write-summary", help="Write qc/dna_rna_circ_cell_summary.tsv and qc/dna_rna_circ_summary.json."),
+) -> None:
+    """
+    Summarize joined DNA, RNA, and circRNA per-cell summaries for scRR-style workflows.
+    """
+    try:
+        summary = summarize_dna_rna_circ(workdir=workdir, write_summary=write_summary)
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("summarize-circ-host-genes")
+def summarize_circ_host_genes_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory with circ matrix outputs."),
+    output: Optional[Path] = typer.Option(None, "--output", help="Output TSV path. Defaults to WORKDIR/qc/circ_host_gene_summary.tsv."),
+    json_output: bool = typer.Option(False, "--json", help="Emit the full summary payload as JSON."),
+) -> None:
+    """
+    Summarize circRNA host-gene recurrence and support across a completed workflow directory.
+    """
+    try:
+        summary = summarize_circ_host_genes(workdir=workdir, output_path=output)
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    if json_output:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+        return
+    typer.echo(
+        "\n".join(
+            [
+                f"n_host_genes={summary['n_host_genes']} n_circ_with_host_gene={summary['n_circ_with_host_gene']}",
+                f"output={summary['output_path']}",
+            ]
+        )
+    )
+
+
+@app.command("export-circ-bed")
+def export_circ_bed_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory with circ matrix outputs."),
+    output: Optional[Path] = typer.Option(None, "--output", help="Output BED-like path. Defaults to WORKDIR/qc/circs.bed."),
+) -> None:
+    """
+    Export circRNA coordinates and total support in a BED-like format for genome-browser interoperability.
+    """
+    try:
+        summary = export_circ_bed(workdir=workdir, output_path=output)
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command("scanpy-qc-report")

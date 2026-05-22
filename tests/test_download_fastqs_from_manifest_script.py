@@ -31,6 +31,7 @@ def test_download_manifest_parser_accepts_single_end_empty_fastq2_and_extra_colu
     proc = _run_script(manifest, dataset_root)
 
     assert proc.returncode == 0
+    assert "parsed manifest row sample_id=GSM8558868 read_layout=single" in proc.stdout
     assert "single-end FASTQ already present, skipping" in proc.stdout
     assert "unsupported read_layout" not in proc.stdout + proc.stderr
 
@@ -51,6 +52,7 @@ def test_download_manifest_parser_accepts_paired_end_row(tmp_path: Path) -> None
     proc = _run_script(manifest, dataset_root)
 
     assert proc.returncode == 0
+    assert "parsed manifest row sample_id=sample1 read_layout=paired" in proc.stdout
     assert "paired-end FASTQs already present, skipping" in proc.stdout
 
 

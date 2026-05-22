@@ -80,6 +80,7 @@ scripts/*
 !scripts/build_imr90_rna_manifest_from_runinfo.sh
 !scripts/build_hap1_rna_manifest_from_runinfo.sh
 !scripts/download_fastqs_from_manifest.sh
+!scripts/summarize_public_benchmarks.sh
 tools/CIRI3/scripts/
 circyto/pipeline/detector_compare.py
 testdata/**/*.fastq.gz

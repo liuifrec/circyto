@@ -20,6 +20,8 @@ from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
     cleanup_summary_block,
+    directory_size_bytes,
+    load_circ_feature_table,
     load_circ_matrix,
     load_json,
     numeric_summary,
@@ -765,6 +767,463 @@ def summarize_mudata_qc(input_path: Path) -> dict[str, Any]:
             correlation = float(pair_df["total_rna_counts"].corr(pair_df["circRNA_count"]))
     summary["pearson_total_rna_vs_circRNA_count"] = correlation
     return summary
+
+
+def inspect_completed_workdir(workdir: Path) -> dict[str, Any]:
+    workflow_summary_path = workdir / "workflow_summary.json"
+    workflow_summary = load_json(workflow_summary_path) if workflow_summary_path.exists() else {}
+
+    matrix_dir = workdir / "matrix"
+    rna_dir = workdir / "rna"
+    qc_dir = workdir / "qc"
+    mudata_dir = workdir / "mudata"
+    dna_cnv_dir = workdir / "dna_cnv"
+    dna_snv_dir = workdir / "dna_snv"
+
+    matrices_present = {
+        "circ_counts_mtx": (matrix_dir / "circ_counts.mtx").exists(),
+        "circ_index": (matrix_dir / "circ_index.txt").exists(),
+        "cell_index": (matrix_dir / "cell_index.txt").exists(),
+        "circ_feature_table": (matrix_dir / "circ_feature_table.tsv").exists(),
+        "gene_counts_tsv": (rna_dir / "gene_counts.tsv").exists(),
+        "gene_feature_table": (rna_dir / "gene_feature_table.tsv").exists(),
+    }
+    modalities: list[str] = []
+    if matrices_present["gene_counts_tsv"]:
+        modalities.append("rna")
+    if matrices_present["circ_counts_mtx"] and matrices_present["cell_index"]:
+        modalities.append("circ")
+    if dna_cnv_dir.exists():
+        modalities.append("dna_cnv")
+    if dna_snv_dir.exists():
+        modalities.append("dna_snv")
+
+    mudata_paths = sorted(str(path.relative_to(workdir)) for path in mudata_dir.glob("*.h5mu")) if mudata_dir.exists() else []
+    qc_files = sorted(str(path.relative_to(workdir)) for path in qc_dir.glob("*")) if qc_dir.exists() else []
+
+    return apply_standard_provenance(
+        {
+            "workdir": str(workdir.resolve()),
+            "available_modalities": modalities,
+            "source_workflow_type": str(workflow_summary.get("workflow_type", workflow_summary.get("workflow", "unknown"))),
+            "source_protocol": str(workflow_summary.get("protocol", "unknown")),
+            "source_read_layout": str(workflow_summary.get("read_layout", "unknown")),
+            "matrices_present": matrices_present,
+            "mudata_present": bool(mudata_paths),
+            "mudata_files": mudata_paths,
+            "qc_present": bool(qc_files),
+            "qc_files": qc_files,
+            "has_workflow_summary": workflow_summary_path.exists(),
+        },
+        command_name="circyto inspect-workdir",
+        workflow_type="workdir-inspection",
+        protocol=str(workflow_summary.get("protocol", "unknown")),
+        read_layout=str(workflow_summary.get("read_layout", "unknown")),
+        genome_fasta=str(workflow_summary.get("genome_fasta")) if workflow_summary.get("genome_fasta") else None,
+        gtf=str(workflow_summary.get("gtf")) if workflow_summary.get("gtf") else None,
+        detector_backend=str(workflow_summary.get("detector_backend")) if workflow_summary.get("detector_backend") else None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+        workflow_uuid=str(workflow_summary.get("workflow_uuid")) if workflow_summary.get("workflow_uuid") else None,
+    )
+
+
+def summarize_circ_host_genes(
+    *,
+    workdir: Path,
+    output_path: Path | None = None,
+) -> dict[str, Any]:
+    matrix_dir = workdir / "matrix"
+    matrix_path = matrix_dir / "circ_counts.mtx"
+    circ_index_path = matrix_dir / "circ_index.txt"
+    cell_index_path = matrix_dir / "cell_index.txt"
+    feature_path = matrix_dir / "circ_feature_table.tsv"
+    if not matrix_path.exists():
+        raise FileNotFoundError(f"Missing circ matrix: {matrix_path}")
+    if not circ_index_path.exists():
+        raise FileNotFoundError(f"Missing circ index: {circ_index_path}")
+    if not cell_index_path.exists():
+        raise FileNotFoundError(f"Missing cell index: {cell_index_path}")
+    if not feature_path.exists():
+        raise FileNotFoundError(f"Missing circ feature table: {feature_path}")
+
+    X, circ_ids, cell_ids = load_circ_matrix(
+        matrix_path=matrix_path,
+        circ_index_path=circ_index_path,
+        cell_index_path=cell_index_path,
+    )
+    X_cells_by_circ = _orient_circ_matrix_cells_by_circ(X=X, circ_ids=circ_ids, cell_ids=cell_ids, matrix_path=matrix_path)
+    feature_df = load_circ_feature_table(circ_ids, feature_path).reset_index(names="circ_id")
+    feature_df["host_gene"] = feature_df.get("host_gene", pd.Series([""] * len(feature_df))).fillna("").astype(str)
+
+    total_support = np.asarray(X_cells_by_circ.sum(axis=0)).ravel()
+    n_cells_detected = np.asarray(X_cells_by_circ.getnnz(axis=0)).ravel()
+    feature_df["total_support"] = total_support.astype(int)
+    feature_df["n_cells_detected"] = n_cells_detected.astype(int)
+    nonempty = feature_df[feature_df["host_gene"].astype(str).str.strip() != ""].copy()
+    if nonempty.empty:
+        raise ValueError(f"{feature_path} contains no non-empty host_gene annotations.")
+
+    host_summary = (
+        nonempty.groupby("host_gene", dropna=False)
+        .agg(
+            n_circRNAs=("circ_id", "nunique"),
+            total_support=("total_support", "sum"),
+            n_cells_detected_sum=("n_cells_detected", "sum"),
+        )
+        .reset_index()
+        .sort_values(["total_support", "n_circRNAs", "host_gene"], ascending=[False, False, True])
+    )
+    if output_path is None:
+        output_path = workdir / "qc" / "circ_host_gene_summary.tsv"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    host_summary.to_csv(output_path, sep="\t", index=False)
+
+    top_host_genes = host_summary.head(10).to_dict(orient="records")
+    return apply_standard_provenance(
+        {
+            "workdir": str(workdir.resolve()),
+            "output_path": str(output_path.resolve()),
+            "n_host_genes": int(host_summary.shape[0]),
+            "n_circ_with_host_gene": int(nonempty.shape[0]),
+            "top_host_genes": top_host_genes,
+        },
+        command_name="circyto summarize-circ-host-genes",
+        workflow_type="circ-host-gene-summary",
+        protocol="unknown",
+        read_layout="unknown",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
+
+
+def export_circ_bed(
+    *,
+    workdir: Path,
+    output_path: Path | None = None,
+) -> dict[str, Any]:
+    matrix_dir = workdir / "matrix"
+    matrix_path = matrix_dir / "circ_counts.mtx"
+    circ_index_path = matrix_dir / "circ_index.txt"
+    cell_index_path = matrix_dir / "cell_index.txt"
+    feature_path = matrix_dir / "circ_feature_table.tsv"
+    if not feature_path.exists():
+        raise FileNotFoundError(f"Missing circ feature table: {feature_path}")
+    if not matrix_path.exists():
+        raise FileNotFoundError(f"Missing circ matrix: {matrix_path}")
+    if not circ_index_path.exists():
+        raise FileNotFoundError(f"Missing circ index: {circ_index_path}")
+    if not cell_index_path.exists():
+        raise FileNotFoundError(f"Missing cell index: {cell_index_path}")
+
+    X, circ_ids, cell_ids = load_circ_matrix(
+        matrix_path=matrix_path,
+        circ_index_path=circ_index_path,
+        cell_index_path=cell_index_path,
+    )
+    X_cells_by_circ = _orient_circ_matrix_cells_by_circ(X=X, circ_ids=circ_ids, cell_ids=cell_ids, matrix_path=matrix_path)
+    feature_df = load_circ_feature_table(circ_ids, feature_path).reset_index(names="circ_id")
+    if output_path is None:
+        output_path = workdir / "qc" / "circs.bed"
+
+    missing_columns = [column for column in ("chrom", "start", "end") if column not in feature_df.columns]
+    if missing_columns:
+        raise ValueError(f"{feature_path} is missing required BED columns: {', '.join(missing_columns)}")
+    feature_df["support"] = np.asarray(X_cells_by_circ.sum(axis=0)).ravel().astype(int)
+    bed_df = feature_df[["chrom", "start", "end", "circ_id", "support"]].copy()
+    bed_df["start"] = pd.to_numeric(bed_df["start"], errors="coerce")
+    bed_df["end"] = pd.to_numeric(bed_df["end"], errors="coerce")
+    if bed_df[["chrom", "start", "end"]].isna().any().any():
+        raise ValueError(f"{feature_path} contains incomplete chrom/start/end values required for BED export.")
+    bed_df["start"] = bed_df["start"].astype(int)
+    bed_df["end"] = bed_df["end"].astype(int)
+
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    bed_df.to_csv(output_path, sep="\t", index=False, header=False)
+    return apply_standard_provenance(
+        {
+            "workdir": str(workdir.resolve()),
+            "output_path": str(output_path.resolve()),
+            "n_rows": int(bed_df.shape[0]),
+            "columns": ["chrom", "start", "end", "circ_id", "support"],
+        },
+        command_name="circyto export-circ-bed",
+        workflow_type="circ-bed-export",
+        protocol="unknown",
+        read_layout="unknown",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
+
+
+def _infer_dataset_name_from_workdir(workdir: Path) -> str:
+    joined = "/".join(part.lower() for part in workdir.parts)
+    if "emtab8735" in joined or "all192" in joined or "smartseq3" in joined:
+        return "E-MTAB-8735 Smart-seq3"
+    if "imr90" in joined or "gse278958" in joined or "scrr_imr90" in joined:
+        return "GSE278958 IMR90 scRR"
+    if "hap1" in joined or "gse278952" in joined or "scrr_hap1" in joined:
+        return "GSE278952 HAP1 scRR"
+    return workdir.name
+
+
+def summarize_benchmark_workdirs(
+    *,
+    workdirs: list[Path],
+    output_tsv: Path | None = None,
+    output_json: Path | None = None,
+) -> dict[str, Any]:
+    rows: list[dict[str, Any]] = []
+    for workdir in workdirs:
+        joined_df, _ = _build_rna_circ_joined_table(workdir)
+        workflow_summary_path = workdir / "workflow_summary.json"
+        workflow_summary = load_json(workflow_summary_path) if workflow_summary_path.exists() else {}
+        mudata_path = workdir / "mudata" / "full_length.h5mu"
+        gene_counts_path = workdir / "rna" / "gene_counts.tsv"
+        n_rna_features = 0
+        if gene_counts_path.exists():
+            n_rna_features = int(pd.read_csv(gene_counts_path, sep="\t", keep_default_na=False).shape[0])
+        circ_ids = read_index_lines(workdir / "matrix" / "circ_index.txt")
+        rows.append(
+            {
+                "workdir": str(workdir.resolve()),
+                "dataset_name": _infer_dataset_name_from_workdir(workdir),
+                "workflow_type": str(workflow_summary.get("workflow_type", workflow_summary.get("workflow", "unknown"))),
+                "protocol": str(workflow_summary.get("protocol", "unknown")),
+                "read_layout": str(workflow_summary.get("read_layout", "unknown")),
+                "n_cells": int(joined_df.shape[0]),
+                "n_rna_features": int(n_rna_features),
+                "n_circ_features": int(len(circ_ids)),
+                "median_rna_counts": float(joined_df["total_rna_counts"].median()),
+                "median_detected_genes": float(joined_df["detected_genes"].median()),
+                "median_circRNA_count": float(joined_df["circRNA_count"].median()),
+                "median_circRNA_total_support": float(joined_df["circRNA_total_support"].median()),
+                "h5mu_exists": mudata_path.exists(),
+                "h5mu_size_bytes": int(mudata_path.stat().st_size) if mudata_path.exists() else 0,
+                "workdir_size_bytes": directory_size_bytes(workdir),
+                "cleanup_status": str(workflow_summary.get("cleanup_summary", {}).get("performed", workflow_summary.get("cleanup_performed", False))),
+                "workflow_succeeded": _workflow_is_marked_successful(workflow_summary),
+            }
+        )
+    summary_df = pd.DataFrame(rows)
+    if output_tsv is not None:
+        output_tsv.parent.mkdir(parents=True, exist_ok=True)
+        summary_df.to_csv(output_tsv, sep="\t", index=False)
+    payload = {
+        "n_workdirs": int(len(rows)),
+        "columns": list(summary_df.columns),
+        "rows": summary_df.to_dict(orient="records"),
+    }
+    if output_tsv is not None:
+        payload["output_tsv"] = str(output_tsv.resolve())
+    if output_json is not None:
+        output_json.parent.mkdir(parents=True, exist_ok=True)
+        write_json(output_json, payload)
+        payload["output_json"] = str(output_json.resolve())
+    return apply_standard_provenance(
+        payload,
+        command_name="circyto summarize-benchmark",
+        workflow_type="benchmark-summary",
+        protocol="mixed",
+        read_layout="mixed",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
+
+
+DNA_CELL_SUMMARY_REQUIRED = ["cell_id", "dna_library_id", "cnv_burden", "replication_score", "cell_cycle_phase", "dna_variant_count", "notes"]
+DNA_VARIANT_SUMMARY_REQUIRED = ["variant_id", "cell_id", "chrom", "pos", "ref", "alt", "gene", "consequence", "evidence_type", "caller", "filter_status"]
+SCOMATIC_CANDIDATE_REQUIRED = ["variant_id", "cell_id", "chrom", "pos", "ref", "alt", "gene", "filter_status", "candidate_variant_class", "read_support", "vaf", "caller"]
+
+
+def _validate_required_columns(path: Path, df: pd.DataFrame, required: list[str]) -> None:
+    missing = [column for column in required if column not in df.columns]
+    if missing:
+        raise ValueError(f"{path} is missing required columns: {', '.join(missing)}")
+
+
+def _read_required_tsv(path: Path, required: list[str]) -> pd.DataFrame:
+    df = pd.read_csv(path, sep="\t", keep_default_na=False)
+    _validate_required_columns(path, df, required)
+    return df
+
+
+def import_dna_snv_summary(
+    *,
+    workdir: Path,
+    dna_cell_summary_path: Path,
+    dna_variant_summary_path: Path | None = None,
+    scomatic_candidate_summary_path: Path | None = None,
+) -> dict[str, Any]:
+    dna_dir = workdir / "dna"
+    dna_dir.mkdir(parents=True, exist_ok=True)
+    dna_cell_df = _read_required_tsv(dna_cell_summary_path, DNA_CELL_SUMMARY_REQUIRED)
+    validate_feature_id_uniqueness(dna_cell_df["cell_id"].astype(str).tolist(), label="cell")
+
+    expected_cells: list[str] = []
+    try:
+        joined_df, _ = _build_rna_circ_joined_table(workdir)
+        expected_cells = joined_df["cell_id"].astype(str).tolist()
+    except Exception:
+        expected_cells = []
+    dna_cells = dna_cell_df["cell_id"].astype(str).tolist()
+    shared = sorted(set(expected_cells) & set(dna_cells))
+    rna_circ_only = sorted(set(expected_cells) - set(dna_cells))
+    dna_only = sorted(set(dna_cells) - set(expected_cells))
+
+    dna_variant_df = _read_required_tsv(dna_variant_summary_path, DNA_VARIANT_SUMMARY_REQUIRED) if dna_variant_summary_path is not None else None
+    scomatic_df = _read_required_tsv(scomatic_candidate_summary_path, SCOMATIC_CANDIDATE_REQUIRED) if scomatic_candidate_summary_path is not None else None
+
+    dna_cell_out = dna_dir / "dna_cell_summary.tsv"
+    dna_cell_df.to_csv(dna_cell_out, sep="\t", index=False)
+    dna_variant_out = None
+    if dna_variant_df is not None:
+        dna_variant_out = dna_dir / "dna_variant_summary.tsv"
+        dna_variant_df.to_csv(dna_variant_out, sep="\t", index=False)
+    scomatic_out = None
+    if scomatic_df is not None:
+        scomatic_out = dna_dir / "scomatic_candidate_summary.tsv"
+        scomatic_df.to_csv(scomatic_out, sep="\t", index=False)
+
+    summary = {
+        "workdir": str(workdir.resolve()),
+        "dna_cell_summary_rows": int(dna_cell_df.shape[0]),
+        "dna_variant_summary_rows": int(dna_variant_df.shape[0]) if dna_variant_df is not None else 0,
+        "scomatic_candidate_summary_rows": int(scomatic_df.shape[0]) if scomatic_df is not None else 0,
+        "shared_cells": shared,
+        "n_shared_cells": int(len(shared)),
+        "rna_circ_only_cells": rna_circ_only,
+        "n_rna_circ_only_cells": int(len(rna_circ_only)),
+        "dna_only_cells": dna_only,
+        "n_dna_only_cells": int(len(dna_only)),
+        "terminology_note": "SComatic outputs are treated as RNA-derived candidate variant signals, not validated somatic mutations.",
+        "output_dna_cell_summary": str(dna_cell_out.resolve()),
+        "output_dna_variant_summary": str(dna_variant_out.resolve()) if dna_variant_out is not None else None,
+        "output_scomatic_candidate_summary": str(scomatic_out.resolve()) if scomatic_out is not None else None,
+    }
+    summary_path = dna_dir / "dna_snv_import_summary.json"
+    write_json(summary_path, summary)
+    summary["output_dna_snv_import_summary"] = str(summary_path.resolve())
+    return apply_standard_provenance(
+        summary,
+        command_name="circyto import-dna-snv-summary",
+        workflow_type="dna-snv-import",
+        protocol="unknown",
+        read_layout="unknown",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
+
+
+def summarize_dna_rna_circ(
+    *,
+    workdir: Path,
+    write_summary: bool = False,
+) -> dict[str, Any]:
+    joined_df, _ = _build_rna_circ_joined_table(workdir)
+    dna_cell_path = workdir / "dna" / "dna_cell_summary.tsv"
+    if not dna_cell_path.exists():
+        raise FileNotFoundError(f"Missing DNA cell summary: {dna_cell_path}")
+    dna_df = _read_required_tsv(dna_cell_path, DNA_CELL_SUMMARY_REQUIRED)
+    dna_df["cell_id"] = dna_df["cell_id"].astype(str)
+    scomatic_counts: dict[str, int] = {}
+    scomatic_path = workdir / "dna" / "scomatic_candidate_summary.tsv"
+    if scomatic_path.exists():
+        scomatic_df = _read_required_tsv(scomatic_path, SCOMATIC_CANDIDATE_REQUIRED)
+        scomatic_counts = scomatic_df.groupby("cell_id").size().to_dict()
+
+    rna_circ_cells = list(joined_df["cell_id"].astype(str))
+    dna_cells = list(dna_df["cell_id"].astype(str))
+    all_cells = rna_circ_cells + [cell_id for cell_id in dna_cells if cell_id not in set(rna_circ_cells)]
+    dna_indexed = dna_df.set_index("cell_id", drop=False)
+    rows: list[dict[str, Any]] = []
+    for cell_id in all_cells:
+        rna_match = joined_df[joined_df["cell_id"] == cell_id]
+        if not rna_match.empty:
+            rna_row = rna_match.iloc[0]
+            total_rna_counts = int(rna_row.get("total_rna_counts", 0))
+            detected_genes = int(rna_row.get("detected_genes", 0))
+            circ_count = int(rna_row.get("circRNA_count", 0))
+            circ_support = int(rna_row.get("circRNA_total_support", 0))
+        else:
+            total_rna_counts = detected_genes = circ_count = circ_support = 0
+        if cell_id in dna_indexed.index:
+            dna_row = dna_indexed.loc[cell_id]
+            if isinstance(dna_row, pd.DataFrame):
+                dna_row = dna_row.iloc[0]
+            cnv_burden = float(dna_row.get("cnv_burden", 0) or 0)
+            replication_score = float(dna_row.get("replication_score", 0) or 0)
+            cell_cycle_phase = str(dna_row.get("cell_cycle_phase", ""))
+            dna_variant_count = int(float(dna_row.get("dna_variant_count", 0) or 0))
+        else:
+            cnv_burden = replication_score = 0.0
+            cell_cycle_phase = ""
+            dna_variant_count = 0
+        membership = "shared" if cell_id in set(rna_circ_cells) and cell_id in set(dna_cells) else ("rna_circ_only" if cell_id in set(rna_circ_cells) else "dna_only")
+        rows.append(
+            {
+                "cell_id": cell_id,
+                "membership": membership,
+                "total_rna_counts": total_rna_counts,
+                "detected_genes": detected_genes,
+                "circRNA_count": circ_count,
+                "circRNA_total_support": circ_support,
+                "cnv_burden": cnv_burden,
+                "replication_score": replication_score,
+                "cell_cycle_phase": cell_cycle_phase,
+                "dna_variant_count": dna_variant_count,
+                "scomatic_candidate_count": int(scomatic_counts.get(cell_id, 0)),
+            }
+        )
+    summary_df = pd.DataFrame(rows)
+    summary = {
+        "workdir": str(workdir.resolve()),
+        "n_joined_cells": int(summary_df.shape[0]),
+        "n_shared_cells": int((summary_df["membership"] == "shared").sum()),
+        "n_rna_circ_only_cells": int((summary_df["membership"] == "rna_circ_only").sum()),
+        "n_dna_only_cells": int((summary_df["membership"] == "dna_only").sum()),
+        "terminology_note": "SComatic counts are RNA-derived candidate variant signals, not validated somatic mutations.",
+        "joined_preview": summary_df.head(10).to_dict(orient="records"),
+    }
+    if write_summary:
+        qc_dir = workdir / "qc"
+        qc_dir.mkdir(parents=True, exist_ok=True)
+        cell_summary_path = qc_dir / "dna_rna_circ_cell_summary.tsv"
+        summary_json_path = qc_dir / "dna_rna_circ_summary.json"
+        summary_df.to_csv(cell_summary_path, sep="\t", index=False)
+        write_json(summary_json_path, summary)
+        summary["output_dna_rna_circ_cell_summary"] = str(cell_summary_path.resolve())
+        summary["output_dna_rna_circ_summary"] = str(summary_json_path.resolve())
+    return apply_standard_provenance(
+        summary,
+        command_name="circyto summarize-dna-rna-circ",
+        workflow_type="dna-rna-circ-summary",
+        protocol="unknown",
+        read_layout="unknown",
+        genome_fasta=None,
+        gtf=None,
+        detector_backend=None,
+        started_at=utc_now_iso(),
+        completed_at=utc_now_iso(),
+        elapsed_seconds=0.0,
+    )
 
 
 def _orient_circ_matrix_cells_by_circ(
