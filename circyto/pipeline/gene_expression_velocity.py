@@ -3,10 +3,12 @@ from __future__ import annotations
 import csv
 import os
 import json
+import platform
 import re
 import time
 from bisect import bisect_left, bisect_right
 from collections import defaultdict
+from importlib import metadata
 from functools import lru_cache
 from pathlib import Path
 from typing import Any, Iterator
@@ -769,6 +771,25 @@ def summarize_mudata_qc(input_path: Path) -> dict[str, Any]:
     return summary
 
 
+def _installed_version(package_name: str) -> str | None:
+    try:
+        return metadata.version(package_name)
+    except metadata.PackageNotFoundError:
+        return None
+
+
+def get_environment_summary() -> dict[str, Any]:
+    return {
+        "circyto_version": __version__,
+        "python_version": platform.python_version(),
+        "anndata_version": _installed_version("anndata"),
+        "mudata_version": _installed_version("mudata"),
+        "scanpy_version": _installed_version("scanpy"),
+        "platform": platform.platform(),
+        "timestamp": utc_now_iso(),
+    }
+
+
 def inspect_completed_workdir(workdir: Path) -> dict[str, Any]:
     workflow_summary_path = workdir / "workflow_summary.json"
     workflow_summary = load_json(workflow_summary_path) if workflow_summary_path.exists() else {}
@@ -827,6 +848,91 @@ def inspect_completed_workdir(workdir: Path) -> dict[str, Any]:
         elapsed_seconds=0.0,
         workflow_uuid=str(workflow_summary.get("workflow_uuid")) if workflow_summary.get("workflow_uuid") else None,
     )
+
+
+def validate_completed_workdir(workdir: Path) -> dict[str, Any]:
+    base = check_workflow_integrity(workdir)
+    errors = list(base.get("errors", []))
+    warnings = list(base.get("warnings", []))
+    details = dict(base.get("details", {}))
+
+    matrix_dir = workdir / "matrix"
+    qc_dir = workdir / "qc"
+    anndata_path = workdir / "anndata" / "circ_counts.h5ad"
+    mudata_path = workdir / "mudata" / "full_length.h5mu"
+    circ_feature_path = matrix_dir / "circ_feature_table.tsv"
+
+    if not matrix_dir.exists():
+        errors.append(f"Missing matrix directory: {matrix_dir}")
+
+    if circ_feature_path.exists():
+        circ_feature_df = pd.read_csv(circ_feature_path, sep="\t", keep_default_na=False)
+        required_circ_columns = {"circ_id", "chrom", "start", "end", "strand"}
+        missing_circ_columns = sorted(required_circ_columns - set(circ_feature_df.columns))
+        if missing_circ_columns:
+            errors.append(
+                f"circ_feature_table.tsv missing required columns: {', '.join(missing_circ_columns)}"
+            )
+    else:
+        warnings.append(f"Optional circ feature table missing: {circ_feature_path}")
+
+    if (workdir / "rna").exists():
+        for name in ("gene_counts.tsv", "gene_feature_table.tsv", "rna_import_summary.json"):
+            path = workdir / "rna" / name
+            if not path.exists():
+                errors.append(f"RNA outputs enabled but missing {name}")
+        if not (qc_dir / "rna_qc.tsv").exists():
+            warnings.append(f"Optional RNA QC summary missing: {qc_dir / 'rna_qc.tsv'}")
+        if not (qc_dir / "rna_gene_qc.tsv").exists():
+            warnings.append(f"Optional RNA gene QC summary missing: {qc_dir / 'rna_gene_qc.tsv'}")
+
+    if anndata_path.exists():
+        if not HAS_ANNDATA:
+            warnings.append("anndata not installed; could not validate circ_counts.h5ad readability")
+        else:
+            try:
+                adata = ad.read_h5ad(str(anndata_path))
+                details["h5ad_shape"] = [int(adata.n_obs), int(adata.n_vars)]
+            except Exception as exc:
+                errors.append(f"h5ad unreadable: {anndata_path} ({exc})")
+    else:
+        warnings.append(f"Optional h5ad missing: {anndata_path}")
+
+    if mudata_path.exists():
+        if not HAS_MUDATA:
+            warnings.append("mudata not installed; could not validate full_length.h5mu readability")
+        else:
+            try:
+                mdata = mu.read_h5mu(str(mudata_path))
+                details["h5mu_modalities"] = list(mdata.mod.keys())
+                details["h5mu_n_obs"] = int(mdata.n_obs)
+                if "circ" in mdata.mod:
+                    circ_var_columns = list(mdata.mod["circ"].var.columns)
+                    details["h5mu_circ_var_columns"] = circ_var_columns
+                    missing = [column for column in ("chrom", "start", "end", "strand") if column not in circ_var_columns]
+                    if missing:
+                        errors.append(f"h5mu circ modality missing expected var columns: {', '.join(missing)}")
+                if "rna" in mdata.mod and "circ" in mdata.mod:
+                    if list(mdata.mod["rna"].obs_names) != list(mdata.mod["circ"].obs_names):
+                        errors.append("h5mu obs inconsistency: RNA and circ obs_names differ")
+            except Exception as exc:
+                errors.append(f"h5mu unreadable: {mudata_path} ({exc})")
+    else:
+        warnings.append(f"Optional h5mu missing: {mudata_path}")
+
+    if (qc_dir / "rna_circ_summary.json").exists() and not (qc_dir / "rna_circ_cell_summary.tsv").exists():
+        warnings.append("rna_circ_summary.json exists but rna_circ_cell_summary.tsv is missing")
+    if (workdir / "dna").exists():
+        if not (workdir / "dna" / "dna_snv_import_summary.json").exists():
+            warnings.append(f"DNA directory present but missing dna_snv_import_summary.json")
+
+    return {
+        "ok": len(errors) == 0,
+        "workdir": str(workdir.resolve()),
+        "errors": errors,
+        "warnings": warnings,
+        "details": details,
+    }
 
 
 def summarize_circ_host_genes(
@@ -1827,6 +1933,10 @@ def export_completed_workflow_mudata(
         "n_shared_cells": int(rna_circ_summary.get("n_shared_cells", 0)),
         "n_rna_only_cells": int(rna_circ_summary.get("n_rna_only_cells", 0)),
         "n_circ_only_cells": int(rna_circ_summary.get("n_circ_only_cells", 0)),
+        "environment": {
+            **get_environment_summary(),
+            "export_timestamp": utc_now_iso(),
+        },
         "workflow_summary_json": json.dumps(workflow_summary_payload, sort_keys=True, default=str),
         "rna_import_summary_json": json.dumps(rna_import_summary_payload, sort_keys=True, default=str),
         "rna_circ_summary_json": json.dumps(rna_circ_summary_payload, sort_keys=True, default=str),

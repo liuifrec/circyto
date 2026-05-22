@@ -18,6 +18,8 @@ Welcome to the `circyto` documentation.
 - [scRR multimodal roadmap](scrr_multimodal_roadmap.md)
 - [DNA/SNV integration scaffold](dna_snv_integration.md)
 - [Manuscript benchmark plan](manuscript_benchmark_plan.md)
+- [scverse interoperability](scverse_interoperability.md)
+- [Reproducibility checklist](reproducibility_checklist.md)
 - [Scanpy downstream](scanpy_downstream.md)
 - [Intermediate cleanup policy](intermediate_cleanup_policy.md)
 - [Workflow integrity and provenance](workflow_integrity_and_provenance.md)

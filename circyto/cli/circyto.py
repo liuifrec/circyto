@@ -45,6 +45,7 @@ from circyto.pipeline.gene_expression_velocity import (
     cleanup_completed_workflow,
     export_completed_workflow_mudata,
     export_circ_bed,
+    get_environment_summary,
     import_dna_snv_summary,
     inspect_completed_workdir,
     inspect_mudata_file,
@@ -54,6 +55,7 @@ from circyto.pipeline.gene_expression_velocity import (
     summarize_dna_rna_circ,
     summarize_mudata_qc,
     summarize_rna_circ_integration,
+    validate_completed_workdir,
 )
 from circyto.pipeline.workflow_integrity import check_workflow_integrity
 from circyto.pipeline.merge_detectors import merge_detectors as _merge_detectors
@@ -320,6 +322,31 @@ def check_workflow_command(
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
     if not summary.get("ok", False):
         raise typer.Exit(code=1)
+
+
+@app.command("validate-workdir")
+def validate_workdir_command(
+    workdir: Path = typer.Option(..., "--workdir", exists=True, file_okay=False, dir_okay=True, help="Completed workflow directory to validate for interoperability."),
+    json_output: bool = typer.Option(False, "--json", help="Emit the full validation payload as JSON."),
+) -> None:
+    """
+    Validate a completed workdir for scverse-facing interoperability and expected artifacts.
+    """
+    summary = validate_completed_workdir(workdir)
+    if json_output:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+    else:
+        typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+    if not summary.get("ok", False):
+        raise typer.Exit(code=1)
+
+
+@app.command("print-environment")
+def print_environment_command() -> None:
+    """
+    Print the current circyto and scverse package environment summary.
+    """
+    typer.echo(json.dumps(get_environment_summary(), indent=2, sort_keys=True))
 
 
 @app.command("inspect-workdir")
