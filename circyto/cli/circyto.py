@@ -39,6 +39,7 @@ from circyto.pipeline.scomatic_interop import (
     export_scomatic_inputs,
     join_circ_snv_summary,
 )
+from circyto.pipeline.scomatic_normalization import normalize_scomatic_results
 from circyto.pipeline.gene_expression_velocity import (
     SUPPORTED_CLEANUP_SCOPES,
     add_posthoc_rna_profile,
@@ -571,6 +572,53 @@ def import_dna_snv_summary_command(
         )
     except (FileNotFoundError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("normalize-scomatic-results")
+def normalize_scomatic_results_command(
+    scomatic_output: List[Path] = typer.Option(
+        ...,
+        "--scomatic-output",
+        exists=True,
+        dir_okay=False,
+        help="External SComatic TSV/CSV output file. Repeat this option for multiple files.",
+    ),
+    outdir: Path = typer.Option(
+        ...,
+        "--outdir",
+        "-o",
+        file_okay=False,
+        help="Directory for scomatic_candidate_summary.tsv and normalize_scomatic_results_summary.json.",
+    ),
+    cell_annotations: Optional[Path] = typer.Option(
+        None,
+        "--cell-annotations",
+        exists=True,
+        dir_okay=False,
+        help="Optional SComatic cell annotation table with Index and Cell_type columns.",
+    ),
+    provenance_metadata: Optional[Path] = typer.Option(
+        None,
+        "--provenance-metadata",
+        exists=True,
+        dir_okay=False,
+        help="Optional JSON or text provenance metadata to preserve in the normalization summary.",
+    ),
+) -> None:
+    """
+    Normalize external SComatic outputs into circyto's candidate-signal schema without running SComatic.
+    """
+    try:
+        summary = normalize_scomatic_results(
+            scomatic_output_paths=scomatic_output,
+            outdir=outdir,
+            cell_annotation_path=cell_annotations,
+            provenance_metadata_path=provenance_metadata,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        typer.echo(str(exc), err=True)
+        raise typer.Exit(code=1) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 

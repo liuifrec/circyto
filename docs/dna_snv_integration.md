@@ -56,6 +56,18 @@ Required columns:
 
 ## Import command
 
+External SComatic outputs should first be normalized into the
+`scomatic_candidate_summary.tsv` schema. This is a read-only step; it does not
+run SComatic.
+
+```bash
+circyto normalize-scomatic-results \
+  --scomatic-output external_scomatic.tsv \
+  --cell-annotations cell_annotations.tsv \
+  --provenance-metadata scomatic_run_metadata.json \
+  --outdir work/scomatic_normalized
+```
+
 ```bash
 circyto import-dna-snv-summary \
   --workdir WORKDIR \
