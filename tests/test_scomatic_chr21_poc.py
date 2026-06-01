@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import json
 import subprocess
+import sys
 from pathlib import Path
 
 import pandas as pd
@@ -91,6 +92,8 @@ def test_run_scomatic_chr21_poc_synthetic_and_import_join(tmp_path: Path) -> Non
             str(gtf),
             "--outdir",
             str(outdir),
+            "--python-bin",
+            sys.executable,
             "--synthetic",
         ],
         check=True,
@@ -133,3 +136,39 @@ def test_run_scomatic_chr21_poc_synthetic_and_import_join(tmp_path: Path) -> Non
 def test_local_scomatic_doc_keeps_candidate_signal_terminology() -> None:
     text = Path("docs/local_scomatic_chr21_poc.md").read_text(encoding="utf-8")
     assert "RNA-derived candidate variant signals" in text
+
+
+def test_run_scomatic_chr21_poc_real_smoke_fails_clearly_when_scomatic_missing(tmp_path: Path) -> None:
+    workdir = tmp_path / "workflow"
+    (workdir / "align").mkdir(parents=True)
+    (workdir / "align" / "tiny.sam").write_text("@HD\tVN:1.6\tSO:unsorted\n", encoding="utf-8")
+    ref = tmp_path / "chr21.fa"
+    gtf = tmp_path / "chr21.gtf"
+    ref.write_text(">chr21\nACGT\n", encoding="utf-8")
+    gtf.write_text('chr21\ttest\tgene\t1\t4\t.\t+\t.\tgene_id "G1"; gene_name "GENE1";\n', encoding="utf-8")
+    outdir = tmp_path / "scomatic_real_smoke"
+    missing_scomatic_dir = tmp_path / "missing_scomatic"
+
+    proc = subprocess.run(
+        [
+            "bash",
+            str(ROOT / "scripts" / "run_scomatic_chr21_poc.sh"),
+            "--workdir",
+            str(workdir),
+            "--reference",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--outdir",
+            str(outdir),
+            "--scomatic-dir",
+            str(missing_scomatic_dir),
+            "--real-smoke",
+        ],
+        check=False,
+        capture_output=True,
+        text=True,
+        cwd=ROOT,
+    )
+    assert proc.returncode != 0
+    assert "SComatic directory not found" in proc.stderr

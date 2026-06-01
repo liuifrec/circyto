@@ -18,6 +18,9 @@ Welcome to the `circyto` documentation.
 - [scRR multimodal roadmap](scrr_multimodal_roadmap.md)
 - [DNA/SNV integration scaffold](dna_snv_integration.md)
 - [Manuscript benchmark plan](manuscript_benchmark_plan.md)
+- [Current project status](current_project_status.md)
+- [Manuscript figure skeleton](manuscript_figure_skeleton.md)
+- [Results skeleton](results_skeleton.md)
 - [scverse interoperability](scverse_interoperability.md)
 - [Reproducibility checklist](reproducibility_checklist.md)
 - [Scanpy downstream](scanpy_downstream.md)
@@ -31,6 +34,8 @@ Welcome to the `circyto` documentation.
 - [Human scRR server test plan](human_scrr_server_test_plan.md)
 - [SComatic interoperability](scomatic_interop.md)
 - [SComatic-integrated circRNA study design](scomatic_circrna_study_design.md)
+- [Local SComatic chr21 POC](local_scomatic_chr21_poc.md)
+- [Local SComatic environment setup](scomatic_environment_setup.md)
 - [CIRI-full chr21 example](ciri_full_chr21_example.md)
 - SMART-Seq3 workflow: see [Getting started](getting_started.md#workflow-1b-experimental-smart-seq3-to-ciri3)
 

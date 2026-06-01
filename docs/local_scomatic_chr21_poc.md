@@ -9,7 +9,7 @@ Scope:
 - no full DNA variant calling
 - no genome-scale SComatic execution inside `circyto`
 
-## Command shape
+## A. Synthetic integration test
 
 ```bash
 bash scripts/run_scomatic_chr21_poc.sh \
@@ -29,7 +29,22 @@ bash scripts/run_scomatic_chr21_poc.sh \
 If a real BAM/SAM-backed local POC is attempted later:
 
 - `samtools` must be installed
-- `SComatic` must be installed explicitly
+- `SComatic` must be installed explicitly in a dedicated Python 3.10 environment
+- `VGAM` must be available to `Rscript`
+
+See [scomatic_environment_setup.md](./scomatic_environment_setup.md).
+
+### Current WSL boundary
+
+Real local WSL SComatic smoke mode is currently blocked on this machine by native conda package instability:
+
+- repeated `Bus error (core dumped)` during minimal dependency installation
+
+For now, use WSL only for:
+
+- `--synthetic`
+- `circyto import-dna-snv-summary`
+- `circyto summarize-dna-rna-circ`
 
 ## Current behavior
 
@@ -57,14 +72,50 @@ The candidate table is already normalized into the current `circyto` schema:
 
 ### Non-synthetic mode
 
-The script currently:
+For environment/protocol smoke testing, use:
+
+```bash
+bash scripts/run_scomatic_chr21_poc.sh \
+  --workdir WORKDIR \
+  --reference ref/chr21.fa \
+  --gtf ref/chr21.gtf \
+  --outdir OUTDIR \
+  --scomatic-dir /mnt/d/SComatic \
+  --real-smoke
+```
+
+## B. Real SComatic environment smoke test
+
+The real-smoke path:
 
 - discovers an existing BAM/SAM if present
-- checks for `samtools`
-- checks for `SComatic`
-- fails clearly if the environment is not ready
+- runs the local SComatic environment checker
+- rejects Python 3.11+ explicitly
+- rejects missing `VGAM` explicitly
+- prepares a tiny local BAM/index under the POC output directory
+- runs a minimal `BaseCellCounter.py --help` launch smoke test
+- writes `scomatic_poc_summary.json`
 
-Real tiny chr21 SComatic execution is intentionally not enabled in this revision. That keeps the current POC technical and local, without pretending to provide validated biological variant calls.
+This is still not a production variant-calling run. It is only an environment/protocol compatibility check.
+
+At present, this real-smoke path should be attempted on:
+
+- an HPC/server conda environment
+- or a container / `mamba` / `micromamba` environment
+
+Do not keep retrying local WSL native installs after a repeated `Bus error`.
+
+## C. Future production genome-scale run
+
+Future production use should remain clearly separate from this local POC:
+
+- use the dedicated SComatic environment
+- use the full reference resources expected by SComatic
+- validate resource compatibility carefully
+- prefer HPC/server or containerized execution if native WSL package installation is unstable
+- keep terminology conservative:
+  - `RNA-derived candidate variant signals`
+  - not validated somatic mutations without orthogonal DNA evidence
 
 ## Integration with circyto
 

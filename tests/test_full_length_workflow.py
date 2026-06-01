@@ -9,6 +9,11 @@ from scipy.io import mmwrite
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.manifest.alignment import AlignmentManifestRow, write_alignment_manifest_tsv
+from circyto.pipeline.workflow_full_length_circrna import (
+    CLEANED_ALIGNMENT_RESUME_MESSAGE,
+    STALE_WORKDIR_MESSAGE,
+)
 
 
 runner = CliRunner()
@@ -41,6 +46,17 @@ def _write_single_end_manifest(tmp_path: Path, *, protocol: str = "ramda") -> Pa
         + "\n",
         encoding="utf-8",
     )
+    return manifest
+
+
+def _write_single_end_manifest_with_cells(tmp_path: Path, *, cell_count: int, protocol: str = "ramda") -> Path:
+    fastq = tmp_path / "reads.fastq"
+    _write_fastq(fastq)
+    rows = ["sample_id\tfastq_1\tfastq_2\tprotocol\tstrandedness\tread_layout\tn_input_reads"]
+    for idx in range(1, cell_count + 1):
+        rows.append(f"cell{idx:03d}\t{fastq}\t\t{protocol}\tunstranded\tsingle\t12")
+    manifest = tmp_path / f"manifest_{cell_count}.tsv"
+    manifest.write_text("\n".join(rows) + "\n", encoding="utf-8")
     return manifest
 
 
@@ -257,6 +273,246 @@ def test_full_length_workflow_future_gene_expression_flags_fail_clearly(tmp_path
     assert result.exit_code != 0
     assert result.exception is not None
     assert "featureCounts/velocyto-based" in str(result.exception)
+
+
+def test_full_length_workflow_cleaned_workdir_missing_alignment_fails_before_resume(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_single_end_manifest(tmp_path, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    outdir = tmp_path / "run"
+    align = outdir / "align"
+    align.mkdir(parents=True)
+    missing_sam = align / "cell1.sam"
+    (align / "alignment_manifest.tsv").write_text(
+        "cell_id\tbam\tsam\tgroup_id\tread_layout\taligner\treference\tcache_key\tsource_manifest\tmapper_mode\tartifact_bucket\tsortedness\n"
+        f"cell1\t\t{missing_sam}\tgrp\tsingle-end\tbwa-mem\t{ref}\tk1\t{manifest}\t0\tbwa_mem\tunsorted\n",
+        encoding="utf-8",
+    )
+    (outdir / "workflow_summary.json").write_text(
+        json.dumps(
+            {
+                "workflow": "full-length-circrna",
+                "workflow_type": "full-length-circrna",
+                "planned_cells": 1,
+                "cleanup_summary": {
+                    "enabled": True,
+                    "scope": "alignments",
+                    "cleanup_performed": True,
+                    "deleted_paths": [str(missing_sam.resolve())],
+                    "reclaimed_bytes": 10,
+                },
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    called = {"run_ciri3": False}
+
+    def _fail_if_called(*args, **kwargs):
+        called["run_ciri3"] = True
+        raise AssertionError("run_ciri3_workflow should not run for cleaned stale workdirs")
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", _fail_if_called)
+
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(outdir),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--no-export-h5ad",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert result.exception is not None
+    assert CLEANED_ALIGNMENT_RESUME_MESSAGE in str(result.exception)
+    assert called["run_ciri3"] is False
+
+
+def test_full_length_workflow_stale_three_cell_outputs_fail_against_ten_cell_manifest(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+
+    manifest = _write_single_end_manifest_with_cells(tmp_path, cell_count=10, protocol="ramda")
+    ref, gtf = _write_ref_and_gtf(tmp_path)
+    outdir = tmp_path / "run"
+    align = outdir / "align"
+    ciri3 = outdir / "ciri3"
+    matrix = outdir / "matrix"
+    for path in (align, ciri3, matrix):
+        path.mkdir(parents=True, exist_ok=True)
+
+    old_cells = [f"cell{idx:03d}" for idx in range(1, 4)]
+    alignment_rows = []
+    for idx, cell_id in enumerate(old_cells, start=1):
+        sam = align / f"{cell_id}.sam"
+        sam.write_text("@SQ\tSN:chr21\tLN:1000\n", encoding="utf-8")
+        alignment_rows.append(
+            AlignmentManifestRow(
+                cell_id=cell_id,
+                sam=str(sam),
+                group_id="old3",
+                read_layout="single-end",
+                aligner="bwa-mem",
+                reference=str(ref),
+                cache_key=f"old{idx}",
+                source_manifest=str((tmp_path / "old_manifest_3.tsv").resolve()),
+                mapper_mode="0",
+                artifact_bucket="bwa_mem",
+                sortedness="unsorted",
+            )
+        )
+        (ciri3 / f"{cell_id}.tsv").write_text(
+            "circ_id\tchr\tstart\tend\tstrand\tsupport\n"
+            f"circ{idx}\tchr21\t{idx}\t{idx + 10}\t+\t1\n",
+            encoding="utf-8",
+        )
+    write_alignment_manifest_tsv(alignment_rows, align / "alignment_manifest.tsv")
+    (align / "alignment_prepare_summary.json").write_text(
+        json.dumps(
+            {
+                "planned_cells": 3,
+                "n_manifest_rows": 3,
+                "status_counts": {"aligned": 3},
+                "cells": [{"cell_id": cell_id, "status": "aligned"} for cell_id in old_cells],
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (ciri3 / "detector_run_summary.json").write_text(
+        json.dumps(
+            {
+                "planned_cells": 3,
+                "n_manifest_rows": 3,
+                "status_counts": {"success": 3},
+                "cells": [{"cell_id": cell_id, "status": "success"} for cell_id in old_cells],
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    (matrix / "circ_counts.mtx").write_text("%%MatrixMarket matrix coordinate integer general\n%\n1 3 0\n", encoding="utf-8")
+    (matrix / "circ_index.txt").write_text("circ1\n", encoding="utf-8")
+    (matrix / "cell_index.txt").write_text("\n".join(old_cells) + "\n", encoding="utf-8")
+    (outdir / "workflow_summary.json").write_text(
+        json.dumps(
+            {
+                "workflow": "full-length-circrna",
+                "workflow_type": "full-length-circrna",
+                "planned_cells": 3,
+                "cleanup_summary": {"enabled": False, "scope": None, "performed": False},
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    called = {"run_ciri3": False}
+
+    def _fail_if_called(*args, **kwargs):
+        called["run_ciri3"] = True
+        raise AssertionError("run_ciri3_workflow should not run for stale workdirs")
+
+    monkeypatch.setattr(workflow, "run_ciri3_workflow", _fail_if_called)
+
+    result = runner.invoke(
+        app,
+        [
+            "workflow",
+            "full-length-circrna",
+            "--manifest",
+            str(manifest),
+            "--outdir",
+            str(outdir),
+            "--protocol",
+            "ramda",
+            "--genome-fasta",
+            str(ref),
+            "--gtf",
+            str(gtf),
+            "--no-export-h5ad",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert result.exception is not None
+    assert STALE_WORKDIR_MESSAGE in str(result.exception)
+    assert "existing summary was created for 3 cells, current manifest has 10 cells" in str(result.exception)
+    assert called["run_ciri3"] is False
+
+
+def test_full_length_workflow_allows_current_manifest_partial_alignment_cache(tmp_path: Path) -> None:
+    from circyto.pipeline import workflow_full_length_circrna as workflow
+    from circyto.pipeline.align_manifest import read_source_manifest
+
+    manifest = _write_single_end_manifest_with_cells(tmp_path, cell_count=10, protocol="ramda")
+    ref, _ = _write_ref_and_gtf(tmp_path)
+    outdir = tmp_path / "run"
+    bwa_dir = outdir / "align" / "bwa_mem"
+    bwa_dir.mkdir(parents=True)
+
+    partial_cells = [f"cell{idx:03d}" for idx in range(1, 4)]
+    rows = []
+    for idx, cell_id in enumerate(partial_cells, start=1):
+        sam = bwa_dir / f"{cell_id}.sam"
+        sam.write_text("@SQ\tSN:chr21\tLN:1000\n", encoding="utf-8")
+        rows.append(
+            AlignmentManifestRow(
+                cell_id=cell_id,
+                sam=str(sam),
+                group_id="current10",
+                read_layout="single-end",
+                aligner="bwa-mem",
+                reference=str(ref),
+                cache_key=f"partial{idx}",
+                source_manifest=str((outdir / "manifests" / "single_end_manifest.tsv").resolve()),
+                mapper_mode="0",
+                artifact_bucket="bwa_mem",
+                sortedness="unsorted",
+            )
+        )
+    write_alignment_manifest_tsv(rows, bwa_dir / "alignment_manifest.tsv")
+    (bwa_dir / "alignment_prepare_summary.json").write_text(
+        json.dumps(
+            {
+                "planned_cells": 10,
+                "n_manifest_rows": 10,
+                "status_counts": {"aligned": 3, "failed": 7},
+                "cells": [{"cell_id": cell_id, "status": "aligned"} for cell_id in partial_cells],
+            },
+            indent=2,
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    source_rows = read_source_manifest(manifest, validate_files=True)
+    workflow._validate_full_length_workdir_resume_state(
+        paths=workflow._workflow_paths(outdir),
+        source_rows=source_rows,
+    )
 
 
 def test_full_length_workflow_gene_counts_import_writes_rna_snapshot(tmp_path: Path, monkeypatch) -> None:

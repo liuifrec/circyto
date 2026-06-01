@@ -6,6 +6,7 @@ from typing import Any, Callable, Optional
 import csv
 import time
 
+from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.align_manifest import read_source_manifest
 from circyto.pipeline.gene_expression_velocity import (
     build_cleanup_plan,
@@ -33,6 +34,7 @@ from circyto.pipeline.workflow_reporting import (
     load_json,
     matrix_section,
     numeric_summary,
+    read_index_lines,
     top_mapping_items,
     summarize_read_layouts,
     utc_now_iso,
@@ -41,6 +43,15 @@ from circyto.pipeline.workflow_reporting import (
 
 
 ProgressFn = Callable[[str], None]
+CLEANED_ALIGNMENT_RESUME_MESSAGE = (
+    "This workdir was cleaned and cannot resume alignment-dependent stages. "
+    "Use a fresh --outdir or rerun from scratch."
+)
+STALE_WORKDIR_MESSAGE = (
+    "Stale-workdir detected: existing outputs use different cell IDs than the current manifest. "
+    "Use a fresh --outdir or rerun from scratch."
+)
+ALIGNMENT_CLEANUP_SCOPES = {"alignments", "all"}
 
 
 @dataclass(frozen=True)
@@ -122,6 +133,222 @@ def _detector_status_counts(path: Path) -> dict[str, int]:
     summary = load_json(path)
     raw = summary.get("status_counts", {})
     return {str(key): int(value) for key, value in dict(raw).items()}
+
+
+def _truthy(value: Any) -> bool:
+    if isinstance(value, bool):
+        return value
+    if value is None:
+        return False
+    return str(value).strip().lower() in {"1", "true", "yes", "y"}
+
+
+def _load_json_if_present(path: Path) -> dict[str, Any] | None:
+    if not path.exists():
+        return None
+    return load_json(path)
+
+
+def _alignment_cleanup_performed(summary: dict[str, Any] | None) -> bool:
+    if not summary:
+        return False
+    cleanup_summary = dict(summary.get("cleanup_summary") or {})
+    cleanup = dict(summary.get("cleanup") or {})
+    performed = any(
+        _truthy(value)
+        for value in (
+            cleanup_summary.get("cleanup_performed"),
+            cleanup_summary.get("performed"),
+            cleanup.get("cleanup_performed"),
+            cleanup.get("performed"),
+            summary.get("cleanup_performed"),
+        )
+    )
+    if not performed:
+        return False
+
+    scopes = [
+        cleanup_summary.get("cleanup_scope"),
+        cleanup_summary.get("scope"),
+        cleanup.get("cleanup_scope"),
+        cleanup.get("planned_scope"),
+        cleanup.get("scope"),
+        summary.get("cleanup_scope"),
+    ]
+    if any(str(scope or "").strip().lower() in ALIGNMENT_CLEANUP_SCOPES for scope in scopes):
+        return True
+
+    deleted_paths = (
+        cleanup_summary.get("deleted_paths")
+        or cleanup.get("cleanup_deleted_paths")
+        or summary.get("cleanup_deleted_paths")
+        or []
+    )
+    return any("/align/" in str(path).replace("\\", "/") for path in deleted_paths)
+
+
+def _stale_workdir_error(label: str, *, expected_ids: set[str], actual_ids: set[str]) -> ValueError:
+    expected_preview = ", ".join(sorted(expected_ids)[:5]) or "-"
+    actual_preview = ", ".join(sorted(actual_ids)[:5]) or "-"
+    return ValueError(
+        f"{STALE_WORKDIR_MESSAGE} {label}: expected {len(expected_ids)} cells "
+        f"({expected_preview}), found {len(actual_ids)} cells ({actual_preview})."
+    )
+
+
+def _summary_declares_current_scope(summary: dict[str, Any] | None, expected_ids: set[str]) -> bool:
+    if not summary:
+        return False
+    planned_raw = summary.get("planned_cells", summary.get("n_manifest_rows"))
+    try:
+        planned = int(planned_raw) if planned_raw is not None else None
+    except (TypeError, ValueError):
+        planned = None
+    if planned is not None and planned != len(expected_ids):
+        return False
+    summary_ids = {
+        str(record.get("cell_id", "")).strip()
+        for record in summary.get("cells", [])
+        if str(record.get("cell_id", "")).strip()
+    }
+    return not (summary_ids - expected_ids)
+
+
+def _duplicate_values(values: list[str]) -> list[str]:
+    seen: set[str] = set()
+    duplicates: set[str] = set()
+    for value in values:
+        if value in seen:
+            duplicates.add(value)
+        seen.add(value)
+    return sorted(duplicates)
+
+
+def _validate_existing_summary_scope(summary_path: Path, *, expected_ids: set[str], label: str) -> dict[str, Any] | None:
+    summary = _load_json_if_present(summary_path)
+    if summary is None:
+        return None
+    planned_raw = summary.get("planned_cells", summary.get("n_manifest_rows"))
+    if planned_raw is not None:
+        try:
+            planned = int(planned_raw)
+        except (TypeError, ValueError) as exc:
+            raise ValueError(f"{STALE_WORKDIR_MESSAGE} {label}: unreadable planned cell count in {summary_path}.") from exc
+        if planned != len(expected_ids):
+            raise ValueError(
+                f"{STALE_WORKDIR_MESSAGE} {label}: existing summary was created for {planned} cells, "
+                f"current manifest has {len(expected_ids)} cells."
+            )
+    summary_id_list = [
+        str(record.get("cell_id", "")).strip()
+        for record in summary.get("cells", [])
+        if str(record.get("cell_id", "")).strip()
+    ]
+    duplicate_ids = _duplicate_values(summary_id_list)
+    if duplicate_ids:
+        preview = ", ".join(duplicate_ids[:5])
+        raise ValueError(f"{STALE_WORKDIR_MESSAGE} {label}: duplicate cell IDs in {summary_path}: {preview}.")
+    summary_ids = set(summary_id_list)
+    if summary_ids and summary_ids - expected_ids:
+        raise _stale_workdir_error(label, expected_ids=expected_ids, actual_ids=summary_ids)
+    return summary
+
+
+def _validate_existing_alignment_manifest(
+    manifest_path: Path,
+    *,
+    expected_ids: set[str],
+    cleaned_alignment_workdir: bool,
+    label: str,
+    allow_current_subset: bool = False,
+) -> None:
+    if not manifest_path.exists():
+        return
+    try:
+        rows = read_alignment_manifest_tsv(manifest_path, validate_files=False)
+    except Exception as exc:
+        raise ValueError(f"{STALE_WORKDIR_MESSAGE} {label}: could not read {manifest_path}: {exc}") from exc
+    actual_ids = {row.cell_id for row in rows}
+    if actual_ids != expected_ids and not (allow_current_subset and actual_ids <= expected_ids):
+        raise _stale_workdir_error(label, expected_ids=expected_ids, actual_ids=actual_ids)
+    try:
+        read_alignment_manifest_tsv(manifest_path, validate_files=True)
+    except FileNotFoundError as exc:
+        if cleaned_alignment_workdir:
+            raise ValueError(CLEANED_ALIGNMENT_RESUME_MESSAGE) from exc
+        raise ValueError(f"{STALE_WORKDIR_MESSAGE} {label}: alignment manifest points to missing files: {exc}") from exc
+
+
+def _validate_full_length_workdir_resume_state(
+    *,
+    paths: dict[str, Path],
+    source_rows,
+) -> None:
+    expected_all = {row.cell_id for row in source_rows}
+    expected_by_aligner = {
+        "bwa_mem": {row.cell_id for row in source_rows if row.read_layout == "single-end"},
+        "star": {row.cell_id for row in source_rows if row.read_layout == "paired-end"},
+    }
+    workflow_summary = _load_json_if_present(paths["workflow_summary"])
+    cleaned_alignment_workdir = _alignment_cleanup_performed(workflow_summary)
+
+    _validate_existing_summary_scope(paths["workflow_summary"], expected_ids=expected_all, label="workflow summary")
+
+    _validate_existing_alignment_manifest(
+        paths["align"] / "alignment_manifest.tsv",
+        expected_ids=expected_all,
+        cleaned_alignment_workdir=cleaned_alignment_workdir,
+        label="alignment manifest",
+    )
+    _validate_existing_summary_scope(
+        paths["align"] / "alignment_prepare_summary.json",
+        expected_ids=expected_all,
+        label="alignment summary",
+    )
+
+    for bucket, expected_ids in expected_by_aligner.items():
+        aligner_dir = paths["align"] / bucket
+        aligner_summary = _validate_existing_summary_scope(
+            aligner_dir / "alignment_prepare_summary.json",
+            expected_ids=expected_ids,
+            label=f"{bucket} alignment summary",
+        )
+        _validate_existing_alignment_manifest(
+            aligner_dir / "alignment_manifest.tsv",
+            expected_ids=expected_ids,
+            cleaned_alignment_workdir=cleaned_alignment_workdir,
+            label=f"{bucket} alignment manifest",
+            allow_current_subset=_summary_declares_current_scope(aligner_summary, expected_ids),
+        )
+
+    detector_summary = _validate_existing_summary_scope(
+        paths["ciri3"] / "detector_run_summary.json",
+        expected_ids=expected_all,
+        label="detector summary",
+    )
+    circ_output_ids = {
+        path.stem
+        for path in paths["ciri3"].glob("*.tsv")
+        if path.is_file()
+    }
+    if circ_output_ids:
+        if circ_output_ids - expected_all:
+            raise _stale_workdir_error("circ output files", expected_ids=expected_all, actual_ids=circ_output_ids)
+        if detector_summary is None and circ_output_ids != expected_all:
+            raise _stale_workdir_error("circ output files", expected_ids=expected_all, actual_ids=circ_output_ids)
+
+    matrix_cell_index = paths["matrix"] / "cell_index.txt"
+    if matrix_cell_index.exists():
+        matrix_id_list = read_index_lines(matrix_cell_index)
+        duplicate_ids = _duplicate_values(matrix_id_list)
+        if duplicate_ids:
+            preview = ", ".join(duplicate_ids[:5])
+            raise ValueError(f"{STALE_WORKDIR_MESSAGE} matrix cell index: duplicate cell IDs in {matrix_cell_index}: {preview}.")
+        matrix_ids = set(matrix_id_list)
+        if matrix_ids:
+            detector_scope_matches = _summary_declares_current_scope(detector_summary, expected_all)
+            if matrix_ids - expected_all or (matrix_ids != expected_all and not detector_scope_matches):
+                raise _stale_workdir_error("matrix cell index", expected_ids=expected_all, actual_ids=matrix_ids)
 
 
 def _matrix_stats_header(matrix_path: Path) -> dict[str, int]:
@@ -479,6 +706,9 @@ def run_full_length_circrna_workflow(
         else:
             warnings.append(message)
             _emit(progress, f"warning: {message}")
+
+    if not params.dry_run:
+        _validate_full_length_workdir_resume_state(paths=paths, source_rows=source_rows)
 
     _emit(progress, f"protocol={effective_protocol} cells={len(source_rows)} skip_demux={skip_demux_effective} dry_run={params.dry_run}")
     run_ciri3_workflow(
