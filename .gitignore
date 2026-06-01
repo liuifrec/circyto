@@ -82,6 +82,7 @@ scripts/*
 !scripts/download_fastqs_from_manifest.sh
 !scripts/summarize_public_benchmarks.sh
 !scripts/run_scomatic_chr21_poc.sh
+!scripts/prepare_ramda_scomatic_input.sh
 !scripts/setup_scomatic_local_env.sh
 !scripts/check_scomatic_environment.sh
 !scripts/check_public_run_status.sh
