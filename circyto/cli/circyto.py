@@ -40,6 +40,7 @@ from circyto.pipeline.scomatic_interop import (
     join_circ_snv_summary,
 )
 from circyto.pipeline.scomatic_normalization import normalize_scomatic_results
+from circyto.pipeline.scrr_cnv_import import import_scrr_cnv
 from circyto.pipeline.gene_expression_velocity import (
     SUPPORTED_CLEANUP_SCOPES,
     add_posthoc_rna_profile,
@@ -571,6 +572,32 @@ def import_dna_snv_summary_command(
             scomatic_candidate_summary_path=scomatic_candidate_summary,
         )
     except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("import-scrr-cnv")
+def import_scrr_cnv_command(
+    cnv_states: Path = typer.Option(..., "--cnv-states", exists=True, dir_okay=False, help="Processed scRR CNV states table, e.g. summary_CNV_states_bin50kb.txt.gz."),
+    outdir: Path = typer.Option(..., "--outdir", "-o", file_okay=False, help="Output directory for cnv.h5ad, cnv_cells.tsv, cnv_bins.tsv, and summary JSON."),
+    cnv_mappabilitynorm: Optional[Path] = typer.Option(None, "--cnv-mappabilitynorm", exists=True, dir_okay=False, help="Optional processed scRR mappability-normalized CNV signal table matching --cnv-states bins."),
+    cell_mapping: Optional[Path] = typer.Option(None, "--cell-mapping", exists=True, dir_okay=False, help="Optional TSV mapping DNA IDs to RNA/canonical cell IDs."),
+    obs_id_strategy: str = typer.Option("canonical", "--obs-id-strategy", help="AnnData obs_names strategy: canonical, dna, or rna."),
+    no_h5ad: bool = typer.Option(False, "--no-h5ad", help="Write only cnv_cells.tsv, cnv_bins.tsv, and summary JSON."),
+) -> None:
+    """
+    Import processed scRR-seq DNA CNV summaries as a bin-level CNV modality.
+    """
+    try:
+        summary = import_scrr_cnv(
+            cnv_states_path=cnv_states,
+            cnv_mappabilitynorm_path=cnv_mappabilitynorm,
+            cell_mapping_path=cell_mapping,
+            outdir=outdir,
+            obs_id_strategy=obs_id_strategy,
+            write_h5ad=not no_h5ad,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
