@@ -24,7 +24,20 @@ circyto normalize-scomatic-results \
 writes:
 
 - `scomatic_candidate_summary.tsv`
+- `scomatic_candidate_summary.tsv.provenance.json`
 - `normalize_scomatic_results_summary.json`
+
+Real SComatic Step 1/Step 2 calling files are accepted directly:
+
+```bash
+circyto normalize-scomatic-results \
+  --scomatic-output hap1_batch10.HAP1.step2.calling.step2.tsv \
+  --outdir work/scomatic_normalized
+```
+
+Step 1 files may contain callable non-candidate rows. The normalizer keeps only
+rows with SComatic candidate allele/cell-type fields and streams the file rather
+than loading the full table into memory.
 
 ## Output Schema
 
@@ -71,6 +84,28 @@ If required fields cannot be resolved, the command fails before writing a
 candidate summary and reports the missing fields plus the available input
 columns.
 
+## Real SComatic Step 1/Step 2 Files
+
+SComatic `BaseCellCalling.step1.py` and `BaseCellCalling.step2.py` outputs use a
+VCF-like TSV structure:
+
+- optional `##INFO` metadata lines
+- a `#CHROM` header line
+- calling fields such as `ALT`, `FILTER`, `Cell_types`, `Bc`, and `VAF`
+- one or more trailing cell-type count columns
+
+`circyto` detects this shape and normalizes one row per called
+cell-type/allele observation. Multi-allelic values encoded with `|` are
+flattened into separate normalized rows. For these real Step 1/Step 2 files,
+`cell_id` is populated from SComatic `Cell_types`, because these files report
+cell-type-level calls rather than unique-cell genotypes. The summary JSON records
+this `cell_id` semantic mapping, the detected SComatic stage, source columns,
+metadata line count, and column mappings.
+
+Use the final Step 2 file for downstream integration when available. Step 1 is
+supported for inspection and validation, but it predates RNA-editing, PoN, and
+nearby-variant filters added by Step 2.
+
 ## Cell Annotation Table
 
 When provided, the cell annotation table must contain:
@@ -78,15 +113,20 @@ When provided, the cell annotation table must contain:
 - `Index`
 - `Cell_type`
 
-The normalized candidate cell IDs must be present in `Index`. This catches
-accidental normalization against the wrong SComatic annotation table.
+For generic per-cell candidate tables, normalized candidate cell IDs must be
+present in `Index`. For real SComatic Step 1/Step 2 calling files, normalized
+candidate labels come from `Cell_types`, so they are validated against
+`Cell_type` instead. This catches accidental normalization against the wrong
+SComatic annotation table while preserving the cell-type-level semantics of
+real Step 1/Step 2 outputs.
 
 ## Provenance
 
 `--provenance-metadata` can point to a JSON or text file. The command embeds the
 metadata path and content in `normalize_scomatic_results_summary.json`, along
 with input paths, column mappings, row counts, output paths, and standard circyto
-provenance fields.
+provenance fields. The same provenance payload is also written to
+`scomatic_candidate_summary.tsv.provenance.json`.
 
 The normalized output can then be imported with:
 
