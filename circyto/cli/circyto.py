@@ -40,6 +40,11 @@ from circyto.pipeline.scomatic_interop import (
     join_circ_snv_summary,
 )
 from circyto.pipeline.scomatic_normalization import normalize_scomatic_results
+from circyto.pipeline.scrr_cell_mapping import (
+    build_scrr_cell_map,
+    merge_scrr_cnv,
+    remap_scrr_mudata_obs,
+)
 from circyto.pipeline.scrr_cnv_import import import_scrr_cnv
 from circyto.pipeline.gene_expression_velocity import (
     SUPPORTED_CLEANUP_SCOPES,
@@ -596,6 +601,73 @@ def import_scrr_cnv_command(
             outdir=outdir,
             obs_id_strategy=obs_id_strategy,
             write_h5ad=not no_h5ad,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("build-scrr-cell-map")
+def build_scrr_cell_map_command(
+    soft: Path = typer.Option(..., "--soft", exists=True, dir_okay=False, help="GEO family.soft or family.soft.gz file."),
+    out: Path = typer.Option(..., "--out", "-o", dir_okay=False, help="Output scRR GSM-to-cell mapping TSV."),
+) -> None:
+    """
+    Build a scRR GSM -> RNA/DNA title -> canonical biological-cell mapping from GEO SOFT metadata.
+    """
+    try:
+        summary = build_scrr_cell_map(soft_path=soft, output_path=out)
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("remap-scrr-mudata-obs")
+def remap_scrr_mudata_obs_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="Existing RNA+circ MuData h5mu with GEO GSM obs IDs."),
+    cell_map: Path = typer.Option(..., "--cell-map", exists=True, dir_okay=False, help="Mapping TSV from build-scrr-cell-map."),
+    output: Path = typer.Option(..., "--output", "-o", dir_okay=False, help="Output remapped RNA+circ h5mu."),
+    target_id: str = typer.Option("canonical_cell_id", "--target-id", help="Remapped obs ID target: canonical_cell_id or rna_cell_id."),
+    allow_partial: bool = typer.Option(False, "--allow-partial", help="Allow obs IDs missing from the mapping and leave them unchanged."),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite an existing output h5mu."),
+) -> None:
+    """
+    Remap scRR RNA/circ MuData obs IDs from GSM accessions to biological cell IDs.
+    """
+    try:
+        summary = remap_scrr_mudata_obs(
+            input_h5mu=input,
+            cell_map_path=cell_map,
+            output_h5mu=output,
+            target_id=target_id,
+            allow_partial=allow_partial,
+            overwrite=overwrite,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("merge-scrr-cnv")
+def merge_scrr_cnv_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="Remapped RNA+circ MuData h5mu."),
+    cnv: Path = typer.Option(..., "--cnv", exists=True, dir_okay=False, help="CNV AnnData h5ad from import-scrr-cnv."),
+    output: Path = typer.Option(..., "--output", "-o", dir_okay=False, help="Output RNA+circ+CNV h5mu."),
+    summary_json: Optional[Path] = typer.Option(None, "--summary-json", dir_okay=False, help="Output summary JSON. Defaults to OUTPUT with .summary.json suffix."),
+    allow_partial: bool = typer.Option(False, "--allow-partial", help="Allow non-identical modality obs sets."),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing output files."),
+) -> None:
+    """
+    Merge remapped scRR RNA+circ MuData with a CNV AnnData modality.
+    """
+    try:
+        summary = merge_scrr_cnv(
+            input_h5mu=input,
+            cnv_h5ad=cnv,
+            output_h5mu=output,
+            summary_json=summary_json,
+            allow_partial=allow_partial,
+            overwrite=overwrite,
         )
     except (FileNotFoundError, ValueError, RuntimeError) as exc:
         raise typer.BadParameter(str(exc)) from exc

@@ -19,6 +19,8 @@ Welcome to the `circyto` documentation.
 - [scRR DNA architecture review](scrr_dna_architecture_review.md)
 - [scRR CNV modality design](scrr_cnv_modality_design.md)
 - [scRR cell pairing strategy](scrr_cell_pairing_strategy.md)
+- [scRR cell mapping](scrr_cell_mapping.md)
+- [scRR tri-modal MuData](scrr_trimodal_mudata.md)
 - [scRR DNA roadmap](scrr_dna_roadmap.md)
 - [DNA/SNV integration scaffold](dna_snv_integration.md)
 - [Manuscript benchmark plan](manuscript_benchmark_plan.md)
