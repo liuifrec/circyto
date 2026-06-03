@@ -103,20 +103,23 @@ The evidence supports a long-term scRR branch centered on:
 MuData
 |- rna
 |- circ
-|- cnv
+|- cnv            (processed copy-number summaries where available)
+|- rt             (processed replication timing/state summaries where available)
 `- candidate_snv  (future, optional, RNA-derived or externally validated)
 ```
 
-The immediate DNA integration target should be CNV/copy-number state import, not SComatic as the core DNA branch.
+The immediate DNA integration targets should follow the processed DNA file semantics: CNV/copy-number state import for IMR90 CNV summaries and RT/replication-state import for HAP1 RT summaries. SComatic should not be treated as the core scRR DNA branch.
 
 ## Current circyto Implementation
 
 Current commands:
 
 - `circyto import-scrr-cnv`
+- `circyto import-scrr-rt`
 - `circyto build-scrr-cell-map`
 - `circyto remap-scrr-mudata-obs`
 - `circyto merge-scrr-cnv`
+- `circyto merge-scrr-rt`
 
 Validated IMR90 full23 output:
 
@@ -126,3 +129,5 @@ Validated IMR90 full23 output:
 - trimodal overlap: 23
 
 The CNV path uses processed GEO summary tables. It does not rerun raw DNA FASTQ/scRepliseq processing.
+
+The RT path also uses processed GEO-style tables. Real GSE278952 HAP1 RT file validation is pending local availability of the named processed files.

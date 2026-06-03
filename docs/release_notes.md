@@ -1,5 +1,18 @@
 # Release Notes
 
+## Unreleased
+
+### HAP1 scRR Replication Timing/State Import
+
+- Added `circyto import-scrr-rt` for processed scRR DNA replication timing/state tables.
+- Added `circyto merge-scrr-rt` for RNA+circ+RT MuData construction.
+- The `rt` modality is separate from IMR90 `cnv`; HAP1 binarized replication-state and average RT files should not be treated as CNV by default.
+- `rt.h5ad` uses cells as `obs`, processed genomic or gene-intersect features as `var`, and replication-state/RT values in `X`.
+- Optional average RT bedGraph values are stored as `var["avg_rt"]` only when coordinates match the RT table features.
+- Synthetic tests cover binary RT parsing, canonical HAP1 cell IDs, no-h5ad mode, optional h5ad writing, and RT MuData merge when `mudata` is available.
+
+Known limitation: the named GSE278952 HAP1 processed files were not present locally during implementation, so real-file import validation remains pending. The importer uses processed GEO-style tables and does not rerun raw DNA FASTQ/scRepli-seq processing.
+
 ## v0.10.0
 
 Recommended tag: `v0.10.0`

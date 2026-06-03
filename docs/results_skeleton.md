@@ -39,24 +39,27 @@ Validated completed outputs:
 - IMR90 full23 tri-modal RNA+circ+CNV MuData
 - HAP1 batch10 paired-end RNA+circ workflow
 - HAP1 batch10 SComatic technical smoke
+- HAP1 processed RT/state importer implemented with synthetic tests
 
 Pending outputs:
 
 - HAP1 full public set
+- real GSE278952 HAP1 processed RT/state file import validation
 
 Language guardrail:
 
 - separate completed validated outputs from pending full-data outputs
 - avoid treating HAP1 full or exploratory SComatic candidate calling as final biological results
 
-## 4. circyto integrates processed scRR CNV as the primary DNA branch
+## 4. circyto integrates processed scRR DNA state as dataset-specific modalities
 
 Points to cover:
 
-- processed GEO CNV state import
-- mappability-normalized CNV signal layer
+- processed GEO CNV state import for IMR90-style CNV summaries
+- mappability-normalized CNV signal layer where supplied
+- processed replication timing/state import for HAP1-style RT summaries
 - GSM-to-biological-cell mapping
-- tri-modal RNA+circ+CNV MuData
+- tri-modal RNA+circ+CNV or RNA+circ+RT MuData
 - SComatic interoperability as an optional sidecar
 
 Terminology guardrail:

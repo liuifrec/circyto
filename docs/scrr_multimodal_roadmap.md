@@ -7,10 +7,11 @@ Current validated foundation:
 - `rna`: post-hoc or workflow-time simple-overlap RNA profiling
 - `circ`: circRNA matrix, QC, `h5ad`, and `MuData` export
 - `cnv`: processed scRR GEO CNV state import and IMR90 full23 tri-modal MuData
+- `rt`: processed scRR replication timing/state import for HAP1-style DNA tables, with synthetic test coverage
 
 Current target:
 
-- integrate RNA, circRNA, processed scRR DNA CNV state, replication-state metadata when available, and exploratory candidate variant summaries under one shared cell axis
+- integrate RNA, circRNA, processed scRR DNA CNV or RT/state profiles, replication-state metadata when available, and exploratory candidate variant summaries under one shared cell axis
 
 ## Proposed modalities
 
@@ -23,6 +24,9 @@ Current target:
 - `mdata["cnv"]`
   - processed scRR GEO copy-number profiles
   - bin-level CNV features
+- `mdata["rt"]`
+  - processed scRR replication timing/state profiles
+  - genomic or gene-intersect RT features
 - `mdata["candidate_snv"]`
   - future exploratory candidate variant modality
   - likely sparse cell-by-variant or summarized burden layers
@@ -74,7 +78,8 @@ These helpers are intentionally lightweight and do not imply biological claims b
 ## Integration path
 
 1. Keep `rna` and `circ` outputs stable.
-2. Add optional replication-state metadata imports into shared `obs`.
-3. Import processed CNV summaries with `circyto import-scrr-cnv`.
-4. Remap GSM IDs and merge tri-modal MuData with `remap-scrr-mudata-obs` and `merge-scrr-cnv`.
-5. Add future candidate SNV burden summaries as optional exploratory `candidate_snv`.
+2. Import processed CNV summaries with `circyto import-scrr-cnv` where source files are CNV.
+3. Import processed replication timing/state summaries with `circyto import-scrr-rt` where source files are RT/state.
+4. Add optional replication-state metadata into shared `obs` when derived summaries are available.
+5. Remap GSM IDs and merge tri-modal MuData with `remap-scrr-mudata-obs` plus `merge-scrr-cnv` or `merge-scrr-rt`.
+6. Add future candidate SNV burden summaries as optional exploratory `candidate_snv`.

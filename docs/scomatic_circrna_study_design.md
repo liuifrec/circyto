@@ -16,7 +16,7 @@ This creates a realistic foundation for an integrated study of:
 
 - circRNA burden
 - full-length single-cell transcriptome state
-- RNA-derived candidate somatic variants
+- RNA-derived candidate variant signals
 - replication stress and genome instability biology
 - future radiation and long-term mutation-response themes relevant to RERF
 
@@ -163,9 +163,9 @@ Recommended statistical style:
 
 Use conservative terms:
 
-- “RNA-derived candidate somatic variants”
+- “RNA-derived candidate variant signals”
 - “candidate variant signals”
-- “exploratory candidate SNVs”
+- “exploratory candidate SNV signals”
 
 Do not use:
 

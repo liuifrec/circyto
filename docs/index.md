@@ -11,12 +11,14 @@ Welcome to the `circyto` documentation.
 | `rna` | validated RNA profile / MuData modality for completed full-length workflows |
 | `circ` | validated circRNA matrix, QC, `h5ad`, and MuData modality |
 | `cnv` | validated processed scRR GEO CNV import and IMR90 full23 tri-modal MuData |
+| `rt` | implemented processed scRR replication timing/state import for HAP1-style DNA tables; real-file validation pending |
 | `candidate_snv` | exploratory optional SComatic interoperability; RNA-derived candidate signals only |
 
 | Dataset / run | Status |
 | --- | --- |
 | IMR90 full23 | RNA + circ + CNV tri-modal MuData validated |
 | HAP1 batch10 | RNA + circ workflow plus SComatic technical smoke validated |
+| HAP1 processed RT | `rt` importer and RNA+circ+RT merge implemented with synthetic tests; real GSE278952 processed-file import pending |
 | HAP1 full | pending full FASTQ download and full workflow run |
 
 ## Sections
@@ -37,6 +39,7 @@ Welcome to the `circyto` documentation.
 - [scRR cell pairing strategy](scrr_cell_pairing_strategy.md)
 - [scRR cell mapping](scrr_cell_mapping.md)
 - [scRR tri-modal MuData](scrr_trimodal_mudata.md)
+- [scRR replication timing modality](scrr_replication_timing_modality.md)
 - [scRR DNA roadmap](scrr_dna_roadmap.md)
 - [DNA/SNV integration scaffold](dna_snv_integration.md)
 - [Manuscript benchmark plan](manuscript_benchmark_plan.md)

@@ -11,7 +11,16 @@ MuData
 `- cnv
 ```
 
-The key requirement is that RNA/circ observations and CNV observations must use the same biological-cell namespace.
+For HAP1 replication timing/state outputs, the parallel shape is:
+
+```text
+MuData
+|- rna
+|- circ
+`- rt
+```
+
+The key requirement is that RNA/circ observations and DNA-modality observations must use the same biological-cell namespace.
 
 ## Step 1: Remap RNA/Circ MuData Obs IDs
 
@@ -63,6 +72,29 @@ Default behavior:
 
 Use `--allow-partial` only when intentionally retaining modality-specific cell sets.
 
+## Alternative Step 2: Merge HAP1 RT
+
+Use the RT path for processed HAP1 replication timing/state outputs, not for IMR90 CNV summaries:
+
+```bash
+circyto import-scrr-rt \
+  --rt-table GSE278952_05_scRR-seq-DNA_HAP1_human_binarized_selectedsamples_all_sorted_hg38.txt.gz \
+  --avg-rt-bedgraph GSE278952_05_scRR-seq-DNA_HAP1_human_midS_Avg_RT_hg38.bedGraph.gz \
+  --outdir dna_rt
+
+circyto merge-scrr-rt \
+  --input rna_circ.remapped.h5mu \
+  --rt dna_rt/rt.h5ad \
+  --output rna_circ_rt.h5mu
+```
+
+Default behavior:
+
+- requires exact shared obs IDs across `rna`, `circ`, and `rt`
+- preserves `rt.X` as the processed replication-state or RT matrix
+- stores matching average RT bedGraph values as `rt.var["avg_rt"]`
+- writes a summary JSON beside the output h5mu
+
 ## Merge Summary JSON
 
 Default summary path:
@@ -99,6 +131,8 @@ n_trimodal_overlap
 n_union_obs
 ```
 
+For `merge-scrr-rt`, the CNV-specific keys are replaced with `rt` keys such as `n_rt_obs`, `n_rna_rt_overlap`, and `n_circ_rt_overlap`.
+
 ## Expected scRR Flow
 
 ```bash
@@ -124,4 +158,8 @@ circyto merge-scrr-cnv \
 
 ## Interpretation
 
-The CNV modality represents processed scRR/scRepli-seq DNA copy-number state by genomic bin. It should be treated as the primary scRR DNA branch. RNA-derived SComatic candidate signals remain a separate optional branch and should not be interpreted as validated DNA somatic mutations.
+The CNV modality represents processed scRR/scRepli-seq DNA copy-number state by genomic bin for datasets whose GEO outputs are CNV summaries, such as the validated IMR90 path.
+
+The `rt` modality represents processed replication timing/state for HAP1-style scRR DNA tables. Do not treat HAP1 binarized RT/state files as CNV by default.
+
+RNA-derived SComatic candidate signals remain a separate optional branch and should not be interpreted as validated DNA somatic mutations.

@@ -46,6 +46,7 @@ from circyto.pipeline.scrr_cell_mapping import (
     remap_scrr_mudata_obs,
 )
 from circyto.pipeline.scrr_cnv_import import import_scrr_cnv
+from circyto.pipeline.scrr_rt_import import import_scrr_rt, merge_scrr_rt
 from circyto.pipeline.gene_expression_velocity import (
     SUPPORTED_CLEANUP_SCOPES,
     add_posthoc_rna_profile,
@@ -664,6 +665,58 @@ def merge_scrr_cnv_command(
         summary = merge_scrr_cnv(
             input_h5mu=input,
             cnv_h5ad=cnv,
+            output_h5mu=output,
+            summary_json=summary_json,
+            allow_partial=allow_partial,
+            overwrite=overwrite,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("import-scrr-rt")
+def import_scrr_rt_command(
+    rt_table: Path = typer.Option(..., "--rt-table", exists=True, dir_okay=False, help="Processed scRR HAP1 replication timing/state table."),
+    outdir: Path = typer.Option(..., "--outdir", "-o", file_okay=False, help="Output directory for rt.h5ad, rt_cells.tsv, rt_features.tsv, and summary JSON."),
+    avg_rt_bedgraph: Optional[Path] = typer.Option(None, "--avg-rt-bedgraph", exists=True, dir_okay=False, help="Optional processed average RT bedGraph. Stored as var['avg_rt'] only when coordinates match --rt-table features."),
+    cell_mapping: Optional[Path] = typer.Option(None, "--cell-mapping", exists=True, dir_okay=False, help="Optional TSV mapping DNA/RNA IDs to canonical cell IDs."),
+    obs_id_strategy: str = typer.Option("canonical", "--obs-id-strategy", help="AnnData obs_names strategy: canonical, dna, or rna."),
+    no_h5ad: bool = typer.Option(False, "--no-h5ad", help="Write only rt_cells.tsv, rt_features.tsv, and summary JSON."),
+) -> None:
+    """
+    Import processed scRR-seq DNA replication timing/state summaries as an RT modality.
+    """
+    try:
+        summary = import_scrr_rt(
+            rt_table_path=rt_table,
+            avg_rt_bedgraph_path=avg_rt_bedgraph,
+            cell_mapping_path=cell_mapping,
+            outdir=outdir,
+            obs_id_strategy=obs_id_strategy,
+            write_h5ad=not no_h5ad,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("merge-scrr-rt")
+def merge_scrr_rt_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="Remapped RNA+circ MuData h5mu."),
+    rt: Path = typer.Option(..., "--rt", exists=True, dir_okay=False, help="Replication timing/state AnnData h5ad from import-scrr-rt."),
+    output: Path = typer.Option(..., "--output", "-o", dir_okay=False, help="Output RNA+circ+RT h5mu."),
+    summary_json: Optional[Path] = typer.Option(None, "--summary-json", dir_okay=False, help="Output summary JSON. Defaults to OUTPUT with .summary.json suffix."),
+    allow_partial: bool = typer.Option(False, "--allow-partial", help="Allow non-identical modality obs sets."),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing output files."),
+) -> None:
+    """
+    Merge remapped scRR RNA+circ MuData with a replication timing/state AnnData modality.
+    """
+    try:
+        summary = merge_scrr_rt(
+            input_h5mu=input,
+            rt_h5ad=rt,
             output_h5mu=output,
             summary_json=summary_json,
             allow_partial=allow_partial,

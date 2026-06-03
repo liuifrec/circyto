@@ -41,11 +41,11 @@ Panels:
   - HAP1 pilot / batch set
 - `2C` workflow reproducibility and integrity outputs
 
-## Figure 3. RNA+circ and scRR CNV MuData integration
+## Figure 3. RNA+circ and scRR DNA MuData integration
 
 Purpose:
 
-- show the `scverse`-style integration layer from RNA+circ through scRR CNV
+- show the `scverse`-style integration layer from RNA+circ through processed scRR DNA modalities
 
 Panels:
 
@@ -53,6 +53,7 @@ Panels:
   - `rna`
   - `circ`
   - `cnv`
+  - `rt`
   - shared `obs`
 - `3B` RNA QC and circRNA QC summary fields
 - `3C` GSM-to-biological-cell remapping:
@@ -67,7 +68,7 @@ Panels:
 
 Purpose:
 
-- present processed scRR CNV as the validated DNA branch and SComatic as exploratory candidate-signal interoperability
+- present processed scRR DNA state modalities and SComatic as exploratory candidate-signal interoperability
 
 Panels:
 
@@ -75,12 +76,17 @@ Panels:
   - `rna`
   - `circ`
   - `cnv`
+  - `rt`
   - optional exploratory `candidate_snv`
 - `4B` CNV integration contracts:
   - processed GEO `summary_CNV_states_*`
   - processed GEO `summary_CNV_mappabilitynorm_*`
   - `cnv.h5ad`
-- `4C` candidate signal contract:
+- `4C` RT/state integration contracts:
+  - processed HAP1 binarized replication-state tables
+  - average RT bedGraph when coordinates match
+  - `rt.h5ad`
+- `4D` candidate signal contract:
   - SComatic candidate summaries
   - RNA-derived candidate variant signals
   - not validated somatic mutations

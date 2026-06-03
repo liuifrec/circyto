@@ -2,10 +2,11 @@
 
 ## Recommendation
 
-The biologically justified near-term DNA branch for circyto should be:
+The biologically justified near-term DNA branch for circyto should be processed scRR DNA modalities with dataset-specific semantics:
 
 ```text
-RNA + circ + CNV
+RNA + circ + CNV      for processed IMR90 copy-number summaries
+RNA + circ + RT       for processed HAP1 replication timing/state summaries
 ```
 
 not:
@@ -20,18 +21,21 @@ SComatic interoperability remains useful as an exploratory RNA-derived candidate
 
 The scRR DNA modality is derived from scRepli-seq. The publication emphasizes genome-wide copy number, replication state, replication timing, S-phase progression, CNV detection, haplotype-specific analysis, and genome instability.
 
-GEO exposes processed CNV tables by genomic bin size. These files map naturally into a `cnv` AnnData modality and can be paired with RNA by sample suffix.
+GEO exposes processed CNV tables by genomic bin size for the validated IMR90 path. These files map naturally into a `cnv` AnnData modality and can be paired with RNA by sample suffix.
+
+The HAP1 processed DNA files named for `GSE278952` are binarized replication-state tables plus an average RT bedGraph. Those files map naturally into a separate `rt` AnnData modality. They should not be imported as CNV unless an upstream file is explicitly documented as copy-number state.
 
 By contrast, the SComatic path uses RNA alignments and produces candidate variant signals under assumptions that are not central to scRR-seq. The completed HAP1 SComatic validation is a technical integration success, but Step2 produced no candidate calls in the single-cell-type test design. That outcome is consistent with treating SComatic as optional exploratory interoperability rather than the core DNA branch.
 
 ## Low-Risk Path
 
-1. Import processed GEO CNV state tables with `circyto import-scrr-cnv`.
-2. Preserve original DNA IDs, inferred RNA IDs, canonical IDs, bin coordinates, bin size, and provenance.
-3. Add `cnv.h5ad` as a first-class DNA output under `WORKDIR/dna/`.
-4. Build GSM-to-biological-cell maps with `circyto build-scrr-cell-map`.
-5. Remap RNA/circ MuData with `circyto remap-scrr-mudata-obs`.
-6. Merge tri-modal RNA+circ+CNV MuData with `circyto merge-scrr-cnv`.
+1. Import processed IMR90 GEO CNV state tables with `circyto import-scrr-cnv`.
+2. Import processed HAP1 replication timing/state tables with `circyto import-scrr-rt`.
+3. Preserve original DNA IDs, inferred RNA IDs, canonical IDs, feature coordinates, bin size when available, and provenance.
+4. Add `cnv.h5ad` or `rt.h5ad` as first-class DNA outputs according to source-file semantics.
+5. Build GSM-to-biological-cell maps with `circyto build-scrr-cell-map` when GEO SOFT metadata are needed.
+6. Remap RNA/circ MuData with `circyto remap-scrr-mudata-obs`.
+7. Merge tri-modal RNA+circ+CNV MuData with `circyto merge-scrr-cnv` or RNA+circ+RT MuData with `circyto merge-scrr-rt`.
 
 This path uses public processed outputs and avoids rerunning DNA workflows.
 
@@ -39,8 +43,8 @@ This path uses public processed outputs and avoids rerunning DNA workflows.
 
 After the low-risk import path is stable:
 
-- correlate circRNA abundance with CNV burden and chromosome-arm copy-number state
-- compare circRNA expression across replication-state or cell-cycle groups
+- correlate circRNA abundance with CNV burden and chromosome-arm copy-number state where CNV summaries exist
+- compare circRNA expression across replication-state or cell-cycle groups where RT/state summaries exist
 - use paired RNA and DNA to analyze gene expression dynamics during S-phase progression
 - integrate aphidicoline and genome-instability conditions where available
 - preserve haplotype-specific hooks for future allele-aware analysis
@@ -70,12 +74,12 @@ Do not use this branch to make primary scRR DNA claims unless orthogonal DNA val
 
 ## Manuscript Opportunities
 
-The stronger circyto manuscript angle is multimodal infrastructure for full-length single-cell RNA/circRNA plus scRR DNA copy-number state:
+The stronger circyto manuscript angle is multimodal infrastructure for full-length single-cell RNA/circRNA plus processed scRR DNA state:
 
-- reusable `rna + circ + cnv` MuData schema
-- public scRR GEO CNV importer
+- reusable `rna + circ + cnv` and `rna + circ + rt` MuData schemas
+- public scRR GEO CNV and RT/state importers
 - direct DNA/RNA cell-pairing validation
-- genome-bin CNV tracks linked to circRNA and RNA summaries
+- genome-bin CNV or replication-state tracks linked to circRNA and RNA summaries
 - explicit separation between copy-number DNA evidence and RNA-derived candidate variant signals
 
 ## Implementation Milestones
@@ -85,11 +89,13 @@ Current:
 - IMR90 full23 RNA+circ+CNV tri-modal MuData validated
 - HAP1 batch10 RNA+circ workflow and SComatic technical smoke validated
 - `circyto import-scrr-cnv` imports processed CNV summaries into `cnv.h5ad`
+- `circyto import-scrr-rt` imports processed replication timing/state summaries into `rt.h5ad` with synthetic test coverage
 - `circyto build-scrr-cell-map`, `circyto remap-scrr-mudata-obs`, and `circyto merge-scrr-cnv` provide the validated metadata bridge
 
 Next:
 
 - add CNV-specific inspection summaries
+- validate `circyto import-scrr-rt` against local GSE278952 processed HAP1 files when available
 - document exact genome build and accession provenance per imported dataset
 
 Deferred:

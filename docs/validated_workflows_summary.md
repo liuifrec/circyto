@@ -30,8 +30,9 @@ The intent is to separate:
 | Area | Current state | Notes |
 | --- | --- | --- |
 | MuData multimodal export for full-length workflows | validated for RNA+circ and IMR90 RNA+circ+CNV | `export-mudata` writes RNA+circ; `merge-scrr-cnv` writes tri-modal scRR MuData after GSM remapping |
+| HAP1 replication timing/state import | implemented with synthetic tests | `import-scrr-rt` writes `rt.h5ad`; `merge-scrr-rt` writes RNA+circ+RT MuData; real GSE278952 processed-file validation is pending local file availability |
 | RNA velocity-compatible layers | future | no `velocyto` dependency required today; spliced / unspliced / ambiguous layers remain planned |
-| SComatic interoperability | exploratory | use conservative language such as `RNA-derived candidate somatic variants` or `candidate variant signals`; no validated DNA somatic mutation claims |
+| SComatic interoperability | exploratory | use conservative language such as `RNA-derived candidate variant signals`; no validated DNA somatic mutation claims |
 | automatic integrated circRNA + RNA + velocity pipeline | future | current implementation favors explicit contracts and staged utilities rather than a monolithic production workflow |
 
 ## Reading This Page

@@ -10,8 +10,11 @@ This checklist captures the recommended release-hygiene artifacts for `circyto` 
 - `mudata/full_length.h5mu` when available
 - `dna/cnv.h5ad` for scRR CNV imports
 - `dna/scrr_cnv_import_summary.json` or the actual `scrr_cnv_import_summary.json` path emitted by `import-scrr-cnv`
+- `dna_rt/rt.h5ad` for scRR replication timing/state imports
+- `dna_rt/scrr_rt_import_summary.json` or the actual `scrr_rt_import_summary.json` path emitted by `import-scrr-rt`
 - scRR GSM-to-cell mapping TSV from `build-scrr-cell-map`
 - tri-modal RNA+circ+CNV `.h5mu` when produced by `merge-scrr-cnv`
+- tri-modal RNA+circ+RT `.h5mu` when produced by `merge-scrr-rt`
 - `qc/` summaries
 - manifest TSVs used for execution
 - command logs for public benchmark runs
@@ -35,7 +38,7 @@ This checklist captures the recommended release-hygiene artifacts for `circyto` 
 - benchmark summary tables
 - selected completed workdir summaries
 - representative `h5ad` / `h5mu` artifacts
-- processed scRR CNV import summaries and mapping TSVs when CNV is included
+- processed scRR CNV or RT import summaries and mapping TSVs when DNA modalities are included
 - manifest files
 - README describing dataset, protocol, and reference assumptions
 
@@ -50,5 +53,5 @@ From `circyto summarize-benchmark`:
 - RNA and circ feature counts
 - median RNA and circ QC metrics
 - `h5mu` presence and size
-- CNV modality presence and bin resolution for scRR tri-modal datasets
+- CNV or RT modality presence and feature resolution for scRR tri-modal datasets
 - cleanup and success status
