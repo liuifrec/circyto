@@ -487,6 +487,8 @@ def sanitize_frame_for_anndata(df: pd.DataFrame) -> pd.DataFrame:
     out = df.copy()
     for column in out.columns:
         series = out[column]
+        if isinstance(series.dtype, pd.CategoricalDtype):
+            series = series.astype(object)
         if pd.api.types.is_bool_dtype(series):
             out[column] = series.fillna(False).astype(bool)
             continue

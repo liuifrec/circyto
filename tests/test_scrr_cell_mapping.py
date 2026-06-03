@@ -11,6 +11,7 @@ from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
 from circyto.pipeline.scrr_cell_mapping import HAS_ANNDATA, HAS_MUDATA
+from circyto.pipeline.workflow_reporting import sanitize_frame_for_anndata
 
 
 runner = CliRunner()
@@ -89,6 +90,21 @@ def test_build_scrr_cell_map_fails_on_duplicate_rna_canonical_id(tmp_path: Path)
     assert "Duplicate Sample_title" in result.output
 
 
+def test_sanitize_frame_for_anndata_handles_categorical_missing_values() -> None:
+    df = pd.DataFrame(
+        {
+            "phase": pd.Categorical(["G1", None], categories=["G1", "S"]),
+            "total_counts": [10, 20],
+        }
+    )
+
+    sanitized = sanitize_frame_for_anndata(df)
+
+    assert sanitized["phase"].tolist() == ["G1", ""]
+    assert pd.api.types.is_numeric_dtype(sanitized["total_counts"])
+    assert sanitized["total_counts"].tolist() == [10, 20]
+
+
 @pytest.mark.skipif(not (HAS_ANNDATA and HAS_MUDATA), reason="anndata or mudata not installed")
 def test_remap_scrr_mudata_obs_from_gsm_to_canonical(tmp_path: Path) -> None:
     import anndata as ad
@@ -130,6 +146,54 @@ def test_remap_scrr_mudata_obs_from_gsm_to_canonical(tmp_path: Path) -> None:
     assert list(remapped.mod["rna"].obs_names) == ["IMR90_A_100", "IMR90_A_101"]
     assert remapped.mod["rna"].obs.loc["IMR90_A_100", "gsm_id"] == "GSM8558852"
     assert remapped.mod["circ"].obs.loc["IMR90_A_100", "original_circ_obs_id"] == "GSM8558852"
+
+
+@pytest.mark.skipif(not (HAS_ANNDATA and HAS_MUDATA), reason="anndata or mudata not installed")
+def test_remap_scrr_mudata_obs_handles_categorical_obs_without_empty_category(tmp_path: Path) -> None:
+    import anndata as ad
+    import mudata as mu
+
+    cell_map = tmp_path / "scrr_cell_map.tsv"
+    cell_map.write_text(
+        "gsm_id\trna_cell_id\tdna_cell_id\tcanonical_cell_id\tsample_title\tmolecule\ttreatment\tsource_name\n"
+        "GSM8558852\tRNA_IMR90_A_100\tDNA_IMR90_A_100\tIMR90_A_100\tRNA_IMR90_A_100\tRNA\tnone\tIMR90\n"
+        "GSM8558853\tRNA_IMR90_A_101\tDNA_IMR90_A_101\tIMR90_A_101\tRNA_IMR90_A_101\tRNA\tnone\tIMR90\n",
+        encoding="utf-8",
+    )
+    obs = pd.DataFrame(
+        {
+            "phase": pd.Categorical(["G1", None], categories=["G1", "S"]),
+            "total_counts": [11, 23],
+        },
+        index=["GSM8558852", "GSM8558853"],
+    )
+    rna = ad.AnnData(X=np.array([[1], [2]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["G1"]))
+    circ = ad.AnnData(X=np.array([[0], [1]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["C1"]))
+    input_h5mu = tmp_path / "rna_circ.h5mu"
+    mdata = mu.MuData({"rna": rna, "circ": circ})
+    mdata.obs = obs.copy()
+    mdata.write_h5mu(input_h5mu)
+    output_h5mu = tmp_path / "rna_circ_remapped.h5mu"
+
+    result = runner.invoke(
+        app,
+        [
+            "remap-scrr-mudata-obs",
+            "--input",
+            str(input_h5mu),
+            "--cell-map",
+            str(cell_map),
+            "--output",
+            str(output_h5mu),
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    remapped = mu.read_h5mu(output_h5mu)
+    assert list(remapped.obs_names) == ["IMR90_A_100", "IMR90_A_101"]
+    assert remapped.mod["rna"].obs.loc["IMR90_A_100", "phase"] == "G1"
+    assert pd.api.types.is_numeric_dtype(remapped.mod["rna"].obs["total_counts"])
+    assert remapped.mod["rna"].obs["total_counts"].tolist() == [11, 23]
 
 
 @pytest.mark.skipif(not (HAS_ANNDATA and HAS_MUDATA), reason="anndata or mudata not installed")
