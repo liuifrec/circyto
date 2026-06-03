@@ -4,10 +4,26 @@ Welcome to the `circyto` documentation.
 
 `circyto` is a modular command-line toolkit for single-cell circRNA detection and integration. It wraps multiple circRNA detectors behind a unified interface and outputs sparse circRNA × cell matrices for downstream analysis.
 
+## Current Capabilities
+
+| Modality | Status |
+| --- | --- |
+| `rna` | validated RNA profile / MuData modality for completed full-length workflows |
+| `circ` | validated circRNA matrix, QC, `h5ad`, and MuData modality |
+| `cnv` | validated processed scRR GEO CNV import and IMR90 full23 tri-modal MuData |
+| `candidate_snv` | exploratory optional SComatic interoperability; RNA-derived candidate signals only |
+
+| Dataset / run | Status |
+| --- | --- |
+| IMR90 full23 | RNA + circ + CNV tri-modal MuData validated |
+| HAP1 batch10 | RNA + circ workflow plus SComatic technical smoke validated |
+| HAP1 full | pending full FASTQ download and full workflow run |
+
 ## Sections
 
 - [Getting started](getting_started.md)
 - [Validated workflows summary](validated_workflows_summary.md)
+- [Release notes](release_notes.md)
 - [Full-length circRNA workflow](full_length_workflow.md)
 - [Gene expression and velocity integration](gene_expression_velocity_integration.md)
 - [RNA and velocity contract](rna_velocity_contract.md)

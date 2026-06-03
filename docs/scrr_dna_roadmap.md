@@ -29,8 +29,9 @@ By contrast, the SComatic path uses RNA alignments and produces candidate varian
 1. Import processed GEO CNV state tables with `circyto import-scrr-cnv`.
 2. Preserve original DNA IDs, inferred RNA IDs, canonical IDs, bin coordinates, bin size, and provenance.
 3. Add `cnv.h5ad` as a first-class DNA output under `WORKDIR/dna/`.
-4. Extend MuData export to include `cnv` when `dna/cnv.h5ad` exists.
-5. Add lightweight per-cell CNV summaries only after the raw imported matrix is stable.
+4. Build GSM-to-biological-cell maps with `circyto build-scrr-cell-map`.
+5. Remap RNA/circ MuData with `circyto remap-scrr-mudata-obs`.
+6. Merge tri-modal RNA+circ+CNV MuData with `circyto merge-scrr-cnv`.
 
 This path uses public processed outputs and avoids rerunning DNA workflows.
 
@@ -81,14 +82,13 @@ The stronger circyto manuscript angle is multimodal infrastructure for full-leng
 
 Current:
 
-- real scRR RNA/circ path validated
-- SComatic technical path validated, with no candidate calls in the single-cell-type HAP1 design
-- `circyto import-scrr-cnv` parser skeleton added for processed CNV summaries
+- IMR90 full23 RNA+circ+CNV tri-modal MuData validated
+- HAP1 batch10 RNA+circ workflow and SComatic technical smoke validated
+- `circyto import-scrr-cnv` imports processed CNV summaries into `cnv.h5ad`
+- `circyto build-scrr-cell-map`, `circyto remap-scrr-mudata-obs`, and `circyto merge-scrr-cnv` provide the validated metadata bridge
 
 Next:
 
-- validate importer on one small processed GEO CNV table
-- extend `export-mudata` to include `cnv`
 - add CNV-specific inspection summaries
 - document exact genome build and accession provenance per imported dataset
 

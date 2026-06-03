@@ -95,10 +95,20 @@ DNA_IMR90_A_100 -> IMR90_A_100
 RNA_IMR90_A_100 -> IMR90_A_100
 ```
 
-For existing circyto runs whose RNA/circ cell IDs are already `RNA_*`, future MuData export should either:
+For existing circyto runs whose RNA/circ cell IDs are already `RNA_*`, use `circyto remap-scrr-mudata-obs` to normalize RNA/circ obs names to canonical IDs or RNA titles before merging CNV.
 
-- normalize RNA/circ obs names to the canonical ID, or
-- join through `canonical_cell_id` while preserving original RNA IDs in metadata
+For RNA/circ MuData objects whose obs names are GEO GSM accessions, first build the mapping table:
+
+```bash
+circyto build-scrr-cell-map \
+  --soft GSE278958_family.soft.gz \
+  --out scrr_cell_map.tsv
+
+circyto remap-scrr-mudata-obs \
+  --input rna_circ.h5mu \
+  --cell-map scrr_cell_map.tsv \
+  --output rna_circ.remapped.h5mu
+```
 
 If RNA cell IDs are SRR accessions or other aliases, require an explicit mapping table.
 
@@ -112,15 +122,23 @@ Recommended handling:
 - optional additional resolutions as `mdata.mod["cnv_100kb"]`, `mdata.mod["cnv_200kb"]`, etc. only when needed
 - preserve `bin_size` in `var` and provenance
 
-## Future MuData Export
+## Tri-Modal MuData Merge
 
-The current implementation adds a parser command that can emit `cnv.h5ad`. Full integration into `export-mudata` should be a separate step:
+The current implementation emits `cnv.h5ad` with `circyto import-scrr-cnv`, then merges with remapped RNA/circ MuData:
 
-1. detect `WORKDIR/dna/cnv.h5ad`
-2. read the CNV AnnData
-3. align cells by `canonical_cell_id`
-4. emit `MuData({"rna": rna, "circ": circ, "cnv": cnv})`
-5. preserve original RNA, circ, and DNA identifiers in `mdata.obs`
+```bash
+circyto merge-scrr-cnv \
+  --input rna_circ.remapped.h5mu \
+  --cnv dna/cnv.h5ad \
+  --output rna_circ_cnv.h5mu
+```
+
+Validated IMR90 full23 output:
+
+- `rna`: 23 x 63187
+- `circ`: 23 x 2443
+- `cnv`: 23 x 60607
+- trimodal overlap: 23
 
 ## Non-goals
 

@@ -39,6 +39,8 @@ Step 1 files may contain callable non-candidate rows. The normalizer keeps only
 rows with SComatic candidate allele/cell-type fields and streams the file rather
 than loading the full table into memory.
 
+Validation note: HAP1 batch10 SComatic BaseCellCounter, Step1, and Step2 execution has been validated as a technical smoke, and real Step1/Step2 output normalization is supported. Candidate rows remain RNA-derived candidate variant signals, not validated somatic mutations.
+
 ## Output Schema
 
 `scomatic_candidate_summary.tsv` always uses these columns:

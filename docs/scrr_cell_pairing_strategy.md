@@ -49,12 +49,12 @@ Column order must not be used as the primary pairing rule. Pair by exact canonic
 
 ## Mapping Table
 
-When sample IDs do not follow the `RNA_`/`DNA_` prefix convention, require a TSV mapping table.
+When sample IDs do not follow the `RNA_`/`DNA_` prefix convention, require a TSV mapping table. For GEO SOFT inputs, `circyto build-scrr-cell-map` creates this table from `^SAMPLE` blocks.
 
-Accepted future columns:
+Current mapping columns:
 
 ```text
-dna_cell_id    rna_cell_id    canonical_cell_id
+gsm_id    rna_cell_id    dna_cell_id    canonical_cell_id    sample_title    molecule    treatment    source_name
 ```
 
 `canonical_cell_id` can be optional when it is inferable, but explicit values should take precedence.
@@ -70,7 +70,7 @@ obs["rna_cell_id"]        original RNA sample/cell ID when known
 obs["dna_cell_id"]        original DNA sample/cell ID when known
 ```
 
-For existing RNA/circ workflow outputs whose `obs_names` are not canonical, future MuData export should align through `canonical_cell_id` rather than forcing string equality.
+For existing RNA/circ workflow outputs whose `obs_names` are not canonical, use `circyto remap-scrr-mudata-obs` before `circyto merge-scrr-cnv`.
 
 ## Failure Modes
 
@@ -84,3 +84,5 @@ Reject or warn clearly on:
 ## Current Implementation
 
 `circyto import-scrr-cnv` implements the canonical-ID strategy for the CNV AnnData output. It also preserves original DNA IDs and inferred RNA IDs in `cnv.obs`.
+
+`circyto build-scrr-cell-map`, `circyto remap-scrr-mudata-obs`, and `circyto merge-scrr-cnv` implement the GSM-to-biological-cell bridge needed for tri-modal RNA+circ+CNV MuData.

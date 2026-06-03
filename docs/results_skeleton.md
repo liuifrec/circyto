@@ -30,30 +30,34 @@ Language guardrail:
 - focus on interoperability and reproducibility
 - keep exploratory downstream analyses clearly labeled
 
-## 3. Public scRR pilots establish executable human RamDA/scRR routes
+## 3. Public scRR runs establish executable human RamDA/scRR routes
 
 Validated completed outputs:
 
-- IMR90 2-cell pilot
-- HAP1 3-cell pilot
+- IMR90 full23 RNA+circ workflow
+- IMR90 full23 processed CNV import
+- IMR90 full23 tri-modal RNA+circ+CNV MuData
+- HAP1 batch10 paired-end RNA+circ workflow
+- HAP1 batch10 SComatic technical smoke
 
-Running outputs:
+Pending outputs:
 
-- IMR90 23-cell server run
-- HAP1 batch10 server run
+- HAP1 full public set
 
 Language guardrail:
 
-- separate completed validated outputs from currently running outputs
-- avoid treating in-progress server runs as final results until post-run inspection is complete
+- separate completed validated outputs from pending full-data outputs
+- avoid treating HAP1 full or exploratory SComatic candidate calling as final biological results
 
-## 4. circyto provides a cautious scaffold for future DNA/RNA/circ integration
+## 4. circyto integrates processed scRR CNV as the primary DNA branch
 
 Points to cover:
 
-- schema contracts for DNA summaries
-- SComatic synthetic integration validated
-- future multimodal roadmap defined
+- processed GEO CNV state import
+- mappability-normalized CNV signal layer
+- GSM-to-biological-cell mapping
+- tri-modal RNA+circ+CNV MuData
+- SComatic interoperability as an optional sidecar
 
 Terminology guardrail:
 
@@ -61,17 +65,16 @@ Terminology guardrail:
   - `RNA-derived candidate variant signals`
 - they should not be described as validated somatic mutations without orthogonal DNA evidence
 
-## 5. Real local SComatic execution remains deferred
+## 5. SComatic interoperability is technical and exploratory
 
 Points to cover:
 
-- synthetic integration path validated
-- real WSL local setup blocked by native conda `Bus error`
-- future real backend should move to:
-  - HPC/server conda
-  - or container / `mamba` / `micromamba`
+- RamDA/scRR adapter validated
+- HAP1 batch10 BaseCellCounter, Step1, and Step2 executed
+- Step2 produced no candidate calls in the single-cell-type design
+- local WSL setup remains an environment caveat; server/container execution is preferred for real runs
 
 Language guardrail:
 
-- classify this as a deferred infrastructure step
-- do not imply real SComatic calling has already been validated locally
+- classify this as exploratory RNA-derived candidate-signal interoperability
+- do not imply validated somatic mutation calling

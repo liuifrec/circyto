@@ -108,3 +108,21 @@ MuData
 ```
 
 The immediate DNA integration target should be CNV/copy-number state import, not SComatic as the core DNA branch.
+
+## Current circyto Implementation
+
+Current commands:
+
+- `circyto import-scrr-cnv`
+- `circyto build-scrr-cell-map`
+- `circyto remap-scrr-mudata-obs`
+- `circyto merge-scrr-cnv`
+
+Validated IMR90 full23 output:
+
+- `rna`: 23 x 63187
+- `circ`: 23 x 2443
+- `cnv`: 23 x 60607
+- trimodal overlap: 23
+
+The CNV path uses processed GEO summary tables. It does not rerun raw DNA FASTQ/scRepliseq processing.

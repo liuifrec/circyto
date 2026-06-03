@@ -14,6 +14,7 @@ The intent is to separate:
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `E-MTAB-8735` diySpike / pooled Smart-seq3 | `smartseq3` | paired-end transcript reads plus index reads | pooled FASTQs -> demux -> manifest selection -> STAR -> BWA rescue -> CIRI3 STAR tuple mode -> matrix -> QC -> `h5ad` | `hg38` | circRNA matrix, QC, `anndata/circ_counts.h5ad` | validated end-to-end on real pooled Smart-seq3 workflow input | still exposed under experimental CLI naming; MuData remains optional and not the core validated output |
 | `GSE278958` IMR90 human scRR / RamDA-like | `ramda` / scRR-style full-length | single-end | FASTQ -> BWA-MEM -> direct SAM -> CIRI3 -> matrix -> QC -> `h5ad` | `hg38` | circRNA matrix, QC, `anndata/circ_counts.h5ad` | validated on real human single-end full-length scRR workflow | biological validation target is human RNA-side scRR; this does not imply velocity or DNA-validated mutation support |
+| `GSE278958` IMR90 human scRR / RamDA-like | `ramda` / scRR-style full-length + processed scRR DNA | single-end RNA plus processed GEO CNV summaries | RNA/circ MuData -> GSM remap -> CNV AnnData merge | `hg38` / GEO processed CNV bins | tri-modal RNA+circ+CNV MuData | validated on 23 cells with trimodal overlap 23 | CNV is imported from processed GEO summary tables, not raw DNA FASTQ reprocessing |
 | `GSE278952` HAP1 human scRR | `ramda` / scRR-style full-length | paired-end | FASTQ pair -> STAR -> BWA rescue -> CIRI3 STAR tuple mode -> matrix -> QC -> `h5ad` | `hg38` | circRNA matrix, QC, `anndata/circ_counts.h5ad` | validated as executable on real human paired-end scRR workflow path | paired-end RamDA route still uses explicit `--allow-paired-ramda`; biological benchmarking remains narrower than single-end RamDA history |
 
 ## Lightweight QC And Post-processing
@@ -28,7 +29,7 @@ The intent is to separate:
 
 | Area | Current state | Notes |
 | --- | --- | --- |
-| MuData multimodal export for full-length workflows | future / partial design only | current validated full-length output remains circ-only `h5ad`; multimodal export is not yet the main validated contract |
+| MuData multimodal export for full-length workflows | validated for RNA+circ and IMR90 RNA+circ+CNV | `export-mudata` writes RNA+circ; `merge-scrr-cnv` writes tri-modal scRR MuData after GSM remapping |
 | RNA velocity-compatible layers | future | no `velocyto` dependency required today; spliced / unspliced / ambiguous layers remain planned |
 | SComatic interoperability | exploratory | use conservative language such as `RNA-derived candidate somatic variants` or `candidate variant signals`; no validated DNA somatic mutation claims |
 | automatic integrated circRNA + RNA + velocity pipeline | future | current implementation favors explicit contracts and staged utilities rather than a monolithic production workflow |

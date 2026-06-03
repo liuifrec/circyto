@@ -15,9 +15,10 @@
 - current modalities:
   - `rna`
   - `circ`
-- future planned modalities:
-  - `dna_cnv`
-  - `dna_snv`
+- validated scRR tri-modal extension:
+  - `cnv`
+- future exploratory modality:
+  - `candidate_snv`
 
 ## h5mu expectations
 
@@ -25,6 +26,7 @@ Current `h5mu` outputs should provide:
 
 - `mdata["rna"]`
 - `mdata["circ"]`
+- `mdata["cnv"]` when merged with `circyto merge-scrr-cnv`
 - shared `mdata.obs`
 - `mdata.uns["circyto"]` provenance
 

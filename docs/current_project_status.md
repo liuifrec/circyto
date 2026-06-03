@@ -7,41 +7,37 @@ This page is the short operational snapshot for `circyto` as of the current manu
 - `SMART-Seq3 all192`
   - public pooled full-length workflow validated
   - demultiplexing, circRNA matrix generation, and downstream integration layer established
-- `IMR90 2-cell`
-  - human scRR / RamDA-like single-end pilot validated on hg38
-  - route: `BWA-MEM -> direct SAM -> CIRI3 -> matrix -> h5ad -> RNA profile -> MuData`
-- `HAP1 3-cell`
-  - human scRR / RamDA-like paired-end pilot validated on hg38
+- `IMR90 full23`
+  - human scRR / RamDA-like single-end full 23-cell run validated on hg38
+  - route: `BWA-MEM -> direct SAM -> CIRI3 -> matrix -> h5ad -> RNA profile -> RNA+circ MuData`
+  - processed GEO CNV states and mappability-normalized signals imported at 50 kb
+  - GSM-to-biological-cell remapping validated
+  - tri-modal RNA+circ+CNV MuData validated:
+    - `rna`: 23 x 63187
+    - `circ`: 23 x 2443
+    - `cnv`: 23 x 60607
+    - trimodal overlap: 23
+- `HAP1 batch10`
+  - human scRR / RamDA-like paired-end 10-cell batch validated on hg38
   - route: `STAR -> BWA rescue -> CIRI3 -> matrix -> h5ad -> RNA profile -> MuData`
-- `SComatic synthetic integration`
-  - local chr21 synthetic candidate import and DNA/RNA/circ summary validated
+  - cleanup-workflow reduced the workdir from about 132G to about 9.2G while preserving final artifacts
+- `SComatic interoperability`
+  - RamDA/scRR adapter validated on HAP1 batch10
+  - CB tags injected, NH/nM tags preserved when present
+  - BaseCellCounter, Step1, Step2, and real output normalization validated as a technical smoke
   - terminology guardrail preserved:
     - `RNA-derived candidate variant signals`
     - not validated somatic mutations
 
-## Running
-
-- `IMR90 23-cell`
-  - full public scRR reconstruction running on the server
-  - intended output stack:
-    - `full-length-circrna`
-    - `simple-overlap` RNA profiling
-    - RNA QC refresh
-    - RNA+circ summary
-    - MuData export
-- `HAP1 batch10`
-  - paired-end public scRR reconstruction running on the server
-  - intended output stack is the same, with paired RamDA route enabled
-
 ## Deferred
 
-- `Real SComatic local WSL smoke mode`
-  - deferred
-  - repeated native `Bus error (core dumped)` during minimal conda package installation
-- `Real SComatic backend`
-  - future target on:
-    - HPC / server conda
-    - or container / `mamba` / `micromamba`
+- `HAP1 full`
+  - full public HAP1 set is pending full FASTQ download and full workflow run
+- `IMR90 SComatic whole-genome candidate calling`
+  - exploratory / in progress
+  - candidate outputs must remain RNA-derived candidate signals unless orthogonal DNA validation exists
+- `Raw DNA FASTQ reprocessing`
+  - not implemented inside circyto; current CNV support imports processed GEO summaries
 
 ## Current manuscript-ready layers
 
@@ -55,12 +51,20 @@ This page is the short operational snapshot for `circyto` as of the current manu
   - RNA+circ joined summaries
   - MuData export and downstream scverse inspection
   - benchmark/status/report scaffolding
+- `Layer 3`
+  - processed scRR CNV import
+  - GSM-to-biological-cell mapping
+  - tri-modal RNA+circ+CNV MuData merge
+  - SComatic candidate-signal interoperability as an optional sidecar
 
 ## Caution
 
-Validated outputs and running outputs should be described separately.
+Validated outputs and pending outputs should be described separately.
 
 - validated:
-  - completed pilots and tested local proof-of-concept paths
-- running:
-  - currently executing server jobs that still need post-run inspection before any result claims
+  - IMR90 full23 RNA+circ+CNV tri-modal MuData
+  - HAP1 batch10 RNA+circ and SComatic technical smoke
+- pending:
+  - HAP1 full workflow
+  - IMR90 whole-genome SComatic candidate calling
+  - raw DNA FASTQ reprocessing

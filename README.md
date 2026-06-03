@@ -18,16 +18,33 @@ A workflow and analysis framework for single-cell circRNA detection, with detect
 
 ## Status
 
-`circyto` `v0.9.0` is the current experimental milestone.
+`circyto` `v0.10.0` is the current experimental milestone.
 
 - The validated pooled SMART-Seq3 end-to-end path is FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
 - The validated single-end full-length RamDA/scRR path is FASTQ -> BWA-MEM -> CIRI3 direct SAM -> matrix -> `h5ad`.
 - The validated paired-end full-length RamDA/scRR path is FASTQ pair -> STAR -> CIRI3 STAR tuple mode -> matrix -> `h5ad`, with `--allow-paired-ramda` required for explicit opt-in. `--experimental-paired-ramda` remains accepted as a deprecated alias.
+- The validated scRR integration path now includes processed GEO CNV import, GSM-to-biological-cell mapping, and IMR90 23-cell tri-modal RNA+circ+CNV MuData.
+- SComatic interoperability has been validated as a technical RNA-derived candidate-signal path on HAP1 batch10, but it remains exploratory and is not the primary scRR DNA modality.
 - The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
 - Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
 
 A concise benchmark-oriented summary of validated and exploratory workflow tiers is available in [`docs/validated_workflows_summary.md`](docs/validated_workflows_summary.md).
+
+### Current Capability Table
+
+| Modality | Current status | Notes |
+| --- | --- | --- |
+| `rna` | validated | RNA profile import and MuData RNA modality for completed full-length workflows |
+| `circ` | validated | CIRI3-backed circRNA matrices, QC, `h5ad`, and MuData circ modality |
+| `cnv` | validated for processed scRR GEO summaries | `import-scrr-cnv` writes `cnv.h5ad`; IMR90 full23 tri-modal MuData validated at 50 kb |
+| `candidate_snv` | exploratory / optional | RNA-derived SComatic candidate signals only; not validated somatic mutation calls |
+
+| Dataset / run | Current validation state |
+| --- | --- |
+| IMR90 full23 | RNA + circ + CNV tri-modal MuData validated |
+| HAP1 batch10 | RNA + circ workflow validated; SComatic BaseCellCounter, Step1, Step2, and normalization technical smoke validated |
+| HAP1 full | pending full FASTQ download and full workflow run |
 
 ## Installation
 
@@ -82,7 +99,7 @@ circyto detectors
 
 What these checks mean:
 
-- `circyto --version` should report `0.9.0`.
+- `circyto --version` should report `0.10.0`.
 - `circyto doctor` checks Python/runtime setup and external dependencies.
 - `circyto detectors` reports detector readiness and required external tools.
 
@@ -108,6 +125,10 @@ Advanced / lower-level entry points:
 | `circyto collect-matrix` | Build circRNA matrix from per-cell outputs | manual collection / detector comparisons | advanced |
 | `circyto add-rna-profile` | Add a lightweight post-hoc RNA profile to a completed workflow folder | completed workflow reuse without rerunning alignment or detection | advanced |
 | `circyto cleanup-workflow` | Remove regenerable workflow-owned intermediates from a completed workflow folder | post-run disk reclamation with integrity checks | advanced |
+| `circyto import-scrr-cnv` | Import processed scRR GEO CNV state and mappability-normalized summaries | scRR DNA CNV modality construction | validated for processed GEO summaries |
+| `circyto build-scrr-cell-map` | Build GSM -> RNA/DNA title -> canonical biological-cell map from GEO SOFT metadata | scRR RNA/DNA cell pairing | validated on GSE278958 metadata |
+| `circyto remap-scrr-mudata-obs` | Remap RNA/circ MuData obs IDs from GSM to canonical scRR cell IDs | preparing RNA/circ MuData for CNV merge | validated on IMR90 full23 |
+| `circyto merge-scrr-cnv` | Merge remapped RNA/circ MuData with `cnv.h5ad` | tri-modal RNA+circ+CNV MuData | validated on IMR90 full23 |
 | `circyto export-scomatic-inputs` | Emit interoperability tables for external SComatic runs | exploratory circRNA/SNV interoperability | exploratory |
 | `circyto join-circ-snv-summary` | Join circ summaries with exploratory SComatic candidate tables | exploratory circRNA/SNV summaries | exploratory |
 
@@ -175,7 +196,7 @@ circyto prepare-public-dataset \
 
 ### 1. SMART-Seq3 to CIRI3 end-to-end workflow
 
-This is the main `v0.9.0` workflow. The command below is a realistic example shape for a real dataset run; the paths are examples and should be replaced with your own files.
+This is the main pooled SMART-Seq3 workflow. The command below is a realistic example shape for a real dataset run; the paths are examples and should be replaced with your own files.
 
 ```bash
 circyto workflow smartseq3-ciri3 \
@@ -375,7 +396,7 @@ Additional references:
 - **CLI contract notes**: [docs/cli_policy.md](/mnt/d/circyto/docs/cli_policy.md)
 - **Roadmap and milestone status**: [ROADMAP.md](/mnt/d/circyto/ROADMAP.md)
 
-Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-only shell-style examples are not part of the recommended `v0.9.0` public path and are intentionally omitted from this README.
+Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-only shell-style examples are not part of the recommended `v0.10.0` public path and are intentionally omitted from this README.
 
 ## Citation
 

@@ -107,7 +107,7 @@ Do not keep retrying local WSL native installs after a repeated `Bus error`.
 
 ## C. Future production genome-scale run
 
-Future production use should remain clearly separate from this local POC:
+Genome-scale SComatic use should remain clearly separate from this local POC. The HAP1 batch10 server smoke validated the technical path through BaseCellCounter, Step1, Step2, and result normalization, but candidate interpretation remains exploratory:
 
 - use the dedicated SComatic environment
 - use the full reference resources expected by SComatic

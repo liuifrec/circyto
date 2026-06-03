@@ -41,39 +41,47 @@ Panels:
   - HAP1 pilot / batch set
 - `2C` workflow reproducibility and integrity outputs
 
-## Figure 3. RNA+circ MuData integration
+## Figure 3. RNA+circ and scRR CNV MuData integration
 
 Purpose:
 
-- show the `scverse`-style integration layer
+- show the `scverse`-style integration layer from RNA+circ through scRR CNV
 
 Panels:
 
 - `3A` `MuData` schema:
   - `rna`
   - `circ`
+  - `cnv`
   - shared `obs`
 - `3B` RNA QC and circRNA QC summary fields
-- `3C` RNA-only / circ-only / shared cell bookkeeping
+- `3C` GSM-to-biological-cell remapping:
+  - `GSM8558852 -> RNA_IMR90_A_100 -> IMR90_A_100`
+- `3D` IMR90 full23 tri-modal overlap:
+  - `rna`: 23 x 63187
+  - `circ`: 23 x 2443
+  - `cnv`: 23 x 60607
+  - trimodal overlap: 23
 
-## Figure 4. scRR multimodal roadmap: DNA / RNA / circ / SComatic
+## Figure 4. scRR DNA branch and SComatic sidecar
 
 Purpose:
 
-- present the roadmap without claiming full DNA/SNV integration is already validated
+- present processed scRR CNV as the validated DNA branch and SComatic as exploratory candidate-signal interoperability
 
 Panels:
 
-- `4A` future modality map:
+- `4A` modality map:
   - `rna`
   - `circ`
-  - `dna_cnv`
-  - `dna_snv`
-- `4B` candidate integration contracts:
-  - DNA cell summaries
-  - DNA variant summaries
+  - `cnv`
+  - optional exploratory `candidate_snv`
+- `4B` CNV integration contracts:
+  - processed GEO `summary_CNV_states_*`
+  - processed GEO `summary_CNV_mappabilitynorm_*`
+  - `cnv.h5ad`
+- `4C` candidate signal contract:
   - SComatic candidate summaries
-- `4C` terminology guardrail:
   - RNA-derived candidate variant signals
   - not validated somatic mutations
 
@@ -85,15 +93,15 @@ Purpose:
 
 Candidate panels:
 
-- `5A` IMR90 RNA+circ summary
-- `5B` HAP1 RNA+circ summary
+- `5A` IMR90 RNA+circ+CNV tri-modal summary
+- `5B` HAP1 batch10 RNA+circ and SComatic technical smoke summary
 - `5C` exploratory MuData QC/UMAP views
-- `5D` future bridge to DNA/RNA/circ integration
+- `5D` HAP1 full pending-run placeholder
 
 ## General note
 
 The figure set should clearly separate:
 
 - validated completed analyses
-- running server analyses
+- pending full-data analyses
 - exploratory future layers
