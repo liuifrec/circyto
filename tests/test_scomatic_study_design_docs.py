@@ -7,9 +7,11 @@ def test_scomatic_study_design_doc_mentions_conservative_variant_terminology() -
     path = Path("docs/scomatic_circrna_study_design.md")
     assert path.exists(), f"Missing design doc: {path}"
     text = path.read_text(encoding="utf-8")
-    assert "RNA-derived candidate somatic variants" in text
+    assert "RNA-derived candidate variant signals" in text
     assert "candidate variant signals" in text
-    assert "not yet sufficient" in text
+    assert "Do not use:" in text
+    assert "validated somatic mutations" in text
+    assert "validated somatic mutation calling" in text
 
 
 def test_scomatic_study_design_doc_lists_proposed_output_tables() -> None:
