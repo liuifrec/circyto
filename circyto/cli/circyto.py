@@ -39,6 +39,13 @@ from circyto.pipeline.scomatic_interop import (
     export_scomatic_inputs,
     join_circ_snv_summary,
 )
+from circyto.pipeline.scomatic_full_length_adapter import (
+    import_scomatic,
+    merge_scomatic,
+    normalize_full_length_protocol,
+    prepare_scomatic_input,
+    run_scomatic,
+)
 from circyto.pipeline.scomatic_normalization import normalize_scomatic_results
 from circyto.pipeline.scrr_cell_mapping import (
     build_scrr_cell_map,
@@ -102,6 +109,7 @@ app = typer.Typer(
         "  [MATRIX] collect-matrix (+ per-detector collectors)\n"
         "  [WORKFLOW] workflow smartseq3-ciri3 / full-length-circrna (experimental)\n"
         "  [ANNOTATE] annotate-circs\n"
+        "  [INTEROP] prepare-scomatic-input, run-scomatic, import-scomatic, merge-scomatic\n"
         "  [INTEROP] export-scomatic-inputs, join-circ-snv-summary\n"
         "  [ANALYZE] analyze summarize-h5ad\n"
         "  [MERGE]  merge-detectors\n"
@@ -727,6 +735,134 @@ def merge_scrr_rt_command(
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
+@app.command("prepare-scomatic-input")
+def prepare_scomatic_input_command(
+    outdir: Path = typer.Option(..., "--outdir", "-o", file_okay=False, help="Output directory for SComatic-ready inputs and provenance."),
+    protocol: str = typer.Option(..., "--protocol", help="Full-length RNA protocol: smartseq2, smartseq3, ramda, shinramda, or scrr-rna."),
+    alignment_manifest: Optional[Path] = typer.Option(None, "--alignment-manifest", exists=True, dir_okay=False, help="One-cell-per-BAM/SAM alignment manifest with cell_id and bam or sam columns."),
+    merged_bam: Optional[Path] = typer.Option(None, "--merged-bam", exists=True, dir_okay=False, help="Already merged multi-cell BAM with CB tags."),
+    cell_metadata: Optional[Path] = typer.Option(None, "--cell-metadata", exists=True, dir_okay=False, help="Optional cell metadata TSV. Required for --merged-bam mode."),
+    reference_fasta: Optional[Path] = typer.Option(None, "--reference-fasta", exists=True, dir_okay=False, help="Reference FASTA used for provenance and later SComatic runs."),
+    sample_id: str = typer.Option("scomatic", "--sample-id", help="Sample prefix for merged SComatic BAM outputs."),
+    threads: int = typer.Option(1, "--threads", help="Threads for samtools sort/merge."),
+    cell_type_column: Optional[str] = typer.Option(None, "--cell-type-column", help="Manifest or metadata column to use as SComatic Cell_type."),
+    default_cell_type: Optional[str] = typer.Option(None, "--default-cell-type", help="Fallback SComatic Cell_type when no column value is available."),
+    samtools: str = typer.Option("samtools", "--samtools", help="samtools executable for one-cell-per-BAM/SAM preparation."),
+) -> None:
+    """
+    Prepare full-length RNA alignments and metadata for external SComatic interoperability.
+    """
+    try:
+        summary = prepare_scomatic_input(
+            outdir=outdir,
+            protocol=protocol,
+            alignment_manifest_path=alignment_manifest,
+            merged_bam_path=merged_bam,
+            cell_metadata_path=cell_metadata,
+            reference_fasta_path=reference_fasta,
+            sample_id=sample_id,
+            threads=threads,
+            cell_type_column=cell_type_column,
+            default_cell_type=default_cell_type,
+            samtools=samtools,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("run-scomatic")
+def run_scomatic_command(
+    prepared_dir: Path = typer.Option(..., "--prepared-dir", exists=True, file_okay=False, help="Output directory from prepare-scomatic-input."),
+    outdir: Path = typer.Option(..., "--outdir", "-o", file_okay=False, help="Output directory for SComatic command plan, logs, and summary."),
+    scomatic_dir: Path = typer.Option(..., "--scomatic-dir", exists=True, file_okay=False, help="SComatic checkout directory."),
+    reference_fasta: Path = typer.Option(..., "--reference-fasta", exists=True, dir_okay=False, help="Reference FASTA for SComatic."),
+    threads: int = typer.Option(1, "--threads", help="Thread count recorded in the BaseCellCounter command plan."),
+    python_executable: str = typer.Option("python", "--python-executable", help="Python executable for SComatic scripts."),
+    basecellcounter_script: Optional[Path] = typer.Option(None, "--basecellcounter-script", dir_okay=False, help="Override BaseCellCounter.py path."),
+    step1_script: Optional[Path] = typer.Option(None, "--step1-script", dir_okay=False, help="Override BaseCellCalling.step1.py path."),
+    step2_script: Optional[Path] = typer.Option(None, "--step2-script", dir_okay=False, help="Override BaseCellCalling.step2.py path."),
+    basecellcounter_args: Optional[str] = typer.Option(None, "--basecellcounter-args", help="Shell-style BaseCellCounter args. Supports placeholders like {merged_bam}, {reference_fasta}, {basecellcounter_out}, {threads}."),
+    step1_args: Optional[str] = typer.Option(None, "--step1-args", help="Shell-style Step1 args. Supports placeholders like {basecellcounter_out} and {step1_out}."),
+    step2_args: Optional[str] = typer.Option(None, "--step2-args", help="Shell-style Step2 args. Supports placeholders like {step1_out} and {step2_out}."),
+    run_step1: bool = typer.Option(False, "--run-step1", help="Include SComatic Step1 in the command plan."),
+    run_step2: bool = typer.Option(False, "--run-step2", help="Include SComatic Step2 in the command plan."),
+    execute: bool = typer.Option(False, "--execute", help="Actually execute the generated external SComatic commands."),
+) -> None:
+    """
+    Generate, and optionally execute, an external SComatic command plan.
+    """
+    try:
+        summary = run_scomatic(
+            prepared_dir=prepared_dir,
+            outdir=outdir,
+            scomatic_dir=scomatic_dir,
+            reference_fasta_path=reference_fasta,
+            threads=threads,
+            python_executable=python_executable,
+            basecellcounter_script=basecellcounter_script,
+            step1_script=step1_script,
+            step2_script=step2_script,
+            basecellcounter_args=basecellcounter_args,
+            step1_args=step1_args,
+            step2_args=step2_args,
+            run_step1=run_step1,
+            run_step2=run_step2,
+            execute=execute,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("import-scomatic")
+def import_scomatic_command(
+    scomatic_output: List[Path] = typer.Option(..., "--scomatic-output", exists=True, dir_okay=False, help="SComatic Step1/Step2 or candidate TSV/CSV output. Repeat for multiple files."),
+    outdir: Path = typer.Option(..., "--outdir", "-o", file_okay=False, help="Directory for scomatic_candidate_summary.tsv and import summaries."),
+    cell_annotations: Optional[Path] = typer.Option(None, "--cell-annotations", exists=True, dir_okay=False, help="Optional SComatic Index/Cell_type annotation table."),
+    provenance_metadata: Optional[Path] = typer.Option(None, "--provenance-metadata", exists=True, dir_okay=False, help="Optional JSON or text SComatic run metadata."),
+) -> None:
+    """
+    Import external SComatic Step1/Step2 outputs into circyto's candidate-signal schema.
+    """
+    try:
+        summary = import_scomatic(
+            scomatic_output_paths=scomatic_output,
+            outdir=outdir,
+            cell_annotation_path=cell_annotations,
+            provenance_metadata_path=provenance_metadata,
+        )
+    except (FileNotFoundError, ValueError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("merge-scomatic")
+def merge_scomatic_command(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="Input RNA/circ or multimodal MuData h5mu."),
+    scomatic_candidates: Path = typer.Option(..., "--scomatic-candidates", exists=True, dir_okay=False, help="scomatic_candidate_summary.tsv from import-scomatic or normalize-scomatic-results."),
+    output: Path = typer.Option(..., "--output", "-o", dir_okay=False, help="Output MuData h5mu with candidate_snv modality."),
+    summary_json: Optional[Path] = typer.Option(None, "--summary-json", dir_okay=False, help="Output summary JSON. Defaults to OUTPUT with .summary.json suffix."),
+    allow_partial: bool = typer.Option(False, "--allow-partial", help="Allow candidate cells absent from input MuData obs, useful for cell-type-level Step1/Step2 tables."),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite existing output files."),
+) -> None:
+    """
+    Merge RNA-derived SComatic candidate signals into MuData as candidate_snv.
+    """
+    try:
+        summary = merge_scomatic(
+            input_h5mu=input,
+            scomatic_candidates_path=scomatic_candidates,
+            output_h5mu=output,
+            summary_json=summary_json,
+            allow_partial=allow_partial,
+            overwrite=overwrite,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
 @app.command("normalize-scomatic-results")
 def normalize_scomatic_results_command(
     scomatic_output: List[Path] = typer.Option(
@@ -1259,16 +1395,17 @@ def export_scomatic_inputs_cmd(
     """
     Export lightweight interoperability tables for an external SComatic run.
     """
-    allowed = {"smartseq3", "ramda", "shin-ramda"}
-    if protocol not in allowed:
-        raise typer.BadParameter(f"--protocol must be one of: {', '.join(sorted(allowed))}")
+    try:
+        normalized_protocol = normalize_full_length_protocol(protocol)
+    except ValueError as exc:
+        raise typer.BadParameter(str(exc)) from exc
 
     export_scomatic_inputs(
         bam_manifest=bam_manifest,
         cell_metadata=cell_metadata,
         outdir=outdir,
         reference_fasta=reference_fasta,
-        protocol=protocol,
+        protocol=normalized_protocol,
     )
     typer.echo(f"Wrote SComatic interoperability scaffold to {outdir}")
 

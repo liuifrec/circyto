@@ -15,7 +15,7 @@ not:
 RNA + circ + SComatic
 ```
 
-SComatic interoperability remains useful as an exploratory RNA-derived candidate-signal branch, but it should not define the main scRR DNA architecture.
+SComatic interoperability remains useful as an exploratory RNA-derived candidate variant signals branch, but it should not define the main scRR DNA architecture.
 
 ## Rationale
 

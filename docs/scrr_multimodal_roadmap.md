@@ -54,7 +54,7 @@ These fields should stay optional and provenance-aware.
 - export clean, inspectable `MuData`
 - keep modality-specific feature tables explicit
 - keep RNA/circ summaries lightweight and reproducible
-- add candidate SNV modalities only as explicit future layers, not hidden workflow side effects
+- add RNA-derived candidate variant signals modalities only as explicit layers, not hidden workflow side effects
 
 `circyto` should not yet:
 
@@ -82,4 +82,4 @@ These helpers are intentionally lightweight and do not imply biological claims b
 3. Import processed replication timing/state summaries with `circyto import-scrr-rt` where source files are RT/state.
 4. Add optional replication-state metadata into shared `obs` when derived summaries are available.
 5. Remap GSM IDs and merge tri-modal MuData with `remap-scrr-mudata-obs` plus `merge-scrr-cnv` or `merge-scrr-rt`.
-6. Add future candidate SNV burden summaries as optional exploratory `candidate_snv`.
+6. Add RNA-derived candidate variant signals burden summaries as optional exploratory `candidate_snv`.

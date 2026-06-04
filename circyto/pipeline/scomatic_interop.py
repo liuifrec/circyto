@@ -177,7 +177,7 @@ def export_scomatic_inputs(
         "# SComatic interoperability scaffold\n\n"
         "This export is intentionally limited to metadata and input tables.\n\n"
         "Important scientific framing:\n"
-        "RNA-derived SComatic calls should be treated as exploratory candidate SNVs.\n"
+        "RNA-derived SComatic calls should be treated as exploratory candidate variant signals.\n"
         "They are not validated DNA somatic mutations unless orthogonal DNA validation exists.\n\n"
         "Generated files:\n"
         "- `scomatic_bam_list.tsv`: per-cell BAM list prepared from the circyto manifest.\n"

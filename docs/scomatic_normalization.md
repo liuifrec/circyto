@@ -41,6 +41,33 @@ than loading the full table into memory.
 
 Validation note: HAP1 batch10 SComatic BaseCellCounter, Step1, and Step2 execution has been validated as a technical smoke, and real Step1/Step2 output normalization is supported. Candidate rows remain RNA-derived candidate variant signals, not validated somatic mutations.
 
+## Validation Status
+
+Validated:
+
+- real SComatic Step1 and Step2 output parsing
+- normalized `scomatic_candidate_summary.tsv` schema
+- HAP1 batch10 technical smoke output normalization
+
+Partially validated:
+
+- downstream `candidate_snv` MuData export through `merge-scomatic`
+- cell-type-level semantics for real Step1/Step2 files
+- provenance capture for external SComatic run metadata
+
+Not yet validated:
+
+- clinically validated variants
+- validated somatic mutation discovery
+- biological interpretation of genome-scale SComatic outputs
+- robust calls from homogeneous datasets without meaningful cell-type/group contrasts
+
+## Lessons Learned from HAP1 and IMR90
+
+- HAP1 batch10 confirmed that real Step1/Step2 files can be normalized without treating rows as validated mutations.
+- The HAP1 single-cell-type smoke produced no Step2 candidate calls, which reinforces the need to document grouping and cell-type limitations.
+- IMR90 reinforces that processed DNA state, such as CNV, is the primary scRR DNA evidence; SComatic outputs remain RNA-derived candidate variant signals.
+
 ## Output Schema
 
 `scomatic_candidate_summary.tsv` always uses these columns:

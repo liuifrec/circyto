@@ -12,7 +12,7 @@ Welcome to the `circyto` documentation.
 | `circ` | validated circRNA matrix, QC, `h5ad`, and MuData modality |
 | `cnv` | validated processed scRR GEO CNV import and IMR90 full23 tri-modal MuData |
 | `rt` | implemented processed scRR replication timing/state import for HAP1-style DNA tables; real-file validation pending |
-| `candidate_snv` | exploratory optional SComatic interoperability; RNA-derived candidate signals only |
+| `candidate_snv` | exploratory optional SComatic interoperability via `merge-scomatic`; RNA-derived candidate variant signals only |
 
 | Dataset / run | Status |
 | --- | --- |
@@ -58,6 +58,7 @@ Welcome to the `circyto` documentation.
 - [Human RamDA candidate datasets](human_ramda_candidate_datasets.md)
 - [Human scRR server test plan](human_scrr_server_test_plan.md)
 - [SComatic interoperability](scomatic_interop.md)
+- [Full-length RNA SComatic adapter](scomatic_full_length_adapter.md)
 - [SComatic-integrated circRNA study design](scomatic_circrna_study_design.md)
 - [Local SComatic chr21 POC](local_scomatic_chr21_poc.md)
 - [Local SComatic environment setup](scomatic_environment_setup.md)

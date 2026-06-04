@@ -2,6 +2,17 @@
 
 ## Unreleased
 
+### Full-Length RNA SComatic Adapter
+
+- Added `circyto prepare-scomatic-input` for Smart-seq2, Smart-seq3, RamDA-seq, ShinRamDA, and scRR RNA-arm SComatic input preparation.
+- Added `circyto run-scomatic` to write an external BaseCellCounter/Step1/Step2 command plan and optionally execute it with explicit `--execute`.
+- Added `circyto import-scomatic` as a conservative import boundary for SComatic Step1/Step2 or candidate tables.
+- Added `circyto merge-scomatic` to export normalized RNA-derived candidate variant signals as an exploratory `candidate_snv` MuData modality.
+- SComatic terminology remains `RNA-derived candidate variant signals`, not validated somatic mutations.
+- `run-scomatic` defaults to planning-only; use split environments and prefer server/container/HPC execution because local WSL SComatic execution may be unstable.
+- Validation status: HAP1 batch10 technical smoke and real Step1/Step2 normalization are validated; `candidate_snv` MuData export is partially validated with synthetic tests; clinically validated variants and validated somatic mutation discovery are not yet validated.
+- Lessons learned: HAP1 confirms the technical adapter path but also shows homogeneous cell-type designs may yield no Step2 candidates; IMR90 reinforces that processed DNA state, such as CNV, is the primary scRR DNA evidence while SComatic remains an optional RNA-derived candidate variant signals sidecar.
+
 ### HAP1 scRR Replication Timing/State Import
 
 - Added `circyto import-scrr-rt` for processed scRR DNA replication timing/state tables.

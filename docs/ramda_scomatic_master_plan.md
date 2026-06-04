@@ -79,7 +79,7 @@ Planned server-scale runs:
 The following remain exploratory or optional:
 
 - imported `scomatic_candidate_summary.tsv`
-- per-cell candidate signal counts in joined summaries
+- per-cell counts of RNA-derived candidate variant signals in joined summaries
 - SComatic candidate generation from RamDA/scRR alignments
 - `candidate_snv` MuData representation
 - DNA SNV interpretation without orthogonal DNA validation
@@ -100,7 +100,7 @@ Real SComatic execution should happen on HPC, a server, or a containerized envir
 8. Run SComatic candidate calling and filtering with a compatible reference and Panel of Normals.
 9. Normalize final SComatic pass/fail outputs into `scomatic_candidate_summary.tsv`.
 10. Import normalized candidate tables into `circyto`.
-11. Generate joined RNA/circ/candidate signal summaries.
+11. Generate joined RNA/circ/RNA-derived candidate variant signals summaries.
 12. Export or refresh multimodal analysis objects.
 
 ### Required Inputs
@@ -139,7 +139,7 @@ From SComatic environment:
 External SComatic outputs should be archived as raw provenance, then normalized into:
 
 - `scomatic_candidate_summary.tsv`
-  - one row per RNA-derived candidate variant signal or candidate signal observation
+  - one row per RNA-derived candidate variant signal observation
   - required by the current `circyto import-dna-snv-summary` path
 - optional raw SComatic step outputs:
   - split BAM reports
@@ -248,7 +248,7 @@ This table is for future external DNA pipelines. It should not be populated by R
 
 ### `scomatic_candidate_summary.tsv`
 
-RNA-derived candidate signal table. Current contract:
+RNA-derived candidate variant signals table. Current contract:
 
 - `variant_id`
 - `cell_id`
@@ -333,14 +333,14 @@ Existing circRNA modality:
 
 ### Candidate Variants
 
-Imported RNA-derived candidate signal modality:
+Imported RNA-derived candidate variant signals modality:
 
 - `dna/scomatic_candidate_summary.tsv`
 - per-cell summary:
   - `scomatic_candidate_count`
   - future optional read-support and VAF summaries
 
-This is not a DNA modality by itself. It is currently stored under `dna/` because it belongs to the candidate-signal integration scaffold, but manuscript language should call it RNA-derived candidate variant evidence.
+This is not a DNA modality by itself. It is currently stored under `dna/` because it belongs to the RNA-derived candidate variant signals integration scaffold.
 
 ### DNA State
 
@@ -389,10 +389,10 @@ Parallel HAP1 replication timing/state MuData:
   - processed replication-state or RT values in `X`
   - optional matching average RT values in `var["avg_rt"]`
 
-Planned optional candidate-signal representation:
+Planned optional RNA-derived candidate variant signals representation:
 
 - `candidate_snv`
-  - RNA-derived SComatic candidate signals only
+  - RNA-derived candidate variant signals only
   - not validated DNA somatic mutations
 
 ## 6. Manuscript Figures Enabled
@@ -406,7 +406,7 @@ Candidate figure panels:
   - external SComatic execution shown as an optional sidecar path
 - Dataset benchmark table:
   - Smart-seq3, IMR90 scRR, HAP1 scRR
-  - cells, layout, aligner route, circRNA outputs, RNA snapshots, candidate-signal readiness
+  - cells, layout, aligner route, circRNA outputs, RNA snapshots, RNA-derived candidate variant signals readiness
 - Workdir integrity and reproducibility figure:
   - manifest-driven execution
   - cleanup-aware resume protection
@@ -448,12 +448,12 @@ Interpretation blockers:
 
 - RNA-derived signals require RNA-editing and mapping-artifact caution
 - DNA validation is absent unless supplied by external DNA pipelines
-- candidate signal burden may correlate with expression/coverage rather than mutation burden
+- burden of RNA-derived candidate variant signals may correlate with expression/coverage rather than mutation burden
 - HAP1/IMR90 biological conclusions should remain exploratory until validated
 
 Implementation blockers:
 
-- no stable `candidate_snv` MuData modality export yet
+- `candidate_snv` MuData export is implemented as exploratory interoperability with `circyto merge-scomatic`; it is not a validated mutation modality
 - no formal provenance schema for external SComatic command logs and resource versions
 - no server-side run template for SComatic over adapter output yet
 

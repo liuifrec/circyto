@@ -25,7 +25,7 @@ rt
 `rt` means processed scRR DNA replication timing/state. It is intentionally separate from:
 
 - `cnv`: processed IMR90 copy-number state by genomic bin
-- `candidate_snv`: optional RNA-derived SComatic candidate signals
+- `candidate_snv`: optional SComatic RNA-derived candidate variant signals
 
 ## Difference From IMR90 CNV
 
@@ -140,4 +140,4 @@ circyto merge-scrr-rt \
 - The importer consumes processed GEO-style tables and does not rerun raw scRepli-seq DNA processing.
 - Replication timing/state is not CNV unless the source file explicitly encodes CNV.
 - `rt` is not an SNV modality.
-- SComatic outputs remain RNA-derived candidate signals unless independently validated by DNA evidence.
+- SComatic outputs remain RNA-derived candidate variant signals unless independently validated by DNA evidence.

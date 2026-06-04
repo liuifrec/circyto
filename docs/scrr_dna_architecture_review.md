@@ -105,7 +105,7 @@ MuData
 |- circ
 |- cnv            (processed copy-number summaries where available)
 |- rt             (processed replication timing/state summaries where available)
-`- candidate_snv  (future, optional, RNA-derived or externally validated)
+`- candidate_snv  (optional, exploratory RNA-derived candidate variant signals)
 ```
 
 The immediate DNA integration targets should follow the processed DNA file semantics: CNV/copy-number state import for IMR90 CNV summaries and RT/replication-state import for HAP1 RT summaries. SComatic should not be treated as the core scRR DNA branch.

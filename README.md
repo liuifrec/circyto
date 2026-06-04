@@ -25,7 +25,7 @@ A workflow and analysis framework for single-cell circRNA detection, with detect
 - The validated paired-end full-length RamDA/scRR path is FASTQ pair -> STAR -> CIRI3 STAR tuple mode -> matrix -> `h5ad`, with `--allow-paired-ramda` required for explicit opt-in. `--experimental-paired-ramda` remains accepted as a deprecated alias.
 - The validated scRR integration path now includes processed GEO CNV import, GSM-to-biological-cell mapping, and IMR90 23-cell tri-modal RNA+circ+CNV MuData.
 - The HAP1 scRR DNA replication timing/state branch has a lightweight `rt` importer and RNA+circ+RT merge path; real processed-file validation is pending local availability of the GSE278952 HAP1 DNA tables.
-- SComatic interoperability has been validated as a technical RNA-derived candidate-signal path on HAP1 batch10, but it remains exploratory and is not the primary scRR DNA modality.
+- SComatic interoperability has been validated as a technical path for RNA-derived candidate variant signals on HAP1 batch10, but it remains exploratory and is not the primary scRR DNA modality.
 - The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
 - Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
@@ -40,7 +40,7 @@ A concise benchmark-oriented summary of validated and exploratory workflow tiers
 | `circ` | validated | CIRI3-backed circRNA matrices, QC, `h5ad`, and MuData circ modality |
 | `cnv` | validated for processed scRR GEO summaries | `import-scrr-cnv` writes `cnv.h5ad`; IMR90 full23 tri-modal MuData validated at 50 kb |
 | `rt` | implemented for processed scRR replication timing/state summaries | `import-scrr-rt` writes `rt.h5ad`; intended for HAP1 GSE278952 processed DNA RT/state tables |
-| `candidate_snv` | exploratory / optional | RNA-derived SComatic candidate signals only; not validated somatic mutation calls |
+| `candidate_snv` | exploratory / optional | `merge-scomatic` exports RNA-derived candidate variant signals only; not validated somatic mutation calls |
 
 | Dataset / run | Current validation state |
 | --- | --- |
@@ -134,6 +134,10 @@ Advanced / lower-level entry points:
 | `circyto remap-scrr-mudata-obs` | Remap RNA/circ MuData obs IDs from GSM to canonical scRR cell IDs | preparing RNA/circ MuData for CNV merge | validated on IMR90 full23 |
 | `circyto merge-scrr-cnv` | Merge remapped RNA/circ MuData with `cnv.h5ad` | tri-modal RNA+circ+CNV MuData | validated on IMR90 full23 |
 | `circyto merge-scrr-rt` | Merge remapped RNA/circ MuData with `rt.h5ad` | tri-modal RNA+circ+RT MuData | implemented with synthetic tests |
+| `circyto prepare-scomatic-input` | Prepare full-length RNA alignments and SComatic cell annotations | Smart-seq2/3, RamDA, ShinRamDA, scRR RNA SComatic interoperability | RNA-derived candidate variant signals interoperability |
+| `circyto run-scomatic` | Write and optionally execute external SComatic command plans | BaseCellCounter plus optional Step1/Step2 | exploratory; external execution requires explicit `--execute` |
+| `circyto import-scomatic` | Import SComatic Step1/Step2 or candidate tables | normalized `scomatic_candidate_summary.tsv` | RNA-derived candidate variant signals interoperability |
+| `circyto merge-scomatic` | Merge normalized candidates as `candidate_snv` | RNA+circ+candidate_snv MuData | exploratory / optional |
 | `circyto export-scomatic-inputs` | Emit interoperability tables for external SComatic runs | exploratory circRNA/SNV interoperability | exploratory |
 | `circyto join-circ-snv-summary` | Join circ summaries with exploratory SComatic candidate tables | exploratory circRNA/SNV summaries | exploratory |
 

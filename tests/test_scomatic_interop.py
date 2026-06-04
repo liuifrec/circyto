@@ -49,7 +49,7 @@ def test_export_scomatic_inputs_cli_writes_expected_files(tmp_path: Path) -> Non
 
     readme_text = readme.read_text(encoding="utf-8")
     assert "does not install, invoke, or validate SComatic" not in readme_text
-    assert "exploratory candidate SNVs" in readme_text
+    assert "exploratory candidate variant signals" in readme_text
 
 
 def test_join_circ_snv_summary_cli_writes_expected_files_and_columns(tmp_path: Path) -> None:

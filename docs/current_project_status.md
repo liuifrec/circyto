@@ -38,7 +38,7 @@ This page is the short operational snapshot for `circyto` as of the current manu
   - full public HAP1 set is pending full FASTQ download and full workflow run
 - `IMR90 SComatic whole-genome candidate calling`
   - exploratory / in progress
-  - candidate outputs must remain RNA-derived candidate signals unless orthogonal DNA validation exists
+  - candidate outputs must remain RNA-derived candidate variant signals unless orthogonal DNA validation exists
 - `Raw DNA FASTQ reprocessing`
   - not implemented inside circyto; current CNV and RT support imports processed GEO-style summaries
 
@@ -59,7 +59,7 @@ This page is the short operational snapshot for `circyto` as of the current manu
   - processed scRR replication timing/state import
   - GSM-to-biological-cell mapping
   - tri-modal RNA+circ+CNV and RNA+circ+RT MuData merge
-  - SComatic candidate-signal interoperability as an optional sidecar
+  - SComatic RNA-derived candidate variant signals interoperability as an optional sidecar
 
 ## Caution
 

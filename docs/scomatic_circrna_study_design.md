@@ -1,6 +1,6 @@
 # SComatic-Integrated circRNA Study Design
 
-This document defines a future study design for linking `circyto` full-length single-cell circRNA outputs with external SComatic-based candidate variant analyses.
+This document defines a future study design for linking `circyto` full-length single-cell circRNA outputs with analysis of external SComatic-based RNA-derived candidate variant signals.
 
 It is a design and terminology document, not a workflow execution guide.
 
@@ -18,11 +18,11 @@ This creates a realistic foundation for an integrated study of:
 - full-length single-cell transcriptome state
 - RNA-derived candidate variant signals
 - replication stress and genome instability biology
-- future radiation and long-term mutation-response themes relevant to RERF
+- future radiation-response and genome-instability themes relevant to RERF
 
 The scientific aim is hypothesis generation, prioritization, and structured follow-up.
 
-The scientific aim is not direct proof of DNA somatic mutation causality from scRNA-seq alone.
+The scientific aim is not direct proof of DNA variant causality from scRNA-seq alone.
 
 ## B. Dataset tiers
 
@@ -68,7 +68,7 @@ Minimum study inputs:
 - `h5ad` outputs with cell-level QC
 - per-cell BAM manifest or equivalent alignment manifest for external SComatic preparation
 - cell metadata table with experimental condition, cell type, and replication-state labels if available
-- external SComatic candidate variant table
+- external SComatic RNA-derived candidate variant signals table
 
 Optional but important inputs:
 
@@ -87,8 +87,8 @@ FASTQ/BAM
 -> circRNA x cell matrix + h5ad
 -> export clean SComatic-compatible input tables
 -> run SComatic externally under explicit user control
--> import candidate variant table
--> per-cell candidate variant burden
+-> import RNA-derived candidate variant signals table
+-> per-cell burden of RNA-derived candidate variant signals
 -> per-cell circRNA burden
 -> host-gene circRNA features
 -> circRNA / candidate variant association summaries
@@ -100,7 +100,7 @@ Role boundaries:
 
 - export clean SComatic inputs
 - collect SComatic outputs
-- join candidate variant summaries with circRNA matrices
+- join RNA-derived candidate variant signals summaries with circRNA matrices
 - produce interpretable summary tables
 - preserve provenance
 
@@ -118,15 +118,15 @@ Proposed future study outputs:
 - `circ_snv_cell_summary.tsv`
   - one row per cell
   - circRNA burden
-  - candidate variant burden
+  - burden of RNA-derived candidate variant signals
   - QC and metadata joins
 - `circ_snv_host_gene_summary.tsv`
   - host-gene aggregation across circRNA features and candidate variant signals
 - `circ_snv_candidate_variant_summary.tsv`
-  - candidate variant-centric summary table
+  - RNA-derived candidate variant signals summary table
   - recurrence, gene context, cell distribution, and filtering provenance
 - `circ_snv_recurrent_circRNA_summary.tsv`
-  - recurrent circRNAs stratified by candidate variant burden or condition
+  - recurrent circRNAs stratified by burden of RNA-derived candidate variant signals or condition
 - `circ_snv_provenance.json`
   - references, command shapes, input paths, versions, terminology flags, and join assumptions
 
@@ -144,8 +144,8 @@ Current scaffold status:
 
 Recommended first-pass analyses:
 
-- per-cell circRNA count vs candidate SNV burden
-- per-cell circRNA read-support burden vs candidate SNV burden
+- per-cell circRNA count vs burden of RNA-derived candidate variant signals
+- per-cell circRNA read-support burden vs burden of RNA-derived candidate variant signals
 - host-gene overlap enrichment between circRNA host genes and candidate variant genes
 - recurrence of circRNAs in high-candidate-variant-burden cells
 - replication-state-aware comparisons for scRR datasets
@@ -165,7 +165,7 @@ Use conservative terms:
 
 - “RNA-derived candidate variant signals”
 - “candidate variant signals”
-- “exploratory candidate SNV signals”
+- “exploratory RNA-derived candidate variant signals”
 
 Do not use:
 
@@ -185,7 +185,34 @@ Key limitations:
 - low cell counts
 - mismatch between RNA signal and DNA state
 
-## H. Validation strategy
+## H. Validation Status
+
+Validated:
+
+- public full-length RNA/circ workflow routes for IMR90 and HAP1
+- HAP1 batch10 SComatic technical smoke through BaseCellCounter, Step1, Step2, and normalization
+- terminology and schema guardrails for RNA-derived candidate variant signals
+
+Partially validated:
+
+- candidate table joins with circRNA summaries
+- `candidate_snv` MuData representation for RNA-derived candidate variant signals
+- split-environment preparation/import workflow
+
+Not yet validated:
+
+- clinically validated variants
+- validated somatic mutation discovery
+- biological interpretation of genome-scale SComatic outputs
+- stable candidate behavior in homogeneous datasets or datasets without meaningful cell-type/group contrasts
+
+## I. Lessons Learned from HAP1 and IMR90
+
+- HAP1 batch10 shows that the technical path is feasible but that homogeneous grouping can yield no Step2 candidates.
+- IMR90 shows that processed DNA state integration, especially CNV, is the stronger validated scRR DNA branch.
+- Both datasets require explicit separation between DNA modalities and RNA-derived candidate variant signals.
+
+## J. Validation strategy
 
 Validation should proceed in layers:
 
@@ -198,23 +225,23 @@ Concrete validation steps:
 
 - verify export/import schema stability on Tier 1 public datasets
 - confirm that cell identifiers remain consistent across circRNA and SComatic tables
-- benchmark whether candidate variant summaries are stable under filtering perturbations
+- benchmark whether RNA-derived candidate variant signals summaries are stable under filtering perturbations
 - cross-check recurrent genes against known replication-stress / DNA damage response biology
 - require orthogonal DNA or targeted validation before any true somatic-mutation claim
 
-## I. RERF / internal-politics positioning
+## K. RERF / internal-politics positioning
 
 Suggested positioning:
 
-- emphasize method development for integrated single-cell transcriptome plus circRNA plus candidate variant signal analysis
+- emphasize method development for integrated single-cell transcriptome plus circRNA plus RNA-derived candidate variant signals analysis
 - emphasize hypothesis generation for genome instability and radiation biology
-- avoid promising validated mutation discovery from scRNA-seq alone
+- avoid claiming validated somatic mutation discovery from scRNA-seq alone
 - position public human scRR datasets as the external methodological bridge before internal dataset use
 - frame internal pilots as carefully labeled exploratory studies aligned with long-term mutation and transcriptome themes
 
-This positioning is safer scientifically and institutionally than claiming direct somatic mutation discovery from RNA-only evidence.
+This positioning is safer scientifically and institutionally than claiming validated somatic mutation discovery from RNA-only evidence.
 
-## J. Implementation roadmap
+## L. Implementation roadmap
 
 ### Phase 0: design and terminology
 
@@ -226,7 +253,7 @@ This positioning is safer scientifically and institutionally than claiming direc
 
 - stabilize BAM manifest export
 - stabilize cell metadata requirements
-- document expected candidate-variant input schema
+- document expected RNA-derived candidate variant signals input schema
 
 ### Phase 2: SComatic export/import wrappers
 
@@ -234,9 +261,9 @@ This positioning is safer scientifically and institutionally than claiming direc
 - improve `join-circ-snv-summary`
 - add provenance capture
 
-### Phase 3: candidate variant + circRNA summary joins
+### Phase 3: RNA-derived candidate variant signals + circRNA summary joins
 
-- add candidate-variant summary table
+- add RNA-derived candidate variant signals summary table
 - add recurrent circRNA summary table
 - add replication-state-aware stratification hooks
 
@@ -255,7 +282,7 @@ This positioning is safer scientifically and institutionally than claiming direc
 
 ## Immediate conclusion
 
-The current `circyto` SComatic scaffold is sufficient for exploratory export and basic circRNA/SNV summary joins.
+The current `circyto` SComatic scaffold is sufficient for exploratory export and basic circRNA/RNA-derived candidate variant signals summary joins.
 
 It is not yet sufficient for a full integrated study layer without:
 

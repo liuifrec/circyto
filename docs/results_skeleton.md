@@ -79,5 +79,5 @@ Points to cover:
 
 Language guardrail:
 
-- classify this as exploratory RNA-derived candidate-signal interoperability
+- classify this as exploratory RNA-derived candidate variant signals interoperability
 - do not imply validated somatic mutation calling

@@ -68,7 +68,7 @@ Panels:
 
 Purpose:
 
-- present processed scRR DNA state modalities and SComatic as exploratory candidate-signal interoperability
+- present processed scRR DNA state modalities and SComatic as exploratory RNA-derived candidate variant signals interoperability
 
 Panels:
 
@@ -86,7 +86,7 @@ Panels:
   - processed HAP1 binarized replication-state tables
   - average RT bedGraph when coordinates match
   - `rt.h5ad`
-- `4D` candidate signal contract:
+- `4D` RNA-derived candidate variant signals contract:
   - SComatic candidate summaries
   - RNA-derived candidate variant signals
   - not validated somatic mutations
