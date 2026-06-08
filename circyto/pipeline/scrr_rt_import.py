@@ -34,6 +34,12 @@ except Exception:
 
 
 CELL_PREFIXES = ("DNA_", "RNA_")
+HAP1_MIDS_CELL_PREFIX = "HAP1_scRR1_MidS_"
+ACCEPTED_SAMPLE_COLUMN_PATTERNS = (
+    "DNA_*",
+    "RNA_*",
+    "HAP1_scRR1_MidS_*",
+)
 MAPPING_COLUMNS = (
     "gsm_id",
     "rna_cell_id",
@@ -48,11 +54,13 @@ GENE_ID_CANDIDATES = (
     "feature_id",
     "bin_id",
     "gene_id",
+    "Gene.id",
     "Geneid",
     "gene",
     "gene_name",
     "name",
 )
+GENE_METADATA_CANDIDATES = ("gene_id", "Gene.id", "Geneid", "gene", "gene_name")
 CHROM_CANDIDATES = ("seqname", "chrom", "chromosome", "chr")
 
 
@@ -97,14 +105,19 @@ def _read_wide_table(path: Path) -> pd.DataFrame:
 
 def _is_cell_column(column: object) -> bool:
     value = str(column).strip()
-    return any(value.startswith(prefix) for prefix in CELL_PREFIXES)
+    return any(value.startswith(prefix) for prefix in CELL_PREFIXES) or value.startswith(HAP1_MIDS_CELL_PREFIX)
 
 
 def _detect_cell_columns(df: pd.DataFrame) -> list[str]:
     cell_columns = [str(column) for column in df.columns if _is_cell_column(column)]
     if not cell_columns:
+        columns = [str(column) for column in df.columns]
         raise ValueError(
-            "Could not identify scRR RT cell columns. Expected sample columns beginning with DNA_ or RNA_."
+            "Could not identify scRR RT cell columns.\n"
+            f"Detected columns count: {len(columns)}\n"
+            f"First 15 columns: {columns[:15]}\n"
+            "Accepted sample prefixes/patterns: "
+            f"{', '.join(ACCEPTED_SAMPLE_COLUMN_PATTERNS)}"
         )
     _validate_unique(cell_columns, label="RT cell")
     return cell_columns
@@ -119,10 +132,34 @@ def _chrom_column(columns: list[str]) -> str | None:
     return None
 
 
+def _normalized_column_name(column: object) -> str:
+    value = str(column).strip().lower()
+    for separator in (".", "-", " "):
+        value = value.replace(separator, "_")
+    return "_".join(part for part in value.split("_") if part)
+
+
+def _find_candidate_column(columns: list[str], candidates: tuple[str, ...]) -> str | None:
+    exact = set(columns)
+    for candidate in candidates:
+        if candidate in exact:
+            return candidate
+    lookup = {_normalized_column_name(column): column for column in columns}
+    for candidate in candidates:
+        match = lookup.get(_normalized_column_name(candidate))
+        if match is not None:
+            return match
+    return None
+
+
+def _gene_metadata_column(columns: list[str]) -> str | None:
+    return _find_candidate_column(columns, GENE_METADATA_CANDIDATES)
+
+
 def _feature_type_from_metadata(metadata: pd.DataFrame) -> str:
     columns = [str(column) for column in metadata.columns]
     has_coords = _chrom_column(columns) is not None and "start" in columns and "end" in columns
-    has_gene = any(column.lower() in {"gene_id", "geneid", "gene", "gene_name"} for column in columns)
+    has_gene = _gene_metadata_column(columns) is not None
     if has_coords and has_gene:
         return "gene_intersect_genomic_feature"
     if has_coords:
@@ -151,14 +188,19 @@ def _build_feature_frame(df: pd.DataFrame, cell_columns: list[str]) -> pd.DataFr
     metadata = df.loc[:, metadata_columns].copy()
     metadata = metadata.rename(columns={column: str(column).strip() for column in metadata.columns})
     feature_type = _feature_type_from_metadata(metadata)
+    gene_col = _gene_metadata_column([str(column) for column in metadata.columns])
     chrom_col = _chrom_column([str(column) for column in metadata.columns])
-    if chrom_col is not None and "start" in metadata.columns and "end" in metadata.columns:
+    has_coords = chrom_col is not None and "start" in metadata.columns and "end" in metadata.columns
+    if has_coords:
         metadata["seqname"] = metadata[chrom_col].astype(str)
         metadata["start"] = pd.to_numeric(metadata["start"], errors="raise").astype(np.int64)
         metadata["end"] = pd.to_numeric(metadata["end"], errors="raise").astype(np.int64)
         if (metadata["end"] <= metadata["start"]).any():
             raise ValueError("RT features with genomic coordinates must have end > start.")
         metadata["bin_size"] = metadata["end"] - metadata["start"]
+    if gene_col is not None:
+        raw_feature_ids = metadata[gene_col].astype(str).str.strip().tolist()
+    elif has_coords:
         raw_feature_ids = (
             metadata["seqname"]
             + ":"
@@ -167,11 +209,7 @@ def _build_feature_frame(df: pd.DataFrame, cell_columns: list[str]) -> pd.DataFr
             + metadata["end"].astype(str)
         ).astype(str).tolist()
     else:
-        chosen = None
-        for candidate in GENE_ID_CANDIDATES:
-            if candidate in metadata.columns:
-                chosen = candidate
-                break
+        chosen = _find_candidate_column([str(column) for column in metadata.columns], GENE_ID_CANDIDATES)
         if chosen is None and metadata_columns:
             chosen = metadata_columns[0]
         if chosen is None:
@@ -260,6 +298,25 @@ def _source_molecule(cell_id: str) -> str:
     return ""
 
 
+def _default_obs_ids(source_cell_id: str) -> tuple[str, str, str, str]:
+    canonical_cell_id = canonical_scrr_cell_id(source_cell_id)
+    if source_cell_id.startswith("DNA_"):
+        return (
+            canonical_cell_id,
+            source_cell_id,
+            infer_paired_rna_cell_id(source_cell_id),
+            "strip_modality_prefix",
+        )
+    if source_cell_id.startswith("RNA_"):
+        return (
+            canonical_cell_id,
+            infer_paired_dna_cell_id(source_cell_id),
+            source_cell_id,
+            "strip_modality_prefix",
+        )
+    return canonical_cell_id, source_cell_id, "", "source_cell_id"
+
+
 def _build_obs(
     cell_columns: list[str],
     *,
@@ -272,17 +329,20 @@ def _build_obs(
     for source_cell_id in cell_columns:
         mapped = mapping.get(source_cell_id)
         source_molecule = _source_molecule(source_cell_id)
+        default_canonical_cell_id, default_dna_cell_id, default_rna_cell_id, default_pairing_strategy = (
+            _default_obs_ids(source_cell_id)
+        )
         if mapped is not None:
             mapped_count += 1
-            canonical_cell_id = mapped["canonical_cell_id"] or canonical_scrr_cell_id(source_cell_id)
-            dna_cell_id = mapped["dna_cell_id"] or infer_paired_dna_cell_id(source_cell_id)
-            rna_cell_id = mapped["rna_cell_id"] or infer_paired_rna_cell_id(source_cell_id)
+            canonical_cell_id = mapped["canonical_cell_id"] or default_canonical_cell_id
+            dna_cell_id = mapped["dna_cell_id"] or default_dna_cell_id
+            rna_cell_id = mapped["rna_cell_id"] or default_rna_cell_id
             pairing_strategy = "cell_mapping"
         else:
-            canonical_cell_id = canonical_scrr_cell_id(source_cell_id)
-            dna_cell_id = source_cell_id if source_cell_id.startswith("DNA_") else infer_paired_dna_cell_id(source_cell_id)
-            rna_cell_id = source_cell_id if source_cell_id.startswith("RNA_") else infer_paired_rna_cell_id(source_cell_id)
-            pairing_strategy = "strip_modality_prefix"
+            canonical_cell_id = default_canonical_cell_id
+            dna_cell_id = default_dna_cell_id
+            rna_cell_id = default_rna_cell_id
+            pairing_strategy = default_pairing_strategy
 
         if obs_id_strategy == "canonical":
             cell_id = canonical_cell_id

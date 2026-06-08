@@ -68,6 +68,116 @@ def test_import_scrr_rt_no_h5ad_writes_metadata_outputs(tmp_path: Path) -> None:
     assert features["feature_type"].tolist() == ["genomic_bin", "genomic_bin"]
 
 
+def test_import_scrr_rt_detects_hap1_mids_sorted_bin_columns(tmp_path: Path) -> None:
+    table = tmp_path / "hap1_sorted_bins.txt"
+    table.write_text(
+        "seqname\tstart\tend\tHAP1_scRR1_MidS_053\tHAP1_scRR1_MidS_036\n"
+        "chr1\t0\t50000\t-1\t0\n"
+        "chr1\t50000\t100000\t1\t-1\n",
+        encoding="utf-8",
+    )
+    outdir = tmp_path / "rt"
+
+    result = runner.invoke(
+        app,
+        [
+            "import-scrr-rt",
+            "--rt-table",
+            str(table),
+            "--outdir",
+            str(outdir),
+            "--no-h5ad",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["n_cells"] == 2
+    assert payload["n_features"] == 2
+    assert payload["observed_values"] == [-1, 0, 1]
+
+    cells = pd.read_csv(outdir / "rt_cells.tsv", sep="\t", keep_default_na=False)
+    assert cells["cell_id"].tolist() == ["HAP1_scRR1_MidS_053", "HAP1_scRR1_MidS_036"]
+    assert cells["canonical_cell_id"].tolist() == ["HAP1_scRR1_MidS_053", "HAP1_scRR1_MidS_036"]
+    assert cells["dna_cell_id"].tolist() == ["HAP1_scRR1_MidS_053", "HAP1_scRR1_MidS_036"]
+    assert cells["rna_cell_id"].tolist() == ["", ""]
+
+    features = pd.read_csv(outdir / "rt_features.tsv", sep="\t")
+    assert features["feature_id"].tolist() == ["chr1:0-50000", "chr1:50000-100000"]
+    assert features["feature_type"].tolist() == ["genomic_bin", "genomic_bin"]
+
+
+def test_import_scrr_rt_detects_hap1_mids_geneintersect_columns(tmp_path: Path) -> None:
+    table = tmp_path / "hap1_geneintersect.txt"
+    table.write_text(
+        "gene_id\tchr\tstart\tend\tgene_name\tHAP1_scRR1_MidS_053\tHAP1_scRR1_MidS_074\n"
+        "ENSG00000000419.14\tchr20\t50934867\t50958555\tDPM1\t-1\t1\n"
+        "ENSG00000000457.14\tchr1\t169849631\t169894267\tSCYL3\t0\t-1\n",
+        encoding="utf-8",
+    )
+    outdir = tmp_path / "rt"
+
+    result = runner.invoke(
+        app,
+        [
+            "import-scrr-rt",
+            "--rt-table",
+            str(table),
+            "--outdir",
+            str(outdir),
+            "--no-h5ad",
+        ],
+    )
+
+    assert result.exit_code == 0, result.output
+    payload = json.loads(result.output)
+    assert payload["n_cells"] == 2
+    assert payload["n_features"] == 2
+
+    cells = pd.read_csv(outdir / "rt_cells.tsv", sep="\t", keep_default_na=False)
+    assert cells["cell_id"].tolist() == ["HAP1_scRR1_MidS_053", "HAP1_scRR1_MidS_074"]
+    assert cells["rna_cell_id"].tolist() == ["", ""]
+
+    features = pd.read_csv(outdir / "rt_features.tsv", sep="\t")
+    assert features["feature_id"].tolist() == ["ENSG00000000419.14", "ENSG00000000457.14"]
+    assert features["feature_type"].tolist() == [
+        "gene_intersect_genomic_feature",
+        "gene_intersect_genomic_feature",
+    ]
+    assert features["gene_id"].tolist() == ["ENSG00000000419.14", "ENSG00000000457.14"]
+    assert features["gene_name"].tolist() == ["DPM1", "SCYL3"]
+    assert features["seqname"].tolist() == ["chr20", "chr1"]
+
+
+def test_import_scrr_rt_no_sample_columns_error_includes_header_context(tmp_path: Path) -> None:
+    table = tmp_path / "not_rt_samples.txt"
+    table.write_text(
+        "seqname\tstart\tend\tunexpected_sample\n"
+        "chr1\t0\t50000\t0\n",
+        encoding="utf-8",
+    )
+    outdir = tmp_path / "rt"
+
+    result = runner.invoke(
+        app,
+        [
+            "import-scrr-rt",
+            "--rt-table",
+            str(table),
+            "--outdir",
+            str(outdir),
+            "--no-h5ad",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "Detected columns count: 4" in result.output
+    assert "First 15 columns:" in result.output
+    assert "unexpected_sample" in result.output
+    assert "Accepted sample prefixes/patterns:" in result.output
+    assert "HAP1_scRR1_MidS_*" in result.output
+
+
 @pytest.mark.skipif(not HAS_ANNDATA, reason="anndata not installed")
 def test_import_scrr_rt_writes_h5ad_and_avg_rt_var(tmp_path: Path) -> None:
     import anndata as ad
