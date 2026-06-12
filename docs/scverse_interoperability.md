@@ -32,6 +32,25 @@ Current `h5mu` outputs should provide:
 
 The `circ` modality should preserve circ feature coordinates and support downstream host-gene summarization and BED export.
 
+CircRNA feature metadata should include:
+
+- `host_gene`: final best host-gene annotation
+- `host_gene_source`: `gtf`, `circatlas`, `circatlas_id`, or empty
+- `host_gene_from_gtf`: GTF/GFF coordinate-overlap annotation only
+- `host_gene_from_circatlas`: database-table host-gene annotation only
+- `host_gene_from_circatlas_id`: fallback parsed from IDs such as `hsa-UBAP2_0052`
+
+Priority is GTF/GFF overlap first, circAtlas host-gene table fields second, and circAtlas ID parsing third. Missing host genes are allowed for novel or unannotated circRNAs.
+
+Existing files can be repaired without rerunning detection:
+
+```bash
+circyto repair-host-genes --input circ_counts.h5ad --output circ_counts.hostgene_fixed.h5ad
+circyto repair-host-genes --input full_length.h5mu --output full_length.hostgene_fixed.h5mu --circ-mod circ
+```
+
+Add `--gtf annotation.gtf` to apply coordinate overlap before circAtlas fallbacks.
+
 ## Scanpy interoperability
 
 `circyto` provides optional Scanpy-facing downstream helpers for exploratory RNA analysis:

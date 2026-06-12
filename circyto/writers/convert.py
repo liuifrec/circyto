@@ -9,6 +9,8 @@ import pandas as pd
 from scipy import sparse as sp
 from scipy import io as scio
 
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
+
 # Optional deps
 try:
     import loompy
@@ -97,7 +99,7 @@ def _to_h5ad(
         X = matrix_csr.T.tocsr().astype(np.int32)
 
     obs = pd.DataFrame(index=cell_ids)
-    var = pd.DataFrame(index=circ_ids)
+    var = normalize_host_gene_annotations(pd.DataFrame({"circ_id": circ_ids}, index=circ_ids))
     ad.AnnData(X=X, obs=obs, var=var).write_h5ad(str(out))
     return str(out)
 

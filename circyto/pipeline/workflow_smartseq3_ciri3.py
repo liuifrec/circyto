@@ -15,6 +15,7 @@ from circyto.pipeline.align_manifest import (
     read_source_manifest,
     run_detector_alignment_manifest,
 )
+from circyto.pipeline.annotate_host_gene import annotate_host_genes
 from circyto.pipeline.collect import collect_matrix
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
@@ -53,6 +54,7 @@ class SmartSeq3Ciri3WorkflowParams:
     ref_fa: Path
     star_index: Path
     outdir: Path
+    gtf: Optional[Path] = None
     top_n: Optional[int] = None
     max_records: Optional[int] = None
     threads: int = 8
@@ -327,6 +329,7 @@ def _build_workflow_summary(
             "detector": "ciri3",
             "aligner": "star",
             "reference": str(params.ref_fa),
+            "gtf": str(params.gtf) if params.gtf is not None else None,
             "command_options": {
                 "top_n": params.top_n,
                 "max_records": params.max_records,
@@ -370,6 +373,7 @@ def _build_workflow_summary(
                 "detector": "ciri3",
                 "aligner": "star",
                 "reference": str(params.ref_fa),
+                "gtf": str(params.gtf) if params.gtf is not None else None,
                 "command_options": {
                     "gene_counts": str(params.gene_counts),
                     "gene_counts_format": params.gene_counts_format,
@@ -400,8 +404,9 @@ def _build_workflow_summary(
             "cell_id_column": params.cell_id_column,
             "index1_column": params.index1_column,
             "index2_column": params.index2_column,
-            "ref_fa": str(params.ref_fa),
-            "star_index": str(params.star_index),
+                "ref_fa": str(params.ref_fa),
+                "gtf": str(params.gtf) if params.gtf is not None else None,
+                "star_index": str(params.star_index),
             "outdir": str(params.outdir),
             "top_n": params.top_n,
             "max_records": params.max_records,
@@ -616,6 +621,7 @@ def run_smartseq3_ciri3_workflow(
             manifest=alignment_manifest_path,
             outdir=paths["ciri3"],
             ref_fa=params.ref_fa,
+            gtf=params.gtf,
             threads=params.threads,
             parallel=params.parallel,
             chunk_size=params.chunk_size,
@@ -639,6 +645,13 @@ def run_smartseq3_ciri3_workflow(
         )
         _emit(progress, f"matrix complete: {paths['matrix'] / 'circ_counts.mtx'}")
         completed_stages.append("matrix")
+    feature_table = paths["matrix"] / "circ_feature_table.tsv"
+    if params.gtf is not None and feature_table.exists():
+        try:
+            annotate_host_genes(feature_table, params.gtf)
+            _emit(progress, f"host-gene annotation complete: {feature_table}")
+        except Exception as exc:
+            _emit(progress, f"warning: host-gene annotation skipped: {exc}")
     stage_seconds["matrix"] = round(time.perf_counter() - stage_started, 3)
 
     stage_started = time.perf_counter()

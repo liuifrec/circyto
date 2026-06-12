@@ -16,6 +16,7 @@ from scipy import io as scio
 from scipy import sparse as sp
 
 from circyto import __version__
+from circyto.pipeline.annotate_host_gene import HOST_GENE_COLUMNS, normalize_host_gene_annotations
 
 
 try:
@@ -263,24 +264,25 @@ def load_circ_feature_table(circ_ids: list[str], feature_path: Path) -> pd.DataF
             "strand": [""] * len(circ_ids),
             "host_gene": [""] * len(circ_ids),
         }
-    ).set_index("circ_id")
+    ).set_index("circ_id", drop=False)
     if not feature_path.exists():
-        return default_df
+        return normalize_host_gene_annotations(default_df)
     df = pd.read_csv(feature_path, sep="\t", keep_default_na=False)
     if "circ_id" not in df.columns:
-        return default_df
+        return normalize_host_gene_annotations(default_df)
     if "host_gene" not in df.columns and "gene_name" in df.columns:
         df["host_gene"] = df["gene_name"]
-    df = df.set_index("circ_id")
+    df = df.set_index("circ_id", drop=False)
     for column in ("chrom", "start", "end", "strand", "host_gene"):
         if column not in df.columns:
             df[column] = pd.NA if column in {"start", "end"} else ""
-    df = df.reindex(circ_ids)[["chrom", "start", "end", "strand", "host_gene"]]
+    df = df.reindex(circ_ids)
+    df["circ_id"] = circ_ids
     for column in ("chrom", "strand", "host_gene"):
         df[column] = df[column].fillna("").astype(str)
     for column in ("start", "end"):
         df[column] = pd.to_numeric(df[column], errors="coerce")
-    return df
+    return normalize_host_gene_annotations(df, legacy_host_gene_source="gtf")
 
 
 def build_cell_qc_table(
@@ -321,30 +323,37 @@ def build_circ_qc_table(
     feature_df: pd.DataFrame,
     X_cells_by_circ: sp.csr_matrix,
 ) -> pd.DataFrame:
-    output_columns = [
-        "chrom",
-        "start",
-        "end",
-        "strand",
-        "host_gene",
+    qc_columns = [
         "n_cells_detected",
         "total_support",
         "max_support",
         "mean_support_detected_cells",
     ]
     if not circ_ids:
-        return pd.DataFrame(columns=output_columns).rename_axis("circ_id")
+        return pd.DataFrame(
+            columns=["chrom", "start", "end", "strand", *HOST_GENE_COLUMNS, *qc_columns]
+        ).rename_axis("circ_id")
 
     total_support = np.asarray(X_cells_by_circ.sum(axis=0)).ravel()
     n_cells = np.asarray(X_cells_by_circ.getnnz(axis=0)).ravel()
     max_support = np.asarray(X_cells_by_circ.max(axis=0).toarray()).ravel() if X_cells_by_circ.shape[0] else np.zeros(len(circ_ids), dtype=int)
     mean_support = np.divide(total_support, n_cells, out=np.zeros_like(total_support, dtype=float), where=n_cells > 0)
-    df = pd.DataFrame(index=pd.Index(circ_ids, name="circ_id"))
-    df["chrom"] = feature_df.reindex(circ_ids)["chrom"].fillna("").astype(str)
-    df["start"] = pd.to_numeric(feature_df.reindex(circ_ids)["start"], errors="coerce")
-    df["end"] = pd.to_numeric(feature_df.reindex(circ_ids)["end"], errors="coerce")
-    df["strand"] = feature_df.reindex(circ_ids)["strand"].fillna("").astype(str)
-    df["host_gene"] = feature_df.reindex(circ_ids)["host_gene"].fillna("").astype(str)
+    df = feature_df.reindex(circ_ids).copy()
+    df.index = pd.Index(circ_ids, name="circ_id")
+    if "circ_id" not in df.columns:
+        df["circ_id"] = circ_ids
+    else:
+        df["circ_id"] = df["circ_id"].fillna("").astype(str)
+        missing_circ_id = df["circ_id"].astype(str).str.strip() == ""
+        df.loc[missing_circ_id, "circ_id"] = [circ_ids[i] for i, missing in enumerate(missing_circ_id.tolist()) if missing]
+    for column in ("chrom", "start", "end", "strand", "host_gene"):
+        if column not in df.columns:
+            df[column] = pd.NA if column in {"start", "end"} else ""
+    df["chrom"] = df["chrom"].fillna("").astype(str)
+    df["start"] = pd.to_numeric(df["start"], errors="coerce")
+    df["end"] = pd.to_numeric(df["end"], errors="coerce")
+    df["strand"] = df["strand"].fillna("").astype(str)
+    df = normalize_host_gene_annotations(df, legacy_host_gene_source="gtf")
     df["n_cells_detected"] = n_cells.astype(int)
     df["total_support"] = total_support.astype(int)
     df["max_support"] = max_support.astype(int)
@@ -352,7 +361,16 @@ def build_circ_qc_table(
     df.index.name = "circ_id"
     if len(n_cells) and int(n_cells.max()) > X_cells_by_circ.shape[0]:
         raise AssertionError("n_cells_detected cannot exceed the number of cells in the matrix")
-    return df[output_columns]
+    preferred = [
+        "chrom",
+        "start",
+        "end",
+        "strand",
+        *HOST_GENE_COLUMNS,
+        *qc_columns,
+    ]
+    other_columns = [column for column in df.columns if column not in preferred and column != "circ_id"]
+    return df[[column for column in preferred if column in df.columns] + other_columns]
 
 
 def matrix_section(X_cells_by_circ: sp.csr_matrix, circ_qc: pd.DataFrame) -> dict[str, Any]:
@@ -514,10 +532,14 @@ def export_circ_h5ad(
     if not HAS_ANNDATA:
         return None
     out_path.parent.mkdir(parents=True, exist_ok=True)
+    circ_var = normalize_host_gene_annotations(circ_qc, legacy_host_gene_source="gtf")
+    if "circ_id" not in circ_var.columns:
+        circ_var.insert(0, "circ_id", [str(value) for value in circ_var.index])
+    circ_var.index.name = None
     adata = ad.AnnData(
         X=X_cells_by_circ.tocsr().astype(np.int32),
         obs=sanitize_frame_for_anndata(cell_qc),
-        var=sanitize_frame_for_anndata(circ_qc),
+        var=sanitize_frame_for_anndata(circ_var),
     )
     adata.uns["circyto"] = uns_payload
     adata.write_h5ad(str(out_path))
@@ -574,10 +596,14 @@ def export_mudata_bundle(
     )
 
     shared_obs_clean = sanitize_frame_for_anndata(shared_obs)
+    circ_var = normalize_host_gene_annotations(circ_qc, legacy_host_gene_source="gtf")
+    if "circ_id" not in circ_var.columns:
+        circ_var.insert(0, "circ_id", [str(value) for value in circ_var.index])
+    circ_var.index.name = None
     circ_adata = ad.AnnData(
         X=circ_aligned.tocsr().astype(np.int32),
         obs=shared_obs_clean.copy(),
-        var=sanitize_frame_for_anndata(circ_qc),
+        var=sanitize_frame_for_anndata(circ_var),
     )
     rna_adata = ad.AnnData(
         X=rna_aligned.tocsr().astype(np.int32),

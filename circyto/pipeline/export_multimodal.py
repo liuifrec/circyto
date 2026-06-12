@@ -8,6 +8,8 @@ import scipy.io
 import scipy.sparse as sp
 import pandas as pd
 
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
+
 
 def _read_lines(path: Path) -> List[str]:
     return [line.strip() for line in path.open() if line.strip()]
@@ -58,7 +60,7 @@ def _load_circ_features(
     # align rows in exactly circ_ids order, filling missing with NaN
     df_aligned = df.reindex(circ_ids)
     df_aligned.reset_index(inplace=True)
-    return df_aligned
+    return normalize_host_gene_annotations(df_aligned, legacy_host_gene_source="gtf")
 
 
 def export_multimodal(

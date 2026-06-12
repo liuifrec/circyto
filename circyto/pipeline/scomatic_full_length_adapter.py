@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from circyto import __version__
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.pipeline.scomatic_normalization import (
     SCOMATIC_CANDIDATE_COLUMNS,
     TERMINOLOGY_NOTE,
@@ -755,6 +756,8 @@ def merge_scomatic(
     obs_names = existing_obs if not allow_partial else sorted(set(existing_obs) | candidate_cells)
     candidate_adata = _candidate_snv_anndata(candidate_df, obs_names)
     modalities = {modality: adata_obj.copy() for modality, adata_obj in mdata.mod.items()}
+    if "circ" in modalities:
+        modalities["circ"].var = normalize_host_gene_annotations(modalities["circ"].var)
     modalities["candidate_snv"] = candidate_adata
     merged = mu.MuData(modalities)
     merged.uns.update(mdata.uns)

@@ -7,6 +7,7 @@ from scipy import sparse
 from scipy.io import mmwrite
 
 from ..parsers.cirifull import read_cirifull_tsv
+from .annotate_host_gene import normalize_host_gene_annotations
 
 
 def _gather_cell_tsvs(in_dir: str) -> List[Tuple[str, Path]]:
@@ -206,7 +207,10 @@ def collect_matrix(
                 }
             )
 
-        df_feat = pd.DataFrame(feature_rows)
+        df_feat = normalize_host_gene_annotations(
+            pd.DataFrame(feature_rows),
+            legacy_host_gene_source="gtf",
+        )
 
         # Fixed filename next to the matrix
         feat_path = out_mtx.with_name("circ_feature_table.tsv")

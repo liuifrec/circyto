@@ -7,6 +7,8 @@ import json
 
 import pandas as pd
 
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
+
 try:
     import anndata as ad
 
@@ -128,6 +130,26 @@ def _normalize_db_table(spec: AnnotationDBSpec) -> pd.DataFrame:
     start = pd.to_numeric(raw[spec.start_column], errors="coerce")
     end = pd.to_numeric(raw[spec.end_column], errors="coerce")
     valid_mask = start.notna() & end.notna()
+    host_gene_column = (
+        spec.host_gene_column
+        if spec.host_gene_column and spec.host_gene_column in raw.columns
+        else None
+    )
+    if host_gene_column is None:
+        for candidate in (
+            "host_gene",
+            "host_genes",
+            "gene_symbol",
+            "gene_name",
+            "host_gene_symbol",
+            "parent_gene",
+            "gene",
+            "symbol",
+        ):
+            if candidate in raw.columns:
+                host_gene_column = candidate
+                break
+
     db = pd.DataFrame(
         {
             "_db_chrom": raw[spec.chrom_column].astype(str),
@@ -139,8 +161,8 @@ def _normalize_db_table(spec: AnnotationDBSpec) -> pd.DataFrame:
             "_db_id": raw[spec.id_column].astype(str)
             if spec.id_column and spec.id_column in raw.columns
             else "",
-            "_db_host_gene": raw[spec.host_gene_column].astype(str)
-            if spec.host_gene_column and spec.host_gene_column in raw.columns
+            "_db_host_gene": raw[host_gene_column].astype(str)
+            if host_gene_column
             else "",
         }
     )
@@ -306,6 +328,10 @@ def annotate_circ_table(
     annotated["known_database_count"] = known_counts
     annotated["known_databases"] = known_dbs
     annotated["best_annotation_status"] = best_statuses
+    annotated = normalize_host_gene_annotations(
+        annotated,
+        legacy_host_gene_source="gtf",
+    )
 
     out_path.parent.mkdir(parents=True, exist_ok=True)
     annotated.to_csv(out_path, sep="\t", index=False, lineterminator="\n")

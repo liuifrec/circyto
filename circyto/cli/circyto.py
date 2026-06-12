@@ -23,7 +23,7 @@ from circyto.pipeline.annotate_circs import (
     annotate_circ_table,
     parse_annotation_db_spec,
 )
-from circyto.pipeline.annotate_host_gene import annotate_host_genes
+from circyto.pipeline.annotate_host_gene import annotate_host_genes, repair_host_gene_file
 from circyto.pipeline.align_manifest import (
     export_manifest_subset,
     plan_alignment_cache,
@@ -1447,6 +1447,30 @@ def annotate_host_genes_cmd(
         out=out,
         max_genes_per_circ=max_genes_per_circ,
     )
+
+
+@app.command("repair-host-genes")
+def repair_host_genes_cmd(
+    input: Path = typer.Option(..., "--input", exists=True, dir_okay=False, help="Input circRNA .h5ad or MuData .h5mu file."),
+    output: Path = typer.Option(..., "--output", "-o", dir_okay=False, help="Output repaired .h5ad or .h5mu file."),
+    circ_mod: str = typer.Option("circ", "--circ-mod", help="CircRNA modality name for .h5mu inputs."),
+    gtf: Optional[Path] = typer.Option(None, "--gtf", exists=True, dir_okay=False, help="Optional GTF/GFF for primary coordinate-based host-gene annotation."),
+    overwrite: bool = typer.Option(False, "--overwrite", help="Overwrite an existing output path."),
+) -> None:
+    """
+    Repair host-gene provenance columns in existing circRNA h5ad or h5mu outputs.
+    """
+    try:
+        summary = repair_host_gene_file(
+            input_path=input,
+            output_path=output,
+            circ_mod=circ_mod,
+            gtf_path=gtf,
+            overwrite=overwrite,
+        )
+    except (FileNotFoundError, ValueError, RuntimeError, ImportError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 
 
 @app.command("annotate-circs")

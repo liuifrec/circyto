@@ -8,6 +8,7 @@ from typing import Any, Iterable
 import pandas as pd
 
 from circyto import __version__
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.pipeline.scrr_cnv_import import canonical_scrr_cell_id
 from circyto.pipeline.workflow_reporting import sanitize_frame_for_anndata, write_json
 
@@ -445,6 +446,8 @@ def merge_scrr_cnv(
         )
 
     modalities = {modality: rna_circ.mod[modality].copy() for modality in rna_circ.mod.keys()}
+    if "circ" in modalities:
+        modalities["circ"].var = normalize_host_gene_annotations(modalities["circ"].var)
     cnv_copy = cnv.copy()
     top_obs = rna_circ.obs.copy()
     if all_equal:

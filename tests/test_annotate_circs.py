@@ -236,6 +236,52 @@ def test_annotate_circs_strand_mismatch_and_host_gene_only(tmp_path: Path) -> No
     assert annotated_disabled.loc["circX", "best_annotation_status"] == "novel"
 
 
+def test_annotate_circs_fills_host_gene_from_circatlas_id_when_table_host_missing(tmp_path: Path) -> None:
+    circ_table = tmp_path / "circ_qc.tsv"
+    db = tmp_path / "circatlas.tsv"
+    out = tmp_path / "annotated.tsv"
+
+    pd.DataFrame(
+        [
+            {
+                "circ_id": "circA",
+                "chrom": "chr1",
+                "start": 100,
+                "end": 200,
+                "strand": "+",
+                "host_gene": "",
+            }
+        ]
+    ).to_csv(circ_table, sep="\t", index=False)
+    pd.DataFrame(
+        [
+            {
+                "seqnames": "chr1",
+                "donor": 100,
+                "acceptor": 200,
+                "bsj_strand": "+",
+                "atlas_id": "hsa-UBAP2_0052",
+            }
+        ]
+    ).to_csv(db, sep="\t", index=False)
+
+    annotate_circ_table(
+        circ_table=circ_table,
+        db_specs=[
+            parse_annotation_db_spec(
+                f"name=circatlas_v3;path={db};chrom=seqnames;start=donor;end=acceptor;strand=bsj_strand;id=atlas_id"
+            )
+        ],
+        out_path=out,
+    )
+
+    annotated = pd.read_csv(out, sep="\t", keep_default_na=False).set_index("circ_id")
+    assert annotated.loc["circA", "circatlas_v3_ids"] == "hsa-UBAP2_0052"
+    assert annotated.loc["circA", "host_gene_from_circatlas_id"] == "UBAP2"
+    assert annotated.loc["circA", "host_gene"] == "UBAP2"
+    assert annotated.loc["circA", "host_gene_source"] == "circatlas_id"
+
+
 def test_annotate_circs_updates_h5ad_var_preserving_shape_and_indices(tmp_path: Path) -> None:
     ad = pytest.importorskip("anndata")
     circ_table = tmp_path / "circ_qc.tsv"

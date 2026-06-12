@@ -313,6 +313,30 @@ Annotation semantics:
 - near-BSJ matches can be enabled with `--max-bsj-distance`
 - unmatched entries remain `novel`
 - annotation columns are added without changing matrix semantics
+- host-gene annotation is non-fatal; novel or intergenic circRNAs may keep an empty `host_gene`
+
+Host-gene priority in circRNA feature metadata:
+
+1. GTF/GFF coordinate overlap (`host_gene_from_gtf`) when a GTF/GFF is supplied. Same-strand gene overlap is preferred when circRNA strand is known; multiple overlapping genes are joined with `;`.
+2. circAtlas table host-gene fields (`host_gene_from_circatlas`) when an annotation database provides them.
+3. circAtlas ID parsing (`host_gene_from_circatlas_id`) for IDs such as `hsa-UBAP2_0052`, which yields `UBAP2`.
+
+The final `host_gene` column stores the best available value. `host_gene_source` is one of `gtf`, `circatlas`, `circatlas_id`, or empty when no supported source is available.
+
+Repair existing h5ad or h5mu outputs without rerunning the pipeline:
+
+```bash
+circyto repair-host-genes \
+  --input work/diySpike_workflow_all192/anndata/circ_counts.h5ad \
+  --output work/diySpike_workflow_all192/anndata/circ_counts.hostgene_fixed.h5ad
+
+circyto repair-host-genes \
+  --input work/full_length/mudata/full_length.h5mu \
+  --output work/full_length/mudata/full_length.hostgene_fixed.h5mu \
+  --circ-mod circ
+```
+
+If a GTF/GFF is available, add `--gtf path/to/annotation.gtf` so coordinate overlap is applied before circAtlas-derived fallbacks.
 
 ### 5. AnnData downstream summary
 
@@ -360,6 +384,7 @@ Data model:
 - In `circ_counts.h5ad`, `adata.X` is `cells x circRNAs`.
 - `adata.obs` contains cell-level QC indexed by `cell_id`.
 - `adata.var` contains circRNA QC and, after annotation, circRNA database labels indexed by `circ_id`.
+- `adata.var["host_gene_source"]` records whether final host genes came from GTF/GFF overlap, circAtlas host-gene tables, circAtlas ID parsing, or no supported source.
 - `adata.uns["circyto"]` stores workflow provenance and related metadata.
 
 ## Validated benchmark result

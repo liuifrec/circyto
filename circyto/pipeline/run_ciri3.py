@@ -19,6 +19,7 @@ from circyto.pipeline.align_manifest import (
     run_detector_alignment_manifest,
 )
 from circyto.pipeline.collect import collect_matrix
+from circyto.pipeline.annotate_host_gene import annotate_host_genes
 from circyto.protocols import get_protocol_preset, normalize_protocol_name
 
 
@@ -386,6 +387,12 @@ def run_ciri3_workflow(params: RunCiri3Params, *, progress: ProgressFn = print) 
         str(root_dirs["matrix"] / "cell_index.txt"),
         min_count_per_cell=1,
     )
+    feature_table = root_dirs["matrix"] / "circ_feature_table.tsv"
+    if feature_table.exists():
+        try:
+            annotate_host_genes(feature_table, params.gtf)
+        except Exception as exc:
+            _emit(progress, f"warning: host-gene annotation skipped: {exc}")
     _write_json(
         root_dirs["logs"] / "run_ciri3_summary.json",
         {

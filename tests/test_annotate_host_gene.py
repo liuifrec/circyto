@@ -52,6 +52,10 @@ def test_annotate_host_genes_simple(tmp_path: Path):
     df_out = pd.read_csv(circ_tsv, sep="\t")
 
     assert "host_gene" in df_out.columns
+    assert "host_gene_source" in df_out.columns
+    assert "host_gene_from_gtf" in df_out.columns
+    assert "host_gene_from_circatlas" in df_out.columns
+    assert "host_gene_from_circatlas_id" in df_out.columns
     assert "host_gene_id" in df_out.columns
     assert "host_genes_multi" in df_out.columns
     assert "host_gene_ids_multi" in df_out.columns
@@ -61,6 +65,8 @@ def test_annotate_host_genes_simple(tmp_path: Path):
     row2 = df_out[df_out["circ_id"] == "chr1:500|600|-"].iloc[0]
 
     assert row1["host_gene"] == "GENE1"
+    assert row1["host_gene_source"] == "gtf"
+    assert row1["host_gene_from_gtf"] == "GENE1"
     assert row1["host_gene_id"] == "GID1"
     assert row1["host_gene_n"] >= 1
 

@@ -59,6 +59,9 @@ No alignments are required.
   - `X` = circRNA counts
   - `obs` = same shared cell metadata
   - `var` = `circ_feature_table.tsv` when present, otherwise minimal `circ_id`
+  - `var` includes host-gene provenance columns: `host_gene`,
+    `host_gene_source`, `host_gene_from_gtf`, `host_gene_from_circatlas`,
+    and `host_gene_from_circatlas_id`
 - `mdata.obs`
   - union of RNA and circ cells
   - includes `membership`, `total_rna_counts`, `detected_genes`,
@@ -80,6 +83,27 @@ RNA-only cells such as `DIYHEK_192` are included in:
 - `mdata["rna"]`
 
 For the circ modality, these cells are retained with zero-filled circ rows. This preserves a stable shared cell axis across modalities without discarding RNA-only cells.
+
+## Host-Gene Annotation
+
+Circ host genes are filled in this priority order:
+
+1. GTF/GFF coordinate overlap when available.
+2. circAtlas database-table host-gene fields.
+3. circAtlas ID parsing, for example `hsa-UBAP2_0052` -> `UBAP2`.
+
+The final value is stored in `host_gene`, and `host_gene_source` records `gtf`, `circatlas`, `circatlas_id`, or an empty string. Missing host genes are valid for novel or unannotated circRNAs.
+
+Repair an existing MuData file:
+
+```bash
+circyto repair-host-genes \
+  --input full_length.h5mu \
+  --output full_length.hostgene_fixed.h5mu \
+  --circ-mod circ
+```
+
+Add `--gtf annotation.gtf` to run coordinate annotation before circAtlas fallback.
 
 ## Dependency behavior
 

@@ -18,6 +18,7 @@ import pandas as pd
 import scipy.sparse as sp
 
 from circyto import __version__
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
@@ -960,7 +961,12 @@ def summarize_circ_host_genes(
         cell_index_path=cell_index_path,
     )
     X_cells_by_circ = _orient_circ_matrix_cells_by_circ(X=X, circ_ids=circ_ids, cell_ids=cell_ids, matrix_path=matrix_path)
-    feature_df = load_circ_feature_table(circ_ids, feature_path).reset_index(names="circ_id")
+    feature_df = load_circ_feature_table(circ_ids, feature_path)
+    if "circ_id" not in feature_df.columns:
+        feature_df = feature_df.reset_index(names="circ_id")
+    else:
+        feature_df = feature_df.copy()
+        feature_df.index.name = None
     feature_df["host_gene"] = feature_df.get("host_gene", pd.Series([""] * len(feature_df))).fillna("").astype(str)
 
     total_support = np.asarray(X_cells_by_circ.sum(axis=0)).ravel()
@@ -1033,7 +1039,12 @@ def export_circ_bed(
         cell_index_path=cell_index_path,
     )
     X_cells_by_circ = _orient_circ_matrix_cells_by_circ(X=X, circ_ids=circ_ids, cell_ids=cell_ids, matrix_path=matrix_path)
-    feature_df = load_circ_feature_table(circ_ids, feature_path).reset_index(names="circ_id")
+    feature_df = load_circ_feature_table(circ_ids, feature_path)
+    if "circ_id" not in feature_df.columns:
+        feature_df = feature_df.reset_index(names="circ_id")
+    else:
+        feature_df = feature_df.copy()
+        feature_df.index.name = None
     if output_path is None:
         output_path = workdir / "qc" / "circs.bed"
 
@@ -1889,6 +1900,8 @@ def export_completed_workflow_mudata(
         circ_var = circ_var.set_index(circ_id_col, drop=False).reindex(circ_ids)
     else:
         circ_var = pd.DataFrame({"circ_id": circ_ids}, index=circ_ids)
+    circ_var = normalize_host_gene_annotations(circ_var, legacy_host_gene_source="gtf")
+    circ_var.index.name = None
     if circ_aligned.shape[1] != circ_var.shape[0]:
         raise ValueError(
             f"Circ AnnData axis mismatch after orientation: X has {circ_aligned.shape[1]} circRNA columns, "

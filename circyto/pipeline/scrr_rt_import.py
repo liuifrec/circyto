@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from circyto import __version__
+from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.pipeline.scrr_cnv_import import (
     canonical_scrr_cell_id,
     infer_paired_rna_cell_id,
@@ -583,6 +584,8 @@ def merge_scrr_rt(
         )
 
     modalities = {modality: rna_circ.mod[modality].copy() for modality in rna_circ.mod.keys()}
+    if "circ" in modalities:
+        modalities["circ"].var = normalize_host_gene_annotations(modalities["circ"].var)
     rt_copy = rt.copy()
     top_obs = rna_circ.obs.copy()
     if all_equal:

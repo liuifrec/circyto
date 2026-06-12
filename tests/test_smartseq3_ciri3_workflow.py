@@ -475,16 +475,23 @@ def test_circ_qc_blank_host_gene_preserves_columns_and_cell_bounds(tmp_path: Pat
     X_cells_by_circ = sp.csr_matrix([[5, 1], [2, 0], [0, 0]], dtype=int)
     circ_qc = build_circ_qc_table(circ_ids=circ_ids, feature_df=feature_df, X_cells_by_circ=X_cells_by_circ)
 
-    assert circ_qc.columns.tolist() == [
+    expected_circ_qc_columns = [
         "chrom",
         "start",
         "end",
         "strand",
         "host_gene",
+        "host_gene_source",
+        "host_gene_from_gtf",
+        "host_gene_from_circatlas",
+        "host_gene_from_circatlas_id",
         "n_cells_detected",
         "total_support",
         "max_support",
         "mean_support_detected_cells",
+    ]
+    assert circ_qc.columns.tolist() == [
+        *expected_circ_qc_columns,
     ]
     assert circ_qc.loc["circA", "host_gene"] == ""
     assert int(circ_qc["n_cells_detected"].max()) <= X_cells_by_circ.shape[0]
@@ -495,15 +502,7 @@ def test_circ_qc_blank_host_gene_preserves_columns_and_cell_bounds(tmp_path: Pat
 
     assert written.columns.tolist() == [
         "circ_id",
-        "chrom",
-        "start",
-        "end",
-        "strand",
-        "host_gene",
-        "n_cells_detected",
-        "total_support",
-        "max_support",
-        "mean_support_detected_cells",
+        *expected_circ_qc_columns,
     ]
     assert written.loc[0, "host_gene"] == ""
     assert written.loc[0, "n_cells_detected"] == 2
@@ -602,6 +601,13 @@ def test_h5ad_export_shape_orientation_and_indices(tmp_path: Path) -> None:
     assert list(adata.var_names) == ["circA", "circB"]
     assert adata.X.toarray().tolist() == [[5, 1], [2, 0], [0, 0]]
     assert adata.uns["circyto"]["workflow_name"] == "smartseq3-ciri3"
+    assert {
+        "host_gene",
+        "host_gene_source",
+        "host_gene_from_gtf",
+        "host_gene_from_circatlas",
+        "host_gene_from_circatlas_id",
+    } <= set(adata.var.columns)
 
 
 def test_empty_matrix_behavior_in_h5ad_export(tmp_path: Path) -> None:
@@ -687,6 +693,13 @@ def test_mudata_export_from_synthetic_gene_counts_tsv(tmp_path: Path) -> None:
     assert mdata.mod["rna"].shape == (2, 2)
     assert mdata.mod["circ"].shape == (2, 2)
     assert list(mdata.obs_names) == ["cellA", "cellB"]
+    assert {
+        "host_gene",
+        "host_gene_source",
+        "host_gene_from_gtf",
+        "host_gene_from_circatlas",
+        "host_gene_from_circatlas_id",
+    } <= set(mdata.mod["circ"].var.columns)
 
 
 def test_mudata_requested_without_package_raises(tmp_path: Path) -> None:
