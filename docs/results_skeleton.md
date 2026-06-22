@@ -66,7 +66,7 @@ Terminology guardrail:
 
 - SComatic outputs should be called:
   - `RNA-derived candidate variant signals`
-- they should not be described as validated somatic mutations without orthogonal DNA evidence
+- they should not be described as orthogonally confirmed somatic variants without orthogonal DNA evidence
 
 ## 5. SComatic interoperability is technical and exploratory
 
@@ -80,4 +80,4 @@ Points to cover:
 Language guardrail:
 
 - classify this as exploratory RNA-derived candidate variant signals interoperability
-- do not imply validated somatic mutation calling
+- do not imply orthogonally confirmed somatic variant calling

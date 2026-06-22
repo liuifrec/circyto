@@ -70,6 +70,8 @@ back_spliced_junction.bed
 scripts/
 !scripts/
 scripts/*
+!scripts/manuscript/
+!scripts/manuscript/*.py
 !scripts/check_full_length_workflow_outputs.py
 !scripts/check_rna_profile_outputs.py
 !scripts/compare_full_length_workflow_runs.py

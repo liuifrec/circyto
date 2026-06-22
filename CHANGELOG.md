@@ -7,6 +7,10 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ---
 ## [Unreleased]
 
+### Added
+
+- Add manuscript-facing reproducibility documentation, schema references, example command files, and lightweight manuscript summary scripts for MuData inventory, HAP1 RT/circRNA analysis, IMR90 CNV/circRNA analysis, cross-dataset host-gene overlap, and known/novel circRNA summaries.
+
 ### Changed
 
 - Clarify public documentation for the current experimental release line instead of older prototype/planning framing.

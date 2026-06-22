@@ -1226,7 +1226,7 @@ def import_dna_snv_summary(
         "n_rna_circ_only_cells": int(len(rna_circ_only)),
         "dna_only_cells": dna_only,
         "n_dna_only_cells": int(len(dna_only)),
-        "terminology_note": "SComatic outputs are treated as RNA-derived candidate variant signals, not validated somatic mutations.",
+        "terminology_note": "SComatic outputs are treated as RNA-derived candidate variant signals unless orthogonal DNA validation exists.",
         "output_dna_cell_summary": str(dna_cell_out.resolve()),
         "output_dna_variant_summary": str(dna_variant_out.resolve()) if dna_variant_out is not None else None,
         "output_scomatic_candidate_summary": str(scomatic_out.resolve()) if scomatic_out is not None else None,
@@ -1316,7 +1316,7 @@ def summarize_dna_rna_circ(
         "n_shared_cells": int((summary_df["membership"] == "shared").sum()),
         "n_rna_circ_only_cells": int((summary_df["membership"] == "rna_circ_only").sum()),
         "n_dna_only_cells": int((summary_df["membership"] == "dna_only").sum()),
-        "terminology_note": "SComatic counts are RNA-derived candidate variant signals, not validated somatic mutations.",
+        "terminology_note": "SComatic counts are RNA-derived candidate variant signals unless orthogonal DNA validation exists.",
         "joined_preview": summary_df.head(10).to_dict(orient="records"),
     }
     if write_summary:

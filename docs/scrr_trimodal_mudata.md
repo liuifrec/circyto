@@ -162,4 +162,4 @@ The CNV modality represents processed scRR/scRepli-seq DNA copy-number state by 
 
 The `rt` modality represents processed replication timing/state for HAP1-style scRR DNA tables. Do not treat HAP1 binarized RT/state files as CNV by default.
 
-RNA-derived candidate variant signals from SComatic remain a separate optional branch and should not be interpreted as validated DNA somatic mutations.
+RNA-derived candidate variant signals from SComatic remain a separate optional branch and should not be interpreted as orthogonally confirmed DNA variation.

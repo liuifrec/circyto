@@ -115,7 +115,7 @@ Genome-scale SComatic use should remain clearly separate from this local POC. Th
 - prefer HPC/server or containerized execution if native WSL package installation is unstable
 - keep terminology conservative:
   - `RNA-derived candidate variant signals`
-  - not validated somatic mutations without orthogonal DNA evidence
+  - RNA-derived candidate variant signals without orthogonal DNA evidence
 
 ## Integration with circyto
 
@@ -142,4 +142,4 @@ These outputs should be described as:
 
 - `RNA-derived candidate variant signals`
 
-They should not be described as validated somatic mutations without orthogonal DNA evidence.
+They should not be described as orthogonally confirmed somatic variants without orthogonal DNA evidence.

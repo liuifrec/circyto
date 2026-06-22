@@ -89,7 +89,7 @@ Panels:
 - `4D` RNA-derived candidate variant signals contract:
   - SComatic candidate summaries
   - RNA-derived candidate variant signals
-  - not validated somatic mutations
+  - RNA-derived candidate variant signals without orthogonal DNA validation
 
 ## Figure 5. Public scRR biological pilot analysis
 

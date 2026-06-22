@@ -178,7 +178,7 @@ def export_scomatic_inputs(
         "This export is intentionally limited to metadata and input tables.\n\n"
         "Important scientific framing:\n"
         "RNA-derived SComatic calls should be treated as exploratory candidate variant signals.\n"
-        "They are not validated DNA somatic mutations unless orthogonal DNA validation exists.\n\n"
+        "They remain RNA-derived candidate variant signals unless orthogonal DNA validation exists.\n\n"
         "Generated files:\n"
         "- `scomatic_bam_list.tsv`: per-cell BAM list prepared from the circyto manifest.\n"
         "- `scomatic_celltypes.tsv`: per-cell labels for downstream grouping.\n\n"

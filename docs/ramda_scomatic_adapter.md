@@ -2,7 +2,7 @@
 
 This note documents the local adapter that prepares one-cell-per-SRR RamDA/scRR alignments for SComatic's pooled single-cell BAM input. It does not run SComatic.
 
-SComatic outputs from this path should be described as RNA-derived candidate variant signals, not validated somatic mutations.
+SComatic outputs from this path should be described as RNA-derived candidate variant signals unless orthogonal DNA validation exists.
 
 ## SComatic Input Contract
 

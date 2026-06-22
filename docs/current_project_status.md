@@ -30,7 +30,7 @@ This page is the short operational snapshot for `circyto` as of the current manu
   - BaseCellCounter, Step1, Step2, and real output normalization validated as a technical smoke
   - terminology guardrail preserved:
     - `RNA-derived candidate variant signals`
-    - not validated somatic mutations
+    - exploratory signal layer unless orthogonal DNA validation exists
 
 ## Deferred
 

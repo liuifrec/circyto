@@ -5,7 +5,7 @@ This page defines the current lightweight scaffold for future DNA/RNA integratio
 Terminology guardrail:
 
 - SComatic results in `circyto` are treated as `RNA-derived candidate variant signals`
-- they are not called validated somatic mutations without orthogonal evidence
+- they are reported as RNA-derived candidate variant signals unless orthogonal evidence exists
 
 ## Input contracts
 

@@ -62,7 +62,7 @@ candidate_snv
 Required terminology:
 
 - `RNA-derived candidate variant signals`
-- not `validated DNA somatic mutations`
+- RNA-derived candidate variant signals unless orthogonal DNA validation exists
 
 Use cases:
 

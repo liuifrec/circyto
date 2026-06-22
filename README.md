@@ -14,7 +14,7 @@
 
 # circyto
 
-A workflow and analysis framework for single-cell circRNA detection, with detector adapters, alignment-first execution, SMART-Seq3 demultiplexing, QC reporting, AnnData export, and circRNA database annotation.
+A CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
 
 ## Status
 
@@ -32,6 +32,8 @@ A workflow and analysis framework for single-cell circRNA detection, with detect
 
 A concise benchmark-oriented summary of validated and exploratory workflow tiers is available in [`docs/validated_workflows_summary.md`](docs/validated_workflows_summary.md).
 
+Manuscript-facing reproducibility plans and reusable summary scripts are organized under [`manuscript/`](manuscript/) and [`scripts/manuscript/`](scripts/manuscript/). Command and schema references are available in [`docs/manuscript_reproducibility.md`](docs/manuscript_reproducibility.md), [`docs/modality_schema.md`](docs/modality_schema.md), [`docs/mudata_schema.md`](docs/mudata_schema.md), and [`docs/host_gene_provenance.md`](docs/host_gene_provenance.md).
+
 ### Current Capability Table
 
 | Modality | Current status | Notes |
@@ -40,7 +42,7 @@ A concise benchmark-oriented summary of validated and exploratory workflow tiers
 | `circ` | validated | CIRI3-backed circRNA matrices, QC, `h5ad`, and MuData circ modality |
 | `cnv` | validated for processed scRR GEO summaries | `import-scrr-cnv` writes `cnv.h5ad`; IMR90 full23 tri-modal MuData validated at 50 kb |
 | `rt` | implemented for processed scRR replication timing/state summaries | `import-scrr-rt` writes `rt.h5ad`; intended for HAP1 GSE278952 processed DNA RT/state tables |
-| `candidate_snv` | exploratory / optional | `merge-scomatic` exports RNA-derived candidate variant signals only; not validated somatic mutation calls |
+| `candidate_snv` | exploratory / optional | `merge-scomatic` exports RNA-derived candidate variant signals only; not orthogonally confirmed DNA variant calls |
 
 | Dataset / run | Current validation state |
 | --- | --- |
@@ -62,7 +64,7 @@ conda activate circyto
 python -m pip install -e .
 ```
 
-The repo-root [environment.yml](/mnt/d/circyto/environment.yml) is the supported baseline for source installs. It provides the Python scientific stack and CLI dependencies, but it intentionally does not install external detector executables.
+The repo-root [environment.yml](environment.yml) is the supported baseline for source installs. It provides the Python scientific stack and CLI dependencies, but it intentionally does not install external detector executables.
 
 ### External tools
 
@@ -424,11 +426,11 @@ Notes:
 
 Additional references:
 
-- **Getting started guide**: [docs/getting_started.md](/mnt/d/circyto/docs/getting_started.md)
-- **Detector catalog**: [docs/detectors.md](/mnt/d/circyto/docs/detectors.md)
-- **Alignment-first execution details**: [docs/alignment_first_execution.md](/mnt/d/circyto/docs/alignment_first_execution.md)
-- **CLI contract notes**: [docs/cli_policy.md](/mnt/d/circyto/docs/cli_policy.md)
-- **Roadmap and milestone status**: [ROADMAP.md](/mnt/d/circyto/ROADMAP.md)
+- **Getting started guide**: [docs/getting_started.md](docs/getting_started.md)
+- **Detector catalog**: [docs/detectors.md](docs/detectors.md)
+- **Alignment-first execution details**: [docs/alignment_first_execution.md](docs/alignment_first_execution.md)
+- **CLI contract notes**: [docs/cli_policy.md](docs/cli_policy.md)
+- **Roadmap and milestone status**: [ROADMAP.md](ROADMAP.md)
 
 Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-only shell-style examples are not part of the recommended `v0.10.0` public path and are intentionally omitted from this README.
 
@@ -436,4 +438,4 @@ Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-
 
 A methods manuscript is under preparation. In the meantime, please cite this repository:
 
-> Liu, Y.-C. et al. "circyto: a unified CLI for single-cell circRNA detection and multimodal matrices." GitHub repository: https://github.com/liuifrec/circyto
+> Liu, Y.-C. et al. "Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto." GitHub repository: https://github.com/liuifrec/circyto

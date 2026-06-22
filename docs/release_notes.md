@@ -8,9 +8,9 @@
 - Added `circyto run-scomatic` to write an external BaseCellCounter/Step1/Step2 command plan and optionally execute it with explicit `--execute`.
 - Added `circyto import-scomatic` as a conservative import boundary for SComatic Step1/Step2 or candidate tables.
 - Added `circyto merge-scomatic` to export normalized RNA-derived candidate variant signals as an exploratory `candidate_snv` MuData modality.
-- SComatic terminology remains `RNA-derived candidate variant signals`, not validated somatic mutations.
+- SComatic terminology remains `RNA-derived candidate variant signals`; these outputs require orthogonal DNA validation before stronger variant claims.
 - `run-scomatic` defaults to planning-only; use split environments and prefer server/container/HPC execution because local WSL SComatic execution may be unstable.
-- Validation status: HAP1 batch10 technical smoke and real Step1/Step2 normalization are validated; `candidate_snv` MuData export is partially validated with synthetic tests; clinically validated variants and validated somatic mutation discovery are not yet validated.
+- Validation status: HAP1 batch10 technical smoke and real Step1/Step2 normalization are validated; `candidate_snv` MuData export is partially validated with synthetic tests; clinically validated variants are outside the current evidence boundary.
 - Lessons learned: HAP1 confirms the technical adapter path but also shows homogeneous cell-type designs may yield no Step2 candidates; IMR90 reinforces that processed DNA state, such as CNV, is the primary scRR DNA evidence while SComatic remains an optional RNA-derived candidate variant signals sidecar.
 
 ### HAP1 scRR Replication Timing/State Import
@@ -73,7 +73,7 @@ GSM8558852 -> RNA_IMR90_A_100 -> DNA_IMR90_A_100 -> IMR90_A_100
 - NH/nM tags are preserved when present.
 - HAP1 batch10 BaseCellCounter, Step1, and Step2 execution has been validated as a technical smoke.
 - `circyto normalize-scomatic-results` supports real SComatic Step1/Step2 outputs.
-- SComatic results remain `RNA-derived candidate variant signals`, not validated somatic mutations.
+- SComatic results remain `RNA-derived candidate variant signals` and require orthogonal DNA validation before stronger variant claims.
 
 ### Cleanup/Resume Safeguards
 
@@ -85,7 +85,7 @@ GSM8558852 -> RNA_IMR90_A_100 -> DNA_IMR90_A_100 -> IMR90_A_100
 
 - HAP1 full set is still pending full FASTQ download and full workflow run.
 - IMR90 SComatic whole-genome candidate calling is still exploratory/in progress.
-- `candidate_snv` is RNA-derived and should not be described as validated somatic mutation.
+- `candidate_snv` is RNA-derived and should be described as an exploratory candidate signal layer.
 - CNV import currently uses processed GEO summary tables, not raw DNA FASTQ reprocessing.
 - MuData may emit an upstream `FutureWarning` from `mudata` update behavior; this is not currently a circyto failure.
 - CNV segmentation and raw scRepliseq DNA reprocessing are not implemented inside circyto.

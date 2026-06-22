@@ -31,7 +31,7 @@ SCOMATIC_CANDIDATE_COLUMNS = [
 
 TERMINOLOGY_NOTE = (
     "SComatic outputs are treated as RNA-derived candidate variant signals, "
-    "not validated somatic mutations."
+    "RNA-derived candidate variant signals without orthogonal DNA validation."
 )
 
 _REQUIRED_FIELD_ALIASES = {

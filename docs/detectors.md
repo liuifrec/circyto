@@ -4,7 +4,7 @@ This page explains which detectors circyto can orchestrate, what each one needs,
 
 Use `circyto detectors` for the live readiness report and this page for behavior notes and workflow guidance.
 
-For Linux/HPC installs, use the repo-root [environment.yml](/mnt/d/circyto/environment.yml) plus `pip install -e .` as the default shared environment. That keeps the packaged runtime conservative and practical while leaving separately obtained assets such as the CIRI3 jar under explicit local control.
+For Linux/HPC installs, use the repo-root [environment.yml](../environment.yml) plus `pip install -e .` as the default shared environment. That keeps the packaged runtime conservative and practical while leaving separately obtained assets such as the CIRI3 jar under explicit local control.
 
 ---
 

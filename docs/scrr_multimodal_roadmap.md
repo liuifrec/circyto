@@ -59,7 +59,7 @@ These fields should stay optional and provenance-aware.
 `circyto` should not yet:
 
 - run full DNA calling internally
-- claim validated somatic mutation inference from RNA alone
+- claim orthogonally confirmed somatic variant inference from RNA alone
 - collapse DNA, RNA, and circ evidence into a single overinterpreted score
 
 ## Near-term helper layer

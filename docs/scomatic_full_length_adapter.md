@@ -18,7 +18,7 @@ SComatic outputs in circyto are always described as:
 RNA-derived candidate variant signals
 ```
 
-They are not validated somatic mutations unless independent DNA validation exists.
+They are RNA-derived candidate variant signals without orthogonal DNA validation unless independent DNA validation exists.
 
 ## Environment Model
 
@@ -230,7 +230,7 @@ Partially validated:
 Not yet validated:
 
 - clinically validated variants
-- validated somatic mutation discovery
+- orthogonally confirmed somatic variant discovery
 - genome-scale biological interpretation of SComatic outputs
 - stable candidate behavior in homogeneous or one-cell-type datasets
 - SComatic execution from local WSL as a supported path
@@ -243,7 +243,7 @@ All imported SComatic rows remain RNA-derived candidate variant signals unless o
 - HAP1 Step2 produced no candidate calls in the single-cell-type technical smoke. This is compatible with SComatic's cell-type/group contrast design and should not be treated as an integration failure.
 - IMR90 establishes that the primary scRR DNA branch is processed DNA state integration, especially CNV for IMR90, not RNA-derived variant interpretation.
 - Both datasets support keeping SComatic as an optional sidecar for RNA-derived candidate variant signals while preserving CNV or RT/state as the main scRR DNA modalities.
-- Future manuscripts should report SComatic as technical interoperability and hypothesis generation, not validated somatic mutation discovery.
+- Future manuscripts should report SComatic as technical interoperability and hypothesis generation, RNA-derived candidate variant signal without orthogonal DNA validation discovery.
 
 ## Validated Path
 
@@ -271,7 +271,7 @@ Exploratory:
 - Without cell types, SComatic grouping is technical rather than biological.
 - Without a Panel of Normals, output must remain exploratory.
 - RNA-derived signals are affected by expression, allelic expression, RNA editing, mapping artifacts, and transcript coverage.
-- `candidate_snv` is an interoperability modality, not a validated DNA mutation modality.
+- `candidate_snv` is an interoperability modality, not an orthogonally confirmed DNA variant modality.
 
 ## Protocol Examples
 

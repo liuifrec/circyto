@@ -8,7 +8,7 @@ job is to translate already-produced SComatic-like tables into circyto's
 Terminology guardrail:
 
 - normalized SComatic rows are RNA-derived candidate variant signals
-- they are not validated somatic mutations without orthogonal evidence
+- they are RNA-derived candidate variant signals without orthogonal evidence
 
 ## Command
 
@@ -39,7 +39,7 @@ Step 1 files may contain callable non-candidate rows. The normalizer keeps only
 rows with SComatic candidate allele/cell-type fields and streams the file rather
 than loading the full table into memory.
 
-Validation note: HAP1 batch10 SComatic BaseCellCounter, Step1, and Step2 execution has been validated as a technical smoke, and real Step1/Step2 output normalization is supported. Candidate rows remain RNA-derived candidate variant signals, not validated somatic mutations.
+Validation note: HAP1 batch10 SComatic BaseCellCounter, Step1, and Step2 execution has been validated as a technical smoke, and real Step1/Step2 output normalization is supported. Candidate rows remain RNA-derived candidate variant signals unless orthogonal DNA validation exists.
 
 ## Validation Status
 
@@ -58,13 +58,13 @@ Partially validated:
 Not yet validated:
 
 - clinically validated variants
-- validated somatic mutation discovery
+- orthogonally confirmed somatic variant discovery
 - biological interpretation of genome-scale SComatic outputs
 - robust calls from homogeneous datasets without meaningful cell-type/group contrasts
 
 ## Lessons Learned from HAP1 and IMR90
 
-- HAP1 batch10 confirmed that real Step1/Step2 files can be normalized without treating rows as validated mutations.
+- HAP1 batch10 confirmed that real Step1/Step2 files can be normalized while retaining RNA-derived candidate variant signal terminology.
 - The HAP1 single-cell-type smoke produced no Step2 candidate calls, which reinforces the need to document grouping and cell-type limitations.
 - IMR90 reinforces that processed DNA state, such as CNV, is the primary scRR DNA evidence; SComatic outputs remain RNA-derived candidate variant signals.
 

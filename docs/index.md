@@ -2,7 +2,7 @@
 
 Welcome to the `circyto` documentation.
 
-`circyto` is a modular command-line toolkit for single-cell circRNA detection and integration. It wraps multiple circRNA detectors behind a unified interface and outputs sparse circRNA × cell matrices for downstream analysis.
+`circyto` is a CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
 
 ## Current Capabilities
 
@@ -32,7 +32,12 @@ Welcome to the `circyto` documentation.
 - [Post-hoc RNA profile](posthoc_rna_profile.md)
 - [RNA circ integration](rna_circ_integration.md)
 - [MuData export](mudata_export.md)
+- [MuData schema](mudata_schema.md)
 - [MuData downstream](mudata_downstream.md)
+- [Modality schema](modality_schema.md)
+- [Host-gene provenance](host_gene_provenance.md)
+- [Manuscript reproducibility](manuscript_reproducibility.md)
+- [Manuscript command reference](manuscript_command_reference.md)
 - [scRR multimodal roadmap](scrr_multimodal_roadmap.md)
 - [scRR DNA architecture review](scrr_dna_architecture_review.md)
 - [scRR CNV modality design](scrr_cnv_modality_design.md)

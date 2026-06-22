@@ -106,7 +106,7 @@ Role boundaries:
 
 `circyto` should not yet:
 
-- claim validated somatic mutation calling
+- claim orthogonally confirmed somatic variant calling
 - run full SComatic automatically without explicit user control
 - mix DNA and RNA evidence without explicit labels
 - overfit biological conclusions from 1-2 cell pilots
@@ -169,7 +169,7 @@ Use conservative terms:
 
 Do not use:
 
-- “validated somatic mutations”
+- “orthogonally confirmed somatic variants”
 - “DNA mutations”
 - “mutation burden”
 
@@ -202,7 +202,7 @@ Partially validated:
 Not yet validated:
 
 - clinically validated variants
-- validated somatic mutation discovery
+- orthogonally confirmed somatic variant discovery
 - biological interpretation of genome-scale SComatic outputs
 - stable candidate behavior in homogeneous datasets or datasets without meaningful cell-type/group contrasts
 
@@ -235,11 +235,11 @@ Suggested positioning:
 
 - emphasize method development for integrated single-cell transcriptome plus circRNA plus RNA-derived candidate variant signals analysis
 - emphasize hypothesis generation for genome instability and radiation biology
-- avoid claiming validated somatic mutation discovery from scRNA-seq alone
+- avoid claiming orthogonally confirmed somatic variant discovery from scRNA-seq alone
 - position public human scRR datasets as the external methodological bridge before internal dataset use
 - frame internal pilots as carefully labeled exploratory studies aligned with long-term mutation and transcriptome themes
 
-This positioning is safer scientifically and institutionally than claiming validated somatic mutation discovery from RNA-only evidence.
+This positioning is safer scientifically and institutionally than claiming orthogonally confirmed somatic variant discovery from RNA-only evidence.
 
 ## L. Implementation roadmap
 

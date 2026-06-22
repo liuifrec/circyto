@@ -5,14 +5,14 @@ This plan defines the end-to-end path for integrating RamDA/scRR RNA-derived can
 Scope:
 
 - do not implement a variant caller in `circyto`
-- do not treat SComatic RNA outputs as validated somatic mutations
+- do not treat SComatic RNA outputs as orthogonally confirmed somatic variants
 - keep real SComatic execution outside local WSL development
 - import and integrate external candidate-variant outputs in a reproducible, scverse-compatible way
 
 Preferred terminology:
 
 - `RNA-derived candidate variant signals`
-- not `validated somatic mutations`, unless orthogonal DNA evidence is available
+- not `orthogonally confirmed somatic variants`, unless orthogonal DNA evidence is available
 
 ## 1. Current State
 
@@ -393,7 +393,7 @@ Planned optional RNA-derived candidate variant signals representation:
 
 - `candidate_snv`
   - RNA-derived candidate variant signals only
-  - not validated DNA somatic mutations
+  - RNA-derived candidate variant signals unless orthogonal DNA validation exists
 
 ## 6. Manuscript Figures Enabled
 
@@ -423,7 +423,7 @@ Candidate figure panels:
   - `rna`, `circ`, validated `cnv`, implemented `rt`, optional exploratory `candidate_snv`
   - shared `obs` schema
 
-These figures support a framework and benchmark manuscript. They do not require claiming validated somatic mutations.
+These figures support a framework and benchmark manuscript. They do not require claiming orthogonally confirmed somatic variants.
 
 ## 7. Remaining Blockers
 
@@ -453,7 +453,7 @@ Interpretation blockers:
 
 Implementation blockers:
 
-- `candidate_snv` MuData export is implemented as exploratory interoperability with `circyto merge-scomatic`; it is not a validated mutation modality
+- `candidate_snv` MuData export is implemented as exploratory interoperability with `circyto merge-scomatic`; it is not an orthogonally confirmed DNA variant modality
 - no formal provenance schema for external SComatic command logs and resource versions
 - no server-side run template for SComatic over adapter output yet
 

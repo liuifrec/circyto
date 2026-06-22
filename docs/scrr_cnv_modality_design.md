@@ -144,4 +144,4 @@ Validated IMR90 full23 output:
 
 - circyto should not rerun scRepliseq CNV calling in this integration layer.
 - circyto should not segment CNVs unless a future, explicit segmentation command is designed.
-- circyto should not represent RNA-derived candidate variant signals from SComatic as validated DNA mutations.
+- circyto should not represent RNA-derived candidate variant signals from SComatic as orthogonally confirmed DNA variants.

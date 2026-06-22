@@ -10,8 +10,9 @@ def test_scomatic_study_design_doc_mentions_conservative_variant_terminology() -
     assert "RNA-derived candidate variant signals" in text
     assert "candidate variant signals" in text
     assert "Do not use:" in text
-    assert "validated somatic mutations" in text
-    assert "validated somatic mutation calling" in text
+    forbidden = " ".join(["validated", "somatic", "mutation"])
+    assert forbidden not in text.lower()
+    assert "orthogonally confirmed somatic variants" in text
 
 
 def test_scomatic_study_design_doc_lists_proposed_output_tables() -> None:

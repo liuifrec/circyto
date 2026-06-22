@@ -167,7 +167,7 @@ summary = {
     "environment_log": str(Path(sys.argv[9]).resolve()),
     "basecellcounter_help_log": str(Path(sys.argv[10]).resolve()),
     "note": "Environment smoke test only. No genome-scale SComatic calling was run.",
-    "terminology_note": "Any future SComatic outputs must be treated as RNA-derived candidate variant signals, not validated somatic mutations.",
+    "terminology_note": "Any future SComatic outputs must be treated as RNA-derived candidate variant signals unless orthogonal DNA validation exists.",
 }
 summary_path = Path(sys.argv[4]) / "scomatic_poc_summary.json"
 summary_path.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")

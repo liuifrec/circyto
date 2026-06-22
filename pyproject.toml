@@ -25,6 +25,7 @@ dependencies = [
 loom = ["loompy>=3.0"]
 mudata = ["mudata>=0.3"]
 scanpy = ["mudata>=0.3", "scanpy>=1.10"]
+dev = ["pytest>=8", "mudata>=0.3"]
 
 [project.scripts]
 circyto = "circyto.cli.circyto:app"

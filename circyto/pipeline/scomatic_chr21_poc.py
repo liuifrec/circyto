@@ -136,7 +136,7 @@ def write_synthetic_scomatic_poc(
         "n_candidates": int(normalized.shape[0]),
         "cell_ids": cell_ids,
         "output_scomatic_candidate_summary": str(out_tsv.resolve()),
-        "terminology_note": "Outputs are RNA-derived candidate variant signals, not validated somatic mutations.",
+        "terminology_note": "Outputs are RNA-derived candidate variant signals unless orthogonal DNA validation exists.",
     }
     write_json(outdir / "scomatic_poc_summary.json", summary)
     return summary

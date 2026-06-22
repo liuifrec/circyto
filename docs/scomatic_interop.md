@@ -16,7 +16,7 @@ Local WSL/native SComatic execution may be unstable. Prefer server, container, o
 
 ## Scientific framing
 
-RNA-derived SComatic calls should be treated as exploratory RNA-derived candidate variant signals, not validated DNA somatic mutations unless orthogonal DNA validation exists.
+RNA-derived SComatic calls should be treated as exploratory RNA-derived candidate variant signals unless orthogonal DNA validation exists.
 
 RNA-based variant calls can reflect transcriptional noise, RNA editing, mapping artifacts, allele-specific expression, and protocol-specific biases. The exported and joined tables are therefore meant for hypothesis generation and prioritization.
 
@@ -37,7 +37,7 @@ Partially validated:
 Not yet validated:
 
 - clinically validated variants
-- validated somatic mutation discovery
+- orthogonally confirmed somatic variant discovery
 - genome-scale biological interpretation of SComatic outputs
 - robust candidate behavior in homogeneous datasets without meaningful cell-type/group contrasts
 - local WSL SComatic execution as a supported path
