@@ -34,7 +34,7 @@ def summarize_one(path: Path, dataset_name: str | None = None) -> dict[str, obje
 
     row: dict[str, object] = {
         "dataset": dataset_name or dataset_name_from_path(path),
-        "path": str(path),
+        "input_file": path.name,
         "modalities": ";".join(map(str, modalities)),
         "modality_cells": json_dumps(modality_cells),
         "modality_features": json_dumps(modality_features),

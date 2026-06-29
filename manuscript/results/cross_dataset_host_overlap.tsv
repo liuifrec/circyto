@@ -1,0 +1,4 @@
+dataset_a	dataset_b	n_host_genes_a	n_host_genes_b	n_overlap	n_union	jaccard
+Smart-seq3	HAP1_scRR_RT	2199	2746	645	4300	0.15
+Smart-seq3	IMR90_scRR_CNV	2199	2005	507	3697	0.13713822017852312
+HAP1_scRR_RT	IMR90_scRR_CNV	2746	2005	720	4031	0.17861572810716944

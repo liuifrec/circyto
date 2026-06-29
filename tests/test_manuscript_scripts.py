@@ -244,9 +244,9 @@ def test_cross_dataset_host_overlap_script(tmp_path: Path) -> None:
         ]
     )
     assert result.returncode == 0, result.stderr + result.stdout
-    pairwise = pd.read_csv(outdir / "pairwise_host_gene_overlap.tsv", sep="\t")
-    three_way = pd.read_csv(outdir / "three_way_host_gene_overlap.tsv", sep="\t")
-    program = pd.read_csv(outdir / "shared_positive_host_gene_program.tsv", sep="\t")
+    pairwise = pd.read_csv(outdir / "cross_dataset_host_overlap.tsv", sep="\t")
+    three_way = pd.read_csv(outdir / "cross_dataset_threeway_hosts.tsv", sep="\t")
+    program = pd.read_csv(outdir / "cross_dataset_shared_positive_hosts.tsv", sep="\t")
     assert pairwise["n_overlap"].min() == 3
     assert {"COL1A1", "FN1", "VIM"}.issubset(set(three_way["host_gene"]))
     assert {"COL1A1", "FN1"}.issubset(set(program["host_gene"]))

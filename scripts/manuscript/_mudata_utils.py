@@ -3,6 +3,7 @@ from __future__ import annotations
 import json
 import re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Iterable, Sequence
 
@@ -17,22 +18,49 @@ RT_MODALITY_CANDIDATES = ("rt", "replication_timing", "replication_state")
 CNV_MODALITY_CANDIDATES = ("cnv", "copy_number")
 
 
+@dataclass
+class LightweightMuData:
+    """Small read-only subset needed by the manuscript scripts."""
+
+    mod: dict[str, object]
+    obs: pd.DataFrame
+
+
 def fail(message: str) -> None:
     raise SystemExit(f"[ERROR] {message}")
 
 
 def load_mudata(path: Path):
-    try:
-        import mudata as mu
-    except ImportError as exc:
-        fail(
-            "mudata is required to read .h5mu files. Install circyto[mudata] "
-            "or run `python -m pip install mudata`."
-        )
-        raise exc
     if not path.exists():
         fail(f"MuData file does not exist: {path}")
+    try:
+        import mudata as mu
+    except ImportError:
+        return load_mudata_with_anndata(path)
     return mu.read_h5mu(path)
+
+
+def load_mudata_with_anndata(path: Path) -> LightweightMuData:
+    try:
+        import h5py
+        from anndata.io import read_elem
+    except ImportError:
+        try:
+            import h5py
+            from anndata.experimental import read_elem
+        except ImportError as exc:
+            fail(
+                "mudata is required to read .h5mu files. Install circyto[mudata], "
+                "or use an environment with h5py and anndata for the lightweight reader."
+            )
+            raise exc
+
+    with h5py.File(path, "r") as handle:
+        if "mod" not in handle:
+            fail(f"Expected MuData file with a `mod` group: {path}")
+        mod = {str(name): read_elem(handle["mod"][name]) for name in handle["mod"].keys()}
+        obs = read_elem(handle["obs"]) if "obs" in handle else pd.DataFrame()
+    return LightweightMuData(mod=mod, obs=obs)
 
 
 def find_modality(mdata, candidates: Sequence[str], *, required: bool = True) -> str | None:

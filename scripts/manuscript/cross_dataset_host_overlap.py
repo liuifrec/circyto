@@ -98,7 +98,7 @@ def main(argv: list[str] | None = None) -> int:
                 "jaccard": len(intersection) / len(union) if union else 0.0,
             }
         )
-    write_table(pd.DataFrame(pair_rows), args.outdir / "pairwise_host_gene_overlap.tsv")
+    write_table(pd.DataFrame(pair_rows), args.outdir / "cross_dataset_host_overlap.tsv")
 
     if labels:
         shared = set.intersection(*(gene_sets[label] for label in labels))
@@ -106,7 +106,7 @@ def main(argv: list[str] | None = None) -> int:
         shared = set()
     write_table(
         pd.DataFrame({"host_gene": sorted(shared), "n_datasets": len(labels)}),
-        args.outdir / "three_way_host_gene_overlap.tsv",
+        args.outdir / "cross_dataset_threeway_hosts.tsv",
     )
 
     if args.enrichment_table:
@@ -124,7 +124,7 @@ def main(argv: list[str] | None = None) -> int:
                     "present_in_datasets": ";".join(labels),
                 }
             ),
-            args.outdir / "shared_positive_host_gene_program.tsv",
+            args.outdir / "cross_dataset_shared_positive_hosts.tsv",
         )
     return 0
 

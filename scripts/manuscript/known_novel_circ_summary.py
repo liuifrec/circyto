@@ -13,6 +13,7 @@ from _mudata_utils import (
     dense_matrix,
     find_modality,
     first_existing_column,
+    fail,
     host_gene_recovery,
     load_mudata,
     nonempty_string_mask,
@@ -63,9 +64,26 @@ def infer_known_status(circ) -> pd.Series:
     return pd.Series("unknown", index=var.index, dtype=object)
 
 
+def has_known_novel_annotation(circ) -> bool:
+    var = circ.var.copy()
+    return any(
+        first_existing_column(var, candidates) is not None
+        for candidates in (
+            ["is_known", "known"],
+            KNOWN_STATUS_COLUMNS,
+            KNOWN_ID_COLUMNS,
+        )
+    )
+
+
 def summarize_one(path: Path, dataset_name: str | None = None) -> pd.DataFrame:
     mdata = load_mudata(path)
     circ = mdata.mod[find_modality(mdata, CIRC_MODALITY_CANDIDATES)]
+    if not has_known_novel_annotation(circ):
+        fail(
+            "circRNA modality lacks known/novel annotation fields. Expected one of "
+            f"{', '.join(['is_known', 'known', *KNOWN_STATUS_COLUMNS, *KNOWN_ID_COLUMNS])}."
+        )
     status = infer_known_status(circ).reset_index(drop=True)
     support = dense_matrix(circ).sum(axis=0).astype(float)
     has_host = (

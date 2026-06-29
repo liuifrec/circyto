@@ -47,6 +47,13 @@ logs/
 data/
 fastq/
 ref/
+load_work/
+*.h5mu
+*.h5ad
+*.loom
+*.cram
+*.fq
+*.fq.gz
 
 # Tool test data
 tools/**/CIRI-full_test/
