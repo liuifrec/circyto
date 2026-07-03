@@ -76,6 +76,26 @@ Expected provenance:
 
 - `uns["circyto"]` records workflow, command, version, source paths, and related summaries where available.
 
+### Normalized Detector Feature Schema
+
+Internally, detector outputs are normalized toward a compact circRNA feature schema before matrix collection:
+
+| Field | Meaning | Current implementation notes |
+| --- | --- | --- |
+| `circ_id` | Stable circRNA ID, usually `chrom:start|end|strand` when detector-native IDs are absent | CIRI3 normalization is in `circyto.detectors.ciri3._normalize_ciri3_output`; CIRI-style TSV parsing is in `circyto.parsers.cirifull.read_cirifull_tsv`; find-circ3 and CIRCexplorer2 collectors construct coordinate IDs. |
+| `chrom` / `chr` | Chromosome or contig | Matrix feature tables write `chrom`; several parser inputs accept `chr`. |
+| `start` | Back-splice start coordinate as reported by the detector | Coordinate convention follows the detector output; no global coordinate-shift layer is applied today. |
+| `end` | Back-splice end coordinate as reported by the detector | Coordinate convention follows the detector output. |
+| `strand` | `+`, `-`, `.`, or detector-provided strand label | find-circ3 treats `.` as `+` during matrix collection. |
+| `junction_reads` / `support` | Back-splice support count | Normalized collector TSVs use `support`; CIRI3 raw `junction_reads` is mapped to `support`. |
+| `detector` | Calling backend | Preserved in run summaries and result metadata; not guaranteed in every per-feature TSV. |
+| `cell_id` | Per-cell/sample ID | Matrix collectors derive this from per-cell filenames or subdirectories. |
+| `raw_id` / `raw_score` | Detector-native ID or score when available | Incomplete: CIRI3 raw score fields are not yet preserved in the normalized six-column TSV. TODO: add optional raw-field passthrough in a shared schema helper. |
+| `host_gene` | Selected host gene label | Preserved when present in CIRI-style TSVs and repaired/expanded by host-gene annotation utilities. |
+| `host_gene_source` | Provenance for selected host gene | Added by `circyto.pipeline.annotate_host_gene.normalize_host_gene_annotations` and host-gene repair flows; see `docs/host_gene_provenance.md`. |
+
+The current implementation is intentionally parser-specific rather than a single central schema object. TODO: consolidate CIRI3, CIRI2/CIRI-full, find-circ3, and CIRCexplorer2 normalization into a shared feature-schema module while preserving existing TSV compatibility.
+
 ## RT Modality
 
 Expected modality name: `rt`.

@@ -11,14 +11,14 @@ Welcome to the `circyto` documentation.
 | `rna` | validated RNA profile / MuData modality for completed full-length workflows |
 | `circ` | validated circRNA matrix, QC, `h5ad`, and MuData modality |
 | `cnv` | validated processed scRR GEO CNV import and IMR90 full23 tri-modal MuData |
-| `rt` | implemented processed scRR replication timing/state import for HAP1-style DNA tables; real-file validation pending |
+| `rt` | validated processed HAP1 scRR replication timing/state import and RNA+circ+RT MuData summaries |
 | `candidate_snv` | exploratory optional SComatic interoperability via `merge-scomatic`; RNA-derived candidate variant signals only |
 
 | Dataset / run | Status |
 | --- | --- |
 | IMR90 full23 | RNA + circ + CNV tri-modal MuData validated |
-| HAP1 batch10 | RNA + circ workflow plus SComatic technical smoke validated |
-| HAP1 processed RT | `rt` importer and RNA+circ+RT merge implemented with synthetic tests; real GSE278952 processed-file import pending |
+| HAP1 batch10 | RNA + circ workflow plus exploratory SComatic candidate-signal technical smoke completed |
+| HAP1 processed RT | RNA + circ + RT MuData validated from processed HAP1 RT/state inputs; committed manuscript tables report 56 shared RNA/circ/RT cells |
 | HAP1 full | pending full FASTQ download and full workflow run |
 
 ## Sections
@@ -26,6 +26,7 @@ Welcome to the `circyto` documentation.
 - [Getting started](getting_started.md)
 - [Validated workflows summary](validated_workflows_summary.md)
 - [Release notes](release_notes.md)
+- [Manuscript release checklist](release_checklist.md)
 - [Full-length circRNA workflow](full_length_workflow.md)
 - [Gene expression and velocity integration](gene_expression_velocity_integration.md)
 - [RNA and velocity contract](rna_velocity_contract.md)

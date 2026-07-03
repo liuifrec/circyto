@@ -227,7 +227,7 @@ Concrete validation steps:
 - confirm that cell identifiers remain consistent across circRNA and SComatic tables
 - benchmark whether RNA-derived candidate variant signals summaries are stable under filtering perturbations
 - cross-check recurrent genes against known replication-stress / DNA damage response biology
-- require orthogonal DNA or targeted validation before any true somatic-mutation claim
+- require orthogonal DNA or targeted validation before any confirmed DNA-variant claim
 
 ## K. RERF / internal-politics positioning
 

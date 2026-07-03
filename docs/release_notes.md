@@ -22,7 +22,7 @@
 - Optional average RT bedGraph values are stored as `var["avg_rt"]` only when coordinates match the RT table features.
 - Synthetic tests cover binary RT parsing, canonical HAP1 cell IDs, no-h5ad mode, optional h5ad writing, and RT MuData merge when `mudata` is available.
 
-Known limitation: the named GSE278952 HAP1 processed files were not present locally during implementation, so real-file import validation remains pending. The importer uses processed GEO-style tables and does not rerun raw DNA FASTQ/scRepli-seq processing.
+Known limitation: the HAP1 RT path uses processed GEO-style tables and does not rerun raw DNA FASTQ/scRepli-seq processing. Current manuscript summaries validate the processed HAP1 RNA+circ+RT integration.
 
 ## v0.10.0
 

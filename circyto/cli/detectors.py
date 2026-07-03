@@ -27,6 +27,38 @@ def _status_for(spec) -> str:
     return detector_runtime_status(spec.name)["status"]
 
 
+def _runtime_missing_dependencies(spec, runtime: dict[str, Any]) -> list[str]:
+    missing = list(runtime.get("details", {}).get("missing_cmds", []))
+    missing.extend(runtime.get("details", {}).get("missing_assets", []))
+    if spec.name != "ciri3":
+        return missing
+
+    details = runtime.get("details", {})
+    if details.get("direct_ready") or (
+        details.get("template_configured") and not details.get("template_errors")
+    ):
+        return []
+    if details.get("jar") and not details.get("java"):
+        missing.append("java")
+    elif details.get("jar") and details.get("java") and not details.get("java_version_ok"):
+        missing.append(f"java>={details.get('required_java_major')}")
+    elif not details.get("jar") and not details.get("template_configured"):
+        missing.append("CIRI3 jar or CIRCYTO_CIRI3_CMD_TEMPLATE")
+    if details.get("template_errors"):
+        missing.append("valid CIRCYTO_CIRI3_CMD_TEMPLATE")
+    return sorted(set(str(item) for item in missing))
+
+
+def _optional_dependencies(spec) -> list[dict[str, Any]]:
+    return [
+        {
+            "name": cmd,
+            "available": _have_cmd(cmd),
+        }
+        for cmd in spec.optional_cmds
+    ]
+
+
 @detectors_app.callback()
 def detectors(
     json_out: bool = typer.Option(False, "--json", help="Output machine-readable JSON."),
@@ -43,6 +75,14 @@ def detectors(
         needs = spec.required_cmds + spec.required_assets
         engine = engines.get(spec.name)
         caps = get_detector_capabilities(engine) if engine is not None else None
+        missing_dependencies = _runtime_missing_dependencies(spec, runtime)
+        optional_dependencies = _optional_dependencies(spec)
+        input_modes = []
+        if caps is not None:
+            if caps.accepts_fastq:
+                input_modes.append("fastq")
+            if caps.accepts_alignment:
+                input_modes.append("alignment")
         asset_details = {}
         for asset in spec.required_assets:
             resolution = resolve_asset(asset)
@@ -56,6 +96,13 @@ def detectors(
             {
                 "name": spec.name,
                 "status": status,
+                "available": status == "READY",
+                "missing_dependencies": missing_dependencies,
+                "optional_dependencies": optional_dependencies,
+                "input_modes": input_modes,
+                "recommended_execution_mode": caps.recommended_execution_mode if caps else None,
+                "validation_status": spec.validation_status,
+                "notes": [*spec.notes, runtime["reason"]],
                 "reason": runtime["reason"],
                 "type": spec.det_type,
                 "needs": needs,

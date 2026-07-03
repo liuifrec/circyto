@@ -24,8 +24,8 @@ A CLI/scverse-compatible framework for single-cell circular RNA detection, annot
 - The validated single-end full-length RamDA/scRR path is FASTQ -> BWA-MEM -> CIRI3 direct SAM -> matrix -> `h5ad`.
 - The validated paired-end full-length RamDA/scRR path is FASTQ pair -> STAR -> CIRI3 STAR tuple mode -> matrix -> `h5ad`, with `--allow-paired-ramda` required for explicit opt-in. `--experimental-paired-ramda` remains accepted as a deprecated alias.
 - The validated scRR integration path now includes processed GEO CNV import, GSM-to-biological-cell mapping, and IMR90 23-cell tri-modal RNA+circ+CNV MuData.
-- The HAP1 scRR DNA replication timing/state branch has a lightweight `rt` importer and RNA+circ+RT merge path; real processed-file validation is pending local availability of the GSE278952 HAP1 DNA tables.
-- SComatic interoperability has been validated as a technical path for RNA-derived candidate variant signals on HAP1 batch10, but it remains exploratory and is not the primary scRR DNA modality.
+- The HAP1 scRR DNA replication timing/state branch has validated processed-file RNA+circ+RT MuData integration, with 56 shared RNA/circ/RT cells summarized in committed manuscript result tables. This is processed GEO-style RT/state import, not raw DNA FASTQ reprocessing.
+- SComatic interoperability is an exploratory sidecar for RNA-derived candidate variant signals only; HAP1 batch10 technical smoke output exists, but circyto does not treat these outputs as orthogonally confirmed DNA variants.
 - The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
 - Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
@@ -41,15 +41,36 @@ Manuscript-facing reproducibility plans and reusable summary scripts are organiz
 | `rna` | validated | RNA profile import and MuData RNA modality for completed full-length workflows |
 | `circ` | validated | CIRI3-backed circRNA matrices, QC, `h5ad`, and MuData circ modality |
 | `cnv` | validated for processed scRR GEO summaries | `import-scrr-cnv` writes `cnv.h5ad`; IMR90 full23 tri-modal MuData validated at 50 kb |
-| `rt` | implemented for processed scRR replication timing/state summaries | `import-scrr-rt` writes `rt.h5ad`; intended for HAP1 GSE278952 processed DNA RT/state tables |
+| `rt` | validated for processed HAP1 scRR replication timing/state summaries | `import-scrr-rt` writes `rt.h5ad`; HAP1 RNA+circ+RT MuData summarized in committed manuscript result tables |
 | `candidate_snv` | exploratory / optional | `merge-scomatic` exports RNA-derived candidate variant signals only; not orthogonally confirmed DNA variant calls |
 
 | Dataset / run | Current validation state |
 | --- | --- |
 | IMR90 full23 | RNA + circ + CNV tri-modal MuData validated |
-| HAP1 batch10 | RNA + circ workflow validated; SComatic BaseCellCounter, Step1, Step2, and normalization technical smoke validated |
-| HAP1 processed RT | `rt` importer and RNA+circ+RT merge implemented with synthetic tests; real GSE278952 processed-file import pending |
+| HAP1 batch10 | RNA + circ workflow validated; SComatic BaseCellCounter, Step1, Step2, and normalization technical smoke completed for exploratory candidate-signal interoperability |
+| HAP1 processed RT | RNA + circ + RT MuData validated from processed HAP1 RT/state inputs; committed manuscript tables report 56 shared RNA/circ/RT cells |
 | HAP1 full | pending full FASTQ download and full workflow run |
+
+### Detector And Workflow Status
+
+| Detector / adapter | Status | Evidence and caveat |
+| --- | --- | --- |
+| CIRI3 | validated primary detector | Main manuscript Smart-seq3 and RamDA/scRR workflows use CIRI3-backed outputs. |
+| CIRI-full | experimental adapter | Implemented with parser/unit coverage and a gated chr21 Smart-seq2 integration example; no manuscript-scale validation claim. Single-end `ciri-full` uses a CIRI2 fallback. |
+| CIRI2 | experimental adapter | Implemented with parser/unit coverage and a gated single-end chr21 known-positive regression; no manuscript-scale validation claim. |
+| find-circ3 | experimental adapter | Parser/collector fixtures and runtime readiness reporting; not part of manuscript-scale validation. |
+| CIRCexplorer2 | optional experimental adapter | Optional STAR/CIRCexplorer2 wrapper and collector coverage; not part of manuscript-scale validation. |
+
+| Workflow | Status | Evidence and caveat |
+| --- | --- | --- |
+| Smart-seq3 CIRI3 | validated | E-MTAB-8735 pooled Smart-seq3 workflow path. |
+| Single-end RamDA/scRR CIRI3 | validated | GSE278958 IMR90 single-end RNA/circ workflow path. |
+| Paired-end RamDA/scRR CIRI3 | executable / validated with caveat | GSE278952 HAP1 paired-end path requires explicit `--allow-paired-ramda`; biological benchmarking remains narrower than the single-end route. |
+| IMR90 RNA+circ+CNV | validated | 23-cell processed scRR CNV MuData integration. |
+| HAP1 RNA+circ+RT | validated | 56-cell processed RT/state MuData overlap in committed manuscript summaries. |
+| SComatic candidate-signal interoperability | exploratory | RNA-derived candidate variant signals only; no orthogonally confirmed DNA-variant claims. |
+
+No concrete circSC dataset validation evidence for CIRI2 or CIRI-full was found in the current docs, tests, result summaries, or branch history search. TODO: upgrade those adapter statuses only if a reproducible circSC validation artifact is added.
 
 ## Installation
 
@@ -100,13 +121,16 @@ After installation, verify the package and runtime detection:
 circyto --version
 circyto doctor
 circyto detectors
+circyto detectors --json
+circyto demo mini --out demo_out
 ```
 
 What these checks mean:
 
 - `circyto --version` should report `0.10.0`.
 - `circyto doctor` checks Python/runtime setup and external dependencies.
-- `circyto detectors` reports detector readiness and required external tools.
+- `circyto detectors` and `circyto detectors --json` report detector readiness and required external tools.
+- `circyto demo mini --out demo_out` is a no-external-tool parser/matrix smoke demo using generated normalized fixtures.
 
 ## Core workflows
 
@@ -131,11 +155,11 @@ Advanced / lower-level entry points:
 | `circyto add-rna-profile` | Add a lightweight post-hoc RNA profile to a completed workflow folder | completed workflow reuse without rerunning alignment or detection | advanced |
 | `circyto cleanup-workflow` | Remove regenerable workflow-owned intermediates from a completed workflow folder | post-run disk reclamation with integrity checks | advanced |
 | `circyto import-scrr-cnv` | Import processed scRR GEO CNV state and mappability-normalized summaries | scRR DNA CNV modality construction | validated for processed GEO summaries |
-| `circyto import-scrr-rt` | Import processed scRR replication timing/state summaries | HAP1 scRR DNA RT modality construction | implemented with synthetic tests |
+| `circyto import-scrr-rt` | Import processed scRR replication timing/state summaries | HAP1 scRR DNA RT modality construction | validated for processed HAP1 RT/state summaries |
 | `circyto build-scrr-cell-map` | Build GSM -> RNA/DNA title -> canonical biological-cell map from GEO SOFT metadata | scRR RNA/DNA cell pairing | validated on GSE278958 metadata |
 | `circyto remap-scrr-mudata-obs` | Remap RNA/circ MuData obs IDs from GSM to canonical scRR cell IDs | preparing RNA/circ MuData for CNV merge | validated on IMR90 full23 |
 | `circyto merge-scrr-cnv` | Merge remapped RNA/circ MuData with `cnv.h5ad` | tri-modal RNA+circ+CNV MuData | validated on IMR90 full23 |
-| `circyto merge-scrr-rt` | Merge remapped RNA/circ MuData with `rt.h5ad` | tri-modal RNA+circ+RT MuData | implemented with synthetic tests |
+| `circyto merge-scrr-rt` | Merge remapped RNA/circ MuData with `rt.h5ad` | tri-modal RNA+circ+RT MuData | validated for HAP1 RNA+circ+RT manuscript object |
 | `circyto prepare-scomatic-input` | Prepare full-length RNA alignments and SComatic cell annotations | Smart-seq2/3, RamDA, ShinRamDA, scRR RNA SComatic interoperability | RNA-derived candidate variant signals interoperability |
 | `circyto run-scomatic` | Write and optionally execute external SComatic command plans | BaseCellCounter plus optional Step1/Step2 | exploratory; external execution requires explicit `--execute` |
 | `circyto import-scomatic` | Import SComatic Step1/Step2 or candidate tables | normalized `scomatic_candidate_summary.tsv` | RNA-derived candidate variant signals interoperability |

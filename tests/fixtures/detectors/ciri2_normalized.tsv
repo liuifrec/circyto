@@ -1,0 +1,2 @@
+circ_id	chr	start	end	strand	support	host_gene
+chr21:100|200|+	chr21	100	200	+	4	SMOKE1

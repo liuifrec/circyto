@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 from pathlib import Path
+import shutil
 from typing import List
 
 from .base import (
@@ -11,6 +12,8 @@ from .base import (
     DetectorResult,
 )
 from .find_circ3_adapter import run_find_circ3
+
+REQUIRED_FIND_CIRC3_COMMANDS = ("bowtie2", "samtools", "find-circ3")
 
 
 class FindCirc3Detector(DetectorBase):
@@ -33,13 +36,14 @@ class FindCirc3Detector(DetectorBase):
     )
     max_parallel: int = 2
 
+    def missing_dependencies(self) -> list[str]:
+        return [cmd for cmd in REQUIRED_FIND_CIRC3_COMMANDS if shutil.which(cmd) is None]
+
     def is_available(self) -> bool:
         """
-        Very lightweight availability check.
-        We assume bowtie2, samtools, find-circ3, and find-circ3-anchors
-        are on PATH if the user wants to run it.
+        Return True only when the external find-circ3 runtime is on PATH.
         """
-        return True
+        return not self.missing_dependencies()
 
     def version(self) -> str:
         """

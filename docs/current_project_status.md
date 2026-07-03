@@ -22,12 +22,15 @@ This page is the short operational snapshot for `circyto` as of the current manu
   - route: `STAR -> BWA rescue -> CIRI3 -> matrix -> h5ad -> RNA profile -> MuData`
   - cleanup-workflow reduced the workdir from about 132G to about 9.2G while preserving final artifacts
 - `HAP1 processed RT/state integration`
-  - `circyto import-scrr-rt` and `circyto merge-scrr-rt` implemented with synthetic tests
-  - real GSE278952 processed-file validation is pending local availability of the named HAP1 DNA RT/state files
+  - `circyto import-scrr-rt` and `circyto merge-scrr-rt` validated for processed HAP1 RT/state manuscript summaries
+  - committed result tables report 56 shared RNA/circ/RT cells
+  - this is processed GEO-style RT/state import, not raw DNA FASTQ reprocessing
+## Exploratory
+
 - `SComatic interoperability`
-  - RamDA/scRR adapter validated on HAP1 batch10
+  - RamDA/scRR adapter technical smoke completed on HAP1 batch10
   - CB tags injected, NH/nM tags preserved when present
-  - BaseCellCounter, Step1, Step2, and real output normalization validated as a technical smoke
+  - BaseCellCounter, Step1, Step2, and real output normalization exercised as a technical smoke
   - terminology guardrail preserved:
     - `RNA-derived candidate variant signals`
     - exploratory signal layer unless orthogonal DNA validation exists
@@ -70,6 +73,5 @@ Validated outputs and pending outputs should be described separately.
   - HAP1 batch10 RNA+circ and SComatic technical smoke
 - pending:
   - HAP1 full workflow
-  - real HAP1 GSE278952 RT/state processed-file import validation
   - IMR90 whole-genome SComatic candidate calling
   - raw DNA FASTQ reprocessing

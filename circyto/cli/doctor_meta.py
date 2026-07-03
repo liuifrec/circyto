@@ -1,10 +1,10 @@
 from __future__ import annotations
 
 import shutil
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from typing import List
 
-from circyto.paths import PathResolution, find_ciri_full_adapter, find_ciri_full_jar
+from circyto.paths import PathResolution, find_ciri2_adapter, find_ciri_full_adapter, find_ciri_full_jar
 from circyto.detectors.ciri3 import inspect_ciri3_runtime
 
 
@@ -15,6 +15,9 @@ class DetectorSpec:
     required_cmds: List[str]
     required_assets: List[str]
     hint_lines: List[str]
+    optional_cmds: List[str] = field(default_factory=list)
+    validation_status: str = "experimental adapter"
+    notes: List[str] = field(default_factory=list)
 
 
 DETECTOR_SPECS: List[DetectorSpec] = [
@@ -27,6 +30,26 @@ DETECTOR_SPECS: List[DetectorSpec] = [
             "conda install -c bioconda bowtie2 samtools and install find-circ3 from upstream",
             "or use apt/brew for bowtie2 + samtools and make sure `find-circ3` is on PATH",
         ],
+        validation_status="experimental adapter",
+        notes=[
+            "Adapter and parser are available for synthetic and small-fixture use.",
+            "Not part of the manuscript-scale validated detector set.",
+        ],
+    ),
+    DetectorSpec(
+        name="ciri2",
+        det_type="CLI",
+        required_cmds=["perl", "bwa"],
+        required_assets=["CIRI2-adapter"],
+        hint_lines=[
+            "Install deps: conda install -c bioconda bwa perl",
+            "Keep tools/CIRI-full_v2.0/bin/ciri2_adapter.sh available, or set CIRCYTO_CIRI2_ADAPTER.",
+        ],
+        validation_status="experimental adapter",
+        notes=[
+            "Implemented with synthetic/unit coverage and a gated chr21 single-end known-positive regression.",
+            "No manuscript-scale validation claim is made for CIRI2.",
+        ],
     ),
     DetectorSpec(
         name="ciri-full",
@@ -37,6 +60,11 @@ DETECTOR_SPECS: List[DetectorSpec] = [
             "Install deps: conda install -c bioconda bwa openjdk",
             "Set CIRCYTO_CIRI_FULL_JAR=/abs/path/CIRI-full.jar or place it under tools/CIRI-full_v2.0/",
             "Keep tools/CIRI-full_v2.0/bin/ciri_full_adapter.sh available; circyto uses it at runtime.",
+        ],
+        validation_status="experimental adapter",
+        notes=[
+            "Implemented with synthetic/unit coverage and a gated chr21 Smart-seq2 integration example.",
+            "Single-end rows use a CIRI2 fallback; upstream CIRI-full Pipeline behavior requires paired-end reads.",
         ],
     ),
     DetectorSpec(
@@ -52,6 +80,26 @@ DETECTOR_SPECS: List[DetectorSpec] = [
             "Set CIRCYTO_CIRI3_EXTRA_ARGS for local tuning such as -S 0 during single-end validation.",
             "STAR is only required for STAR-based CIRI3 workflows.",
         ],
+        optional_cmds=["bwa", "STAR", "samtools"],
+        validation_status="primary validated detector",
+        notes=[
+            "Primary detector for the validated Smart-seq3 and RamDA/scRR manuscript workflows.",
+            "Direct jar mode requires Java plus a local CIRI3 jar; template mode may be configured separately.",
+        ],
+    ),
+    DetectorSpec(
+        name="circexplorer2",
+        det_type="CLI",
+        required_cmds=["CIRCexplorer2", "STAR"],
+        required_assets=[],
+        hint_lines=[
+            "Install CIRCexplorer2 and STAR only when using this optional adapter.",
+            "Set STAR index and refFlat inputs through the detector workflow options.",
+        ],
+        validation_status="optional experimental adapter",
+        notes=[
+            "Optional adapter with parser/collector coverage; not part of manuscript-scale validation.",
+        ],
     ),
 ]
 
@@ -61,6 +109,8 @@ def resolve_asset(asset: str) -> PathResolution:
         return find_ciri_full_jar()
     if asset == "CIRI-full-adapter":
         return find_ciri_full_adapter()
+    if asset == "CIRI2-adapter":
+        return find_ciri2_adapter()
     return PathResolution(label=asset, resolved_path=None, checked_paths=(), source=None)
 
 

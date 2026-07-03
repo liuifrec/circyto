@@ -6,6 +6,30 @@ This page documents the expected inputs, processed outputs, and command shapes f
 
 The repository does not contain large FASTQ files, reference genomes, processed GEO DNA tables, circAtlas databases, or completed manuscript-scale `.h5mu` objects. Replace placeholder paths such as `/path/to/data/...` with local or institutional paths.
 
+## Tier 1: Local Reviewer Smoke Test
+
+The local smoke tier uses only package code and tiny generated or bundled fixtures. It does not download FASTQs, build genome references, run external circRNA detectors, or require completed `.h5mu` manuscript objects.
+
+```bash
+python -m pip install -e ".[dev,mudata]"
+pytest -q
+circyto --version
+circyto doctor
+circyto detectors
+circyto detectors --json
+circyto demo mini --out demo_out --overwrite
+```
+
+Expected behavior:
+
+- `pytest -q` runs parser, schema, CLI, and synthetic workflow tests; external detector execution tests are skipped unless their opt-in environment variables and dependencies are present.
+- `circyto doctor` and `circyto detectors` may report missing external detector binaries on a fresh machine, but they should fail gracefully and keep package import usable.
+- `circyto demo mini` writes a tiny normalized detector fixture, matrix files, a circRNA feature table, and `demo_summary.json` without external tools.
+
+## Tier 2: Manuscript-Scale Regeneration
+
+Tier 2 regenerates manuscript-scale objects and tables from public FASTQ/GEO files plus local reference paths. It requires external aligners/detectors and public-data downloads that are intentionally not committed to this repository.
+
 ## Expected Inputs
 
 - Full-length single-cell RNA FASTQs or workflow manifests.
@@ -25,7 +49,7 @@ The repository does not contain large FASTQ files, reference genomes, processed 
 - `scrr_hap1/mudata/full_length_rna_circ_rt.hostgene_fixed.h5mu`
 - `scrr_imr90/mudata/full_length_rna_circ_cnv.hostgene_fixed.h5mu`
 
-These paths are local manuscript targets and are not committed data.
+These paths are local manuscript targets and are not committed data. The committed `manuscript/results/` tables summarize the current evidence: Smart-seq3 RNA+circ, HAP1 RNA+circ+RT with 56 shared RNA/circ/RT cells, and IMR90 RNA+circ+CNV with 23 shared RNA/circ/CNV cells.
 
 ## Regenerate Smart-seq3 MuData
 
@@ -146,6 +170,8 @@ Expected circRNA feature fields after repair:
 
 ## Manuscript Summary Scripts
 
+The reusable scripts below are the committed table-regeneration interface. `examples/manuscript/reproduce_inventory_and_summaries.sh` shows the expected command grouping with placeholder local paths.
+
 Inventory and host-gene recovery:
 
 ```bash
@@ -205,6 +231,14 @@ python scripts/manuscript/known_novel_circ_summary.py \
   --dataset-name IMR90_scRR_CNV \
   --out /path/to/results/manuscript/known_novel_circ_summary.tsv
 ```
+
+Smart-seq3 UMAP/feature plotting:
+
+```bash
+python scripts/manuscript/smartseq3_umap_feature_plot.py --help
+```
+
+This script is a planned CLI stub in this repository snapshot. It documents the expected inputs for future Smart-seq3 UMAP/feature plots but intentionally exits with a TODO if run for plotting. Do not cite Smart-seq3 UMAP/feature-plot outputs as regenerated from this repo until the implementation is added.
 
 ## Producing Figures and Tables
 

@@ -2,19 +2,58 @@ from __future__ import annotations
 
 import subprocess
 from pathlib import Path
-from typing import Mapping, Optional, Sequence
+from typing import IO, Mapping, Optional, Sequence
 
 
-def _run(cmd: Sequence[str] | str, shell: bool = False) -> None:
+def _run(cmd: Sequence[str], *, stdout: IO[bytes] | None = None, stderr: IO[str] | None = None) -> None:
     """
-    Small wrapper for subprocess.run with basic logging.
+    Small wrapper for subprocess.run with basic logging and no shell interpolation.
     """
-    if isinstance(cmd, str):
-        printable = cmd
-    else:
-        printable = " ".join(cmd)
+    printable = " ".join(map(str, cmd))
     print(f"[find_circ3] {printable}")
-    subprocess.run(cmd, check=True, shell=shell)
+    subprocess.run(list(map(str, cmd)), check=True, stdout=stdout, stderr=stderr)
+
+
+def _run_pipeline(
+    left_cmd: Sequence[str],
+    right_cmd: Sequence[str],
+    *,
+    stdout_path: Path,
+    log_path: Path,
+) -> None:
+    """
+    Run left_cmd | right_cmd > stdout_path without shell=True.
+    """
+    print(f"[find_circ3] {' '.join(map(str, left_cmd))} | {' '.join(map(str, right_cmd))} > {stdout_path}")
+    with log_path.open("w", encoding="utf-8") as log, stdout_path.open("wb") as out:
+        left = subprocess.Popen(
+            list(map(str, left_cmd)),
+            stdout=subprocess.PIPE,
+            stderr=log,
+        )
+        assert left.stdout is not None
+        right = subprocess.run(
+            list(map(str, right_cmd)),
+            stdin=left.stdout,
+            stdout=out,
+            stderr=log,
+            check=False,
+        )
+        left.stdout.close()
+        left_returncode = left.wait()
+        if left_returncode != 0:
+            raise subprocess.CalledProcessError(left_returncode, list(map(str, left_cmd)))
+        if right.returncode != 0:
+            raise subprocess.CalledProcessError(right.returncode, list(map(str, right_cmd)))
+
+
+def _require_existing_file(path: str | Path, *, label: str) -> Path:
+    value = Path(path)
+    if not value.exists():
+        raise FileNotFoundError(f"find-circ3 {label} not found: {value}")
+    if not value.is_file():
+        raise ValueError(f"find-circ3 {label} is not a file: {value}")
+    return value
 
 
 def _bowtie2_index_from_fasta(reference_fa: str) -> str:
@@ -69,8 +108,9 @@ def run_find_circ3(
         Path to the final splice_sites BED file.
     """
     cell_id = str(sample["cell_id"])
-    fq1 = str(sample["r1"])
-    fq2 = sample.get("r2")
+    fq1 = _require_existing_file(str(sample["r1"]), label="R1 FASTQ")
+    fq2 = _require_existing_file(str(sample["r2"]), label="R2 FASTQ") if sample.get("r2") else None
+    reference_path = _require_existing_file(reference_fa, label="reference FASTA")
 
     outdir = Path(outdir_root) / cell_id
     outdir.mkdir(parents=True, exist_ok=True)
@@ -80,77 +120,100 @@ def run_find_circ3(
     anchors_fq = outdir / f"{cell_id}.anchors.fastq"
     anchors_sam = outdir / f"{cell_id}.anchors.sam"
     splice_sites_bed = outdir / f"{cell_id}_splice_sites.bed"
+    firstpass_log = outdir / f"{cell_id}_firstpass.log"
+    anchors_log = outdir / f"{cell_id}_anchors.log"
+    secondpass_log = outdir / f"{cell_id}_secondpass.log"
+    call_log = outdir / f"{cell_id}_call.log"
 
-    bowtie2_index = _bowtie2_index_from_fasta(reference_fa)
+    bowtie2_index = _bowtie2_index_from_fasta(str(reference_path))
 
     # --- Step 1: first-pass mapping (FASTQ -> aln.bam) ---
     if fq2:
         # Paired-end
-        cmd_align = (
-            f"bowtie2 "
-            f"-x {bowtie2_index} "
-            f"-1 {fq1} -2 {fq2} "
-            f"--very-sensitive "
-            f"-p {threads} "
-            f"2> {outdir / (cell_id + '_firstpass.log')} "
-            f"| samtools view -bS - > {aln_bam}"
-        )
+        cmd_align = [
+            "bowtie2",
+            "-x",
+            bowtie2_index,
+            "-1",
+            str(fq1),
+            "-2",
+            str(fq2),
+            "--very-sensitive",
+            "-p",
+            str(threads),
+        ]
     else:
         # Single-end
-        cmd_align = (
-            f"bowtie2 "
-            f"-x {bowtie2_index} "
-            f"-U {fq1} "
-            f"--very-sensitive "
-            f"-p {threads} "
-            f"2> {outdir / (cell_id + '_firstpass.log')} "
-            f"| samtools view -bS - > {aln_bam}"
-        )
-    _run(cmd_align, shell=True)
+        cmd_align = [
+            "bowtie2",
+            "-x",
+            bowtie2_index,
+            "-U",
+            str(fq1),
+            "--very-sensitive",
+            "-p",
+            str(threads),
+        ]
+    _run_pipeline(cmd_align, ["samtools", "view", "-bS", "-"], stdout_path=aln_bam, log_path=firstpass_log)
 
     # --- Step 1b: extract unmapped reads -> unmapped.bam ---
-    _run(
-        [
-            "samtools",
-            "view",
-            "-b",
-            "-f",
-            "4",
-            "-o",
-            str(unmapped_bam),
-            str(aln_bam),
-        ]
-    )
+    with (outdir / f"{cell_id}_samtools_unmapped.log").open("w", encoding="utf-8") as log:
+        _run(
+            [
+                "samtools",
+                "view",
+                "-b",
+                "-f",
+                "4",
+                "-o",
+                str(unmapped_bam),
+                str(aln_bam),
+            ],
+            stderr=log,
+        )
 
     # --- Step 2: generate anchors (FASTQ) using Python 3 unmapped2anchors3 ---
     # Recommended grouped CLI:
     #   find-circ3 anchors sample_unmapped.bam --anchor 20 --min-qual 5 > anchors.fastq
-    cmd_anchors = (
-        f"find-circ3 anchors {unmapped_bam} "
-        f"--anchor 20 "
-        f"--min-qual 5 "
-        f"> {anchors_fq}"
-    )
-    _run(cmd_anchors, shell=True)
+    with anchors_fq.open("wb") as out, anchors_log.open("w", encoding="utf-8") as log:
+        _run(
+            [
+                "find-circ3",
+                "anchors",
+                str(unmapped_bam),
+                "--anchor",
+                "20",
+                "--min-qual",
+                "5",
+            ],
+            stdout=out,
+            stderr=log,
+        )
 
     # --- Step 3: map anchors with bowtie2 (anchors.fastq -> anchors.sam) ---
     # As per README:
     # bowtie2 -q -U sample_anchors.fastq -x genome_index --reorder --mm --very-sensitive \
     #   --score-min C,-15,0 2> sample_secondpass.log > sample_anchors.sam
-    cmd_anchor_align = (
-        f"bowtie2 "
-        f"-q "
-        f"-U {anchors_fq} "
-        f"-x {bowtie2_index} "
-        f"--reorder "
-        f"--mm "
-        f"--very-sensitive "
-        f"--score-min C,-15,0 "
-        f"-p {threads} "
-        f"2> {outdir / (cell_id + '_secondpass.log')} "
-        f"> {anchors_sam}"
-    )
-    _run(cmd_anchor_align, shell=True)
+    with anchors_sam.open("wb") as out, secondpass_log.open("w", encoding="utf-8") as log:
+        _run(
+            [
+                "bowtie2",
+                "-q",
+                "-U",
+                str(anchors_fq),
+                "-x",
+                bowtie2_index,
+                "--reorder",
+                "--mm",
+                "--very-sensitive",
+                "--score-min",
+                "C,-15,0",
+                "-p",
+                str(threads),
+            ],
+            stdout=out,
+            stderr=log,
+        )
 
     # --- Step 4: call circRNAs from anchors.sam ---
     # README example:
@@ -172,7 +235,7 @@ def run_find_circ3(
         "call",
         str(anchors_sam),
         "--genome",
-        str(reference_fa),
+        str(reference_path),
         "--name",
         cell_id,
         "--prefix",
@@ -185,10 +248,9 @@ def run_find_circ3(
     if extra_args:
         call_cmd.extend(extra_args)
 
-    call_cmd_str = " ".join(call_cmd) + f" > {splice_sites_bed}"
-    _run(call_cmd_str, shell=True)
+    with splice_sites_bed.open("wb") as out, call_log.open("w", encoding="utf-8") as log:
+        _run(call_cmd, stdout=out, stderr=log)
 
     return splice_sites_bed
-
 
 

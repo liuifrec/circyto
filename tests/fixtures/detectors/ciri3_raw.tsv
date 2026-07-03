@@ -1,0 +1,3 @@
+circRNA_ID	chr	circRNA_start	circRNA_end	strand	junction_reads	raw_score
+chr21:100|200|+	chr21	100	200	+	3	0.95
+chr21:300|420|-	chr21	300	420	-	1	0.42

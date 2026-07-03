@@ -8,6 +8,18 @@ The intent is to separate:
 - lightweight QC and post-processing utilities
 - experimental or future directions
 
+## Detector Status
+
+| Detector / adapter | Status | Evidence | Caveats |
+| --- | --- | --- | --- |
+| CIRI3 | validated primary detector | Primary detector for the validated Smart-seq3, single-end RamDA/scRR, and paired-end scRR/RamDA-style manuscript workflows | External Java/CIRI3 runtime is still reported by `circyto detectors`; STAR mode needs STAR inputs |
+| CIRI-full | experimental adapter | Parser/unit coverage plus gated chr21 Smart-seq2 integration example (`tests/test_cirifull_chr21_integration.py`, `docs/ciri_full_chr21_example.md`) | Not manuscript-scale validated; single-end `ciri-full` uses a CIRI2 fallback |
+| CIRI2 | experimental adapter | Parser/unit coverage plus gated single-end chr21 known-positive regression (`tests/test_ciri2_se_chr21_integration.py`) | Not manuscript-scale validated |
+| find-circ3 | experimental adapter | Fixture parser/collector tests and runtime readiness reporting | Not manuscript-scale validated |
+| CIRCexplorer2 | optional experimental adapter | Optional wrapper plus fixture collector tests | Not manuscript-scale validated |
+
+No concrete circSC dataset validation artifact for CIRI2 or CIRI-full was found in the current repository, tests, docs, committed summaries, or branch-history search. TODO: if a reproducible circSC validation is recovered, document the dataset, exact commands, outputs, and caveats before upgrading either adapter status.
+
 ## Validated
 
 | Dataset | Protocol | Read layout | Route | Reference | Output type | Validation status | Caveats |
@@ -16,6 +28,7 @@ The intent is to separate:
 | `GSE278958` IMR90 human scRR / RamDA-like | `ramda` / scRR-style full-length | single-end | FASTQ -> BWA-MEM -> direct SAM -> CIRI3 -> matrix -> QC -> `h5ad` | `hg38` | circRNA matrix, QC, `anndata/circ_counts.h5ad` | validated on real human single-end full-length scRR workflow | biological validation target is human RNA-side scRR; this does not imply velocity or orthogonally confirmed DNA variant support |
 | `GSE278958` IMR90 human scRR / RamDA-like | `ramda` / scRR-style full-length + processed scRR DNA | single-end RNA plus processed GEO CNV summaries | RNA/circ MuData -> GSM remap -> CNV AnnData merge | `hg38` / GEO processed CNV bins | tri-modal RNA+circ+CNV MuData | validated on 23 cells with trimodal overlap 23 | CNV is imported from processed GEO summary tables, not raw DNA FASTQ reprocessing |
 | `GSE278952` HAP1 human scRR | `ramda` / scRR-style full-length | paired-end | FASTQ pair -> STAR -> BWA rescue -> CIRI3 STAR tuple mode -> matrix -> QC -> `h5ad` | `hg38` | circRNA matrix, QC, `anndata/circ_counts.h5ad` | validated as executable on real human paired-end scRR workflow path | paired-end RamDA route still uses explicit `--allow-paired-ramda`; biological benchmarking remains narrower than single-end RamDA history |
+| `GSE278952` HAP1 human scRR + processed scRR DNA RT/state | `ramda` / scRR-style full-length + processed RT/state | paired-end RNA plus processed GEO RT/state summaries | RNA/circ MuData -> GSM remap -> RT AnnData merge -> manuscript RT/circ summaries | `hg38` / GEO processed RT/state features | tri-modal RNA+circ+RT MuData | validated on committed manuscript summaries with RNA/circ/RT overlap 56 | RT/state is imported from processed GEO-style tables, not raw DNA FASTQ reprocessing |
 
 ## Lightweight QC And Post-processing
 
@@ -30,7 +43,7 @@ The intent is to separate:
 | Area | Current state | Notes |
 | --- | --- | --- |
 | MuData multimodal export for full-length workflows | validated for RNA+circ and IMR90 RNA+circ+CNV | `export-mudata` writes RNA+circ; `merge-scrr-cnv` writes tri-modal scRR MuData after GSM remapping |
-| HAP1 replication timing/state import | implemented with synthetic tests | `import-scrr-rt` writes `rt.h5ad`; `merge-scrr-rt` writes RNA+circ+RT MuData; real GSE278952 processed-file validation is pending local file availability |
+| HAP1 replication timing/state import | validated for processed HAP1 RT/state summaries | `import-scrr-rt` writes `rt.h5ad`; `merge-scrr-rt` writes RNA+circ+RT MuData; committed manuscript result tables summarize 56 shared RNA/circ/RT cells |
 | RNA velocity-compatible layers | future | no `velocyto` dependency required today; spliced / unspliced / ambiguous layers remain planned |
 | SComatic interoperability | exploratory | use conservative language such as `RNA-derived candidate variant signals`; no orthogonally confirmed DNA variant claims |
 | automatic integrated circRNA + RNA + velocity pipeline | future | current implementation favors explicit contracts and staged utilities rather than a monolithic production workflow |

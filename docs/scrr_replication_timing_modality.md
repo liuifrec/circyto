@@ -10,7 +10,7 @@ The HAP1 files named for this integration are:
 - `GSE278952_05_scRR-seq-DNA_HAP1_human_binarized_selectedsamples_all_sorted_hg38.txt.gz`
 - `GSE278952_05_scRR-seq-DNA_HAP1_human_midS_Avg_RT_hg38.bedGraph.gz`
 
-Local inspection status: these exact files were not present under the active workspace or `/tmp` during implementation, so circyto does not claim real-file validation for this importer yet. The parser is covered by synthetic tests that match the expected processed table structure: feature metadata columns followed by `DNA_*` or `RNA_*` sample columns.
+Current manuscript status: the HAP1 RNA+circ+RT integration is validated through committed manuscript summary tables generated from processed RT/state inputs, with 56 shared RNA/circ/RT cells. The parser is also covered by synthetic tests that match the expected processed table structure: feature metadata columns followed by `DNA_*` or `RNA_*` sample columns. This remains processed GEO-style RT/state import, not raw DNA FASTQ reprocessing.
 
 ## Biological Interpretation
 
@@ -136,7 +136,7 @@ circyto merge-scrr-rt \
 
 ## Limitations
 
-- Real HAP1 processed RT files were not present locally during implementation, so real-file import validation is pending.
+- HAP1 processed RT/state integration is now represented by committed manuscript summary tables; raw DNA FASTQ reprocessing remains out of scope.
 - The importer consumes processed GEO-style tables and does not rerun raw scRepli-seq DNA processing.
 - Replication timing/state is not CNV unless the source file explicitly encodes CNV.
 - `rt` is not an SNV modality.

@@ -130,4 +130,4 @@ Validated IMR90 full23 output:
 
 The CNV path uses processed GEO summary tables. It does not rerun raw DNA FASTQ/scRepliseq processing.
 
-The RT path also uses processed GEO-style tables. Real GSE278952 HAP1 RT file validation is pending local availability of the named processed files.
+The RT path also uses processed GEO-style tables. Current manuscript summaries validate the HAP1 RNA+circ+RT integration from processed RT/state inputs; raw DNA FASTQ reprocessing remains out of scope.

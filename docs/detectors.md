@@ -65,6 +65,7 @@ circyto run-detector find-circ3 \
 ```
 
 Notes:
+- Status: experimental adapter. Parser/collector fixtures and readiness checks are covered; this is not part of the manuscript-scale validated detector set.
 - A GTF is not required for the detector call itself.
 - You may still want a GTF later for host-gene annotation (`annotate-host-genes`).
 
@@ -93,6 +94,7 @@ circyto run-detector ciri-full \
 ```
 
 Notes:
+- Status: experimental adapter. The repo contains parser/unit coverage and a gated chr21 Smart-seq2 integration example, but no manuscript-scale validation claim.
 - `circyto` reports `ciri-full` as READY when the required external tools and bundled assets are available. That status does **not** imply one identical internal execution path for every read layout.
 - **Paired-end input (`r1` + `r2`)** uses the upstream bundled **CIRI-full Java Pipeline**.
 - **Single-end input (`r1` only)** does **not** use the upstream CIRI-full Pipeline directly, because upstream Pipeline mode is paired-end only. `circyto` falls back to the bundled **CIRI2-based detection path** and normalizes the result to the same TSV schema.
@@ -128,6 +130,7 @@ circyto run-detector ciri2 \
 ```
 
 Notes:
+- Status: experimental adapter. The repo contains parser/unit coverage and a gated single-end chr21 known-positive regression, but no manuscript-scale validation claim.
 - `ciri2` is the direct bundled CIRI2 integration.
 - For short single-end reads, the wrapper applies more permissive BWA/CIRI2 settings than the default paired-end path.
 
@@ -164,6 +167,7 @@ circyto run-detector-from-alignments \
 ```
 
 Notes:
+- Status: primary validated manuscript detector.
 - `ciri3` is an alignment-first detector with a real backend.
 - Direct execution is `java -jar` based and is reported as `READY` when circyto finds both a usable CIRI3 jar and Java.
 - `NOT READY` means circyto could not find a usable CIRI3 jar or execution path.
@@ -172,9 +176,8 @@ Notes:
 - `CIRCYTO_CIRI3_CMD_TEMPLATE` and `--command-template` remain available for explicit template execution.
 - BWA mode requires unsorted SAM input, is alignment-sensitive, and is the validated local production path.
 - Validated local BWA settings are `-S 0`, `-Ma 0`, and `bwa mem -k 15 -T 15`.
-- STAR mode is supported in code for alignment-first workflows, also alignment-sensitive, and uses `-Ma 1`.
+- STAR mode is supported for alignment-first workflows, is used by validated Smart-seq3 and paired-end scRR paths, and uses `-Ma 1`.
 - STAR alignment prep is executed in a local Linux temp workspace before artifacts are copied back into the cache. Use `CIRCYTO_STAR_TMPDIR` if you need to force node-local scratch.
-- STAR mode is not yet fully validated end-to-end in this release.
 - The backend normalizes tabular CIRI3 output to the stable circyto TSV schema.
 
 Verification example:
@@ -215,9 +218,13 @@ find-circ3   CLI tool    bowtie2, samtools         good first-run smoke test
 ciri-full    JAR tool    bwa, java                 requires tools/CIRI-full*.jar
 ```
 
-Optional flags under consideration:
-- `--json` for tooling
-- `--verbose` to show expected output layout and required inputs
+Machine-readable output:
+
+```bash
+circyto detectors --json
+```
+
+The JSON includes each detector name, readiness status, availability, missing dependencies, optional dependencies, input modes/capabilities, recommended execution mode, validation status, and notes.
 
 ---
 
