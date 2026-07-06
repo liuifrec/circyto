@@ -1,0 +1,6 @@
+detector	status	available	type	input_modes	recommended_execution_mode	validation_status	missing_dependencies	reason
+find-circ3	READY	True	CLI	fastq	per-cell-fastq	experimental adapter		all required commands and assets found
+ciri2	READY	True	CLI	fastq	per-cell-fastq	experimental adapter		all required commands and assets found
+ciri-full	READY	True	JAR	fastq	per-cell-fastq	experimental adapter		all required commands and assets found
+ciri3	READY	True	JAR	alignment	alignment-first	primary validated detector		direct java -jar contract available (Java 17, need >=12)
+circexplorer2	NOT READY	False	CLI	fastq	per-cell-fastq	optional experimental adapter	CIRCexplorer2	missing commands: CIRCexplorer2

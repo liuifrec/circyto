@@ -120,6 +120,7 @@ def test_manuscript_script_help_runs_without_mudata() -> None:
         "imr90_cnv_circ_analysis.py",
         "cross_dataset_host_overlap.py",
         "known_novel_circ_summary.py",
+        "prepare_manuscript_consistency_outputs.py",
         "smartseq3_umap_feature_plot.py",
     ]:
         result = _run_script([str(SCRIPT_DIR / script_name), "--help"])

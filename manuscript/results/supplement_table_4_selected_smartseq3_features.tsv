@@ -1,0 +1,4 @@
+role	feature_type	feature_id	host_gene	n_cells_detected	total_support	combined_score	umap_detected_spread_ratio	umap_detected_area_fraction	selection_note
+individual_circRNA	circRNA	chr7:158869855|158876691	DYNC2I1	10	28.0	0.9992209348781462	0.9383623694923711	0.5255601849366683	Top individual circRNA by combined recurrence/support score with at least 6 detected cells.
+host_gene_signal	host_gene	MAN1A2	MAN1A2	12	31.0	0.9921100500227377	1.103220365227557	0.8477904816167132	Top host-gene-level circRNA signal by recurrence/support/feature-count score with at least 6 detected cells.
+backup_candidate	circRNA	chr1:31915895|31919658	PTP4A2;ENSG00000269967;ENSG00000288678	14	26.0	0.9990011985617259	0.7572557980000445	0.5898777277746798	Second-ranked individual circRNA candidate by the same data-driven score.
