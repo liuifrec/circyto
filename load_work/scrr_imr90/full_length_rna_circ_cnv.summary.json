@@ -1,0 +1,38 @@
+{
+  "allow_partial": false,
+  "description": "Merged remapped scRR RNA/circ MuData with CNV AnnData into tri-modal MuData.",
+  "modalities": [
+    "rna",
+    "circ",
+    "cnv"
+  ],
+  "modality_shapes": {
+    "circ": [
+      23,
+      2443
+    ],
+    "cnv": [
+      23,
+      60607
+    ],
+    "rna": [
+      23,
+      63187
+    ]
+  },
+  "n_obs": 23,
+  "output_h5mu": "/user/ifrec/liuyuchen/circyto_redo/scrr_imr90/work_hg38_full23_v2/mudata/full_length_rna_circ_cnv.h5mu",
+  "output_summary_json": "/user/ifrec/liuyuchen/circyto_redo/scrr_imr90/work_hg38_full23_v2/mudata/full_length_rna_circ_cnv.summary.json",
+  "overlap_counts": {
+    "n_circ_cnv_overlap": 23,
+    "n_circ_obs": 23,
+    "n_cnv_obs": 23,
+    "n_rna_circ_overlap": 23,
+    "n_rna_cnv_overlap": 23,
+    "n_rna_obs": 23,
+    "n_trimodal_overlap": 23,
+    "n_union_obs": 23
+  },
+  "source_cnv_h5ad": "/user/ifrec/liuyuchen/circyto_redo/scrr_imr90/cnv_import_50kb_full/cnv.h5ad",
+  "source_rna_circ_h5mu": "/user/ifrec/liuyuchen/circyto_redo/scrr_imr90/work_hg38_full23_v2/mudata/full_length_canonical.h5mu"
+}
