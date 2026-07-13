@@ -1,0 +1,4 @@
+dataset	accession	modalities	shared_cells	source_data_type	manuscript_role	object_path	sha256
+Smart-seq3	E-MTAB-8735	rna;circ	192	Public Smart-seq3 RNA sequencing data with CIRI3 circRNA calls and RNA counts.	Manuscript-scale RNA+circRNA reproducibility object.	load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu	0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339
+HAP1	GSE278952	rna;circ;rt	56	Public HAP1 scRR RNA data plus processed public RT/state summaries.	Manuscript-scale RNA+circRNA+RT reproducibility object.	load_work/scrr_hap1/full_length_rna_circ_rt.hostgene_fixed.h5mu	6d3f460371000dde2f307c67887cfb5939ea591527c4e813d8daf2ef2b1bece5
+IMR90	GSE278958	rna;circ;cnv	23	Public IMR90 scRR RNA data plus processed public CNV summary tables.	Manuscript-scale RNA+circRNA+CNV reproducibility object.	load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8

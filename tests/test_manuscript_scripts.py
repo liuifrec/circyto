@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 import shutil
 import subprocess
 import sys
@@ -120,10 +121,20 @@ def test_manuscript_script_help_runs_without_mudata() -> None:
         "imr90_cnv_circ_analysis.py",
         "cross_dataset_host_overlap.py",
         "known_novel_circ_summary.py",
+        "audit_manuscript_objects.py",
+        "validate_manuscript_objects.py",
+        "export_smartseq3_figure1_data.py",
+        "generate_supplement_tables.py",
     ]:
         result = _run_script([str(SCRIPT_DIR / script_name), "--help"])
         assert result.returncode == 0, result.stderr + result.stdout
         assert "usage:" in result.stdout.lower()
+
+
+def test_repository_size_guard_help_runs() -> None:
+    result = _run_script(["scripts/check_repository_file_sizes.py", "--help"])
+    assert result.returncode == 0, result.stderr + result.stdout
+    assert "usage:" in result.stdout.lower()
 
 
 def test_manuscript_inventory_hap1_imr90_and_known_novel_scripts(tmp_path: Path) -> None:
@@ -250,6 +261,66 @@ def test_cross_dataset_host_overlap_script(tmp_path: Path) -> None:
     assert pairwise["n_overlap"].min() == 3
     assert {"COL1A1", "FN1", "VIM"}.issubset(set(three_way["host_gene"]))
     assert {"COL1A1", "FN1"}.issubset(set(program["host_gene"]))
+
+
+def test_manuscript_object_audit_and_validation_scripts(tmp_path: Path) -> None:
+    h5mu = tmp_path / "tiny.hostgene_fixed.h5mu"
+    _write_tiny_mudata(h5mu)
+
+    audit_dir = tmp_path / "audit"
+    audit_dir.mkdir()
+    result = _run_script(
+        [
+            str(SCRIPT_DIR / "audit_manuscript_objects.py"),
+            "--smartseq3",
+            str(h5mu),
+            "--hap1",
+            str(h5mu),
+            "--imr90",
+            str(h5mu),
+            "--manifest-out",
+            str(audit_dir / "manifest.tsv"),
+            "--report-out",
+            str(audit_dir / "audit.md"),
+            "--json-out",
+            str(audit_dir / "audit.json"),
+        ]
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    manifest = pd.read_csv(audit_dir / "manifest.tsv", sep="\t")
+    assert set(manifest["dataset"]) == {"Smart-seq3", "HAP1", "IMR90"}
+    assert manifest["local_paths_detected"].sum() == 0
+    assert "No absolute local paths" in (audit_dir / "audit.md").read_text(encoding="utf-8")
+
+    expectations = {
+        "Smart-seq3": {
+            "expected_shapes": {"rna": [5, 5], "circ": [5, 4]},
+            "expected_shared_cells": 5,
+            "expected_host_gene_annotated": 3,
+            "expected_host_gene_total": 4,
+            "expected_median_circRNA_count": 2.0,
+            "expected_median_circRNA_total_support": 2.0,
+        }
+    }
+    expectations_path = tmp_path / "expectations.json"
+    expectations_path.write_text(json.dumps(expectations), encoding="utf-8")
+    validation_dir = tmp_path / "validation"
+    result = _run_script(
+        [
+            str(SCRIPT_DIR / "validate_manuscript_objects.py"),
+            "--smartseq3",
+            str(h5mu),
+            "--expectations-json",
+            str(expectations_path),
+            "--outdir",
+            str(validation_dir),
+        ]
+    )
+    assert result.returncode == 0, result.stderr + result.stdout
+    validation = pd.read_csv(validation_dir / "validation_summary.tsv", sep="\t")
+    assert set(validation["status"]) == {"pass"}
+    summary = json.loads((validation_dir / "validation_summary.json").read_text(encoding="utf-8"))
+    assert summary["status"] == "pass"
 
 
 def test_hap1_script_missing_rt_modality_error_is_informative(tmp_path: Path) -> None:

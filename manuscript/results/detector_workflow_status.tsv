@@ -1,0 +1,9 @@
+component	status	evidence_scope	caveat
+CIRI3 Smart-seq3	validated	E-MTAB-8735 Smart-seq3 RNA+circRNA object and workflow outputs	CIRI3 is the primary manuscript-validation detector; circyto does not introduce a new back-splice-junction algorithm.
+CIRI3 single-end RamDA/scRR	validated	IMR90 single-end scRR RNA-side workflow	Genome-state CNV modality comes from processed public summary tables.
+CIRI3 paired-end RamDA/scRR	validated with caveat	HAP1 paired-end scRR route executable with explicit opt-in	Use --allow-paired-ramda; paired-end RamDA remains a documented caveat in the CLI.
+IMR90 RNA+circRNA+CNV	validated	23-cell trimodal MuData from public RNA data and processed public CNV summaries	CNV is not raw DNA FASTQ reprocessing.
+HAP1 RNA+circRNA+RT	validated	56 shared trimodal cells from public RNA data and processed public RT/state summaries	RT is not raw DNA FASTQ reprocessing.
+SComatic interoperability	exploratory	RNA-derived candidate variant signal import/merge path	Not orthogonally confirmed DNA variation.
+find-circ3 adapter	experimental adapter	Adapter-level extensibility tests	Not the primary manuscript validation detector.
+CIRI2/CIRI-full/CIRCexplorer2 adapters	experimental adapter	Extensibility and normalization paths	Do not present as manuscript-scale validation unless additional evidence is recovered.

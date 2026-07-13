@@ -1,0 +1,1176 @@
+[
+  {
+    "accession": "E-MTAB-8735",
+    "compression": {
+      "compressed_datasets": 0,
+      "compression_algorithms": {},
+      "datasets": 101,
+      "matrix_datasets": [
+        {
+          "chunks": "2659",
+          "compression": "",
+          "dataset": "mod/circ/X/data",
+          "dtype": "int32",
+          "shape": "2659"
+        },
+        {
+          "chunks": "6625",
+          "compression": "",
+          "dataset": "mod/rna/X/data",
+          "dtype": "int32",
+          "shape": "1695807"
+        }
+      ]
+    },
+    "dataset": "Smart-seq3",
+    "file_size_bytes": 30911142,
+    "host_gene_annotated": 2379,
+    "host_gene_rate": 0.950459448661606,
+    "host_gene_source_counts": {
+      "gtf": 2379,
+      "missing": 124
+    },
+    "host_gene_total": 2503,
+    "intended_role": "Manuscript-scale RNA+circRNA reproducibility object.",
+    "local_path_findings": [
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_circ_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_circ_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_import_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_import_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/workflow_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/workflow_summary_json",
+        "value": "[local username redacted]"
+      }
+    ],
+    "local_paths_detected": 9,
+    "manuscript_release_status": "Candidate frozen manuscript object; prefer release/Zenodo archive over ordinary Git.",
+    "mdata_obs_columns": [
+      "rna:membership",
+      "rna:total_rna_counts",
+      "rna:detected_genes",
+      "rna:mitochondrial_fraction",
+      "rna:ribosomal_fraction",
+      "rna:circRNA_count",
+      "rna:circRNA_total_support",
+      "circ:membership",
+      "circ:total_rna_counts",
+      "circ:detected_genes",
+      "circ:mitochondrial_fraction",
+      "circ:ribosomal_fraction",
+      "circ:circRNA_count",
+      "circ:circRNA_total_support",
+      "membership",
+      "total_rna_counts",
+      "detected_genes",
+      "mitochondrial_fraction",
+      "ribosomal_fraction",
+      "circRNA_count",
+      "circRNA_total_support"
+    ],
+    "mdata_obsm_keys": [
+      "circ",
+      "rna"
+    ],
+    "mdata_uns_keys": [
+      "circyto"
+    ],
+    "mdata_varm_keys": [
+      "circ",
+      "rna"
+    ],
+    "median_circRNA_count": 12.0,
+    "median_circRNA_total_support": 22.5,
+    "missing_host_gene_fields": [],
+    "modalities": [
+      "rna",
+      "circ"
+    ],
+    "modalities_detail": {
+      "circ": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.005532943800772406,
+          "nnz": 2659,
+          "storage": "csr_matrix"
+        },
+        "obs_columns": [
+          "membership",
+          "total_rna_counts",
+          "detected_genes",
+          "mitochondrial_fraction",
+          "ribosomal_fraction",
+          "circRNA_count",
+          "circRNA_total_support"
+        ],
+        "obs_name_examples": [
+          "DIYHEK_1",
+          "DIYHEK_10",
+          "DIYHEK_100",
+          "DIYHEK_101",
+          "DIYHEK_102"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          192,
+          2503
+        ],
+        "uns_keys": [],
+        "var_columns": [
+          "circ_id",
+          "chrom",
+          "start",
+          "end",
+          "strand",
+          "host_gene",
+          "host_gene_from_gtf",
+          "host_gene_id",
+          "host_genes_multi",
+          "host_gene_ids_multi",
+          "host_gene_n",
+          "host_gene_source",
+          "host_gene_from_circatlas",
+          "host_gene_from_circatlas_id"
+        ],
+        "var_name_examples": [
+          "chr19:46910586|46911183",
+          "chr9:33953285|33996333",
+          "chr9:33960826|33989126",
+          "chrX:101049107|101050336",
+          "chr15:65011401|65012591"
+        ],
+        "varm_keys": []
+      },
+      "rna": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.1397807796698688,
+          "nnz": 1695807,
+          "storage": "csr_matrix"
+        },
+        "obs_columns": [
+          "membership",
+          "total_rna_counts",
+          "detected_genes",
+          "mitochondrial_fraction",
+          "ribosomal_fraction",
+          "circRNA_count",
+          "circRNA_total_support"
+        ],
+        "obs_name_examples": [
+          "DIYHEK_1",
+          "DIYHEK_10",
+          "DIYHEK_100",
+          "DIYHEK_101",
+          "DIYHEK_102"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          192,
+          63187
+        ],
+        "uns_keys": [],
+        "var_columns": [
+          "gene_id",
+          "gene_name",
+          "chrom",
+          "start",
+          "end",
+          "strand",
+          "gene_biotype"
+        ],
+        "var_name_examples": [
+          "ENSG00000290825.1",
+          "ENSG00000223972.6",
+          "ENSG00000227232.6",
+          "ENSG00000278267.1",
+          "ENSG00000243485.5"
+        ],
+        "varm_keys": []
+      }
+    },
+    "modality_shapes": {
+      "circ": [
+        192,
+        2503
+      ],
+      "rna": [
+        192,
+        63187
+      ]
+    },
+    "pairwise_shared_cells": {
+      "rna&circ": 192
+    },
+    "public_data_only": "yes_public_accession_or_canonical_cell_ids",
+    "relative_path": "load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu",
+    "sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "shared_cells": 192,
+    "source_data_type": "Public Smart-seq3 RNA sequencing data with CIRI3 circRNA calls and RNA counts."
+  },
+  {
+    "accession": "GSE278952",
+    "compression": {
+      "compressed_datasets": 0,
+      "compression_algorithms": {},
+      "datasets": 171,
+      "matrix_datasets": [
+        {
+          "chunks": "1837",
+          "compression": "",
+          "dataset": "mod/circ/X/data",
+          "dtype": "int32",
+          "shape": "3674"
+        },
+        {
+          "chunks": "5165",
+          "compression": "",
+          "dataset": "mod/rna/X/data",
+          "dtype": "int32",
+          "shape": "661042"
+        },
+        {
+          "chunks": "",
+          "compression": "",
+          "dataset": "mod/rt/X",
+          "dtype": "int16",
+          "shape": "56x56881"
+        }
+      ]
+    },
+    "dataset": "HAP1",
+    "file_size_bytes": 41952586,
+    "host_gene_annotated": 3117,
+    "host_gene_rate": 0.9713306325958242,
+    "host_gene_source_counts": {
+      "gtf": 3117,
+      "missing": 92
+    },
+    "host_gene_total": 3209,
+    "intended_role": "Manuscript-scale RNA+circRNA+RT reproducibility object.",
+    "local_path_findings": [
+      {
+        "category": "server_path",
+        "location": "mod/rt/uns/circyto/avg_rt_bedgraph/source_avg_rt_bedgraph",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/rt/uns/circyto/avg_rt_bedgraph/source_avg_rt_bedgraph",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/rt/uns/circyto/avg_rt_bedgraph/source_avg_rt_bedgraph",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "mod/rt/uns/circyto/source_avg_rt_bedgraph",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/rt/uns/circyto/source_avg_rt_bedgraph",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/rt/uns/circyto/source_avg_rt_bedgraph",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "mod/rt/uns/circyto/source_rt_table",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/rt/uns/circyto/source_rt_table",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/rt/uns/circyto/source_rt_table",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_import_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_import_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/workflow_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/workflow_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_remap/cell_map",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/cell_map",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/cell_map",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_remap/source_h5mu",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/source_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/source_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_rt_trimodal/source_rna_circ_h5mu",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_rt_trimodal/source_rna_circ_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_rt_trimodal/source_rna_circ_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_rt_trimodal/source_rt_h5ad",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_rt_trimodal/source_rt_h5ad",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_rt_trimodal/source_rt_h5ad",
+        "value": "[local username redacted]"
+      }
+    ],
+    "local_paths_detected": 28,
+    "manuscript_release_status": "Candidate frozen manuscript object; prefer release/Zenodo archive over ordinary Git.",
+    "mdata_obs_columns": [
+      "rna:membership",
+      "rna:total_rna_counts",
+      "rna:detected_genes",
+      "rna:mitochondrial_fraction",
+      "rna:ribosomal_fraction",
+      "rna:circRNA_count",
+      "rna:circRNA_total_support",
+      "rna:original_obs_id",
+      "rna:gsm_id",
+      "rna:canonical_cell_id",
+      "rna:rna_cell_id",
+      "rna:dna_cell_id",
+      "rna:sample_title",
+      "rna:molecule",
+      "rna:original_rna_obs_id",
+      "circ:membership",
+      "circ:total_rna_counts",
+      "circ:detected_genes",
+      "circ:mitochondrial_fraction",
+      "circ:ribosomal_fraction",
+      "circ:circRNA_count",
+      "circ:circRNA_total_support",
+      "circ:original_obs_id",
+      "circ:gsm_id",
+      "circ:canonical_cell_id",
+      "circ:rna_cell_id",
+      "circ:dna_cell_id",
+      "circ:sample_title",
+      "circ:molecule",
+      "circ:original_circ_obs_id",
+      "rt:cell_id",
+      "rt:canonical_cell_id",
+      "rt:dna_cell_id",
+      "rt:rna_cell_id",
+      "rt:source_cell_id",
+      "rt:source_molecule",
+      "rt:pairing_strategy"
+    ],
+    "mdata_obsm_keys": [
+      "circ",
+      "rna",
+      "rt"
+    ],
+    "mdata_uns_keys": [
+      "circyto",
+      "circyto_scrr_remap",
+      "circyto_scrr_rt_trimodal"
+    ],
+    "mdata_varm_keys": [
+      "circ",
+      "rna",
+      "rt"
+    ],
+    "median_circRNA_count": 50.0,
+    "median_circRNA_total_support": 371.0,
+    "missing_host_gene_fields": [],
+    "modalities": [
+      "rna",
+      "circ",
+      "rt"
+    ],
+    "modalities_detail": {
+      "circ": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.018173094520866413,
+          "nnz": 3674,
+          "storage": "csr_matrix"
+        },
+        "obs_columns": [
+          "membership",
+          "total_rna_counts",
+          "detected_genes",
+          "mitochondrial_fraction",
+          "ribosomal_fraction",
+          "circRNA_count",
+          "circRNA_total_support",
+          "original_obs_id",
+          "gsm_id",
+          "canonical_cell_id",
+          "rna_cell_id",
+          "dna_cell_id",
+          "sample_title",
+          "molecule",
+          "original_circ_obs_id"
+        ],
+        "obs_name_examples": [
+          "HAP1_scRR1_MidS_104",
+          "HAP1_scRR1_MidS_103",
+          "HAP1_scRR1_MidS_102",
+          "HAP1_scRR1_MidS_101",
+          "HAP1_scRR1_MidS_096"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          63,
+          3209
+        ],
+        "uns_keys": [],
+        "var_columns": [
+          "circ_id",
+          "chrom",
+          "start",
+          "end",
+          "strand",
+          "host_gene",
+          "host_gene_from_gtf",
+          "host_gene_id",
+          "host_genes_multi",
+          "host_gene_ids_multi",
+          "host_gene_n",
+          "host_gene_source",
+          "host_gene_from_circatlas",
+          "host_gene_from_circatlas_id"
+        ],
+        "var_name_examples": [
+          "chr9:27482842|27482998",
+          "chr9:131430090|131432794",
+          "chr7:5596478|5596886",
+          "chr7:72879795|72891083",
+          "chr7:100358690|100373720"
+        ],
+        "varm_keys": []
+      },
+      "rna": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.1660583689482039,
+          "nnz": 661042,
+          "storage": "csr_matrix"
+        },
+        "obs_columns": [
+          "membership",
+          "total_rna_counts",
+          "detected_genes",
+          "mitochondrial_fraction",
+          "ribosomal_fraction",
+          "circRNA_count",
+          "circRNA_total_support",
+          "original_obs_id",
+          "gsm_id",
+          "canonical_cell_id",
+          "rna_cell_id",
+          "dna_cell_id",
+          "sample_title",
+          "molecule",
+          "original_rna_obs_id"
+        ],
+        "obs_name_examples": [
+          "HAP1_scRR1_MidS_104",
+          "HAP1_scRR1_MidS_103",
+          "HAP1_scRR1_MidS_102",
+          "HAP1_scRR1_MidS_101",
+          "HAP1_scRR1_MidS_096"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          63,
+          63187
+        ],
+        "uns_keys": [],
+        "var_columns": [
+          "gene_id",
+          "gene_name",
+          "chrom",
+          "start",
+          "end",
+          "strand",
+          "gene_biotype"
+        ],
+        "var_name_examples": [
+          "ENSG00000290825.1",
+          "ENSG00000223972.6",
+          "ENSG00000227232.6",
+          "ENSG00000278267.1",
+          "ENSG00000243485.5"
+        ],
+        "varm_keys": []
+      },
+      "rt": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.9938756853280156,
+          "nnz": 3165828,
+          "storage": "ndarray"
+        },
+        "obs_columns": [
+          "cell_id",
+          "canonical_cell_id",
+          "dna_cell_id",
+          "rna_cell_id",
+          "source_cell_id",
+          "source_molecule",
+          "pairing_strategy"
+        ],
+        "obs_name_examples": [
+          "HAP1_scRR1_MidS_031",
+          "HAP1_scRR1_MidS_051",
+          "HAP1_scRR1_MidS_024",
+          "HAP1_scRR1_MidS_023",
+          "HAP1_scRR1_MidS_053"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          56,
+          56881
+        ],
+        "uns_keys": [
+          "circyto"
+        ],
+        "var_columns": [
+          "chr",
+          "start",
+          "end",
+          "seqname",
+          "bin_size",
+          "feature_id",
+          "feature_type"
+        ],
+        "var_name_examples": [
+          "chr2:0-40000",
+          "chr2:40000-80000",
+          "chr2:80000-120000",
+          "chr2:120000-160000",
+          "chr2:160000-200000"
+        ],
+        "varm_keys": []
+      }
+    },
+    "modality_shapes": {
+      "circ": [
+        63,
+        3209
+      ],
+      "rna": [
+        63,
+        63187
+      ],
+      "rt": [
+        56,
+        56881
+      ]
+    },
+    "pairwise_shared_cells": {
+      "circ&rt": 56,
+      "rna&circ": 63,
+      "rna&rt": 56
+    },
+    "public_data_only": "yes_public_accession_or_canonical_cell_ids",
+    "relative_path": "load_work/scrr_hap1/full_length_rna_circ_rt.hostgene_fixed.h5mu",
+    "sha256": "6d3f460371000dde2f307c67887cfb5939ea591527c4e813d8daf2ef2b1bece5",
+    "shared_cells": 56,
+    "source_data_type": "Public HAP1 scRR RNA data plus processed public RT/state summaries."
+  },
+  {
+    "accession": "GSE278958",
+    "compression": {
+      "compressed_datasets": 0,
+      "compression_algorithms": {},
+      "datasets": 177,
+      "matrix_datasets": [
+        {
+          "chunks": "2914",
+          "compression": "",
+          "dataset": "mod/circ/X/data",
+          "dtype": "int32",
+          "shape": "2914"
+        },
+        {
+          "chunks": "",
+          "compression": "",
+          "dataset": "mod/cnv/X",
+          "dtype": "int16",
+          "shape": "23x60607"
+        },
+        {
+          "chunks": "",
+          "compression": "",
+          "dataset": "mod/cnv/layers/mappabilitynorm",
+          "dtype": "float32",
+          "shape": "23x60607"
+        },
+        {
+          "chunks": "",
+          "compression": "",
+          "dataset": "mod/cnv/uns/circyto/layers/mappabilitynorm",
+          "dtype": "object",
+          "shape": ""
+        },
+        {
+          "chunks": "5878",
+          "compression": "",
+          "dataset": "mod/rna/X/data",
+          "dtype": "int32",
+          "shape": "376158"
+        }
+      ]
+    },
+    "dataset": "IMR90",
+    "file_size_bytes": 41036354,
+    "host_gene_annotated": 2429,
+    "host_gene_rate": 0.994269340974212,
+    "host_gene_source_counts": {
+      "gtf": 2429,
+      "missing": 14
+    },
+    "host_gene_total": 2443,
+    "intended_role": "Manuscript-scale RNA+circRNA+CNV reproducibility object.",
+    "local_path_findings": [
+      {
+        "category": "server_path",
+        "location": "mod/cnv/uns/circyto/layers/mappabilitynorm",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/cnv/uns/circyto/layers/mappabilitynorm",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/cnv/uns/circyto/layers/mappabilitynorm",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "mod/cnv/uns/circyto/source_cnv_mappabilitynorm",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/cnv/uns/circyto/source_cnv_mappabilitynorm",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/cnv/uns/circyto/source_cnv_mappabilitynorm",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "mod/cnv/uns/circyto/source_cnv_states",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/cnv/uns/circyto/source_cnv_states",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "mod/cnv/uns/circyto/source_cnv_states",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_circ_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_circ_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_import_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/rna_import_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/source_workdir",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/workflow_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto/workflow_summary_json",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_remap/cell_map",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/cell_map",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/cell_map",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_remap/source_h5mu",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/source_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_remap/source_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_trimodal/source_cnv_h5ad",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_trimodal/source_cnv_h5ad",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_trimodal/source_cnv_h5ad",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "server_path",
+        "location": "uns/circyto_scrr_trimodal/source_rna_circ_h5mu",
+        "value": "[local path redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_trimodal/source_rna_circ_h5mu",
+        "value": "[local username redacted]"
+      },
+      {
+        "category": "known_local_username",
+        "location": "uns/circyto_scrr_trimodal/source_rna_circ_h5mu",
+        "value": "[local username redacted]"
+      }
+    ],
+    "local_paths_detected": 30,
+    "manuscript_release_status": "Candidate frozen manuscript object; prefer release/Zenodo archive over ordinary Git.",
+    "mdata_obs_columns": [
+      "rna:membership",
+      "rna:total_rna_counts",
+      "rna:detected_genes",
+      "rna:mitochondrial_fraction",
+      "rna:ribosomal_fraction",
+      "rna:circRNA_count",
+      "rna:circRNA_total_support",
+      "rna:original_obs_id",
+      "rna:gsm_id",
+      "rna:canonical_cell_id",
+      "rna:rna_cell_id",
+      "rna:dna_cell_id",
+      "rna:sample_title",
+      "rna:molecule",
+      "rna:original_rna_obs_id",
+      "circ:membership",
+      "circ:total_rna_counts",
+      "circ:detected_genes",
+      "circ:mitochondrial_fraction",
+      "circ:ribosomal_fraction",
+      "circ:circRNA_count",
+      "circ:circRNA_total_support",
+      "circ:original_obs_id",
+      "circ:gsm_id",
+      "circ:canonical_cell_id",
+      "circ:rna_cell_id",
+      "circ:dna_cell_id",
+      "circ:sample_title",
+      "circ:molecule",
+      "circ:original_circ_obs_id",
+      "cnv:cell_id",
+      "cnv:canonical_cell_id",
+      "cnv:dna_cell_id",
+      "cnv:rna_cell_id",
+      "cnv:pairing_strategy",
+      "membership",
+      "total_rna_counts",
+      "detected_genes",
+      "mitochondrial_fraction",
+      "ribosomal_fraction",
+      "circRNA_count",
+      "circRNA_total_support",
+      "original_obs_id",
+      "gsm_id",
+      "canonical_cell_id",
+      "rna_cell_id",
+      "dna_cell_id",
+      "sample_title",
+      "molecule",
+      "cell_id",
+      "pairing_strategy"
+    ],
+    "mdata_obsm_keys": [
+      "circ",
+      "cnv",
+      "rna"
+    ],
+    "mdata_uns_keys": [
+      "circyto",
+      "circyto_scrr_remap",
+      "circyto_scrr_trimodal"
+    ],
+    "mdata_varm_keys": [
+      "circ",
+      "cnv",
+      "rna"
+    ],
+    "median_circRNA_count": 119.0,
+    "median_circRNA_total_support": 317.0,
+    "missing_host_gene_fields": [],
+    "modalities": [
+      "rna",
+      "circ",
+      "cnv"
+    ],
+    "modalities_detail": {
+      "circ": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.051860684475609105,
+          "nnz": 2914,
+          "storage": "csr_matrix"
+        },
+        "obs_columns": [
+          "membership",
+          "total_rna_counts",
+          "detected_genes",
+          "mitochondrial_fraction",
+          "ribosomal_fraction",
+          "circRNA_count",
+          "circRNA_total_support",
+          "original_obs_id",
+          "gsm_id",
+          "canonical_cell_id",
+          "rna_cell_id",
+          "dna_cell_id",
+          "sample_title",
+          "molecule",
+          "original_circ_obs_id"
+        ],
+        "obs_name_examples": [
+          "IMR90_A_126",
+          "IMR90_A_125",
+          "IMR90_A_122",
+          "IMR90_A_119",
+          "IMR90_A_117"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          23,
+          2443
+        ],
+        "uns_keys": [],
+        "var_columns": [
+          "circ_id",
+          "chrom",
+          "start",
+          "end",
+          "strand",
+          "host_gene",
+          "host_gene_from_gtf",
+          "host_gene_id",
+          "host_genes_multi",
+          "host_gene_ids_multi",
+          "host_gene_n",
+          "host_gene_source",
+          "host_gene_from_circatlas",
+          "host_gene_from_circatlas_id"
+        ],
+        "var_name_examples": [
+          "chr9:110941421|111011690",
+          "chr9:110972073|111011690",
+          "chr9:110972073|110973558",
+          "chr9:131643239|131650949",
+          "chr7:849373|849578"
+        ],
+        "varm_keys": []
+      },
+      "cnv": {
+        "layers": [
+          "mappabilitynorm",
+          "None"
+        ],
+        "matrix": {
+          "density": 0.9174345623729788,
+          "nnz": 1278868,
+          "storage": "ndarray"
+        },
+        "obs_columns": [
+          "cell_id",
+          "canonical_cell_id",
+          "dna_cell_id",
+          "rna_cell_id",
+          "pairing_strategy"
+        ],
+        "obs_name_examples": [
+          "IMR90_A_126",
+          "IMR90_A_125",
+          "IMR90_A_122",
+          "IMR90_A_119",
+          "IMR90_A_117"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          23,
+          60607
+        ],
+        "uns_keys": [
+          "circyto"
+        ],
+        "var_columns": [
+          "bin_id",
+          "seqname",
+          "start",
+          "end",
+          "bin_size"
+        ],
+        "var_name_examples": [
+          "chr1:0-50000",
+          "chr1:50000-100000",
+          "chr1:100000-150000",
+          "chr1:150000-200000",
+          "chr1:200000-250000"
+        ],
+        "varm_keys": []
+      },
+      "rna": {
+        "layers": [
+          "None"
+        ],
+        "matrix": {
+          "density": 0.25883007030202276,
+          "nnz": 376158,
+          "storage": "csr_matrix"
+        },
+        "obs_columns": [
+          "membership",
+          "total_rna_counts",
+          "detected_genes",
+          "mitochondrial_fraction",
+          "ribosomal_fraction",
+          "circRNA_count",
+          "circRNA_total_support",
+          "original_obs_id",
+          "gsm_id",
+          "canonical_cell_id",
+          "rna_cell_id",
+          "dna_cell_id",
+          "sample_title",
+          "molecule",
+          "original_rna_obs_id"
+        ],
+        "obs_name_examples": [
+          "IMR90_A_126",
+          "IMR90_A_125",
+          "IMR90_A_122",
+          "IMR90_A_119",
+          "IMR90_A_117"
+        ],
+        "obsm_keys": [],
+        "shape": [
+          23,
+          63187
+        ],
+        "uns_keys": [],
+        "var_columns": [
+          "gene_id",
+          "gene_name",
+          "chrom",
+          "start",
+          "end",
+          "strand",
+          "gene_biotype"
+        ],
+        "var_name_examples": [
+          "ENSG00000290825.1",
+          "ENSG00000223972.6",
+          "ENSG00000227232.6",
+          "ENSG00000278267.1",
+          "ENSG00000243485.5"
+        ],
+        "varm_keys": []
+      }
+    },
+    "modality_shapes": {
+      "circ": [
+        23,
+        2443
+      ],
+      "cnv": [
+        23,
+        60607
+      ],
+      "rna": [
+        23,
+        63187
+      ]
+    },
+    "pairwise_shared_cells": {
+      "circ&cnv": 23,
+      "rna&circ": 23,
+      "rna&cnv": 23
+    },
+    "public_data_only": "yes_public_accession_or_canonical_cell_ids",
+    "relative_path": "load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu",
+    "sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+    "shared_cells": 23,
+    "source_data_type": "Public IMR90 scRR RNA data plus processed public CNV summary tables."
+  }
+]

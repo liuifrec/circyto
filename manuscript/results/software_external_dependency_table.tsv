@@ -1,0 +1,8 @@
+name	role	required_for_basic_tests	install_scope	license_or_note
+Python	Package runtime	yes	environment.yml or pip	>=3.10 per pyproject.toml
+mudata	Read/write manuscript MuData objects	yes in CI dev extra	circyto[mudata] or circyto[dev]	Optional dependency in pyproject.toml
+scanpy	Figure 1 RNA UMAP data export	no	circyto[scanpy]	Only needed for downstream UMAP export
+CIRI3	Primary circRNA detector for manuscript validation	no	External tool or configured jar path	Local bundled license is GPL-2.0; redistribution should be confirmed before release packaging.
+STAR	Smart-seq3 and paired-end alignment route	no	External executable	Workflow-specific dependency
+bwa	CIRI3 BWA/direct and rescue alignment route	no	External executable	Workflow-specific dependency
+samtools	Alignment handling	no	External executable	Workflow-specific dependency

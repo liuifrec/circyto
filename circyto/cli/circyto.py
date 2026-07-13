@@ -85,6 +85,7 @@ from circyto.detectors import build_default_engines, get_detector_capabilities
 from circyto.detectors.ciri3 import Ciri3Detector
 from circyto.paths import get_repo_root, get_tools_dir
 from circyto.cli.doctor import doctor_app
+from circyto.cli.demo import demo_app
 from circyto.cli.detectors import detectors_app
 from circyto.cli.smoke import smoke_app
 
@@ -142,6 +143,7 @@ def app_callback(
 
 app.add_typer(doctor_app, name="doctor")
 app.add_typer(detectors_app, name="detectors")
+app.add_typer(demo_app, name="demo")
 
 app.add_typer(demux_app, name="demux")
 app.add_typer(manifest_app, name="manifest")

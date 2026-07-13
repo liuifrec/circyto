@@ -48,6 +48,24 @@ data/
 fastq/
 ref/
 
+# Large analysis objects belong in versioned release/Zenodo archives with
+# checksums in Git, not as routine repository commits.
+*.h5mu
+*.h5ad
+*.loom
+*.cram
+*.crai
+*.vcf
+*.vcf.gz
+*.bcf
+
+# Intentionally tiny fixtures may be tracked for tests.
+!testdata/**/*.h5mu
+!testdata/**/*.h5ad
+!testdata/**/*.loom
+!circyto/resources/**/*.h5ad
+!circyto/resources/**/*.h5mu
+
 # Tool test data
 tools/**/CIRI-full_test/
 work_smartseq2/
@@ -70,6 +88,7 @@ back_spliced_junction.bed
 scripts/
 !scripts/
 scripts/*
+!scripts/check_repository_file_sizes.py
 !scripts/manuscript/
 !scripts/manuscript/*.py
 !scripts/check_full_length_workflow_outputs.py

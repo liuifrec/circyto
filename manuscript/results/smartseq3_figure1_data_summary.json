@@ -1,0 +1,17 @@
+{
+  "input": "load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu",
+  "n_top_genes": 2000,
+  "outputs": [
+    "smartseq3_umap_cells.tsv",
+    "smartseq3_top_circRNA_candidates.tsv",
+    "smartseq3_top_hostgene_features.tsv",
+    "smartseq3_selected_feature_candidates.tsv",
+    "smartseq3_figure1_data_method.md"
+  ],
+  "seed": 17,
+  "selected_hosts": [
+    "DYNC2I1",
+    "MAN1A2",
+    "PTP4A2"
+  ]
+}

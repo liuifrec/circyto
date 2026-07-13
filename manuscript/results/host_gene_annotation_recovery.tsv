@@ -1,0 +1,4 @@
+dataset	annotated_circRNAs	total_circRNAs	recovery_fraction	host_gene_source_counts
+Smart-seq3	2379	2503	0.950459448661606	"{""gtf"": 2379, ""missing"": 124}"
+HAP1	3117	3209	0.9713306325958242	"{""gtf"": 3117, ""missing"": 92}"
+IMR90	2429	2443	0.994269340974212	"{""gtf"": 2429, ""missing"": 14}"

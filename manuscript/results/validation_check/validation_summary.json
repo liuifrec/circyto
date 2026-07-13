@@ -1,0 +1,108 @@
+{
+  "failures": [],
+  "n_checks": 31,
+  "n_failures": 0,
+  "n_warnings": 3,
+  "objects": [
+    {
+      "dataset": "Smart-seq3",
+      "file_size_bytes": 30911142,
+      "modalities": [
+        "rna",
+        "circ"
+      ],
+      "modality_shapes": {
+        "circ": [
+          192,
+          2503
+        ],
+        "rna": [
+          192,
+          63187
+        ]
+      },
+      "relative_path": "load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu",
+      "sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "shared_cells": 192
+    },
+    {
+      "dataset": "HAP1",
+      "file_size_bytes": 41952586,
+      "modalities": [
+        "rna",
+        "circ",
+        "rt"
+      ],
+      "modality_shapes": {
+        "circ": [
+          63,
+          3209
+        ],
+        "rna": [
+          63,
+          63187
+        ],
+        "rt": [
+          56,
+          56881
+        ]
+      },
+      "relative_path": "load_work/scrr_hap1/full_length_rna_circ_rt.hostgene_fixed.h5mu",
+      "sha256": "6d3f460371000dde2f307c67887cfb5939ea591527c4e813d8daf2ef2b1bece5",
+      "shared_cells": 56
+    },
+    {
+      "dataset": "IMR90",
+      "file_size_bytes": 41036354,
+      "modalities": [
+        "rna",
+        "circ",
+        "cnv"
+      ],
+      "modality_shapes": {
+        "circ": [
+          23,
+          2443
+        ],
+        "cnv": [
+          23,
+          60607
+        ],
+        "rna": [
+          23,
+          63187
+        ]
+      },
+      "relative_path": "load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu",
+      "sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "shared_cells": 23
+    }
+  ],
+  "status": "pass",
+  "warnings": [
+    {
+      "dataset": "Smart-seq3",
+      "expected": 0,
+      "message": "Source-object metadata contains local/private-looking strings. Public audit outputs redact values; inspect manuscript_object_audit.md before release.",
+      "metric": "local_private_metadata_findings",
+      "observed": 9,
+      "status": "warn"
+    },
+    {
+      "dataset": "HAP1",
+      "expected": 0,
+      "message": "Source-object metadata contains local/private-looking strings. Public audit outputs redact values; inspect manuscript_object_audit.md before release.",
+      "metric": "local_private_metadata_findings",
+      "observed": 28,
+      "status": "warn"
+    },
+    {
+      "dataset": "IMR90",
+      "expected": 0,
+      "message": "Source-object metadata contains local/private-looking strings. Public audit outputs redact values; inspect manuscript_object_audit.md before release.",
+      "metric": "local_private_metadata_findings",
+      "observed": 30,
+      "status": "warn"
+    }
+  ]
+}

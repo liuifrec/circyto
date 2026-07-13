@@ -1,0 +1,32 @@
+dataset	metric	observed	expected	status	message
+Smart-seq3	rna_shape	[192,63187]	[192,63187]	pass	
+Smart-seq3	circ_shape	[192,2503]	[192,2503]	pass	
+Smart-seq3	shared_cells	192	192	pass	
+Smart-seq3	host_gene_annotated	2379	2379	pass	
+Smart-seq3	host_gene_total	2503	2503	pass	
+Smart-seq3	host_gene_rate	0.950459448661606	0.950459448661606	pass	
+Smart-seq3	median_circRNA_count	12.0	12.0	pass	
+Smart-seq3	median_circRNA_total_support	22.5	22.5	pass	
+Smart-seq3	required_host_gene_fields	all_present	host_gene,host_gene_source,host_gene_from_gtf,host_gene_from_circatlas,host_gene_from_circatlas_id,host_gene_id,host_genes_multi,host_gene_ids_multi,host_gene_n	pass	
+Smart-seq3	local_private_metadata_findings	9	0	warn	Source-object metadata contains local/private-looking strings. Public audit outputs redact values; inspect manuscript_object_audit.md before release.
+Smart-seq3	public_cell_identifier_assessment	yes_public_accession_or_canonical_cell_ids	yes_public_accession_or_canonical_cell_ids	pass	
+HAP1	rna_shape	[63,63187]	[63,63187]	pass	
+HAP1	circ_shape	[63,3209]	[63,3209]	pass	
+HAP1	rt_shape	[56,56881]	[56,56881]	pass	
+HAP1	shared_cells	56	56	pass	
+HAP1	host_gene_annotated	3117	3117	pass	
+HAP1	host_gene_total	3209	3209	pass	
+HAP1	host_gene_rate	0.9713306325958242	0.9713306325958242	pass	
+HAP1	required_host_gene_fields	all_present	host_gene,host_gene_source,host_gene_from_gtf,host_gene_from_circatlas,host_gene_from_circatlas_id,host_gene_id,host_genes_multi,host_gene_ids_multi,host_gene_n	pass	
+HAP1	local_private_metadata_findings	28	0	warn	Source-object metadata contains local/private-looking strings. Public audit outputs redact values; inspect manuscript_object_audit.md before release.
+HAP1	public_cell_identifier_assessment	yes_public_accession_or_canonical_cell_ids	yes_public_accession_or_canonical_cell_ids	pass	
+IMR90	rna_shape	[23,63187]	[23,63187]	pass	
+IMR90	circ_shape	[23,2443]	[23,2443]	pass	
+IMR90	cnv_shape	[23,60607]	[23,60607]	pass	
+IMR90	shared_cells	23	23	pass	
+IMR90	host_gene_annotated	2429	2429	pass	
+IMR90	host_gene_total	2443	2443	pass	
+IMR90	host_gene_rate	0.994269340974212	0.994269340974212	pass	
+IMR90	required_host_gene_fields	all_present	host_gene,host_gene_source,host_gene_from_gtf,host_gene_from_circatlas,host_gene_from_circatlas_id,host_gene_id,host_genes_multi,host_gene_ids_multi,host_gene_n	pass	
+IMR90	local_private_metadata_findings	30	0	warn	Source-object metadata contains local/private-looking strings. Public audit outputs redact values; inspect manuscript_object_audit.md before release.
+IMR90	public_cell_identifier_assessment	yes_public_accession_or_canonical_cell_ids	yes_public_accession_or_canonical_cell_ids	pass	

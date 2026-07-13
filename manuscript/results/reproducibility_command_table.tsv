@@ -1,0 +1,6 @@
+artifact	command	expected_outputs
+Object audit and manifest	python scripts/manuscript/audit_manuscript_objects.py	manuscript/results/manuscript_object_audit.md; manuscript/results/manuscript_object_manifest.tsv
+Object validation	python scripts/manuscript/validate_manuscript_objects.py --outdir manuscript/results/validation_check	manuscript/results/validation_check/validation_summary.tsv; validation_summary.json
+Smart-seq3 Figure 1 data	python scripts/manuscript/export_smartseq3_figure1_data.py --outdir manuscript/results	smartseq3_umap_cells.tsv; smartseq3_top_circRNA_candidates.tsv; smartseq3_top_hostgene_features.tsv; smartseq3_selected_feature_candidates.tsv
+Supplement-ready small tables	python scripts/manuscript/generate_supplement_tables.py --outdir manuscript/results	manuscript_dataset_inventory.tsv; detector_workflow_status.tsv; host_gene_annotation_recovery.tsv; software_external_dependency_table.tsv; reproducibility_command_table.tsv
+Repository large-file guard	python scripts/check_repository_file_sizes.py --base-ref origin/main --fail-scope added	stdout report; nonzero exit for unapproved newly added large files
