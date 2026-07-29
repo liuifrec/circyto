@@ -45,12 +45,12 @@ def infer_known_status(circ) -> pd.Series:
         values = var[bool_col]
         if values.dtype == bool:
             return values.map({True: "known", False: "novel"})
-        lowered = values.fillna("").astype(str).str.lower()
+        lowered = values.astype("string").fillna("").str.lower()
         return lowered.isin({"true", "1", "yes", "known"}).map({True: "known", False: "novel"})
 
     status_col = first_existing_column(var, KNOWN_STATUS_COLUMNS)
     if status_col is not None:
-        lowered = var[status_col].fillna("").astype(str).str.lower()
+        lowered = var[status_col].astype("string").fillna("").str.lower()
         status = pd.Series("unknown", index=var.index, dtype=object)
         status[lowered.str.contains("novel", na=False)] = "novel"
         status[lowered.str.contains("known|match|exact|database", na=False)] = "known"

@@ -209,6 +209,33 @@ def test_manuscript_inventory_hap1_imr90_and_known_novel_scripts(tmp_path: Path)
     assert {"known", "novel", "all"}.issubset(set(known_df["known_status"]))
 
 
+def test_known_novel_script_handles_categorical_status_with_missing_values(tmp_path: Path) -> None:
+    mu = pytest.importorskip("mudata")
+    h5mu = tmp_path / "categorical_status.h5mu"
+    _write_tiny_mudata(h5mu)
+    mdata = mu.read_h5mu(h5mu)
+    mdata.mod["circ"].var["annotation_status"] = pd.Categorical(
+        ["known", "novel", None, "database_match"]
+    )
+    mdata.write_h5mu(h5mu)
+
+    known_out = tmp_path / "known_novel.tsv"
+    result = _run_script(
+        [
+            str(SCRIPT_DIR / "known_novel_circ_summary.py"),
+            str(h5mu),
+            "--out",
+            str(known_out),
+        ]
+    )
+
+    assert result.returncode == 0, result.stderr + result.stdout
+    known_df = pd.read_csv(known_out, sep="\t").set_index("known_status")
+    assert known_df.loc["known", "n_circRNAs"] == 2
+    assert known_df.loc["novel", "n_circRNAs"] == 1
+    assert known_df.loc["unknown", "n_circRNAs"] == 1
+
+
 def test_cross_dataset_host_overlap_script(tmp_path: Path) -> None:
     h5mu = tmp_path / "tiny.hostgene_fixed.h5mu"
     _write_tiny_mudata(h5mu)

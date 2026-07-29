@@ -364,4 +364,4 @@ def test_merge_scomatic_adds_candidate_snv_modality(tmp_path: Path) -> None:
     assert list(candidate.obs_names) == ["cellA", "cellB"]
     assert list(candidate.var_names) == ["chr1:10:A>G"]
     assert candidate.X.tolist() == [[4.0], [0.0]]
-    assert candidate.layers["vaf"].tolist() == [[0.2], [0.0]]
+    np.testing.assert_allclose(candidate.layers["vaf"], [[0.2], [0.0]])

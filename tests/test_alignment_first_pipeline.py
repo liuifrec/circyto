@@ -939,16 +939,26 @@ def test_ciri3_runs_from_star_hybrid_manifest_row_with_direct_jar_contract(tmp_p
     assert " -Ma 1" in f" {result.meta['command']}"
 
 
-def test_run_detector_from_alignments_cli_accepts_ciri3_template(tmp_path: Path) -> None:
+def test_run_detector_from_alignments_cli_accepts_ciri3_template(tmp_path: Path, monkeypatch) -> None:
     manifest = _write_fastq_manifest(tmp_path, ["c1", "c2"])
     alignment_dir = tmp_path / "align"
     fake_bin = tmp_path / "bin"
     fake_bin.mkdir()
     _install_fake_bwa_and_samtools(fake_bin)
+    fake_ciri3 = tmp_path / "fake_ciri3.sh"
+    fake_ciri3.write_text(
+        "#!/usr/bin/env bash\n"
+        "set -euo pipefail\n"
+        "cat > \"$2\" <<'EOF'\n"
+        "circRNA_ID\tchr\tstart\tend\tstrand\tbsj_reads\n"
+        "circA\tchr1\t11\t22\t+\t7\n"
+        "EOF\n",
+        encoding="utf-8",
+    )
+    fake_ciri3.chmod(0o755)
     ref = tmp_path / "ref.fa"
     ref.write_text(">chr1\nACGT\n", encoding="utf-8")
-    original_path = os.environ["PATH"]
-    os.environ["PATH"] = f"{fake_bin}{os.pathsep}{original_path}"
+    monkeypatch.setenv("PATH", f"{fake_bin}{os.pathsep}{os.environ['PATH']}")
     alignment_manifest = prepare_alignment_cache(
         manifest=manifest,
         outdir=alignment_dir,
@@ -957,7 +967,10 @@ def test_run_detector_from_alignments_cli_accepts_ciri3_template(tmp_path: Path)
         ref_fa=ref,
     )
     runner = CliRunner()
-    template = f"bash /mnt/d/circyto/tools/ciri3_smoke_template.sh {{alignment}} {{raw_output}} {{cell_id}} # {{alignment_format}} {{threads}} {{outdir}}"
+    template = (
+        f"bash {fake_ciri3} {{alignment}} {{raw_output}} {{cell_id}}"
+        " # {alignment_format} {threads} {outdir}"
+    )
     result = runner.invoke(
         app,
         [
@@ -974,8 +987,7 @@ def test_run_detector_from_alignments_cli_accepts_ciri3_template(tmp_path: Path)
             template,
         ],
     )
-    os.environ["PATH"] = original_path
-    assert result.exit_code == 0
+    assert result.exit_code == 0, result.output
 
 
 def test_run_detector_from_alignment_manifest_dry_run(tmp_path: Path) -> None:
