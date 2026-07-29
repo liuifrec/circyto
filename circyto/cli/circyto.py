@@ -81,6 +81,7 @@ from circyto.pipeline.collect_circexplorer2_matrix import (
 )
 from circyto.pipeline.public_dataset_prepare import prepare_public_dataset
 from circyto.pipeline.scanpy_downstream import scanpy_pca_workflow, scanpy_qc_report
+from circyto.biogenesis import export_biogenesis_bundle
 from circyto.detectors import build_default_engines, get_detector_capabilities
 from circyto.detectors.ciri3 import Ciri3Detector
 from circyto.paths import get_repo_root, get_tools_dir
@@ -111,6 +112,7 @@ app = typer.Typer(
         "  [ANNOTATE] annotate-circs\n"
         "  [INTEROP] prepare-scomatic-input, run-scomatic, import-scomatic, merge-scomatic\n"
         "  [INTEROP] export-scomatic-inputs, join-circ-snv-summary\n"
+        "  [EXPORT] export-mudata, export-biogenesis\n"
         "  [ANALYZE] analyze summarize-h5ad\n"
         "  [MERGE]  merge-detectors\n"
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
@@ -499,6 +501,58 @@ def export_mudata_completed_workflow_command(
             overwrite=overwrite,
         )
     except (FileNotFoundError, ValueError, RuntimeError) as exc:
+        raise typer.BadParameter(str(exc)) from exc
+    typer.echo(json.dumps(summary, indent=2, sort_keys=True))
+
+
+@app.command("export-biogenesis")
+def export_biogenesis_command(
+    candidates: Path = typer.Option(
+        ...,
+        "--candidates",
+        exists=True,
+        dir_okay=False,
+        help="Schema-v1 circRNA candidate TSV.",
+    ),
+    cell_contexts: Path = typer.Option(
+        ...,
+        "--cell-contexts",
+        exists=True,
+        dir_okay=False,
+        help="Schema-v1 cell-context TSV.",
+    ),
+    observations: Path = typer.Option(
+        ...,
+        "--observations",
+        exists=True,
+        dir_okay=False,
+        help="Schema-v1 cell-by-circRNA observation TSV.",
+    ),
+    outdir: Path = typer.Option(
+        ...,
+        "--outdir",
+        "-o",
+        file_okay=False,
+        help="Output directory for the validated biogenesis bundle.",
+    ),
+    overwrite: bool = typer.Option(
+        False,
+        "--overwrite",
+        help="Replace existing canonical bundle files in the output directory.",
+    ),
+) -> None:
+    """
+    Validate and export dependency-light circyto-biogenesis schema-v1 tables.
+    """
+    try:
+        summary = export_biogenesis_bundle(
+            candidates_path=candidates,
+            cell_contexts_path=cell_contexts,
+            observations_path=observations,
+            outdir=outdir,
+            overwrite=overwrite,
+        )
+    except (FileNotFoundError, FileExistsError, ValueError) as exc:
         raise typer.BadParameter(str(exc)) from exc
     typer.echo(json.dumps(summary, indent=2, sort_keys=True))
 

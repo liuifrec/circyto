@@ -35,6 +35,7 @@ Welcome to the `circyto` documentation.
 - [MuData schema](mudata_schema.md)
 - [MuData downstream](mudata_downstream.md)
 - [Modality schema](modality_schema.md)
+- [circyto-biogenesis schema foundation](biogenesis_schema.md)
 - [Host-gene provenance](host_gene_provenance.md)
 - [Manuscript reproducibility](manuscript_reproducibility.md)
 - [Manuscript command reference](manuscript_command_reference.md)
