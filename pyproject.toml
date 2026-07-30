@@ -75,3 +75,8 @@ alignment = [
   "STAR",
   "samtools"
 ]
+
+nanopore_interoperability = [
+  "minimap2",
+  "samtools"
+]
