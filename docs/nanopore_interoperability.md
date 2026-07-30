@@ -15,10 +15,11 @@ write AnnData or MuData, does not modify the validated `circ` modality, and
 does not promote exploratory long-read evidence to circRNA calls.
 
 This is the generic long-read path for Mandalorion, SiCeLoRe, ScNapBar, and
-ordinary ONT cDNA. Its minimap2 BAM is not input to the separate future
+ordinary ONT cDNA. Its minimap2 BAM is not input to the separate optional
 CIRI-long detector path. CIRI-long requires raw reads from a compatible
 rolling-circle reverse-transcription circRNA library; see
-[the CIRI-long compatibility assessment](ciri_long_feasibility.md).
+[the optional CIRI-long adapter](ciri_long_adapter.md) and
+[compatibility assessment](ciri_long_feasibility.md).
 
 ## Archive identity
 

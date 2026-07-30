@@ -7,7 +7,7 @@ review of this architecture.
 ## Revised decision: two separate paths
 
 **Go for a bounded, experimental long-read interoperability prototype, and
-separately plan a chemistry-gated CIRI-long detector adapter. Do not connect
+retain a separate chemistry-gated CIRI-long detector adapter. Do not connect
 the two paths through a minimap2 BAM.**
 
 ### Path A: generic single-cell long-read interoperability
@@ -23,7 +23,7 @@ always false, and its output stays outside the validated `circ` modality.
 
 ### Path B: CIRI-long-compatible circRNA detection
 
-This future path is admitted only for circRNA-enriched libraries with
+This optional path is admitted only for circRNA-enriched libraries with
 documented rolling-circle reverse transcription. It passes raw FASTA/FASTQ to
 the official CIRI-long interface, not generic minimap2 BAMs, and normalizes
 the `collapse` results into versioned circRNA and full-length isoform records.
@@ -168,7 +168,7 @@ single-cell Nanopore minimap2 alignments for circRNA calling.**
 | CIRI2 / CIRI-full | Short-read BWA-based detection and, for CIRI-full, paired-read reconstruction. | **Unsupported.** Read pairing, clipping/error models, and reconstruction assumptions do not match ordinary ONT cDNA. |
 | find_circ3 | Short-read FASTQ/Bowtie2 route. | **Unsupported.** |
 | CIRCexplorer2 adapter | Short-read FASTQ/STAR route in circyto. | **Unsupported in the current adapter.** |
-| `circyto/detectors/ciri_long.py` | A small, unregistered shell wrapper around `CIRI-long`; it has no detector capabilities, normalized output, provenance contract, or tests. | **Not a usable circyto backend.** CIRI-long consumes raw FASTA/FASTQ containing repeat-rich RCRT products, not the generic minimap2 BAM. None of the proposed single-cell poly(A) cDNA datasets has that chemistry. |
+| `circyto ciri-long` | Separate, optional RCRT-manifest adapter with readiness checks, shell-free `call`/`collapse`, provenance, and normalized BSJ/isoform/evidence tables. It is deliberately absent from the default short-read detector registry. | **Eligible only for chemistry-confirmed RCRT/circRNA-enriched raw FASTA/FASTQ.** It never consumes generic minimap2 BAM. None of the proposed single-cell poly(A) cDNA datasets has that chemistry. |
 
 CIRI3 formally expects BWA-MEM or its defined STAR+BWA inputs
 ([CIRI3 paper](https://www.nature.com/articles/s41587-025-02835-1);
@@ -327,7 +327,7 @@ circyto nanopore inspect-bsj \
   --outdir work/nanopore/exploratory_bsj_evidence
 ```
 
-Path B should be a separate future detector-adapter command family:
+Path B uses a separate detector-adapter command family:
 
 ```bash
 circyto ciri-long validate-manifest \
@@ -345,7 +345,7 @@ circyto ciri-long collapse \
   --annotation annotation.gtf \
   --outdir work/ciri_long/collapse
 
-circyto ciri-long normalize \
+circyto ciri-long import \
   --collapse-dir work/ciri_long/collapse \
   --outdir work/ciri_long/normalized
 ```
@@ -389,7 +389,7 @@ approved.
    - Reject false or unknown RCRT status. Do not offer a force flag that
      relabels ordinary ONT cDNA as compatible.
 
-4. **Implement the future CIRI-long adapter**
+4. **CIRI-long adapter (implemented; official-demo execution pending)**
    - Extend `DetectorCapabilities` with backward-compatible defaults for
      supported read technologies and required library chemistry.
    - Reject `read_technology=nanopore` for existing short-read detectors with

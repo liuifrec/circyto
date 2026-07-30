@@ -1,8 +1,9 @@
 # CIRI-long compatibility assessment
 
-Status: architecture and source review, 2026-07-29. This document defines a
-future detector adapter; it does not claim that circyto currently supports
-CIRI-long.
+Status: architecture/source review completed 2026-07-29; optional adapter
+implemented for issue #14 on 2026-07-30. The implementation is covered by
+hermetic tests, but the official demo has not yet been downloaded or run.
+Operational details are in [ciri_long_adapter.md](ciri_long_adapter.md).
 
 ## Decision
 
@@ -10,7 +11,7 @@ CIRI-long belongs in a separate, chemistry-gated circRNA detection path. It is
 not an alternative aligner for ordinary Oxford Nanopore cDNA and must not
 consume the BAMs produced by circyto's generic minimap2 interoperability path.
 
-The future adapter is appropriate only when source metadata establishes that
+The optional adapter is appropriate only when source metadata establishes that
 the library used rolling-circle reverse transcription (RCRT) of enriched
 circular RNA and therefore contains concatemeric reads with repeated copies of
 a circular template. A FASTA/FASTQ filename alone is not evidence of this
@@ -173,9 +174,9 @@ CRR194209 and any other public reads should be retrieved from their archive
 under the archive's data-use terms. Reference FASTA and GTF files retain their
 own provider licenses and likewise should not be bundled by default.
 
-## Future adapter contract
+## Adapter contract
 
-The future CIRI-long path should be a detector adapter, not an extension of
+The CIRI-long path is a detector adapter, not an extension of
 the minimap2 alignment command:
 
 ```text

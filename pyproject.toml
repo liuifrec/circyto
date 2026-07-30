@@ -80,3 +80,8 @@ nanopore_interoperability = [
   "minimap2",
   "samtools"
 ]
+
+ciri_long = [
+  "CIRI-long",
+  "bwa"
+]

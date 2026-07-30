@@ -1,0 +1,2 @@
+chr1	CIRI-long	circRNA	101	250	3	+	.	circ_id "chr1:101-250"; splice_site "AG-GT|0-0"; equivalent_seq "AC"; circ_type "exon"; circ_len "100"; isoform "101-150,201-250|101-250"; gene_id "GENE1"; gene_name "GeneOne"; gene_type "protein_coding";
+chr2	CIRI-long	circRNA	401	500	2	-	.	circ_id "chr2:401-500"; splice_site "CT-AC|0-0"; equivalent_seq "GT"; circ_type "intron"; circ_len "100"; isoform "401-500"; gene_id "GENE2"; gene_name "GeneTwo"; gene_type "lncRNA";

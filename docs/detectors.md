@@ -41,6 +41,34 @@ circ_id    chr    start    end    strand    support
 
 ---
 
+## Separate long-read detector adapter
+
+### `ciri-long`
+
+CIRI-long is deliberately not part of `circyto detectors` or the default
+short-read registry. It has a separate, chemistry-gated command family:
+
+```bash
+circyto ciri-long doctor \
+  --reference ref/genome.fa \
+  --gtf ref/genes.gtf
+
+circyto ciri-long validate-manifest \
+  --manifest ciri_long_manifest.tsv \
+  --strict
+```
+
+It accepts raw Oxford Nanopore FASTA/FASTQ only from circRNA-enriched
+rolling-circle reverse-transcription libraries. It rejects ordinary ONT cDNA,
+direct RNA, unknown chemistry, and minimap2 BAM/SAM input. `call` and
+`collapse` remain distinct external stages, and `import` writes separate
+BSJ-, isoform-, expression-, usage-, and read-evidence tables without changing
+AnnData/MuData exports.
+
+See [Optional CIRI-long adapter](ciri_long_adapter.md).
+
+---
+
 ## Detector summary
 
 ### `find-circ3`

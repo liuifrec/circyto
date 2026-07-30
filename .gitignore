@@ -89,6 +89,7 @@ scripts/*
 !scripts/check_scomatic_environment.sh
 !scripts/check_public_run_status.sh
 !scripts/run_srr4048177_nanopore_smoke.py
+!scripts/run_ciri_long_official_demo.py
 !scripts/export_run_snapshot.sh
 tools/CIRI3/scripts/
 circyto/pipeline/detector_compare.py

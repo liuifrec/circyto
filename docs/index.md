@@ -60,6 +60,7 @@ Welcome to the `circyto` documentation.
 - [RamDA / Shin-RamDA protocol notes](protocols_ramda_shin_ramda.md)
 - [Server install and RamDA hg38 run](server_install_and_ramda_hg38.md)
 - [Detectors](detectors.md)
+- [Optional CIRI-long adapter](ciri_long_adapter.md)
 - [Nanopore feasibility and two-path architecture](nanopore_feasibility.md)
 - [Public dataset preparation](public_dataset_prepare.md)
 - [Human RamDA candidate datasets](human_ramda_candidate_datasets.md)
