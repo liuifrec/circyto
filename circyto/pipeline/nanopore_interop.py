@@ -645,7 +645,12 @@ def prepare_nanopore_alignments(
     root.mkdir(parents=True, exist_ok=True)
     alignment_manifest_path = root / "alignment_manifest.tsv"
     root_summary_path = root / "nanopore_alignment_summary.json"
-    if alignment_manifest_path.exists() or root_summary_path.exists():
+    root_provenance_path = root / "provenance.json"
+    if (
+        alignment_manifest_path.exists()
+        or root_summary_path.exists()
+        or root_provenance_path.exists()
+    ):
         raise FileExistsError(
             f"Nanopore alignment output already exists under {root}; choose a new outdir"
         )
@@ -724,6 +729,10 @@ def prepare_nanopore_alignments(
             "alignment_qc": str(qc_path.resolve()),
             "exploratory_bsj_evidence": str(evidence_path.resolve()),
             "retained_sam": str(retained_sam_path.resolve()) if retained_sam_path else None,
+            "minimap2_log": str(minimap2_log.resolve()),
+            "samtools_sort_log": str(samtools_sort_log.resolve()),
+            "samtools_index_log": str(samtools_index_log.resolve()),
+            "provenance": str(provenance_path.resolve()),
         }
         provenance = {
             "schema_version": "circyto.nanopore_alignment_provenance.v1",
@@ -839,8 +848,9 @@ def prepare_nanopore_alignments(
             {
                 "cell_id": row.cell_id,
                 "cell_directory": str(cell_dir.resolve()),
-                "paths": {**paths, "provenance": str(provenance_path.resolve())},
+                "paths": paths,
                 "alignment_qc": qc,
+                "commands": provenance["commands"],
             }
         )
 
@@ -855,6 +865,7 @@ def prepare_nanopore_alignments(
         "elapsed_seconds": round(time.perf_counter() - workflow_start_clock, 3),
         "manifest": str(manifest_path.resolve()),
         "alignment_manifest": str(alignment_manifest_path.resolve()),
+        "run_provenance": str(root_provenance_path.resolve()),
         "reference": reference,
         "cell_count": len(cell_summaries),
         "cells": cell_summaries,
@@ -867,4 +878,66 @@ def prepare_nanopore_alignments(
         ],
     }
     write_json(root_summary_path, summary)
+    run_provenance = {
+        "schema_version": "circyto.nanopore_alignment_run_provenance.v1",
+        "workflow_uuid": workflow_uuid,
+        "dataset_ids": sorted({row.dataset_id for row in rows}),
+        "source_accessions": sorted({row.source_accession for row in rows}),
+        "biological_interpretation_boundaries": sorted(
+            {row.biological_interpretation_boundary for row in rows}
+        ),
+        "manifest": {
+            "path": str(manifest_path.resolve()),
+            "sha256": manifest_sha256,
+        },
+        "archive_metadata": archive_metadata,
+        "reference": reference,
+        "tools": {
+            "minimap2": {
+                "path": minimap2_path,
+                "version": minimap2_version,
+            },
+            "samtools": {
+                "path": samtools_path,
+                "version": samtools_version,
+            },
+        },
+        "cells": cell_summaries,
+        "paths": {
+            "alignment_manifest": str(alignment_manifest_path.resolve()),
+            "alignment_summary": str(root_summary_path.resolve()),
+            "run_provenance": str(root_provenance_path.resolve()),
+        },
+        "detector_invoked": False,
+        "detector_backend": None,
+        "circRNA_validation_status": False,
+        "scientific_disclaimers": [
+            SCIENTIFIC_BOUNDARY_WARNING,
+            EXPLORATORY_EVIDENCE_WARNING,
+            NO_DETECTOR_WARNING,
+        ],
+        "stage_graph": [
+            {"stage": "minimap2_alignment", "status": "completed"},
+            {"stage": "coordinate_sort", "status": "completed"},
+            {"stage": "bam_index", "status": "completed"},
+            {"stage": "alignment_qc", "status": "completed"},
+            {"stage": "exploratory_bsj_evidence", "status": "completed"},
+            {"stage": "circRNA_detector", "status": "disabled"},
+        ],
+    }
+    run_provenance = apply_standard_provenance(
+        run_provenance,
+        command_name="circyto nanopore align",
+        workflow_type="experimental_nanopore_interoperability",
+        protocol=";".join(sorted({row.protocol for row in rows})),
+        read_layout="single-end",
+        genome_fasta=str(reference_fasta.resolve()),
+        gtf=None,
+        detector_backend=None,
+        started_at=workflow_started,
+        completed_at=workflow_completed,
+        elapsed_seconds=time.perf_counter() - workflow_start_clock,
+        workflow_uuid=workflow_uuid,
+    )
+    write_json(root_provenance_path, run_provenance)
     return alignment_manifest_path

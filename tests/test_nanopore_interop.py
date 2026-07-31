@@ -310,6 +310,102 @@ def test_keep_sam_is_opt_in(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> 
     ).read_text(encoding="utf-8") == SAM_TEXT
 
 
+def test_run_and_cell_provenance_record_all_generated_outputs(
+    tmp_path: Path,
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    manifest, reference, reference_sha256 = _prepare_inputs(tmp_path, ["cell_a"])
+    sam_fixture = tmp_path / "fixture.sam"
+    sam_fixture.write_text(SAM_TEXT, encoding="utf-8")
+    command_log = tmp_path / "commands.jsonl"
+    minimap2, samtools = _install_fake_tools(tmp_path / "bin", sam_fixture, command_log)
+    monkeypatch.setenv("FAKE_SAM_PATH", str(sam_fixture))
+    monkeypatch.setenv("FAKE_COMMAND_LOG", str(command_log))
+    outdir = tmp_path / "work"
+    archive_metadata_path = tmp_path / "archive_metadata.json"
+    archive_metadata = {
+        "schema_version": "circyto.ena_metadata_snapshot.v1",
+        "run": {"run_accession": "SYNTHETIC_cell_a"},
+    }
+    archive_metadata_path.write_text(
+        json.dumps(archive_metadata) + "\n",
+        encoding="utf-8",
+    )
+
+    alignment_manifest = prepare_nanopore_alignments(
+        manifest_path=manifest,
+        reference_fasta=reference,
+        reference_id="synthetic_reference",
+        reference_build="synthetic_build_v1",
+        reference_sha256=reference_sha256,
+        outdir=outdir,
+        threads=1,
+        minimap2=str(minimap2),
+        samtools=str(samtools),
+        archive_metadata_path=archive_metadata_path,
+    )
+
+    root = outdir / "nanopore_alignment"
+    cell_dir = root / "cell_a"
+    cell_provenance_path = cell_dir / "provenance.json"
+    cell_provenance = json.loads(cell_provenance_path.read_text(encoding="utf-8"))
+    expected_cell_outputs = {
+        cell_dir / "alignment.bam",
+        cell_dir / "alignment.bam.bai",
+        cell_dir / "alignment_qc.json",
+        cell_dir / "exploratory_bsj_evidence.tsv",
+        cell_dir / "minimap2.stderr.log",
+        cell_dir / "samtools_sort.stderr.log",
+        cell_dir / "samtools_index.log",
+        cell_provenance_path,
+    }
+    recorded_cell_outputs = {
+        Path(path)
+        for path in cell_provenance["paths"].values()
+        if path is not None
+    }
+    assert {path.resolve() for path in expected_cell_outputs} == recorded_cell_outputs
+
+    run_provenance_path = root / "provenance.json"
+    run_provenance = json.loads(run_provenance_path.read_text(encoding="utf-8"))
+    assert run_provenance["schema_version"] == (
+        "circyto.nanopore_alignment_run_provenance.v1"
+    )
+    assert run_provenance["detector_invoked"] is False
+    assert run_provenance["detector_invoked"] == cell_provenance["detector_invoked"]
+    assert run_provenance["circRNA_validation_status"] is False
+    assert run_provenance["circRNA_validation_status"] == (
+        cell_provenance["circRNA_validation_status"]
+    )
+    assert run_provenance["biological_interpretation_boundaries"] == [
+        cell_provenance["biological_interpretation_boundary"]
+    ]
+    assert run_provenance["paths"] == {
+        "alignment_manifest": str(alignment_manifest.resolve()),
+        "alignment_summary": str((root / "nanopore_alignment_summary.json").resolve()),
+        "run_provenance": str(run_provenance_path.resolve()),
+    }
+    assert run_provenance["cells"][0]["paths"] == cell_provenance["paths"]
+    assert run_provenance["cells"][0]["commands"] == cell_provenance["commands"]
+    assert run_provenance["cells"][0]["alignment_qc"] == (
+        cell_provenance["alignment_qc"]
+    )
+    assert run_provenance["tools"] == cell_provenance["tools"]
+    assert run_provenance["reference"] == cell_provenance["reference"]
+    assert run_provenance["archive_metadata"] == archive_metadata
+    assert run_provenance["archive_metadata"] == cell_provenance["archive_metadata"]
+    assert run_provenance["scientific_disclaimers"] == (
+        cell_provenance["scientific_disclaimers"]
+    )
+    assert {
+        "minimap2_log",
+        "samtools_sort_log",
+        "samtools_index_log",
+        "provenance",
+    }.issubset(cell_provenance["paths"])
+    assert all(Path(path).is_file() for path in run_provenance["paths"].values())
+
+
 def test_reference_sha256_is_explicit_and_verified(
     tmp_path: Path,
     monkeypatch: pytest.MonkeyPatch,
