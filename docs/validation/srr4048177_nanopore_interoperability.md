@@ -34,17 +34,17 @@ validation report. The branch matched
 
 | Component | Value |
 | --- | --- |
-| Host | `liuyuchen-Precision-5690` |
+| Host | validation workstation |
 | OS | Ubuntu 22.04.5 LTS; Linux 6.8.0-136-generic x86_64 |
 | CPU | Intel Core Ultra 9 185H; 22 online logical CPUs |
 | circyto | 0.10.0 |
 | circyto Python | 3.10.20 |
-| circyto executable | `/home/liuyuchen/micromamba/envs/circyto/bin/circyto` |
+| circyto executable | `$CIRCYTO_ENV/bin/circyto` |
 | minimap2 | 2.31-r1302 |
-| minimap2 executable | `/home/liuyuchen/micromamba/envs/nanopore-interop/bin/minimap2` |
+| minimap2 executable | `$NANOPORE_ENV/bin/minimap2` |
 | samtools/HTSlib | 1.24/1.24 |
-| samtools executable | `/home/liuyuchen/micromamba/envs/nanopore-interop/bin/samtools` |
-| External-tool environment | micromamba environment `nanopore-interop` at `/home/liuyuchen/micromamba/envs/nanopore-interop` |
+| samtools executable | `$NANOPORE_ENV/bin/samtools` |
+| External-tool environment | isolated micromamba environment `nanopore-interop` (`$NANOPORE_ENV`) |
 
 minimap2 and samtools were kept outside the circyto environment. All sequence,
 reference, alignment, index, log, and temporary files were placed under the
@@ -184,8 +184,8 @@ circyto nanopore align \
   --reference-sha256 767f48e8ae5bda117ad519fb694cbf7e24f161bf094c274bbbcd16e52aedf802 \
   --outdir work/srr4048177_nanopore/validated_run \
   --threads 8 \
-  --minimap2 /home/liuyuchen/micromamba/envs/nanopore-interop/bin/minimap2 \
-  --samtools /home/liuyuchen/micromamba/envs/nanopore-interop/bin/samtools \
+  --minimap2 "$NANOPORE_ENV/bin/minimap2" \
+  --samtools "$NANOPORE_ENV/bin/samtools" \
   --archive-metadata work/srr4048177_nanopore/archive_metadata.json
 
 circyto nanopore inspect-bsj \
@@ -194,17 +194,17 @@ circyto nanopore inspect-bsj \
   --input-query-count 52696 \
   --output work/srr4048177_nanopore/diagnostic_review/exploratory_bsj_evidence.tsv \
   --qc-output work/srr4048177_nanopore/diagnostic_review/exploratory_bsj_qc.json \
-  --samtools /home/liuyuchen/micromamba/envs/nanopore-interop/bin/samtools
+  --samtools "$NANOPORE_ENV/bin/samtools"
 ```
 
-The argv captured in provenance were:
+The argv captured in provenance, shown with workstation paths normalized, were:
 
 ```text
-/home/liuyuchen/micromamba/envs/nanopore-interop/bin/minimap2 -ax splice -t 8 /home/liuyuchen/Github/circyto/work/srr4048177_nanopore/reference/GRCm38.primary_assembly.genome.fa /home/liuyuchen/Github/circyto/work/srr4048177_nanopore/downloads/SRR4048177_1.fastq.gz
+$NANOPORE_ENV/bin/minimap2 -ax splice -t 8 work/srr4048177_nanopore/reference/GRCm38.primary_assembly.genome.fa work/srr4048177_nanopore/downloads/SRR4048177_1.fastq.gz
 
-/home/liuyuchen/micromamba/envs/nanopore-interop/bin/samtools sort -@ 8 -o work/srr4048177_nanopore/validated_run/nanopore_alignment/WT_B1a_Cell1/alignment.partial.bam -
+$NANOPORE_ENV/bin/samtools sort -@ 8 -o work/srr4048177_nanopore/validated_run/nanopore_alignment/WT_B1a_Cell1/alignment.partial.bam -
 
-/home/liuyuchen/micromamba/envs/nanopore-interop/bin/samtools index work/srr4048177_nanopore/validated_run/nanopore_alignment/WT_B1a_Cell1/alignment.bam
+$NANOPORE_ENV/bin/samtools index work/srr4048177_nanopore/validated_run/nanopore_alignment/WT_B1a_Cell1/alignment.bam
 ```
 
 All subprocesses used argument arrays and `shell=False`. minimap2 stdout was

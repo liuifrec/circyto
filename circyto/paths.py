@@ -93,9 +93,22 @@ def get_tools_dir() -> Path | None:
         return _normalize_path(env_tools_dir)
 
     repo_root = get_repo_root()
-    if repo_root is None:
-        return None
-    return repo_root / "tools"
+    if repo_root is not None:
+        return repo_root / "tools"
+
+    packaged_tools = get_package_root() / "resources" / "tools"
+    if packaged_tools.is_dir():
+        return packaged_tools
+    return None
+
+
+def _tools_source_label(tools_dir: Path) -> str:
+    packaged_tools = get_package_root() / "resources" / "tools"
+    if tools_dir == packaged_tools:
+        return "packaged-tools"
+    if os.environ.get("CIRCYTO_TOOLS_DIR"):
+        return "env:CIRCYTO_TOOLS_DIR"
+    return "repo-tools"
 
 
 def get_testdata_dir() -> Path | None:
@@ -306,19 +319,20 @@ def find_ciri_full_jar(override: str | Path | None = None) -> PathResolution:
     candidates: list[tuple[Path, str]] = []
 
     if tools_dir is not None:
+        tools_source = _tools_source_label(tools_dir)
         candidates.extend(
             [
-                (tools_dir / "CIRI-full_v2.0" / "CIRI-full.jar", "repo-tools"),
-                (tools_dir / "CIRI-full_v2.0" / "CIRI_Full.jar", "repo-tools"),
-                (tools_dir / "CIRI-full.jar", "repo-tools"),
-                (tools_dir / "CIRI_Full.jar", "repo-tools"),
+                (tools_dir / "CIRI-full_v2.0" / "CIRI-full.jar", tools_source),
+                (tools_dir / "CIRI-full_v2.0" / "CIRI_Full.jar", tools_source),
+                (tools_dir / "CIRI-full.jar", tools_source),
+                (tools_dir / "CIRI_Full.jar", tools_source),
             ]
         )
         if tools_dir.exists():
             for match in sorted(tools_dir.rglob("CIRI-full*.jar")):
-                candidates.append((match, "repo-tools-scan"))
+                candidates.append((match, f"{tools_source}-scan"))
             for match in sorted(tools_dir.rglob("CIRI_Full*.jar")):
-                candidates.append((match, "repo-tools-scan"))
+                candidates.append((match, f"{tools_source}-scan"))
 
     return _resolve_from_candidates(
         "CIRI-full jar",
@@ -332,7 +346,12 @@ def find_ciri_full_adapter(override: str | Path | None = None) -> PathResolution
     tools_dir = get_tools_dir()
     candidates: list[tuple[Path, str]] = []
     if tools_dir is not None:
-        candidates.append((tools_dir / "CIRI-full_v2.0" / "bin" / "ciri_full_adapter.sh", "repo-tools"))
+        candidates.append(
+            (
+                tools_dir / "CIRI-full_v2.0" / "bin" / "ciri_full_adapter.sh",
+                _tools_source_label(tools_dir),
+            )
+        )
 
     return _resolve_from_candidates(
         "CIRI-full adapter",
@@ -346,7 +365,12 @@ def find_ciri2_adapter(override: str | Path | None = None) -> PathResolution:
     tools_dir = get_tools_dir()
     candidates: list[tuple[Path, str]] = []
     if tools_dir is not None:
-        candidates.append((tools_dir / "CIRI-full_v2.0" / "bin" / "ciri2_adapter.sh", "repo-tools"))
+        candidates.append(
+            (
+                tools_dir / "CIRI-full_v2.0" / "bin" / "ciri2_adapter.sh",
+                _tools_source_label(tools_dir),
+            )
+        )
 
     return _resolve_from_candidates(
         "CIRI2 adapter",

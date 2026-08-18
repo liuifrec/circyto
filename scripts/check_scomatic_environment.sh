@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-SCOMATIC_DIR="/mnt/d/SComatic"
+SCOMATIC_DIR="${SCOMATIC_DIR:-SComatic}"
 PYTHON_BIN="${PYTHON_BIN:-}"
 
 while [[ $# -gt 0 ]]; do
@@ -15,7 +15,7 @@ while [[ $# -gt 0 ]]; do
       shift 2
       ;;
     -h|--help)
-      echo "usage: $0 [--scomatic-dir /mnt/d/SComatic]" >&2
+      echo "usage: $0 [--scomatic-dir /path/to/SComatic]" >&2
       exit 0
       ;;
     *)

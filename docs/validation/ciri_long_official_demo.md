@@ -24,12 +24,10 @@ biological accuracy on an independent dataset.
 - Host: Dell Precision 5690, Intel Core Ultra 9 185H, 22 online logical CPUs
 - OS: Ubuntu 22.04.5 LTS, Linux `6.8.0-136-generic`, x86-64
 - Isolated environment: `ciri-long-demo`
-- Environment prefix:
-  `/home/liuyuchen/micromamba/envs/ciri-long-demo`
+- Environment prefix: `$CIRI_LONG_ENV`
 - Python: `3.10.20`
 - CIRI-long: `1.1.0`
-- CIRI-long executable:
-  `/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long`
+- CIRI-long executable: `$CIRI_LONG_ENV/bin/CIRI-long`
 - BWA: `0.7.19-r1273`
 - samtools: `1.24`
 - CMake: `4.4.1`
@@ -53,7 +51,7 @@ micromamba create -y -n ciri-long-demo \
 The first official-package attempt was:
 
 ```bash
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/python \
+$CIRI_LONG_ENV/bin/python \
   -m pip install --no-cache-dir CIRI-long==1.1.0
 ```
 
@@ -63,20 +61,20 @@ environment. Installation was completed with the following isolated
 build-tool compatibility sequence:
 
 ```bash
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/python \
+$CIRI_LONG_ENV/bin/python \
   -m pip install --no-cache-dir setuptools==80.9.0
 
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/python \
+$CIRI_LONG_ENV/bin/python \
   -m pip install --no-cache-dir Cython
 
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/python \
+$CIRI_LONG_ENV/bin/python \
   -m pip install --no-cache-dir --no-build-isolation bwapy==0.1.4
 
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/python \
+$CIRI_LONG_ENV/bin/python \
   -m pip install --no-cache-dir CIRI-long==1.1.0
 
 env PYTHONNOUSERSITE=1 \
-  /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/python \
+  $CIRI_LONG_ENV/bin/python \
   -m pip install --no-cache-dir numpy==1.26.4 scipy==1.11.4
 ```
 
@@ -135,23 +133,23 @@ python scripts/run_ciri_long_official_demo.py \
 python scripts/run_ciri_long_official_demo.py \
   --outdir work/ciri_long_official_demo \
   --dry-run \
-  --ciri-long /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long \
-  --bwa /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/bwa \
+  --ciri-long "$CIRI_LONG_ENV/bin/CIRI-long" \
+  --bwa "$CIRI_LONG_ENV/bin/bwa" \
   --threads 4
 
 python scripts/run_ciri_long_official_demo.py \
   --outdir work/ciri_long_official_demo \
-  --ciri-long /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long \
-  --bwa /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/bwa \
+  --ciri-long "$CIRI_LONG_ENV/bin/CIRI-long" \
+  --bwa "$CIRI_LONG_ENV/bin/bwa" \
   --threads 4 --timeout-seconds 120
 
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/bwa \
+$CIRI_LONG_ENV/bin/bwa \
   index -a bwtsw \
-  /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa
+  work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa
 
 env PYTHONNOUSERSITE=1 circyto ciri-long doctor \
-  --ciri-long /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long \
-  --bwa /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/bwa \
+  --ciri-long "$CIRI_LONG_ENV/bin/CIRI-long" \
+  --bwa "$CIRI_LONG_ENV/bin/bwa" \
   --reference work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa \
   --gtf work/ciri_long_official_demo/extracted/test_data/mm10_chr12.gtf
 
@@ -161,8 +159,8 @@ env PYTHONNOUSERSITE=1 circyto ciri-long plan \
   --gtf work/ciri_long_official_demo/extracted/test_data/mm10_chr12.gtf \
   --outdir work/ciri_long_official_demo \
   --threads 4 \
-  --ciri-long /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long \
-  --bwa /home/liuyuchen/micromamba/envs/ciri-long-demo/bin/bwa
+  --ciri-long "$CIRI_LONG_ENV/bin/CIRI-long" \
+  --bwa "$CIRI_LONG_ENV/bin/bwa"
 ```
 
 Doctor passed with no errors or warnings after indexing. BWA indexing took
@@ -182,16 +180,16 @@ The manifest chemistry gate accepted one bulk RCRT/circRNA-enriched cDNA
 sample. It explicitly rejected interpretation as ordinary poly(A) cDNA,
 direct RNA, generic minimap2 alignment input, or a single cell.
 
-The exact detector argv recorded by circyto was:
+The detector argv recorded by circyto, shown with workstation paths normalized, was:
 
 ```text
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long
+$CIRI_LONG_ENV/bin/CIRI-long
 call
--i /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/extracted/test_data/test_reads.fa
--o /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/ciri_long/call/official_demo
--r /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa
+-i work/ciri_long_official_demo/extracted/test_data/test_reads.fa
+-o work/ciri_long_official_demo/ciri_long/call/official_demo
+-r work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa
 -p official_demo
--a /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/extracted/test_data/mm10_chr12.gtf
+-a work/ciri_long_official_demo/extracted/test_data/mm10_chr12.gtf
 -t 4
 ```
 
@@ -222,16 +220,16 @@ internal index generation and did not prevent successful execution.
 ## CIRI-long collapse
 
 The generated `calls.list` contained the `official_demo` sample and its
-candidate FASTA. The exact detector argv was:
+candidate FASTA. The detector argv, shown with workstation paths normalized, was:
 
 ```text
-/home/liuyuchen/micromamba/envs/ciri-long-demo/bin/CIRI-long
+$CIRI_LONG_ENV/bin/CIRI-long
 collapse
--i /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/ciri_long/collapse/calls.list
--o /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/ciri_long/collapse
+-i work/ciri_long_official_demo/ciri_long/collapse/calls.list
+-o work/ciri_long_official_demo/ciri_long/collapse
 -p cohort
--r /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa
--a /home/liuyuchen/Github/circyto/work/ciri_long_official_demo/extracted/test_data/mm10_chr12.gtf
+-r work/ciri_long_official_demo/extracted/test_data/mm10_chr12.fa
+-a work/ciri_long_official_demo/extracted/test_data/mm10_chr12.gtf
 -t 4
 ```
 

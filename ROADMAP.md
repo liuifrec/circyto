@@ -10,7 +10,7 @@ For step-by-step usage, see `docs/getting_started.md`.
 
 **A new user can go from “I have FASTQs” → “I have a circRNA × cell matrix”** without reading developer logs, spelunking through source code, or guessing CLI conventions.
 
-Current release line: **v0.9.0** (experimental).
+Current release line: **v0.10.0** (experimental).
 
 ---
 

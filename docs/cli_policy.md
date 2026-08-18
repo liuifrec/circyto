@@ -104,7 +104,11 @@ Many failures happen before circyto can do meaningful work, e.g.:
 - `java` missing or too old
 - `STAR` optional but required for STAR-based detectors
 
-`circyto doctor` prints a report of what is found on PATH and what is missing.
+`circyto doctor` separates required Python-package readiness, packaged detector
+assets, optional executables, detector-specific readiness, and protocol
+limitations. Optional-tool gaps use `OPT`, do not cause package failure, and
+include the tool name plus the workflow that needs it. The default check is
+network-free.
 
 Bundled asset resolution is intended to be cwd-independent; users should not need to `cd` into the repository root just to make `doctor` or `detectors` find the bundled CIRI-full assets.
 

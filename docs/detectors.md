@@ -251,21 +251,30 @@ Optional flags under consideration:
 
 ## `circyto doctor`
 
-Current checks:
-- detect executables on PATH: `bowtie2`, `samtools`, `bwa`, `java`, `STAR` (optional)
-- detect the presence of required detector assets under `tools/`
-- print one actionable line per missing dependency
+Current checks are grouped so optional workflow gaps cannot be mistaken for a
+broken Python installation:
+
+- required core Python and package versions;
+- packaged, repository, or explicitly configured detector assets;
+- optional executables (`find-circ3`, `bowtie2`, `samtools`, `bwa`, `perl`,
+  `java`, `STAR`, `minimap2`, and `CIRI-long`);
+- detector-specific readiness, including the CIRI3 Java requirement;
+- protocol limitations for short reads, generic Nanopore cDNA, and CIRI-long
+  RCRT libraries.
+
+The default command is local and performs no network checks.
 
 Example:
 
 ```text
 $ circyto doctor
 
-[OK] python: 3.11.7
-[OK] bowtie2: /usr/bin/bowtie2
-[OK] samtools: /usr/bin/samtools
-[MISSING] bwa: not found on PATH (needed for ciri-full)
-[OK] java: 17.0.10
-[WARN] STAR: not found (only needed for STAR-based detectors)
-[WARN] tools/: CIRI-full jar not found (needed for ciri-full)
+[OK  ] python       3.11.7 (required >=3.10)
+[OK  ] circyto      0.10.0
+[OPT ] bwa          not found; install `bwa` and add it to PATH to use CIRI2/CIRI-full, CIRI3 BWA mode, and CIRI-long
+[OPT ] STAR         not found; install `STAR` and add it to PATH to use CIRI3 STAR-mode workflows
+
+Summary:
+  ✅ Core Python package is ready
+  Optional workflow tools are missing; this does not indicate a circyto package failure.
 ```

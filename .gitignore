@@ -42,6 +42,11 @@ tests/*.tsv
 tests/fastq_batches/
 CIRI-*/    # local binaries
 logs/
+Log.out
+load_work/
+_cli_*.txt
+_repo_tree*.txt
+docs/REPO_*.txt
 
 # Local data
 data/
@@ -50,6 +55,7 @@ ref/
 
 # Tool test data
 tools/**/CIRI-full_test/
+tools/**/CIRI-vis_test/
 work_smartseq2/
 work/
 
@@ -91,6 +97,7 @@ scripts/*
 !scripts/run_srr4048177_nanopore_smoke.py
 !scripts/run_ciri_long_official_demo.py
 !scripts/export_run_snapshot.sh
+!scripts/release_cli_inventory.py
 tools/CIRI3/scripts/
 circyto/pipeline/detector_compare.py
 testdata/**/*.fastq.gz

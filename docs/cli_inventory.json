@@ -1,0 +1,1991 @@
+{
+  "schema_version": "circyto.release_cli_inventory.v1",
+  "circyto_version": "0.10.0",
+  "command_count": 90,
+  "notes": {
+    "experimental": "True denotes an explicitly experimental or exploratory public command family.",
+    "manuscript_facing": "True denotes commands used by the repository's manuscript reproducibility path.",
+    "optional_external_tools": "Python extras are declared in pyproject.toml; this field focuses on non-core workflow tooling."
+  },
+  "commands": [
+    {
+      "command_path": "add-rna-profile",
+      "one_line_purpose": "Add a lightweight post-hoc RNA profile to an already completed workflow directory.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "align-manifest",
+      "one_line_purpose": "Alias for prepare-alignment-cache focused on manifest generation.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "compatibility-alias",
+      "alias_for": "prepare-alignment-cache"
+    },
+    {
+      "command_path": "alignment-first-smoke",
+      "one_line_purpose": "Run a small local alignment-first smoke path using repo-shipped FASTQs plus a bundled CIRI3-compatible template.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "analyze",
+      "one_line_purpose": "Lightweight downstream summaries for analysis-ready outputs.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "analyze summarize-h5ad",
+      "one_line_purpose": "Summarize a circRNA h5ad and export small downstream-ready tables.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "annotate-circs",
+      "one_line_purpose": "Annotate circRNAs against one or more known circRNA databases.",
+      "required_arguments": [
+        {
+          "name": "circ_table",
+          "cli_spelling": "--circ-table",
+          "kind": "option"
+        },
+        {
+          "name": "out",
+          "cli_spelling": "--out",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "annotate-host-genes",
+      "one_line_purpose": "Annotate circRNAs with host gene(s) using a reference GTF.",
+      "required_arguments": [
+        {
+          "name": "circ_feature_table",
+          "cli_spelling": "--circ-feature-table",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "build-scrr-cell-map",
+      "one_line_purpose": "Build a scRR GSM -> RNA/DNA title -> canonical biological-cell mapping from GEO SOFT metadata.",
+      "required_arguments": [
+        {
+          "name": "soft",
+          "cli_spelling": "--soft",
+          "kind": "option"
+        },
+        {
+          "name": "out",
+          "cli_spelling": "--out",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "check-workflow",
+      "one_line_purpose": "Read-only integrity check for a workflow directory.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long",
+      "one_line_purpose": "Optional CIRI-long adapter for circRNA-enriched rolling-circle reverse-transcription Nanopore libraries.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long call",
+      "one_line_purpose": "Plan or execute `CIRI-long call` independently for each manifest sample.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "reference",
+          "cli_spelling": "--reference",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "CIRI-long",
+        "bwa"
+      ],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long collapse",
+      "one_line_purpose": "Plan or execute `CIRI-long collapse` from a call-stage manifest.",
+      "required_arguments": [
+        {
+          "name": "call_manifest",
+          "cli_spelling": "--call-manifest",
+          "kind": "option"
+        },
+        {
+          "name": "reference",
+          "cli_spelling": "--reference",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "CIRI-long",
+        "bwa"
+      ],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long doctor",
+      "one_line_purpose": "Check CIRI-long, BWA, reference indexes, and optional annotations.",
+      "required_arguments": [],
+      "optional_external_tools": [
+        "CIRI-long",
+        "bwa"
+      ],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long import",
+      "one_line_purpose": "Normalize official collapse outputs into separate BSJ/isoform/evidence tables.",
+      "required_arguments": [
+        {
+          "name": "collapse_dir",
+          "cli_spelling": "--collapse-dir",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long plan",
+      "one_line_purpose": "Validate readiness and write shell-free CIRI-long call plans.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "reference",
+          "cli_spelling": "--reference",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "CIRI-long",
+        "bwa"
+      ],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "ciri-long validate-manifest",
+      "one_line_purpose": "Validate the versioned RCRT/circRNA-enriched input manifest.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "cleanup-workflow",
+      "one_line_purpose": "Clean regenerable workflow-owned intermediates from a completed workflow directory.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "collect",
+      "one_line_purpose": "[LEGACY] Collect CIRI-full per-cell TSVs into a circ \u00d7 cell MatrixMarket matrix.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "legacy",
+      "alias_for": null
+    },
+    {
+      "command_path": "collect-circexplorer2",
+      "one_line_purpose": "Collect CIRCexplorer2 outputs into circ \u00d7 cell matrix.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "collect-find-circ3",
+      "one_line_purpose": "Collect find_circ3 per-cell splice_sites.bed into circ \u00d7 cell matrix.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "collect-matrix",
+      "one_line_purpose": "Unified matrix collector.",
+      "required_arguments": [
+        {
+          "name": "detector",
+          "cli_spelling": "--detector",
+          "kind": "option"
+        },
+        {
+          "name": "indir",
+          "cli_spelling": "--indir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "collect-multidetector",
+      "one_line_purpose": "Build per-detector circRNA matrices from a multi-detector run into:",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "compare-detectors",
+      "one_line_purpose": "Compare detectors using a merged circ_union.tsv (output of merge-detectors).",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "compare-ids",
+      "one_line_purpose": "Compare two circ ID lists (exact + fuzzy \u00b1window bp).",
+      "required_arguments": [
+        {
+          "name": "a",
+          "cli_spelling": "--a",
+          "kind": "option"
+        },
+        {
+          "name": "b",
+          "cli_spelling": "--b",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "convert",
+      "one_line_purpose": "Convert circ \u00d7 cell matrix and index files to loom/h5ad.",
+      "required_arguments": [
+        {
+          "name": "matrix",
+          "cli_spelling": "--matrix",
+          "kind": "option"
+        },
+        {
+          "name": "circ_index",
+          "cli_spelling": "--circ-index",
+          "kind": "option"
+        },
+        {
+          "name": "cell_index",
+          "cli_spelling": "--cell-index",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "demux",
+      "one_line_purpose": "Resolve pooled reads into cell-resolved inputs and emit a manifest.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "demux smartseq2",
+      "one_line_purpose": "Demultiplex pooled paired-end SMART-Seq2 FASTQs into per-cell files and a manifest.",
+      "required_arguments": [
+        {
+          "name": "r1",
+          "cli_spelling": "--r1",
+          "kind": "option"
+        },
+        {
+          "name": "r2",
+          "cli_spelling": "--r2",
+          "kind": "option"
+        },
+        {
+          "name": "barcodes",
+          "cli_spelling": "--barcodes",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "barcode_start",
+          "cli_spelling": "--barcode-start",
+          "kind": "option"
+        },
+        {
+          "name": "barcode_length",
+          "cli_spelling": "--barcode-length",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "demux smartseq3",
+      "one_line_purpose": "Experimental SMART-Seq3 pooled demultiplexing using transcript FASTQs plus dual index FASTQs.",
+      "required_arguments": [
+        {
+          "name": "read1",
+          "cli_spelling": "--read1",
+          "kind": "option"
+        },
+        {
+          "name": "read2",
+          "cli_spelling": "--read2",
+          "kind": "option"
+        },
+        {
+          "name": "index1",
+          "cli_spelling": "--index1",
+          "kind": "option"
+        },
+        {
+          "name": "index2",
+          "cli_spelling": "--index2",
+          "kind": "option"
+        },
+        {
+          "name": "annotation",
+          "cli_spelling": "--annotation",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "cell_id_column",
+          "cli_spelling": "--cell-id-column",
+          "kind": "option"
+        },
+        {
+          "name": "index1_column",
+          "cli_spelling": "--index1-column",
+          "kind": "option"
+        },
+        {
+          "name": "index2_column",
+          "cli_spelling": "--index2-column",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "detectors",
+      "one_line_purpose": "List available detectors, readiness status, and external runtime requirements.",
+      "required_arguments": [],
+      "optional_external_tools": [
+        "workflow-dependent; reported by the command"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "doctor",
+      "one_line_purpose": "Diagnose core package readiness and optional workflow dependencies without network access.",
+      "required_arguments": [],
+      "optional_external_tools": [
+        "workflow-dependent; reported by the command"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "export-biogenesis",
+      "one_line_purpose": "Validate and export dependency-light circyto-biogenesis schema-v1 tables.",
+      "required_arguments": [
+        {
+          "name": "candidates",
+          "cli_spelling": "--candidates",
+          "kind": "option"
+        },
+        {
+          "name": "cell_contexts",
+          "cli_spelling": "--cell-contexts",
+          "kind": "option"
+        },
+        {
+          "name": "observations",
+          "cli_spelling": "--observations",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "export-circ-bed",
+      "one_line_purpose": "Export circRNA coordinates and total support in a BED-like format for genome-browser interoperability.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "export-mudata",
+      "one_line_purpose": "Export a completed RNA+circ workflow directory as a MuData multimodal bundle.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "export-multimodal",
+      "one_line_purpose": "Attach circRNA counts as obsm['X_circ'] to an existing gene-expression AnnData.",
+      "required_arguments": [
+        {
+          "name": "genes_h5ad",
+          "cli_spelling": "--genes-h5ad",
+          "kind": "option"
+        },
+        {
+          "name": "circ_matrix",
+          "cli_spelling": "--circ-matrix",
+          "kind": "option"
+        },
+        {
+          "name": "circ_index",
+          "cli_spelling": "--circ-index",
+          "kind": "option"
+        },
+        {
+          "name": "cell_index",
+          "cli_spelling": "--cell-index",
+          "kind": "option"
+        },
+        {
+          "name": "out",
+          "cli_spelling": "--out",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "export-run-subset",
+      "one_line_purpose": "Export failed, missing, stale, incomplete, or chunk-specific rows as a new manifest for reruns.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "run_dir",
+          "cli_spelling": "--run-dir",
+          "kind": "option"
+        },
+        {
+          "name": "out",
+          "cli_spelling": "--out",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "export-scomatic-inputs",
+      "one_line_purpose": "Export lightweight interoperability tables for an external SComatic run.",
+      "required_arguments": [
+        {
+          "name": "bam_manifest",
+          "cli_spelling": "--bam-manifest",
+          "kind": "option"
+        },
+        {
+          "name": "cell_metadata",
+          "cli_spelling": "--cell-metadata",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "reference_fasta",
+          "cli_spelling": "--reference-fasta",
+          "kind": "option"
+        },
+        {
+          "name": "protocol",
+          "cli_spelling": "--protocol",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "import-dna-snv-summary",
+      "one_line_purpose": "Import lightweight DNA/CNV and RNA-derived candidate variant summaries into a completed workflow directory.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        },
+        {
+          "name": "dna_cell_summary",
+          "cli_spelling": "--dna-cell-summary",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "import-scomatic",
+      "one_line_purpose": "Import external SComatic Step1/Step2 outputs into circyto's candidate-signal schema.",
+      "required_arguments": [
+        {
+          "name": "scomatic_output",
+          "cli_spelling": "--scomatic-output",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "import-scrr-cnv",
+      "one_line_purpose": "Import processed scRR-seq DNA CNV summaries as a bin-level CNV modality.",
+      "required_arguments": [
+        {
+          "name": "cnv_states",
+          "cli_spelling": "--cnv-states",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "import-scrr-rt",
+      "one_line_purpose": "Import processed scRR-seq DNA replication timing/state summaries as an RT modality.",
+      "required_arguments": [
+        {
+          "name": "rt_table",
+          "cli_spelling": "--rt-table",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "inspect-mudata",
+      "one_line_purpose": "Read-only structural inspection of a circyto MuData output.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "inspect-workdir",
+      "one_line_purpose": "Read-only inspection of a completed workflow directory and its available modalities.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "join-circ-snv-summary",
+      "one_line_purpose": "Join circRNA summaries with exploratory SComatic candidate SNV tables.",
+      "required_arguments": [
+        {
+          "name": "circ_matrix",
+          "cli_spelling": "--circ-matrix",
+          "kind": "option"
+        },
+        {
+          "name": "circ_feature_table",
+          "cli_spelling": "--circ-feature-table",
+          "kind": "option"
+        },
+        {
+          "name": "scomatic_candidates",
+          "cli_spelling": "--scomatic-candidates",
+          "kind": "option"
+        },
+        {
+          "name": "cell_metadata",
+          "cli_spelling": "--cell-metadata",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "make",
+      "one_line_purpose": "[LEGACY] Convenience wrapper combining CIRI-full calling + collect + convert.",
+      "required_arguments": [
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "cmd_template",
+          "cli_spelling": "--cmd-template",
+          "kind": "option"
+        },
+        {
+          "name": "ref_fa",
+          "cli_spelling": "--ref-fa",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "java",
+        "bwa",
+        "samtools",
+        "CIRI-full assets"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "legacy",
+      "alias_for": null
+    },
+    {
+      "command_path": "manifest",
+      "one_line_purpose": "Manifest utilities (validate, summarize).",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "manifest validate",
+      "one_line_purpose": "Validate a circyto FASTQ manifest.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "manifest",
+          "kind": "argument"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "manifest validate-alignment",
+      "one_line_purpose": "Validate a circyto alignment manifest.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "manifest",
+          "kind": "argument"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "merge-detectors",
+      "one_line_purpose": "Merge per-detector per-cell TSVs into union + long-format tables.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "merge-scomatic",
+      "one_line_purpose": "Merge RNA-derived SComatic candidate signals into MuData as candidate_snv.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "scomatic_candidates",
+          "cli_spelling": "--scomatic-candidates",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "merge-scrr-cnv",
+      "one_line_purpose": "Merge remapped scRR RNA+circ MuData with a CNV AnnData modality.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "cnv",
+          "cli_spelling": "--cnv",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "merge-scrr-rt",
+      "one_line_purpose": "Merge remapped scRR RNA+circ MuData with a replication timing/state AnnData modality.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "rt",
+          "cli_spelling": "--rt",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "nanopore",
+      "one_line_purpose": "Experimental single-cell Oxford Nanopore ingestion and alignment interoperability.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "nanopore align",
+      "one_line_purpose": "Stream minimap2 into coordinate-sorting samtools and emit cell-scoped outputs.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "reference",
+          "cli_spelling": "--reference",
+          "kind": "option"
+        },
+        {
+          "name": "reference_id",
+          "cli_spelling": "--reference-id",
+          "kind": "option"
+        },
+        {
+          "name": "reference_build",
+          "cli_spelling": "--reference-build",
+          "kind": "option"
+        },
+        {
+          "name": "reference_sha256",
+          "cli_spelling": "--reference-sha256",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "minimap2",
+        "samtools"
+      ],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "nanopore inspect-bsj",
+      "one_line_purpose": "Report conservative alignment-order patterns; never emit circRNA calls.",
+      "required_arguments": [
+        {
+          "name": "alignment",
+          "cli_spelling": "--alignment",
+          "kind": "option"
+        },
+        {
+          "name": "cell_id",
+          "cli_spelling": "--cell-id",
+          "kind": "option"
+        },
+        {
+          "name": "input_query_count",
+          "cli_spelling": "--input-query-count",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "samtools"
+      ],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "nanopore query-run",
+      "one_line_purpose": "Query ENA metadata and enforce the documented run identity without downloading reads.",
+      "required_arguments": [
+        {
+          "name": "accession",
+          "cli_spelling": "--accession",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "nanopore validate-manifest",
+      "one_line_purpose": "Validate the versioned single-cell long-read manifest.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "normalize-scomatic-results",
+      "one_line_purpose": "Normalize external SComatic outputs into circyto's candidate-signal schema without running SComatic.",
+      "required_arguments": [
+        {
+          "name": "scomatic_output",
+          "cli_spelling": "--scomatic-output",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "plan-alignment-cache",
+      "one_line_purpose": "Print and persist a preflight plan for alignment cache preparation.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "prepare",
+      "one_line_purpose": "[LEGACY] Extract per-cell FASTQs from a 10x-style BAM.",
+      "required_arguments": [
+        {
+          "name": "bam",
+          "cli_spelling": "--bam",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "legacy",
+      "alias_for": null
+    },
+    {
+      "command_path": "prepare-alignment-cache",
+      "one_line_purpose": "Prepare reusable alignment artifacts from a source manifest.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "prepare-public-dataset",
+      "one_line_purpose": "Prepare a lightweight public-dataset download plan without fetching large files.",
+      "required_arguments": [
+        {
+          "name": "dataset_id",
+          "cli_spelling": "--dataset-id",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "protocol",
+          "cli_spelling": "--protocol",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "prepare-scomatic-input",
+      "one_line_purpose": "Prepare full-length RNA alignments and metadata for external SComatic interoperability.",
+      "required_arguments": [
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "protocol",
+          "cli_spelling": "--protocol",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "samtools"
+      ],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "print-environment",
+      "one_line_purpose": "Print the current circyto and scverse package environment summary.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "refresh-rna-qc",
+      "one_line_purpose": "Regenerate RNA QC summaries from existing RNA profile outputs without requiring alignments.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "remap-scrr-mudata-obs",
+      "one_line_purpose": "Remap scRR RNA/circ MuData obs IDs from GSM accessions to biological cell IDs.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "cell_map",
+          "cli_spelling": "--cell-map",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "repair-host-genes",
+      "one_line_purpose": "Repair host-gene provenance columns in existing circRNA h5ad or h5mu outputs.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "output",
+          "cli_spelling": "--output",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "run",
+      "one_line_purpose": "[LEGACY] Run CIRI-full over batched FASTQs using a shell command template.",
+      "required_arguments": [
+        {
+          "name": "fastq_dir",
+          "cli_spelling": "--fastq-dir",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "cmd_template",
+          "cli_spelling": "--cmd-template",
+          "kind": "option"
+        },
+        {
+          "name": "ref_fa",
+          "cli_spelling": "--ref-fa",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "java",
+        "bwa",
+        "samtools",
+        "CIRI-full assets"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "legacy",
+      "alias_for": null
+    },
+    {
+      "command_path": "run-batch",
+      "one_line_purpose": "Unified batch runner for any detector.",
+      "required_arguments": [
+        {
+          "name": "detector",
+          "cli_spelling": "--detector",
+          "kind": "option"
+        },
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "detector-dependent; see `circyto detectors`"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "compatibility-alias",
+      "alias_for": "run-detector"
+    },
+    {
+      "command_path": "run-ciri3",
+      "one_line_purpose": "Run a protocol-aware CIRI3 alignment-first workflow.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "genome_fasta",
+          "cli_spelling": "--genome-fasta",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "java>=12",
+        "CIRI3 jar or wrapper",
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "run-detector",
+      "one_line_purpose": "Run a single detector over a manifest using the detector API.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "detector-dependent; see `circyto detectors`"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "run-detector-from-alignments",
+      "one_line_purpose": "Run an alignment-capable detector over a reusable alignment manifest.",
+      "required_arguments": [
+        {
+          "name": "detector",
+          "cli_spelling": "--detector",
+          "kind": "option"
+        },
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "detector-dependent",
+        "java>=12 for CIRI3"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "run-manifest",
+      "one_line_purpose": "[LEGACY] Run CIRI-full over a plate/full-length manifest using a shell template.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "cmd_template",
+          "cli_spelling": "--cmd-template",
+          "kind": "option"
+        },
+        {
+          "name": "ref_fa",
+          "cli_spelling": "--ref-fa",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "java",
+        "bwa",
+        "samtools",
+        "CIRI-full assets"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "legacy",
+      "alias_for": null
+    },
+    {
+      "command_path": "run-multidetector",
+      "one_line_purpose": "Run multiple detectors on the same manifest.",
+      "required_arguments": [
+        {
+          "name": "detectors",
+          "cli_spelling": "detectors",
+          "kind": "argument"
+        },
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "detector-dependent; see `circyto detectors`"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "run-scomatic",
+      "one_line_purpose": "Generate, and optionally execute, an external SComatic command plan.",
+      "required_arguments": [
+        {
+          "name": "prepared_dir",
+          "cli_spelling": "--prepared-dir",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "scomatic_dir",
+          "cli_spelling": "--scomatic-dir",
+          "kind": "option"
+        },
+        {
+          "name": "reference_fasta",
+          "cli_spelling": "--reference-fasta",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "external SComatic checkout/environment",
+        "samtools"
+      ],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "scanpy-pca",
+      "one_line_purpose": "Exploratory Scanpy PCA/UMAP/Leiden workflow over the RNA modality of a circyto MuData file.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "output_dir",
+          "cli_spelling": "--output-dir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "scanpy-qc-report",
+      "one_line_purpose": "Exploratory Scanpy QC reporting over the RNA modality of a circyto MuData file.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        },
+        {
+          "name": "output_dir",
+          "cli_spelling": "--output-dir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "smoke",
+      "one_line_purpose": "One-command smoke tests (public data / dev).",
+      "required_arguments": [],
+      "optional_external_tools": [
+        "detector-dependent; see `circyto detectors`"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "smoke smartseq2",
+      "one_line_purpose": "Demux Smart-seq2 pooled FASTQs -> run detector -> collect matrix -> convert to h5ad.",
+      "required_arguments": [
+        {
+          "name": "r1",
+          "cli_spelling": "--r1",
+          "kind": "option"
+        },
+        {
+          "name": "r2",
+          "cli_spelling": "--r2",
+          "kind": "option"
+        },
+        {
+          "name": "barcodes",
+          "cli_spelling": "--barcodes",
+          "kind": "option"
+        },
+        {
+          "name": "ref_fa",
+          "cli_spelling": "--ref-fa",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "detector-dependent; see `circyto detectors`"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-benchmark",
+      "one_line_purpose": "Summarize completed workflow directories into a manuscript-facing benchmark table.",
+      "required_arguments": [
+        {
+          "name": "workdirs",
+          "cli_spelling": "--workdirs",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-chunks",
+      "one_line_purpose": "Summarize per-chunk checkpoint files for cluster logs and resume inspection.",
+      "required_arguments": [
+        {
+          "name": "indir",
+          "cli_spelling": "--indir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-circ-host-genes",
+      "one_line_purpose": "Summarize circRNA host-gene recurrence and support across a completed workflow directory.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-dna-rna-circ",
+      "one_line_purpose": "Summarize joined DNA, RNA, and circRNA per-cell summaries for scRR-style workflows.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-mudata-qc",
+      "one_line_purpose": "Read-only QC summary over a circyto MuData output.",
+      "required_arguments": [
+        {
+          "name": "input",
+          "cli_spelling": "--input",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-rna-circ",
+      "one_line_purpose": "Summarize RNA and circRNA overlap across cells in a completed workflow directory.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "summarize-run-state",
+      "one_line_purpose": "Summarize a run against its manifest, including missing and stale cells.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "run_dir",
+          "cli_spelling": "--run-dir",
+          "kind": "option"
+        },
+        {
+          "name": "mode",
+          "cli_spelling": "--mode",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "validate-ciri3-template",
+      "one_line_purpose": "Validate the configured CIRI3 command template before a large cluster run.",
+      "required_arguments": [],
+      "optional_external_tools": [
+        "java>=12",
+        "CIRI3 jar or wrapper",
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "validate-workdir",
+      "one_line_purpose": "Validate a completed workdir for scverse-facing interoperability and expected artifacts.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "workflow",
+      "one_line_purpose": "Experimental high-level workflows.",
+      "required_arguments": [],
+      "optional_external_tools": [],
+      "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "workflow full-length-circrna",
+      "one_line_purpose": "Experimental manifest-driven full-length circRNA workflow.",
+      "required_arguments": [
+        {
+          "name": "manifest",
+          "cli_spelling": "--manifest",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "protocol",
+          "cli_spelling": "--protocol",
+          "kind": "option"
+        },
+        {
+          "name": "genome_fasta",
+          "cli_spelling": "--genome-fasta",
+          "kind": "option"
+        },
+        {
+          "name": "gtf",
+          "cli_spelling": "--gtf",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "java>=12",
+        "CIRI3 jar or wrapper",
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "workflow smartseq3-ciri3",
+      "one_line_purpose": "Experimental end-to-end SMART-Seq3 to CIRI3 workflow.",
+      "required_arguments": [
+        {
+          "name": "read1",
+          "cli_spelling": "--read1",
+          "kind": "option"
+        },
+        {
+          "name": "read2",
+          "cli_spelling": "--read2",
+          "kind": "option"
+        },
+        {
+          "name": "index1",
+          "cli_spelling": "--index1",
+          "kind": "option"
+        },
+        {
+          "name": "index2",
+          "cli_spelling": "--index2",
+          "kind": "option"
+        },
+        {
+          "name": "annotation",
+          "cli_spelling": "--annotation",
+          "kind": "option"
+        },
+        {
+          "name": "cell_id_column",
+          "cli_spelling": "--cell-id-column",
+          "kind": "option"
+        },
+        {
+          "name": "index1_column",
+          "cli_spelling": "--index1-column",
+          "kind": "option"
+        },
+        {
+          "name": "index2_column",
+          "cli_spelling": "--index2-column",
+          "kind": "option"
+        },
+        {
+          "name": "ref_fa",
+          "cli_spelling": "--ref-fa",
+          "kind": "option"
+        },
+        {
+          "name": "star_index",
+          "cli_spelling": "--star-index",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [
+        "java>=12",
+        "CIRI3 jar or wrapper",
+        "bwa or STAR",
+        "samtools"
+      ],
+      "experimental": true,
+      "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    }
+  ]
+}

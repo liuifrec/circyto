@@ -7,7 +7,7 @@ GTF=""
 OUTDIR=""
 SYNTHETIC=0
 REAL_SMOKE=0
-SCOMATIC_DIR="/mnt/d/SComatic"
+SCOMATIC_DIR="${SCOMATIC_DIR:-SComatic}"
 PYTHON_BIN="${PYTHON_BIN:-}"
 
 while [[ $# -gt 0 ]]; do
@@ -52,7 +52,7 @@ while [[ $# -gt 0 ]]; do
 done
 
 if [[ -z "${WORKDIR}" || -z "${REFERENCE}" || -z "${GTF}" || -z "${OUTDIR}" ]]; then
-  echo "usage: $0 --workdir WORKDIR --reference ref/chr21.fa --gtf ref/chr21.gtf --outdir OUTDIR [--synthetic|--real-smoke] [--scomatic-dir /mnt/d/SComatic] [--python-bin /path/to/python]" >&2
+  echo "usage: $0 --workdir WORKDIR --reference ref/chr21.fa --gtf ref/chr21.gtf --outdir OUTDIR [--synthetic|--real-smoke] [--scomatic-dir /path/to/SComatic] [--python-bin /path/to/python]" >&2
   exit 1
 fi
 

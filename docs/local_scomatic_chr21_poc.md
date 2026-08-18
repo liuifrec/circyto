@@ -80,7 +80,7 @@ bash scripts/run_scomatic_chr21_poc.sh \
   --reference ref/chr21.fa \
   --gtf ref/chr21.gtf \
   --outdir OUTDIR \
-  --scomatic-dir /mnt/d/SComatic \
+  --scomatic-dir /path/to/SComatic \
   --real-smoke
 ```
 
