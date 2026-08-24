@@ -1,0 +1,5 @@
+schema_version	cell_id	circ_id	dataset_id	donor_id	protocol	detector	reference_genome	reference_annotation	workflow_uuid	count	detected	bsj_support	candidate_label_status	detectability_offset	host_gene_expression	label_confidence	count_uncertainty	detection_probability	observation_weight
+1.0	cellA	circA	dataset_synthetic	donor1	ramda	ciri3	GRCh38	gencode.v47	workflow-synthetic-001	2	true	2	positive	9.2103	4.2	1.0	0.2	0.90	1.0
+1.0	cellA	circB	dataset_synthetic	donor1	ramda	ciri3	GRCh38	gencode.v47	workflow-synthetic-001	0	false	0	unlabelled	9.2103	1.1		0.5	0.15	1.0
+1.0	cellB	circA	dataset_synthetic	donor2	ramda	ciri3	GRCh38	gencode.v47	workflow-synthetic-001	0	false	0	positive	8.9872	2.8	1.0	0.4	0.40	1.0
+1.0	cellB	circB	dataset_synthetic	donor2	ramda	ciri3	GRCh38	gencode.v47	workflow-synthetic-001	0	false	0	unlabelled	8.9872	0.9		0.6	0.08	1.0

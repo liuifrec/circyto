@@ -13,8 +13,25 @@ from circyto.pipeline.run_ciri3 import _build_subset_rows
 runner = CliRunner()
 
 
-def test_read_source_manifest_supports_protocol_alias_columns() -> None:
-    manifest = Path("testdata/shin_ramda/manifest_chr21_smoke.tsv")
+def _write_shin_ramda_manifest(tmp_path: Path) -> Path:
+    fastq = tmp_path / "shin_ramda_se_R1.fastq"
+    fastq.write_text("@shin_read_1\nACGT\n+\n!!!!\n", encoding="utf-8")
+    manifest = tmp_path / "manifest_chr21_smoke.tsv"
+    manifest.write_text(
+        "\n".join(
+            [
+                "sample_id\tfastq_1\tfastq_2\tprotocol\tstrandedness\tread_layout",
+                f"shin_ramda_chr21_se\t{fastq}\t\tshin-ramda\tforward\tsingle-end",
+            ]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    return manifest
+
+
+def test_read_source_manifest_supports_protocol_alias_columns(tmp_path: Path) -> None:
+    manifest = _write_shin_ramda_manifest(tmp_path)
     rows = read_source_manifest(manifest, validate_files=True)
     assert len(rows) == 1
     row = rows[0]
@@ -178,13 +195,14 @@ def test_run_ciri3_dry_run_accepts_single_end_shin_ramda(tmp_path: Path, monkeyp
     ref.write_text(">chr21\nACGT\n", encoding="utf-8")
     gtf.write_text('chr21\ttest\texon\t1\t4\t.\t+\t.\tgene_id "G1"; transcript_id "T1";\n', encoding="utf-8")
     star_index.mkdir()
+    manifest = _write_shin_ramda_manifest(tmp_path)
 
     result = runner.invoke(
         app,
         [
             "run-ciri3",
             "--manifest",
-            "testdata/shin_ramda/manifest_chr21_smoke.tsv",
+            str(manifest),
             "--outdir",
             str(tmp_path / "run"),
             "--genome-fasta",
@@ -310,6 +328,7 @@ def test_run_ciri3_single_end_real_execution_without_star_index(tmp_path: Path, 
 
     ref = tmp_path / "chr21.fa"
     gtf = tmp_path / "chr21.gtf"
+    manifest = _write_shin_ramda_manifest(tmp_path)
     ref.write_text(">chr21\nACGT\n", encoding="utf-8")
     gtf.write_text('chr21\ttest\texon\t1\t4\t.\t+\t.\tgene_id "G1"; transcript_id "T1";\n', encoding="utf-8")
 
@@ -318,7 +337,7 @@ def test_run_ciri3_single_end_real_execution_without_star_index(tmp_path: Path, 
         [
             "run-ciri3",
             "--manifest",
-            "testdata/shin_ramda/manifest_chr21_smoke.tsv",
+            str(manifest),
             "--outdir",
             str(tmp_path / "run"),
             "--genome-fasta",
