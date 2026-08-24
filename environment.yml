@@ -12,6 +12,5 @@ dependencies:
   - scipy
   - anndata
   - h5py
-  - tqdm
   - typer>=0.9,<1.0
   - rich

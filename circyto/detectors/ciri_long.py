@@ -1,7 +1,22 @@
-import subprocess
+"""Compatibility exports for the optional, chemistry-gated CIRI-long adapter.
 
+CIRI-long is deliberately not registered in the default short-read detector
+registry. Its input and execution model are defined by the dedicated
+``circyto ciri-long`` command family.
+"""
 
-def run_ciri_long(r1, r2, ref_fa, gtf, out_tsv, threads=8):
-    cmd = f"CIRI-long -r {ref_fa} -a {gtf} -i {r1} -o {out_tsv}"
-    print("[CIRI-long]", cmd)
-    subprocess.run(cmd, shell=True, check=False)
+from circyto.pipeline.ciri_long_adapter import (
+    build_ciri_long_call_argv,
+    build_ciri_long_collapse_argv,
+    check_ciri_long_readiness,
+    run_ciri_long_call_stage,
+    run_ciri_long_collapse_stage,
+)
+
+__all__ = [
+    "build_ciri_long_call_argv",
+    "build_ciri_long_collapse_argv",
+    "check_ciri_long_readiness",
+    "run_ciri_long_call_stage",
+    "run_ciri_long_collapse_stage",
+]

@@ -485,9 +485,13 @@ def repair_host_gene_file(
         }
 
     if suffix == ".h5mu":
-        import mudata as mu
+        from circyto.multimodal.sync import (
+            read_h5mu,
+            refresh_prefixed_var_from_modality,
+            write_h5mu,
+        )
 
-        mdata = mu.read_h5mu(str(input_path))
+        mdata = read_h5mu(str(input_path))
         if circ_mod not in mdata.mod:
             raise ValueError(f"{input_path} is missing circ modality '{circ_mod}'")
         before = mdata.mod[circ_mod].var.copy()
@@ -495,7 +499,8 @@ def repair_host_gene_file(
             mdata.mod[circ_mod].var,
             gtf_path=gtf_path,
         )
-        mdata.write_h5mu(str(output_path))
+        refresh_prefixed_var_from_modality(mdata, circ_mod)
+        write_h5mu(mdata, str(output_path))
         return {
             "input": str(input_path.resolve()),
             "output": str(output_path.resolve()),

@@ -2,7 +2,7 @@
 set -euo pipefail
 
 ENV_NAME="scomatic"
-SCOMATIC_DIR="/mnt/d/SComatic"
+SCOMATIC_DIR="${SCOMATIC_DIR:-SComatic}"
 RUN_SETUP=0
 
 while [[ $# -gt 0 ]]; do

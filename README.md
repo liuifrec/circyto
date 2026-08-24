@@ -16,6 +16,28 @@
 
 A CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
 
+The main output is a circRNA-by-cell matrix, with `h5ad` export and optional RNA+circ MuData integration. Capability boundaries are intentionally narrow:
+
+| Input mode | Current support |
+| --- | --- |
+| Short-read full-length single-cell RNA-seq | CircRNA detection, collection, annotation, QC, and scverse export; validated workflows use CIRI3 while the public CLI remains experimental. |
+| Generic single-cell Nanopore cDNA | Experimental alignment, QC, and provenance interoperability only; it does not call or validate circRNAs. |
+| CIRI-long RCRT/circRNA-enriched reads | Optional experimental `circyto ciri-long` adapter for chemistry-confirmed RCRT libraries; ordinary ONT cDNA is rejected. |
+
+A minimal full-length workflow shape is:
+
+```bash
+circyto workflow full-length-circrna \
+  --manifest manifest.tsv \
+  --outdir work/full_length \
+  --protocol ramda \
+  --genome-fasta ref/genome.fa \
+  --gtf ref/genes.gtf \
+  --export-h5ad
+```
+
+Run `circyto doctor` and `circyto detectors` first to distinguish core package readiness from optional workflow-tool readiness.
+
 ## Status
 
 `circyto` `v0.10.0` is the current experimental milestone.
@@ -27,6 +49,7 @@ A CLI/scverse-compatible framework for single-cell circular RNA detection, annot
 - The HAP1 scRR DNA replication timing/state branch has a lightweight `rt` importer and RNA+circ+RT merge path; real processed-file validation is pending local availability of the GSE278952 HAP1 DNA tables.
 - SComatic interoperability has been validated as a technical path for RNA-derived candidate variant signals on HAP1 batch10, but it remains exploratory and is not the primary scRR DNA modality.
 - The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
+- Generic Nanopore cDNA support is experimental interoperability only (alignment/QC/provenance, never circRNA validation); CIRI-long support is a separate optional RCRT/circRNA-enriched workflow.
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
 - Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
 

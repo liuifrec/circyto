@@ -281,6 +281,27 @@ def test_doctor_and_detectors_share_resolution_from_non_repo_cwd(
     assert ciri_full["status"] in {"READY", "PARTIAL", "NOT READY"}
 
 
+def test_packaged_tools_are_used_when_repo_root_is_unavailable(
+    monkeypatch: pytest.MonkeyPatch,
+    tmp_path: Path,
+) -> None:
+    package_root = tmp_path / "site-packages" / "circyto"
+    packaged_tools = package_root / "resources" / "tools"
+    jar = packaged_tools / "CIRI-full_v2.0" / "CIRI-full.jar"
+    jar.parent.mkdir(parents=True)
+    jar.write_text("jar", encoding="utf-8")
+
+    monkeypatch.setattr("circyto.paths.get_repo_root", lambda: None)
+    monkeypatch.setattr("circyto.paths.get_package_root", lambda: package_root)
+
+    from circyto.paths import get_tools_dir
+
+    assert get_tools_dir() == packaged_tools
+    resolution = find_ciri_full_jar()
+    assert resolution.resolved_path == jar
+    assert resolution.source == "packaged-tools"
+
+
 def test_ciri_full_runtime_resolves_paths_independent_of_cwd(
     monkeypatch: pytest.MonkeyPatch,
     tmp_path: Path,

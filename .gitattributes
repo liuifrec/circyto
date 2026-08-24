@@ -1,0 +1,2 @@
+# Preserve vendored detector documentation, licenses, and scripts byte-for-byte.
+circyto/resources/tools/** -whitespace

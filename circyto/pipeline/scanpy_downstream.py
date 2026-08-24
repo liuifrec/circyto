@@ -6,6 +6,8 @@ from typing import Any
 
 import pandas as pd
 
+from circyto.multimodal.sync import read_h5mu
+
 from circyto.pipeline.workflow_reporting import numeric_summary, write_json
 
 try:
@@ -47,7 +49,7 @@ def _load_rna_from_h5mu(input_path: Path):
     _require_scanpy_stack()
     if not input_path.exists():
         raise FileNotFoundError(f"MuData input not found: {input_path}")
-    mdata = mu.read_h5mu(str(input_path))
+    mdata = read_h5mu(str(input_path))
     if "rna" not in mdata.mod:
         raise ValueError(f"{input_path} does not contain an 'rna' modality")
     adata = mdata.mod["rna"].copy()

@@ -7,6 +7,7 @@ import pytest
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import read_h5mu
 from circyto.pipeline.gene_expression_velocity import HAS_MUDATA
 
 
@@ -169,8 +170,9 @@ def test_mudata_environment_metadata_serialized(tmp_path: Path) -> None:
     out_path = tmp_path / "full_length.h5mu"
     result = runner.invoke(app, ["export-mudata", "--workdir", str(root), "--output", str(out_path)])
     assert result.exit_code == 0, result.output
-    mdata = mu.read_h5mu(out_path)
+    mdata = read_h5mu(out_path)
     assert "environment" in mdata.uns["circyto"]
+    assert mdata.uns["circyto"]["mudata_sync_policy"] == "pull_on_update=True"
     env = mdata.uns["circyto"]["environment"]
     assert "circyto_version" in env
     assert "export_timestamp" in env

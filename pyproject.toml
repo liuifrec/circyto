@@ -9,12 +9,11 @@ description = "A Python CLI toolkit for single-cell circRNA detection, detector 
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "James Liu" }]
-license = { text = "MIT" }
+license = "MIT"
 
 dependencies = [
   "typer>=0.9,<1.0",
   "rich>=13.0",
-  "tqdm>=4.66",
   "pandas>=2.0",
   "numpy>=1.24",
   "scipy>=1.10",
@@ -25,7 +24,8 @@ dependencies = [
 loom = ["loompy>=3.0"]
 mudata = ["mudata>=0.3"]
 scanpy = ["mudata>=0.3", "scanpy>=1.10"]
-dev = ["pytest>=8", "mudata>=0.3"]
+bam = ["pysam>=0.22"]
+dev = ["build>=1.2", "pytest>=8", "mudata>=0.3"]
 
 [project.scripts]
 circyto = "circyto.cli.circyto:app"
@@ -50,6 +50,9 @@ circyto = [
   "resources/**/*.gtf",
   "resources/**/*.fastq",
   "resources/**/*.tsv",
+  "resources/**/*.jar",
+  "resources/**/*.pl",
+  "resources/**/*.md",
 ]
 
 [tool.pytest.ini_options]
@@ -74,4 +77,14 @@ alignment = [
   "bwa",
   "STAR",
   "samtools"
+]
+
+nanopore_interoperability = [
+  "minimap2",
+  "samtools"
+]
+
+ciri_long = [
+  "CIRI-long",
+  "bwa"
 ]

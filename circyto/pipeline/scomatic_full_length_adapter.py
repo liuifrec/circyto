@@ -13,6 +13,7 @@ import numpy as np
 import pandas as pd
 
 from circyto import __version__
+from circyto.multimodal.sync import MUDATA_SYNC_POLICY, mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.pipeline.scomatic_normalization import (
     SCOMATIC_CANDIDATE_COLUMNS,
@@ -742,7 +743,7 @@ def merge_scomatic(
     if summary_json.exists() and not overwrite:
         raise ValueError(f"Summary already exists: {summary_json}. Use --overwrite to replace it.")
 
-    mdata = mu.read_h5mu(str(input_h5mu))
+    mdata = read_h5mu(str(input_h5mu))
     candidate_df = pd.read_csv(scomatic_candidates_path, sep="\t", keep_default_na=False)
     candidate_cells = set(candidate_df["cell_id"].astype(str)) if "cell_id" in candidate_df.columns else set()
     existing_obs = [str(value) for value in mdata.obs_names.astype(str).tolist()]
@@ -759,18 +760,19 @@ def merge_scomatic(
     if "circ" in modalities:
         modalities["circ"].var = normalize_host_gene_annotations(modalities["circ"].var)
     modalities["candidate_snv"] = candidate_adata
-    merged = mu.MuData(modalities)
+    merged = mudata_from_modalities(modalities)
     merged.uns.update(mdata.uns)
     merged.uns["circyto_scomatic"] = {
         "command_name": "circyto merge-scomatic",
         "circyto_version": __version__,
+        "mudata_sync_policy": MUDATA_SYNC_POLICY,
         "source_h5mu": str(input_h5mu.resolve()),
         "scomatic_candidates": str(scomatic_candidates_path.resolve()),
         "allow_partial": bool(allow_partial),
         "terminology_note": TERMINOLOGY_NOTE,
     }
     output_h5mu.parent.mkdir(parents=True, exist_ok=True)
-    merged.write_h5mu(str(output_h5mu))
+    write_h5mu(merged, str(output_h5mu))
     summary = {
         "command_name": "circyto merge-scomatic",
         "description": "Merged RNA-derived SComatic candidate signals into MuData as candidate_snv.",

@@ -7,6 +7,7 @@ import pytest
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import read_h5mu
 from circyto.pipeline.gene_expression_velocity import HAS_MUDATA
 
 
@@ -123,7 +124,7 @@ def test_export_mudata_creates_h5mu_and_preserves_metadata(tmp_path: Path) -> No
     assert payload["n_rna_only_cells"] == 1
     assert "DIYHEK_192" in payload["rna_only_cells"]
 
-    mdata = mu.read_h5mu(out_path)
+    mdata = read_h5mu(out_path)
     assert "rna" in mdata.mod
     assert "circ" in mdata.mod
     assert list(mdata.obs_names) == ["cellA", "DIYHEK_192"]
@@ -136,6 +137,7 @@ def test_export_mudata_creates_h5mu_and_preserves_metadata(tmp_path: Path) -> No
     assert int(mdata.obs.loc["DIYHEK_192", "circRNA_count"]) == 0
     assert "circyto" in mdata.uns
     assert mdata.uns["circyto"]["command_name"] == "circyto export-mudata"
+    assert mdata.uns["circyto"]["mudata_sync_policy"] == "pull_on_update=True"
     assert "workflow_summary_json" in mdata.uns["circyto"]
     workflow_summary = json.loads(mdata.uns["circyto"]["workflow_summary_json"])
     assert workflow_summary["cleanup"]["delete_candidates"][0]["path"] == "/tmp/a.sam"
@@ -189,7 +191,7 @@ def test_export_mudata_transposes_circ_by_cell_matrix_to_cells_by_circ(tmp_path:
     assert payload["n_circ_features"] == 2503
     assert payload["n_rna_only_cells"] == 1
 
-    mdata = mu.read_h5mu(out_path)
+    mdata = read_h5mu(out_path)
     assert mdata.mod["circ"].shape == (192, 2503)
     assert mdata.mod["rna"].shape == (192, 1)
     assert int(mdata.mod["circ"][191, :].X.sum()) == 0

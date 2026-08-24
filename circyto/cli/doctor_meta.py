@@ -4,7 +4,12 @@ import shutil
 from dataclasses import dataclass
 from typing import List
 
-from circyto.paths import PathResolution, find_ciri_full_adapter, find_ciri_full_jar
+from circyto.paths import (
+    PathResolution,
+    find_ciri2_adapter,
+    find_ciri_full_adapter,
+    find_ciri_full_jar,
+)
 from circyto.detectors.ciri3 import inspect_ciri3_runtime
 
 
@@ -26,6 +31,16 @@ DETECTOR_SPECS: List[DetectorSpec] = [
         hint_lines=[
             "conda install -c bioconda bowtie2 samtools and install find-circ3 from upstream",
             "or use apt/brew for bowtie2 + samtools and make sure `find-circ3` is on PATH",
+        ],
+    ),
+    DetectorSpec(
+        name="ciri2",
+        det_type="PERL",
+        required_cmds=["bwa", "perl"],
+        required_assets=["CIRI2-adapter"],
+        hint_lines=[
+            "Install deps: conda install -c bioconda bwa perl",
+            "Keep the bundled CIRI2 adapter and Perl implementation available at runtime.",
         ],
     ),
     DetectorSpec(
@@ -61,6 +76,8 @@ def resolve_asset(asset: str) -> PathResolution:
         return find_ciri_full_jar()
     if asset == "CIRI-full-adapter":
         return find_ciri_full_adapter()
+    if asset == "CIRI2-adapter":
+        return find_ciri2_adapter()
     return PathResolution(label=asset, resolved_path=None, checked_paths=(), source=None)
 
 

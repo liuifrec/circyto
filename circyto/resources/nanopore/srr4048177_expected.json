@@ -1,0 +1,37 @@
+{
+  "schema_version": "circyto.ena_run_expectation.v1",
+  "hard_identity": {
+    "run_accession": "SRR4048177",
+    "study_accession": "PRJNA339767",
+    "instrument_platform": "OXFORD_NANOPORE",
+    "instrument_model": "MinION",
+    "library_strategy": "RNA-Seq",
+    "library_source": "TRANSCRIPTOMIC",
+    "archive_library_selection": "RACE",
+    "fastq_files": [
+      {
+        "filename": "SRR4048177_1.fastq.gz",
+        "md5": "7e841c27e8afd6c2303f06e7a470d4a6"
+      }
+    ]
+  },
+  "warning_baseline": {
+    "read_count": 52696,
+    "base_count": 70823600,
+    "fastq_files": [
+      {
+        "filename": "SRR4048177_1.fastq.gz",
+        "url": "https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR404/007/SRR4048177/SRR4048177_1.fastq.gz",
+        "compressed_bytes": 50513678
+      }
+    ]
+  },
+  "manifest_defaults": {
+    "cell_id": "WT_B1a_Cell1",
+    "protocol": "mandalorion_modified_smartseq2",
+    "library_preparation_summary": "Modified Smart-seq2-style, oligo(dT)-primed single-cell cDNA sequenced with Oxford Nanopore 2D reads.",
+    "molecule_type": "cdna",
+    "barcode_status": "not_applicable_physical_single_cell",
+    "biological_interpretation_boundary": "experimental_long_read_interoperability_not_circrna_validation"
+  }
+}

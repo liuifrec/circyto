@@ -6,7 +6,7 @@ SComatic outputs from this path should be described as RNA-derived candidate var
 
 ## SComatic Input Contract
 
-Local inspection of `/mnt/d/SComatic/README.md` and `/mnt/d/SComatic/scripts/SplitBam/SplitBamCellTypes.py` shows:
+Inspection of the upstream `SComatic/README.md` and `SComatic/scripts/SplitBam/SplitBamCellTypes.py` shows:
 
 - Step 1 expects one coordinate-sorted BAM containing reads from all cells.
 - The BAM must carry cell barcode information in the `CB` tag. `SplitBamCellTypes.py` reads `read.opt("CB")` and drops reads without it.

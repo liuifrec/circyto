@@ -9,6 +9,8 @@ import numpy as np
 import pandas as pd
 import pytest
 
+from circyto.multimodal.sync import mudata_from_modalities, read_h5mu, write_h5mu
+
 
 SCRIPT_DIR = Path("scripts/manuscript")
 
@@ -110,7 +112,7 @@ def _write_tiny_mudata(path: Path, *, include_rt: bool = True, include_cnv: bool
                 index=["chr1:0-100", "chr1:100-200", "chr2:0-100"],
             ),
         )
-    mu.MuData(modalities).write_h5mu(path)
+    write_h5mu(mudata_from_modalities(modalities), path)
 
 
 def test_manuscript_script_help_runs_without_mudata() -> None:
@@ -213,11 +215,11 @@ def test_known_novel_script_handles_categorical_status_with_missing_values(tmp_p
     mu = pytest.importorskip("mudata")
     h5mu = tmp_path / "categorical_status.h5mu"
     _write_tiny_mudata(h5mu)
-    mdata = mu.read_h5mu(h5mu)
+    mdata = read_h5mu(h5mu)
     mdata.mod["circ"].var["annotation_status"] = pd.Categorical(
         ["known", "novel", None, "database_match"]
     )
-    mdata.write_h5mu(h5mu)
+    write_h5mu(mdata, h5mu)
 
     known_out = tmp_path / "known_novel.tsv"
     result = _run_script(

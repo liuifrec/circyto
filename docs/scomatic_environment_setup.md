@@ -6,7 +6,7 @@ Scope:
 
 - local proof-of-concept only
 - no hg38-scale execution here
-- no modification of the upstream `/mnt/d/SComatic` checkout
+- no modification of the upstream SComatic checkout supplied with `--scomatic-dir`
 
 ## Current WSL status
 
@@ -49,7 +49,7 @@ conda create -n scomatic-smoke python=3.10 -y
 conda activate scomatic-smoke
 conda install -c conda-forge -c bioconda \
   samtools bedtools r-base r-vgam pandas pysam pybedtools -y
-python /mnt/d/SComatic/scripts/BaseCellCounter/BaseCellCounter.py --help
+python /path/to/SComatic/scripts/BaseCellCounter/BaseCellCounter.py --help
 ```
 
 If that works, then run the `circyto` chr21 real-smoke wrapper from the same environment.
@@ -71,7 +71,7 @@ conda create -n scomatic python=3.10 -y
 conda activate scomatic
 conda install -c conda-forge -c bioconda \
   samtools bedtools datamash r-base r-vgam -y
-pip install -r /mnt/d/SComatic/requirements.txt
+pip install -r /path/to/SComatic/requirements.txt
 Rscript -e 'library(VGAM); cat("VGAM OK\n")'
 ```
 
@@ -100,7 +100,7 @@ bash scripts/setup_scomatic_local_env.sh
 Run the setup directly only on a stable HPC/server or containerized environment:
 
 ```bash
-bash scripts/setup_scomatic_local_env.sh --run --env-name scomatic --scomatic-dir /mnt/d/SComatic
+bash scripts/setup_scomatic_local_env.sh --run --env-name scomatic --scomatic-dir /path/to/SComatic
 ```
 
 ## Environment validation
@@ -108,7 +108,7 @@ bash scripts/setup_scomatic_local_env.sh --run --env-name scomatic --scomatic-di
 Run:
 
 ```bash
-bash scripts/check_scomatic_environment.sh --scomatic-dir /mnt/d/SComatic
+bash scripts/check_scomatic_environment.sh --scomatic-dir /path/to/SComatic
 ```
 
 This checks:
@@ -142,14 +142,14 @@ conda create -n scomatic-smoke python=3.10 -y
 conda activate scomatic-smoke
 conda install -c conda-forge -c bioconda \
   samtools bedtools r-base r-vgam pandas pysam pybedtools -y
-python /mnt/d/SComatic/scripts/BaseCellCounter/BaseCellCounter.py --help
+python /path/to/SComatic/scripts/BaseCellCounter/BaseCellCounter.py --help
 
 bash scripts/run_scomatic_chr21_poc.sh \
   --workdir work/local_chr21_simple_overlap_validation_20260519/real_se10k_rerun \
   --reference ref/chr21.fa \
   --gtf ref/chr21.gtf \
   --outdir work/scomatic_chr21_real_smoke \
-  --scomatic-dir /mnt/d/SComatic \
+  --scomatic-dir /path/to/SComatic \
   --real-smoke
 ```
 

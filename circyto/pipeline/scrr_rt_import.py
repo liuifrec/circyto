@@ -7,6 +7,7 @@ import numpy as np
 import pandas as pd
 
 from circyto import __version__
+from circyto.multimodal.sync import MUDATA_SYNC_POLICY, mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.pipeline.scrr_cnv_import import (
     canonical_scrr_cell_id,
@@ -557,7 +558,7 @@ def merge_scrr_rt(
     if summary_json.exists() and not overwrite:
         raise ValueError(f"Summary already exists: {summary_json}. Use --overwrite to replace it.")
 
-    rna_circ = mu.read_h5mu(str(input_h5mu))
+    rna_circ = read_h5mu(str(input_h5mu))
     rt = ad.read_h5ad(str(rt_h5ad))
     required = {"rna", "circ"}
     missing_modalities = sorted(required - set(rna_circ.mod.keys()))
@@ -600,7 +601,7 @@ def merge_scrr_rt(
                 top_obs[column] = rt_obs[column]
     modalities["rt"] = rt_copy
 
-    merged = mu.MuData(modalities)
+    merged = mudata_from_modalities(modalities)
     if all_equal:
         merged.obs = sanitize_frame_for_anndata(top_obs)
     merged.uns.update(rna_circ.uns)
@@ -608,6 +609,7 @@ def merge_scrr_rt(
         {
             "command_name": "circyto merge-scrr-rt",
             "circyto_version": __version__,
+            "mudata_sync_policy": MUDATA_SYNC_POLICY,
             "source_rna_circ_h5mu": str(input_h5mu.resolve()),
             "source_rt_h5ad": str(rt_h5ad.resolve()),
             "allow_partial": allow_partial,
@@ -617,7 +619,7 @@ def merge_scrr_rt(
     )
 
     output_h5mu.parent.mkdir(parents=True, exist_ok=True)
-    merged.write_h5mu(str(output_h5mu))
+    write_h5mu(merged, str(output_h5mu))
     modality_shapes = {
         modality: [int(adata.n_obs), int(adata.n_vars)]
         for modality, adata in merged.mod.items()

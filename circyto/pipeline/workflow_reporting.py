@@ -16,6 +16,7 @@ from scipy import io as scio
 from scipy import sparse as sp
 
 from circyto import __version__
+from circyto.multimodal.sync import MUDATA_SYNC_POLICY, mudata_from_modalities, write_h5mu
 from circyto.pipeline.annotate_host_gene import HOST_GENE_COLUMNS, normalize_host_gene_annotations
 
 
@@ -610,11 +611,11 @@ def export_mudata_bundle(
         obs=shared_obs_clean.copy(),
         var=sanitize_frame_for_anndata(rna_var),
     )
-    mdata = mu.MuData({"rna": rna_adata, "circ": circ_adata})
+    mdata = mudata_from_modalities({"rna": rna_adata, "circ": circ_adata})
     mdata.obs = shared_obs_clean.copy()
-    mdata.uns["circyto"] = uns_payload
+    mdata.uns["circyto"] = {**uns_payload, "mudata_sync_policy": MUDATA_SYNC_POLICY}
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    mdata.write_h5mu(str(out_path))
+    write_h5mu(mdata, str(out_path))
     return {
         "path": str(out_path.resolve()),
         "cell_join": cell_join,

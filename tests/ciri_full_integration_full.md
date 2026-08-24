@@ -75,9 +75,3 @@ Run:
 ```
 pytest -vv
 ```
-
-## TODO
-- MatrixMarket header already uses `general`.
-- Add `.h5ad` writer
-- Add detector comparison table
-- Normalize circRNA ID format

@@ -88,6 +88,8 @@ from circyto.paths import get_repo_root, get_tools_dir
 from circyto.cli.doctor import doctor_app
 from circyto.cli.detectors import detectors_app
 from circyto.cli.smoke import smoke_app
+from circyto.cli.nanopore import nanopore_app
+from circyto.cli.ciri_long import ciri_long_app
 
 app = typer.Typer(
     add_completion=False,
@@ -150,6 +152,8 @@ app.add_typer(manifest_app, name="manifest")
 app.add_typer(workflow_app, name="workflow")
 app.add_typer(analyze_app, name="analyze")
 app.add_typer(smoke_app, name="smoke")
+app.add_typer(nanopore_app, name="nanopore")
+app.add_typer(ciri_long_app, name="ciri-long")
 # --------------------------------------------------------------------------------------
 # Helpers: consistent INDIR/OUTDIR + default output naming
 # --------------------------------------------------------------------------------------
