@@ -9,6 +9,7 @@ import pytest
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.scrr_rt_import import HAS_ANNDATA, HAS_MUDATA, infer_paired_dna_cell_id
 
 
@@ -300,7 +301,7 @@ def test_merge_scrr_rt_creates_rna_circ_rt_mudata(tmp_path: Path) -> None:
     rna = ad.AnnData(X=np.array([[1], [2]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["G1"]))
     circ = ad.AnnData(X=np.array([[0], [3]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["C1"]))
     input_h5mu = tmp_path / "rna_circ_remapped.h5mu"
-    mu.MuData({"rna": rna, "circ": circ}).write_h5mu(input_h5mu)
+    write_h5mu(mudata_from_modalities({"rna": rna, "circ": circ}), input_h5mu)
 
     rt_obs = pd.DataFrame(
         {
@@ -338,7 +339,7 @@ def test_merge_scrr_rt_creates_rna_circ_rt_mudata(tmp_path: Path) -> None:
     assert payload["overlap_counts"]["n_trimodal_overlap"] == 2
     assert Path(payload["output_summary_json"]).exists()
 
-    merged = mu.read_h5mu(output)
+    merged = read_h5mu(output)
     assert list(merged.mod.keys()) == ["rna", "circ", "rt"]
     assert list(merged.obs_names) == ["HAP1_A_001", "HAP1_A_002"]
     assert np.issubdtype(merged.mod["rt"].X.dtype, np.integer)

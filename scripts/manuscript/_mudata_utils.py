@@ -8,6 +8,8 @@ from typing import Callable, Iterable, Sequence
 
 import numpy as np
 import pandas as pd
+
+from circyto.multimodal.sync import read_h5mu
 from scipy import sparse
 
 
@@ -32,7 +34,7 @@ def load_mudata(path: Path):
         raise exc
     if not path.exists():
         fail(f"MuData file does not exist: {path}")
-    return mu.read_h5mu(path)
+    return read_h5mu(path)
 
 
 def find_modality(mdata, candidates: Sequence[str], *, required: bool = True) -> str | None:

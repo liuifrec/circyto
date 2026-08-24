@@ -11,6 +11,7 @@ from scipy import sparse as sp
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import read_h5mu
 from circyto.manifest.alignment import AlignmentManifestRow, write_alignment_manifest_tsv
 from circyto.pipeline.collect import collect_matrix
 from circyto.pipeline.workflow_reporting import (
@@ -687,7 +688,7 @@ def test_mudata_export_from_synthetic_gene_counts_tsv(tmp_path: Path) -> None:
         cell_join="inner",
     )
 
-    mdata = mu.read_h5mu(out_path)
+    mdata = read_h5mu(out_path)
     assert "rna" in mdata.mod
     assert "circ" in mdata.mod
     assert mdata.mod["rna"].shape == (2, 2)

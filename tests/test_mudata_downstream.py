@@ -7,6 +7,7 @@ import pytest
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import mudata_from_modalities, write_h5mu
 from circyto.pipeline.gene_expression_velocity import HAS_MUDATA
 
 
@@ -50,7 +51,7 @@ def _write_mudata_fixture(tmp_path: Path) -> Path:
             index=["circ1", "circ2"],
         ),
     )
-    mdata = mu.MuData({"rna": rna, "circ": circ})
+    mdata = mudata_from_modalities({"rna": rna, "circ": circ})
     mdata.obs = obs.copy()
     mdata.uns["circyto"] = {
         "command_name": "circyto export-mudata",
@@ -59,7 +60,7 @@ def _write_mudata_fixture(tmp_path: Path) -> Path:
         "workflow_summary_json": "{}",
     }
     out_path = tmp_path / "full_length.h5mu"
-    mdata.write_h5mu(out_path)
+    write_h5mu(mdata, out_path)
     return out_path
 
 

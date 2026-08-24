@@ -54,6 +54,7 @@ A new environment under `/tmp`, outside the repository, installed only the final
 - Installing Java 17 and workflow-specific BWA, Bowtie2, STAR, minimap2, find-circ3, or CIRI-long is an environment concern. This audit did not install or execute those external workflows.
 - Consolidating source-tree and packaged copies of licensed detector assets may reduce maintenance duplication later, but is not required for release correctness.
 - MuData 0.4 behavior adoption is deferred as described above.
+  The focused follow-up is recorded in [MuData synchronization compatibility](mudata_compatibility.md).
 - `prepare-public-dataset` retains explicitly labeled `TODO_REAL_ACCESSION` fallback rows for planning-only targets. The command and its documentation already prevent those placeholders from being presented as validated accessions.
 
 ## Final validation

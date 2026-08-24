@@ -10,6 +10,7 @@ from scipy import sparse as sp
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import mudata_from_modalities, read_h5mu, write_h5mu
 
 
 runner = CliRunner()
@@ -163,7 +164,7 @@ def test_repair_h5mu_patches_circ_modality_var(tmp_path: Path) -> None:
         index=["circA"],
     )
     circ = ad.AnnData(X=np.array([[0], [3]], dtype=np.int32), obs=obs.copy(), var=circ_var)
-    mu.MuData({"rna": rna, "circ": circ}).write_h5mu(input_path)
+    write_h5mu(mudata_from_modalities({"rna": rna, "circ": circ}), input_path)
 
     result = runner.invoke(
         app,
@@ -179,11 +180,12 @@ def test_repair_h5mu_patches_circ_modality_var(tmp_path: Path) -> None:
     )
 
     assert result.exit_code == 0, result.output
-    fixed = mu.read_h5mu(output_path)
+    fixed = read_h5mu(output_path)
     circ_fixed = fixed.mod["circ"]
     assert HOST_COLUMNS <= set(circ_fixed.var.columns)
     assert circ_fixed.var.loc["circA", "host_gene_from_circatlas_id"] == "UBAP2"
     assert circ_fixed.var.loc["circA", "host_gene"] == "UBAP2"
     assert circ_fixed.var.loc["circA", "host_gene_source"] == "circatlas_id"
+    assert fixed.var.loc["circA", "circ:host_gene"] == "UBAP2"
     circ_x = circ_fixed.X.toarray() if sp.issparse(circ_fixed.X) else np.asarray(circ_fixed.X)
     assert circ_x.tolist() == [[0], [3]]

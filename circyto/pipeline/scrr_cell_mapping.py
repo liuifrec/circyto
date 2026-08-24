@@ -8,6 +8,7 @@ from typing import Any, Iterable
 import pandas as pd
 
 from circyto import __version__
+from circyto.multimodal.sync import MUDATA_SYNC_POLICY, mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.pipeline.scrr_cnv_import import canonical_scrr_cell_id
 from circyto.pipeline.workflow_reporting import sanitize_frame_for_anndata, write_json
@@ -317,7 +318,7 @@ def remap_scrr_mudata_obs(
         for _, row in mapping_df.iterrows()
     }
 
-    source = mu.read_h5mu(str(input_h5mu))
+    source = read_h5mu(str(input_h5mu))
     remapped_modalities = {}
     missing_by_axis: dict[str, list[str]] = {}
     for modality, modality_adata in source.mod.items():
@@ -344,13 +345,14 @@ def remap_scrr_mudata_obs(
     )
     missing_by_axis["mudata"] = top_missing
 
-    remapped = mu.MuData(remapped_modalities)
+    remapped = mudata_from_modalities(remapped_modalities)
     remapped.obs = sanitize_frame_for_anndata(top_obs.reindex(remapped.obs_names))
     remapped.uns.update(source.uns)
     remapped.uns["circyto_scrr_remap"] = _safe_uns(
         {
             "command_name": "circyto remap-scrr-mudata-obs",
             "circyto_version": __version__,
+            "mudata_sync_policy": MUDATA_SYNC_POLICY,
             "source_h5mu": str(input_h5mu.resolve()),
             "cell_map": str(cell_map_path.resolve()),
             "target_id": target_column,
@@ -360,7 +362,7 @@ def remap_scrr_mudata_obs(
     )
 
     output_h5mu.parent.mkdir(parents=True, exist_ok=True)
-    remapped.write_h5mu(str(output_h5mu))
+    write_h5mu(remapped, str(output_h5mu))
     modality_shapes = {
         modality: [int(adata.n_obs), int(adata.n_vars)]
         for modality, adata in remapped.mod.items()
@@ -419,7 +421,7 @@ def merge_scrr_cnv(
     if summary_json.exists() and not overwrite:
         raise ValueError(f"Summary already exists: {summary_json}. Use --overwrite to replace it.")
 
-    rna_circ = mu.read_h5mu(str(input_h5mu))
+    rna_circ = read_h5mu(str(input_h5mu))
     cnv = ad.read_h5ad(str(cnv_h5ad))
     required = {"rna", "circ"}
     missing_modalities = sorted(required - set(rna_circ.mod.keys()))
@@ -462,7 +464,7 @@ def merge_scrr_cnv(
                 top_obs[column] = cnv_obs[column]
     modalities["cnv"] = cnv_copy
 
-    merged = mu.MuData(modalities)
+    merged = mudata_from_modalities(modalities)
     if all_equal:
         merged.obs = sanitize_frame_for_anndata(top_obs)
     merged.uns.update(rna_circ.uns)
@@ -470,6 +472,7 @@ def merge_scrr_cnv(
         {
             "command_name": "circyto merge-scrr-cnv",
             "circyto_version": __version__,
+            "mudata_sync_policy": MUDATA_SYNC_POLICY,
             "source_rna_circ_h5mu": str(input_h5mu.resolve()),
             "source_cnv_h5ad": str(cnv_h5ad.resolve()),
             "allow_partial": allow_partial,
@@ -478,7 +481,7 @@ def merge_scrr_cnv(
     )
 
     output_h5mu.parent.mkdir(parents=True, exist_ok=True)
-    merged.write_h5mu(str(output_h5mu))
+    write_h5mu(merged, str(output_h5mu))
     modality_shapes = {
         modality: [int(adata.n_obs), int(adata.n_vars)]
         for modality, adata in merged.mod.items()

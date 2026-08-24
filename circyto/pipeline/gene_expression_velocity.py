@@ -18,6 +18,7 @@ import pandas as pd
 import scipy.sparse as sp
 
 from circyto import __version__
+from circyto.multimodal.sync import MUDATA_SYNC_POLICY, mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.annotate_host_gene import normalize_host_gene_annotations
 from circyto.manifest.alignment import read_alignment_manifest_tsv
 from circyto.pipeline.workflow_reporting import (
@@ -704,7 +705,7 @@ def inspect_mudata_file(input_path: Path) -> dict[str, Any]:
     if not input_path.exists():
         raise FileNotFoundError(f"MuData input not found: {input_path}")
 
-    mdata = mu.read_h5mu(str(input_path))
+    mdata = read_h5mu(str(input_path))
     modalities = list(mdata.mod.keys())
     rna = mdata.mod["rna"] if "rna" in mdata.mod else None
     circ = mdata.mod["circ"] if "circ" in mdata.mod else None
@@ -742,7 +743,7 @@ def summarize_mudata_qc(input_path: Path) -> dict[str, Any]:
     _require_mudata_for_readers()
     if not input_path.exists():
         raise FileNotFoundError(f"MuData input not found: {input_path}")
-    mdata = mu.read_h5mu(str(input_path))
+    mdata = read_h5mu(str(input_path))
     obs = mdata.obs.copy()
 
     summary: dict[str, Any] = {
@@ -904,7 +905,7 @@ def validate_completed_workdir(workdir: Path) -> dict[str, Any]:
             warnings.append("mudata not installed; could not validate full_length.h5mu readability")
         else:
             try:
-                mdata = mu.read_h5mu(str(mudata_path))
+                mdata = read_h5mu(str(mudata_path))
                 details["h5mu_modalities"] = list(mdata.mod.keys())
                 details["h5mu_n_obs"] = int(mdata.n_obs)
                 if "circ" in mdata.mod:
@@ -1924,7 +1925,7 @@ def export_completed_workflow_mudata(
         obs=shared_obs_clean.copy(),
         var=sanitize_frame_for_anndata(circ_var),
     )
-    mdata = mu.MuData({"rna": rna_adata, "circ": circ_adata})
+    mdata = mudata_from_modalities({"rna": rna_adata, "circ": circ_adata})
     mdata.obs = shared_obs_clean.copy()
     workflow_summary_payload = load_json(workdir / "workflow_summary.json") if (workdir / "workflow_summary.json").exists() else {}
     rna_import_summary_payload = load_json(rna_dir / "rna_import_summary.json") if (rna_dir / "rna_import_summary.json").exists() else {}
@@ -1933,6 +1934,7 @@ def export_completed_workflow_mudata(
     provenance = {
         "command_name": "circyto export-mudata",
         "circyto_version": __version__,
+        "mudata_sync_policy": MUDATA_SYNC_POLICY,
         "source_workdir": str(workdir.resolve()),
         "workflow_uuid": str(workflow_summary_payload.get("workflow_uuid", "")),
         "workflow_type": str(workflow_summary_payload.get("workflow_type", workflow_summary_payload.get("workflow", ""))),
@@ -1956,7 +1958,7 @@ def export_completed_workflow_mudata(
     }
     mdata.uns["circyto"] = sanitize_for_h5ad_uns(provenance)
     out_path.parent.mkdir(parents=True, exist_ok=True)
-    mdata.write_h5mu(str(out_path))
+    write_h5mu(mdata, str(out_path))
     return {
         "path": str(out_path.resolve()),
         "n_obs": int(mdata.n_obs),

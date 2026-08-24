@@ -10,6 +10,7 @@ import pytest
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.scrr_cell_mapping import HAS_ANNDATA, HAS_MUDATA
 from circyto.pipeline.workflow_reporting import sanitize_frame_for_anndata
 
@@ -121,7 +122,7 @@ def test_remap_scrr_mudata_obs_from_gsm_to_canonical(tmp_path: Path) -> None:
     rna = ad.AnnData(X=np.array([[1, 2], [3, 4]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["G1", "G2"]))
     circ = ad.AnnData(X=np.array([[0, 1], [1, 0]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["C1", "C2"]))
     input_h5mu = tmp_path / "rna_circ.h5mu"
-    mu.MuData({"rna": rna, "circ": circ}).write_h5mu(input_h5mu)
+    write_h5mu(mudata_from_modalities({"rna": rna, "circ": circ}), input_h5mu)
     output_h5mu = tmp_path / "rna_circ_remapped.h5mu"
 
     result = runner.invoke(
@@ -141,7 +142,7 @@ def test_remap_scrr_mudata_obs_from_gsm_to_canonical(tmp_path: Path) -> None:
     payload = json.loads(result.output)
     assert payload["target_id"] == "canonical_cell_id"
 
-    remapped = mu.read_h5mu(output_h5mu)
+    remapped = read_h5mu(output_h5mu)
     assert list(remapped.obs_names) == ["IMR90_A_100", "IMR90_A_101"]
     assert list(remapped.mod["rna"].obs_names) == ["IMR90_A_100", "IMR90_A_101"]
     assert remapped.mod["rna"].obs.loc["IMR90_A_100", "gsm_id"] == "GSM8558852"
@@ -170,9 +171,9 @@ def test_remap_scrr_mudata_obs_handles_categorical_obs_without_empty_category(tm
     rna = ad.AnnData(X=np.array([[1], [2]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["G1"]))
     circ = ad.AnnData(X=np.array([[0], [1]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["C1"]))
     input_h5mu = tmp_path / "rna_circ.h5mu"
-    mdata = mu.MuData({"rna": rna, "circ": circ})
+    mdata = mudata_from_modalities({"rna": rna, "circ": circ})
     mdata.obs = obs.copy()
-    mdata.write_h5mu(input_h5mu)
+    write_h5mu(mdata, input_h5mu)
     output_h5mu = tmp_path / "rna_circ_remapped.h5mu"
 
     result = runner.invoke(
@@ -189,7 +190,7 @@ def test_remap_scrr_mudata_obs_handles_categorical_obs_without_empty_category(tm
     )
 
     assert result.exit_code == 0, result.output
-    remapped = mu.read_h5mu(output_h5mu)
+    remapped = read_h5mu(output_h5mu)
     assert list(remapped.obs_names) == ["IMR90_A_100", "IMR90_A_101"]
     assert remapped.mod["rna"].obs.loc["IMR90_A_100", "phase"] == "G1"
     assert pd.api.types.is_numeric_dtype(remapped.mod["rna"].obs["total_counts"])
@@ -211,7 +212,7 @@ def test_merge_scrr_cnv_creates_trimodal_mudata(tmp_path: Path) -> None:
     rna = ad.AnnData(X=np.array([[1], [2]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["G1"]))
     circ = ad.AnnData(X=np.array([[0], [3]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["C1"]))
     rna_circ_h5mu = tmp_path / "rna_circ_remapped.h5mu"
-    mu.MuData({"rna": rna, "circ": circ}).write_h5mu(rna_circ_h5mu)
+    write_h5mu(mudata_from_modalities({"rna": rna, "circ": circ}), rna_circ_h5mu)
 
     cnv_obs = pd.DataFrame(
         {
@@ -250,7 +251,7 @@ def test_merge_scrr_cnv_creates_trimodal_mudata(tmp_path: Path) -> None:
     assert payload["overlap_counts"]["n_trimodal_overlap"] == 2
     assert Path(payload["output_summary_json"]).exists()
 
-    merged = mu.read_h5mu(output)
+    merged = read_h5mu(output)
     assert list(merged.mod.keys()) == ["rna", "circ", "cnv"]
     assert list(merged.obs_names) == ["IMR90_A_100", "IMR90_A_101"]
     assert "mappabilitynorm" in merged.mod["cnv"].layers

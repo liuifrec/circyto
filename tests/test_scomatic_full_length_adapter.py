@@ -11,6 +11,7 @@ import pytest
 from typer.testing import CliRunner
 
 from circyto.cli.circyto import app
+from circyto.multimodal.sync import mudata_from_modalities, read_h5mu, write_h5mu
 from circyto.pipeline.scomatic_full_length_adapter import HAS_ANNDATA, HAS_MUDATA
 
 
@@ -317,7 +318,7 @@ def test_merge_scomatic_adds_candidate_snv_modality(tmp_path: Path) -> None:
     rna = ad.AnnData(X=np.array([[1], [2]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["G1"]))
     circ = ad.AnnData(X=np.array([[0], [3]], dtype=np.int32), obs=obs.copy(), var=pd.DataFrame(index=["C1"]))
     input_h5mu = tmp_path / "rna_circ.h5mu"
-    mu.MuData({"rna": rna, "circ": circ}).write_h5mu(input_h5mu)
+    write_h5mu(mudata_from_modalities({"rna": rna, "circ": circ}), input_h5mu)
     candidates = tmp_path / "scomatic_candidate_summary.tsv"
     candidates.write_text(
         "\t".join(
@@ -358,7 +359,7 @@ def test_merge_scomatic_adds_candidate_snv_modality(tmp_path: Path) -> None:
     assert result.exit_code == 0, result.output
     payload = json.loads(result.output)
     assert "candidate_snv" in payload["modalities"]
-    merged = mu.read_h5mu(output)
+    merged = read_h5mu(output)
     assert "candidate_snv" in merged.mod
     candidate = merged.mod["candidate_snv"]
     assert list(candidate.obs_names) == ["cellA", "cellB"]
