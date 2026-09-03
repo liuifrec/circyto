@@ -2,7 +2,14 @@
 
 This page documents the expected inputs, processed outputs, and command shapes for the `circyto` manuscript:
 
-> Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto
+> circyto: a scverse-compatible framework for circular RNA analysis in full-length single-cell sequencing
+
+The authoritative Application Note claim and number register is
+[`../manuscript/application_note_evidence.md`](../manuscript/application_note_evidence.md).
+Smart-seq3 is the primary demonstration; IMR90 is a bounded multimodal schema
+example. HAP1 RT association, IMR90 CNV biology, cross-dataset programs, and
+known/novel biological summaries below are retained as **deferred biological
+follow-up**, not current submission requirements.
 
 The repository does not contain large FASTQ files, reference genomes, processed GEO DNA tables, circAtlas databases, or completed manuscript-scale `.h5mu` objects. Replace placeholder paths such as `/path/to/data/...` with local or institutional paths.
 
@@ -52,6 +59,10 @@ circyto workflow smartseq3-ciri3 \
 ```
 
 ## Regenerate HAP1 RNA+circRNA+RT MuData
+
+The RNA/circRNA route is real-data validated. The RT commands document an
+implemented contract with synthetic tests; current evidence does not support a
+finished real-file RT-circRNA biological analysis.
 
 ```bash
 circyto workflow full-length-circrna \
@@ -161,6 +172,9 @@ python scripts/manuscript/summarize_mudata_inventory.py \
 
 HAP1 RT/circRNA analysis:
 
+Deferred biological follow-up; do not use until real processed-file RT
+validation and the historical object are reconciled.
+
 ```bash
 python scripts/manuscript/hap1_rt_circ_analysis.py \
   --input /path/to/work/scrr_hap1/mudata/full_length_rna_circ_rt.hostgene_fixed.h5mu \
@@ -170,6 +184,9 @@ python scripts/manuscript/hap1_rt_circ_analysis.py \
 ```
 
 IMR90 CNV/circRNA analysis:
+
+Deferred biological follow-up. The Application Note uses IMR90 only to show
+RNA+circ+processed-CNV interoperability.
 
 ```bash
 python scripts/manuscript/imr90_cnv_circ_analysis.py \
@@ -181,6 +198,8 @@ python scripts/manuscript/imr90_cnv_circ_analysis.py \
 ```
 
 Cross-dataset host-gene overlap:
+
+Deferred biological follow-up.
 
 ```bash
 python scripts/manuscript/cross_dataset_host_overlap.py \
@@ -194,6 +213,9 @@ python scripts/manuscript/cross_dataset_host_overlap.py \
 ```
 
 Known versus novel circRNA summary:
+
+Optional/deferred unless a compact descriptive row is needed in the
+Supplement; it is not a main-paper biological analysis.
 
 ```bash
 python scripts/manuscript/known_novel_circ_summary.py \

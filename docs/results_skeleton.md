@@ -1,83 +1,51 @@
-# Results Skeleton
+# Bioinformatics Application Note results skeleton
 
-This page is a cautious writing scaffold for the current `circyto` project.
+This is a writing scaffold, not an evidence source. Resolve every quantitative
+statement through `manuscript/application_note_evidence.md`.
 
-## 1. circyto supports validated circRNA workflows across multiple full-length single-cell protocols
+## 1. Introduction
 
-Points to cover:
+- Full-length single-cell protocols can retain RNA species that are not
+  represented by standard gene-expression workflows.
+- Existing circRNA detectors produce detector-specific outputs but do not by
+  themselves supply a common cell-by-feature/scverse analysis layer.
+- circyto fills that workflow and interoperability gap; it is not a new
+  back-splice detection algorithm.
 
-- `SMART-Seq3` pooled workflow validated
-- single-end human scRR / RamDA-like workflow validated
-- paired-end human scRR / RamDA-like workflow validated
-- workflow outputs are standardized into matrices, `h5ad`, and optional `h5mu`
+## 2. circyto workflow
 
-Language guardrail:
+- Describe protocol-aware Smart-seq3 and manifest-driven RamDA/scRR routes.
+- Follow detector output through cell-level collection, matrix construction,
+  QC, host-gene/known-circRNA annotation, provenance, and AnnData/MuData export.
+- Introduce Figure 1A and keep optional processed CNV, processed RT, and
+  candidate-variant integrations visually and verbally secondary.
 
-- describe these as validated workflow and output layers
-- do not overstate biological discovery from pilot-size runs
+## 3. Single-cell and multimodal outputs
 
-## 2. circyto reconstructs RNA+circ multimodal outputs from completed workflows
+- Use E-MTAB-8735 Smart-seq3 as the primary real-data demonstration.
+- Report the regenerated object shape, annotation recovery, and per-cell
+  summaries.
+- Describe Figure 1B as an RNA-derived UMAP with circRNA burden overlaid.
+- Describe Figure 1C as an illustrative MAN1A2-associated candidate detection
+  overlay without functional interpretation.
+- Briefly state that the 23-cell IMR90 RNA+circ+processed-CNV object
+  demonstrates multimodal interoperability.
+- Point workflow breadth, object schemas, software validation, commands, and
+  provenance to Supplementary Figures S1-S2 and Tables S1-S3.
 
-Points to cover:
+## 4. Conclusions
 
-- post-hoc RNA profiling
-- RNA QC refresh after cleanup
-- RNA+circ joined summaries
-- MuData export for `scverse` interoperability
+- Reiterate the bridge from detector calls to interoperable single-cell
+  objects.
+- Keep biological discovery, RT/CNV association analysis, long-read validation,
+  and predictive biogenesis outside the central claim.
+- State relevant limitations: detector-derived candidates, full-length protocol
+  focus, small multimodal example, and optional integration boundaries.
 
-Language guardrail:
+## Required wording guardrails
 
-- focus on interoperability and reproducibility
-- keep exploratory downstream analyses clearly labeled
-
-## 3. Public scRR runs establish executable human RamDA/scRR routes
-
-Validated completed outputs:
-
-- IMR90 full23 RNA+circ workflow
-- IMR90 full23 processed CNV import
-- IMR90 full23 tri-modal RNA+circ+CNV MuData
-- HAP1 batch10 paired-end RNA+circ workflow
-- HAP1 batch10 SComatic technical smoke
-- HAP1 processed RT/state importer implemented with synthetic tests
-
-Pending outputs:
-
-- HAP1 full public set
-- real GSE278952 HAP1 processed RT/state file import validation
-
-Language guardrail:
-
-- separate completed validated outputs from pending full-data outputs
-- avoid treating HAP1 full or exploratory SComatic candidate calling as final biological results
-
-## 4. circyto integrates processed scRR DNA state as dataset-specific modalities
-
-Points to cover:
-
-- processed GEO CNV state import for IMR90-style CNV summaries
-- mappability-normalized CNV signal layer where supplied
-- processed replication timing/state import for HAP1-style RT summaries
-- GSM-to-biological-cell mapping
-- tri-modal RNA+circ+CNV or RNA+circ+RT MuData
-- SComatic interoperability as an optional sidecar
-
-Terminology guardrail:
-
-- SComatic outputs should be called:
-  - `RNA-derived candidate variant signals`
-- they should not be described as orthogonally confirmed somatic variants without orthogonal DNA evidence
-
-## 5. SComatic interoperability is technical and exploratory
-
-Points to cover:
-
-- RamDA/scRR adapter validated
-- HAP1 batch10 BaseCellCounter, Step1, and Step2 executed
-- Step2 produced no candidate calls in the single-cell-type design
-- local WSL setup remains an environment caveat; server/container execution is preferred for real runs
-
-Language guardrail:
-
-- classify this as exploratory RNA-derived candidate variant signals interoperability
-- do not imply orthogonally confirmed somatic variant calling
+- “circRNA candidate” or “detected circRNA,” unless orthogonally validated.
+- “processed CNV integration,” not CNV inference from raw DNA reads.
+- “RNA-derived candidate variant signals,” not validated DNA variants.
+- No finished HAP1 RT-circRNA discovery, radiation result, single-cell Nanopore
+  circRNA validation, or predictive biogenesis claim.

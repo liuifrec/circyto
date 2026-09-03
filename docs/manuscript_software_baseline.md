@@ -9,7 +9,7 @@ Bioinformatics Application Note.
 | --- | --- |
 | Project | circyto |
 | Software version | 0.10.0 |
-| Candidate manuscript baseline commit | `3eb4acdf1c6f55c6edd88e8aa4e21f8f15376d06` |
+| Manuscript baseline commit | `44697355bcab1c525ca7ef9b130e2ad0094d9e1b` |
 | Validation date | 2026-08-24 |
 | Full source and clean-wheel validation | Python 3.10.20 |
 | Targeted MuData 0.4 compatibility check | Python 3.12.14; not a full release-stack validation |
@@ -20,8 +20,8 @@ and pytest 9.1.1. The clean wheel resolved the same numerical/scverse stack
 and Typer 0.27.1. The targeted Python 3.12 check used MuData 0.4.1 and AnnData
 0.13.2 only for the synchronization compatibility paths described below.
 
-The candidate tree is the exact tip of the PR #13 to PR #15 stack. It contains,
-in order, the issue #12 portability fixes, biogenesis schema/export foundation,
+The baseline is the merged `main` tree containing PR #13 and PR #15. It
+contains the issue #12 portability fixes, biogenesis schema/export foundation,
 generic Nanopore interoperability, CIRI-long adapter and validations,
 release-readiness cleanup, and explicit MuData synchronization compatibility.
 
@@ -121,7 +121,8 @@ The following work does not block manuscript writing:
 ## Freeze decision
 
 **PASS.** PR #13 independently passed its tests, build, compile, diff, and CLI
-checks. The exact simulated PR #13 to PR #15 final tree passed the full source,
-package, clean-wheel, semantic, and repository-hygiene gates. This software
-tree can serve as the stable manuscript baseline without adding biological
-scope. PR #13 and PR #15 remain unmerged at the time of this record.
+checks. The exact PR #13 to PR #15 final tree passed the full source, package,
+clean-wheel, semantic, and repository-hygiene gates. PR #13 and PR #15 are
+merged in baseline commit `44697355bcab1c525ca7ef9b130e2ad0094d9e1b`.
+This tree is the stable manuscript software baseline; no additional biological
+or engineering scope is required for the Application Note.

@@ -41,9 +41,10 @@ circyto summarize-benchmark \
 
 This command is designed to support:
 
-- methods tables
-- benchmark appendix tables
+- Supplementary Tables S1-S3
 - workflow reproducibility summaries
 - disk and cleanup reporting across benchmark datasets
 
 It is not intended to imply biological ranking or mechanistic interpretation by itself.
+It does not replace the checksum-matched regeneration required by
+`manuscript/application_note_evidence.md`.

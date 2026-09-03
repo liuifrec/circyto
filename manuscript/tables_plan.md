@@ -1,52 +1,64 @@
-# Tables Plan
+# Application Note tables plan
 
-## Main Tables
+No main-paper table is planned. Keep the supplement to the smallest set needed
+to audit datasets, claims, and reproducibility.
 
-Table 1: Dataset and modality inventory.
+## Supplementary Table S1: dataset/workflow inventory
 
-- dataset
-- source accession
-- protocol
-- RNA cells/features
-- circRNA cells/features
-- DNA-derived modality cells/features
-- shared-cell overlap
-- processed object path
+Columns:
 
-Table 2: Host-gene annotation recovery.
+- dataset and accession;
+- protocol and read layout;
+- route;
+- reference;
+- output object/modalities;
+- validation scale;
+- manuscript role;
+- limitation.
 
-- dataset
-- circRNA count
-- annotated circRNAs
-- recovery fraction
-- `host_gene_source` counts
-- dominant source
+Rows: Smart-seq3 / E-MTAB-8735, IMR90 scRR / GSE278958, and HAP1 scRR /
+GSE278952. Long-read examples may be added as clearly separated optional rows.
 
-Table 3: HAP1 RT-circRNA association.
+## Supplementary Table S2: software and reproducibility validation
 
-- metric pair
-- number of paired cells
-- Pearson r and p-value
-- Spearman r and p-value
-- OLS terms for `circRNA_count ~ detected_genes + frac_rt_pos`
+Columns:
 
-Table 4: IMR90 CNV-high host-gene programs.
+- workflow or capability;
+- dataset/test fixture;
+- cells;
+- circRNAs;
+- annotation recovery;
+- validation status;
+- evidence source;
+- limitation.
 
-- host gene
-- number of circRNAs
-- CNV-high mean support
-- CNV-low mean support
-- difference and log2 fold-change
-- gene-program label when curated
+Use “not regenerated” or “not applicable” rather than importing stale values.
+The HAP1 manuscript-scale counts remain blank until reconciled; the validated
+10-cell route may be reported as protocol execution evidence.
 
-## Supplement Tables
+## Supplementary Table S3: versions, commands, and provenance
 
-Supplement Table S1: Full `summarize_mudata_inventory.py` output.
+Columns:
 
-Supplement Table S2: Known versus novel circRNA summary.
+- component or workflow;
+- circyto version and baseline commit;
+- Python/dependency or external-tool version;
+- command/script;
+- input accession/object SHA-256;
+- output/provenance record;
+- status.
 
-Supplement Table S3: Cross-dataset host-gene overlap.
+Include the package build, wheel-only install, H5MU round trip, resource lookup,
+MuData synchronization audit, and exact manuscript regeneration commands.
 
-Supplement Table S4: Optional local CNV-at-circRNA-locus summary.
+## Optional long-read section
 
-Supplement Table S5: Reproducibility commands and software versions.
+If included, append a short, visibly secondary block to S1-S3 rather than
+creating additional tables. Report generic SRR4048177 interoperability and the
+official CIRI-long demo separately.
+
+## Deferred biological follow-up
+
+Former tables for HAP1 RT regression, IMR90 CNV-high programs, known/novel
+biology, cross-dataset host-gene overlap, and local CNV-at-circRNA loci are not
+submission requirements.

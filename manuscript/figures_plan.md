@@ -1,47 +1,79 @@
-# Figures Plan
+# Application Note figures plan
 
-## Figure 1: circyto Architecture
+## Main Figure 1: workflow and Smart-seq3 output
 
-Planned panels:
+Figure 1 is the only main-paper figure. It should read from architecture to
+real-data output in one visual sequence.
 
-- FASTQ/full-length scRNA input.
-- circRNA detector layer.
-- host-gene annotation.
-- known circRNA annotation.
-- AnnData/MuData export.
-- integration with RNA, CNV, RT, and `candidate_snv` RNA-derived candidate variant signal layers.
+### Panel A: circyto architecture
 
-## Figure 2: Dataset Validation and Host-Gene Annotation
+Primary path:
 
-Planned panels:
+```text
+full-length scRNA-seq
+    -> protocol-aware alignment / circRNA detection
+    -> cell x circRNA matrix + QC
+    -> host-gene / known-circRNA annotation
+    -> AnnData / MuData
+```
 
-- Smart-seq3, HAP1, and IMR90 inventory.
-- circRNA counts by dataset.
-- host-gene annotation recovery.
-- `host_gene_source` breakdown.
+Show that detector calls enter circyto; do not depict circyto as inventing a
+new back-splice detector. RNA and circRNA are the primary output modalities.
+Optional branches for processed CNV, processed RT, and exploratory candidate
+variant signals should be smaller, lighter, and labelled optional.
 
-## Figure 3: HAP1 RT-circRNA Association
+### Panel B: RNA-derived Smart-seq3 UMAP with circRNA burden
 
-Planned panels:
+- Dataset: E-MTAB-8735, 192 cells.
+- Construct the embedding from RNA features only.
+- Colour cells by detected circRNAs per cell; include median = 12 only after
+  regeneration from the checksum-matched object.
+- State in the legend that the circRNA metric is an overlay and did not define
+  the embedding.
 
-- RT-positive fraction versus circRNA count.
-- RT-positive fraction versus circRNA total support.
-- OLS / partial regression result for `circRNA_count ~ detected_genes + frac_rt_pos`.
-- RT-high enriched host genes.
+### Panel C: representative MAN1A2-associated circRNA detection
 
-## Figure 4: IMR90 CNV-circRNA Analysis
+- Use candidate `chr1:117402186|117420649`, host gene `MAN1A2`.
+- Reuse the Panel B RNA-derived coordinates.
+- Prefer a binary detected/not-detected overlay for clarity; support may be a
+  continuous overlay only if the legend says “support,” not expression.
+- Historical export: detected in 6/192 cells, total support 15. Regenerate
+  before putting either number in the legend.
+- Treat the feature as an illustrative output, not evidence for MAN1A2 biology.
 
-Planned panels:
+## Supplementary Figure S1: protocol/workflow validation
 
-- global CNV burden versus circRNA count/support.
-- CNV-high versus CNV-low host-gene enrichment.
-- ECM/stress-associated host genes, including `COL1A1`, `FN1`, `VIM`, `COL6A3`, `P4HB`, `COL1A2`, `CRIM1`, `SPARC`, `LTBP1`, `CORO1C`, and `ERBIN`.
-- local CNV-at-circRNA-locus results when coordinates support the analysis.
+One compact panel set covering:
 
-## Figure 5: Cross-Dataset Host-Gene Program
+- Smart-seq3 pooled/demultiplexed paired-end route;
+- IMR90 single-end scRR route;
+- HAP1 paired-end scRR route.
 
-Planned panels:
+For each, show protocol, alignment/detector route, completed output class, and
+validation status. Use the validated HAP1 10-cell batch; do not substitute the
+unresolved historical 63-cell/RT object.
 
-- pairwise and three-way host-gene overlaps.
-- shared HAP1 RT-high and IMR90 CNV-high positive host genes.
-- candidate recurrent genome-state-associated circRNA host-gene program.
+## Supplementary Figure S2: multimodal object/schema demonstration
+
+Show modality structure and cell-axis contracts rather than biological
+associations:
+
+- RNA+circ AnnData/MuData;
+- validated IMR90 RNA+circ+processed-CNV MuData (23-cell overlap);
+- optional RT import/merge contract, labelled implemented with synthetic tests
+  and pending reconciled real processed-file validation.
+
+If space permits, include the scoped `pull_on_update=True` compatibility policy
+as a small provenance note, not a separate panel.
+
+## Optional long-read inset
+
+Only add a compact supplementary inset or table row if it does not compete
+with the short-read single-cell story. Separate generic ONT cDNA alignment/QC
+from the chemistry-gated bulk CIRI-long adapter and retain all non-claims in
+`application_note_evidence.md`.
+
+## Deferred biological follow-up
+
+The former HAP1 RT association, IMR90 CNV biology, and cross-dataset host-gene
+program figures are not part of this Application Note.

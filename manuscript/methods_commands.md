@@ -2,6 +2,13 @@
 
 These command shapes document how manuscript-scale objects are expected to be regenerated. Paths are placeholders unless explicitly described as committed repo assets.
 
+For the current Application Note, the Smart-seq3 commands support the primary
+demonstration and the IMR90 commands support a multimodal object/schema
+example. The HAP1 RT analysis and IMR90 CNV association scripts below are
+preserved as **deferred biological follow-up**, not as main-paper requirements.
+Real HAP1 processed-file RT validation must be reconciled before those outputs
+are used as evidence.
+
 ## Smart-seq3 / E-MTAB-8735
 
 ```bash
@@ -37,6 +44,10 @@ circyto repair-host-genes \
 ```
 
 ## HAP1 RNA+circRNA+RT
+
+**Deferred biological follow-up:** the RNA/circ route is real-data validated,
+but the RT commands below currently document the integration contract. They do
+not establish a completed real-file RT-circRNA analysis.
 
 ```bash
 circyto workflow full-length-circrna \
@@ -86,6 +97,10 @@ circyto repair-host-genes \
 
 ## IMR90 RNA+circRNA+CNV
 
+**Supplementary interoperability only:** use these commands to demonstrate the
+RNA+circ+processed-CNV object contract. CNV association or host-gene biology is
+deferred biological follow-up.
+
 ```bash
 circyto build-scrr-cell-map \
   --soft /path/to/data/GSE278958_family.soft.gz \
@@ -122,6 +137,9 @@ circyto repair-host-genes \
 ```
 
 ## Manuscript Summary Scripts
+
+The inventory command is current manuscript support. HAP1 RT correlations and
+IMR90 CNV association outputs are deferred biological follow-up.
 
 ```bash
 python scripts/manuscript/summarize_mudata_inventory.py \

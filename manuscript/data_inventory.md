@@ -1,105 +1,97 @@
-# Data Inventory
+# Application Note data inventory
 
-The processed objects below are expected local manuscript inputs. They are not committed to the repository.
+This inventory distinguishes current committed evidence from values derived
+from manuscript-scale objects that are no longer tracked. Exact provenance and
+classification are maintained in `application_note_evidence.md`.
 
 ## Smart-seq3 / E-MTAB-8735
 
-Expected object:
+Role: primary real-data demonstration.
+
+Audited object identity:
 
 ```text
-mtab8735_smartseq3/full_length.hostgene_fixed.h5mu
+load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu
+SHA-256: 0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339
 ```
 
-Expected modalities:
+Historical checksum-backed audit:
 
-- RNA: 192 cells x 63,187 genes
-- circRNA: 192 cells x 2,503 circRNAs
+- RNA: 192 cells x 63,187 features;
+- circRNA: 192 cells x 2,503 candidates;
+- shared RNA/circRNA cells: 192;
+- annotated circRNAs: 2,379 / 2,503 (95.0% to one decimal place);
+- median detected circRNAs per cell: 12;
+- median total circRNA support per cell: 22.5;
+- representative candidate: `chr1:117402186|117420649`, annotated to
+  `MAN1A2`, detected in 6/192 cells with total support 15 in the historical
+  export.
 
-Expected host-gene annotation:
+Status: the 192-cell and 2,503-candidate workflow result is also documented in
+the current README. All manuscript-facing values and Figure 1 plot data still
+need one independent regeneration from the checksum-matched object because the
+object and derived tables were removed from the frozen tree.
 
-- 2,379 / 2,503 circRNAs annotated
-- 95.0% annotation recovery
-- `host_gene_source` mostly `gtf`
+## IMR90 scRR / GSE278958
 
-Primary use:
+Role: bounded multimodal interoperability demonstration.
 
-- general circRNA detection and annotation benchmarking
-- host-gene landscape
-- known versus novel circRNA summary when circAtlas fields are present
-
-## HAP1 scRR-seq
-
-Expected object:
+Audited object identity:
 
 ```text
-scrr_hap1/mudata/full_length_rna_circ_rt.hostgene_fixed.h5mu
+load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu
+SHA-256: bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
 ```
 
-Expected modalities:
+Committed validation evidence:
 
-- RNA: 63 cells x 63,187 genes
-- circRNA: 63 cells x 3,209 circRNAs
-- RT: 56 cells x 56,881 genomic bins
+- RNA: 23 cells x 63,187 features;
+- circRNA: 23 cells x 2,443 candidates;
+- processed CNV: 23 cells x 60,607 bins;
+- trimodal overlap: 23 cells;
+- historical host-gene audit: 2,429 / 2,443 (99.4%).
 
-Expected overlap:
+Status: modality shapes and overlap are repeated in current authoritative
+workflow documentation and supported by a historical machine-readable merge
+summary. Regenerate the Supplementary Table row from the checksum-matched
+object before submission. Do not interpret processed CNV biology in the main
+paper.
 
-- RNA/circRNA overlap: 63 cells
-- RNA/circRNA/RT overlap: 56 cells
+## HAP1 scRR / GSE278952
 
-Expected host-gene annotation:
+Role: protocol validation in Supplementary Figure S1; optional RT contract in
+Supplementary Figure S2.
 
-- 3,117 / 3,209 circRNAs annotated
-- 97.1% annotation recovery
-- `host_gene_source` mostly `gtf`
+Current authoritative status:
 
-Known correlations, n = 56 paired cells:
+- the paired-end real-data RNA/circRNA route is validated on a 10-cell batch;
+- RT import and RNA+circ+RT merge are implemented and covered by synthetic
+  tests;
+- current workflow documentation says real processed-file RT validation is
+  pending.
 
-- `frac_rt_pos` vs `circRNA_count`: Pearson r = 0.3778, p = 0.0041; Spearman r = 0.2777, p = 0.0383
-- `frac_rt_pos` vs `circRNA_total_support`: Pearson r = 0.3052, p = 0.0222; Spearman r = 0.3081, p = 0.0209
-- `frac_rt_neg` vs `circRNA_count`: Pearson r = -0.3887, p = 0.0031; Spearman r = -0.2852, p = 0.0331
-- `frac_rt_neg` vs `circRNA_total_support`: Pearson r = -0.3075, p = 0.0211; Spearman r = -0.3105, p = 0.0198
-- `detected_genes` vs `circRNA_count`: Pearson r = 0.7357, p = 1.05e-10; Spearman r = 0.6698, p = 1.65e-8
+Historical, unresolved manuscript-object values:
 
-Required next analysis:
+- RNA/circRNA: 63 cells;
+- circRNA candidates: 3,209;
+- RT: 56 cells x 56,881 bins;
+- trimodal overlap: 56 cells;
+- host-gene annotations: 3,117 / 3,209 (97.1%).
 
-```text
-circRNA_count ~ detected_genes + frac_rt_pos
-```
+Status: historical/unverified for manuscript use and needs rerun/reconciliation.
+Do not quote these counts or prior RT-circRNA correlations in the Application
+Note until the source files, object SHA-256, and current workflow status are
+reconciled.
 
-## IMR90 scRR-seq
+## Long-read interoperability
 
-Expected object:
+Role: optional compact supplementary software-extensibility note.
 
-```text
-scrr_imr90/mudata/full_length_rna_circ_cnv.hostgene_fixed.h5mu
-```
-
-Expected modalities:
-
-- RNA: 23 cells x 63,187 genes
-- circRNA: 23 cells x 2,443 circRNAs
-- CNV: 23 cells x 60,607 genomic bins
-
-Expected overlap:
-
-- RNA/circRNA/CNV overlap: 23 cells
-
-Expected host-gene annotation:
-
-- 2,429 / 2,443 circRNAs annotated
-- 99.4% annotation recovery
-- `host_gene_source` mostly `gtf`
-
-Expected CNV-high fibroblast/ECM/stress signal genes:
-
-- `COL1A1`
-- `FN1`
-- `VIM`
-- `COL6A3`
-- `P4HB`
-- `COL1A2`
-- `CRIM1`
-- `SPARC`
-- `LTBP1`
-- `CORO1C`
-- `ERBIN`
+- Generic ONT / SRR4048177: 52,696 input reads; 39,537 mapped primary
+  queries (75.03%); 33,270 spliced primary queries (84.15% of mapped primary
+  queries). This validates generic cDNA ingestion/alignment/QC only;
+  `circRNA_call=false`.
+- Official CIRI-long demo: 149 BSJs, 149 full-length isoforms, 149 expression
+  rows, 149 usage rows, and 1,133 read assignments, with zero reconciliation
+  discrepancies. This is bulk, chemistry-gated adapter interoperability, not
+  single-cell biological performance.

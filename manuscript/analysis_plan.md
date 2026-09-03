@@ -1,80 +1,86 @@
-# Analysis Plan
+# Application Note analysis plan
 
-## Core Framing
+## Framing
 
-The manuscript evaluates `circyto` as a framework for full-length single-cell circRNA detection, annotation, and multimodal genome-state integration. It is not framed as only a circRNA caller.
+The paper evaluates circyto as the missing workflow and data-model layer
+between established circRNA detectors and scverse analysis. It does not
+present a new detector or a circRNA biology survey.
 
-Main analysis layers:
+The main paper must establish, in order:
 
-- Manifest-driven full-length single-cell workflow.
-- Multi-detector circRNA architecture, currently validated mainly with CIRI3.
-- AnnData and MuData export for scverse-compatible downstream analysis.
-- Host-gene annotation with explicit provenance.
-- Known circRNA annotation through circAtlas-style tables.
-- scRR GEO SOFT RNA/DNA cell mapping.
-- scRR CNV and replication timing modality import and merge.
-- SComatic interoperability for RNA-derived candidate variant signals.
+1. full-length single-cell protocols require detector-aware preprocessing and
+   cell-resolved collection;
+2. circyto produces annotated cell-by-circRNA matrices with QC and provenance;
+3. real Smart-seq3 data run through the workflow;
+4. the resulting RNA and circRNA data behave as standard AnnData/MuData
+   modalities;
+5. processed DNA-state data can be added without changing modality semantics;
+6. the frozen package is installable and reproducibly validated.
 
-## Dataset Analyses
+## Primary demonstration: Smart-seq3 / E-MTAB-8735
 
-### Smart-seq3 / E-MTAB-8735
+Use a checksum-matched copy of the audited Smart-seq3 RNA+circ H5MU object.
+Regenerate all final numbers and plot data from that object in one controlled
+run. The intended main-paper summaries are:
 
-Use `mtab8735_smartseq3/full_length.hostgene_fixed.h5mu` for general circRNA detection, annotation benchmarking, and host-gene landscape.
+- 192 cells;
+- 63,187 RNA features;
+- 2,503 circRNA candidates;
+- 2,379 host-gene annotations (95.0%);
+- median 12 detected circRNAs per cell;
+- median total circRNA support 22.5 per cell.
 
-Expected object:
+These values agree with the historical committed object audit, but the object
+is not present in the frozen tree. They require pre-submission regeneration,
+not a full raw-data workflow rerun, unless the archived object fails its
+recorded SHA-256 check.
 
-- RNA: 192 cells x 63,187 genes
-- circRNA: 192 cells x 2,503 circRNAs
-- host-gene annotation: 2,379 / 2,503 circRNAs, 95.0% recovery
-- `host_gene_source` mostly `gtf`
+Figure analysis:
 
-### HAP1 scRR-seq
+- compute the embedding from the RNA modality only with fixed preprocessing
+  and random seed;
+- overlay per-cell circRNA burden without using circRNA values to construct the
+  embedding;
+- overlay detection (or support, if clearly labelled) for the representative
+  `chr1:117402186|117420649` MAN1A2-associated candidate;
+- describe this as an illustrative software output, not a biological
+  association or validation of MAN1A2 function.
 
-Use `scrr_hap1/mudata/full_length_rna_circ_rt.hostgene_fixed.h5mu` for RNA+circRNA+RT integration.
+## Secondary interoperability demonstration: IMR90 scRR
 
-Expected object:
+Use the validated 23-cell RNA+circ+processed-CNV MuData example to show that
+modalities share an explicit cell axis and retain modality-specific features.
+The committed evidence reports 23 cells in each modality and a trimodal
+overlap of 23. CNV is imported from processed GEO summaries; circyto does not
+infer CNV from raw DNA reads. Do not include CNV-burden correlations,
+CNV-high host-gene programs, or locus-level claims in the main paper.
 
-- RNA: 63 cells x 63,187 genes
-- circRNA: 63 cells x 3,209 circRNAs
-- RT: 56 cells x 56,881 genomic bins
-- RNA/circRNA overlap: 63 cells
-- RNA/circRNA/RT overlap: 56 cells
-- host-gene annotation: 3,117 / 3,209 circRNAs, 97.1% recovery
+## Protocol breadth: HAP1 scRR
 
-Primary test:
+Use HAP1 only as evidence that the paired-end scRR RNA/circRNA route executes
+on real data. The current authoritative workflow summary supports a validated
+10-cell batch. Historical manuscript artifacts report a 63-cell RNA/circ
+object and a 56-cell RT overlap, but current frozen-tree documentation says
+real processed-file RT validation remains pending. Those historical counts and
+all RT-circRNA association results therefore require reconciliation and are
+not manuscript claims.
 
-```text
-circRNA_count ~ detected_genes + frac_rt_pos
-```
+## Supplementary analyses
 
-This tests whether replication-timing state explains circRNA burden beyond detected gene number / transcriptional complexity.
+Keep the supplement limited to protocol/workflow validation, object schemas,
+dataset inventory, software validation, versions, commands, and provenance.
+Generic Nanopore and CIRI-long results may appear as a compact optional
+interoperability note only if their chemistry and interpretation boundaries
+remain explicit.
 
-### IMR90 scRR-seq
+## Deferred biological follow-up
 
-Use `scrr_imr90/mudata/full_length_rna_circ_cnv.hostgene_fixed.h5mu` for RNA+circRNA+CNV integration.
+The following are not requirements for this Application Note:
 
-Expected object:
-
-- RNA: 23 cells x 63,187 genes
-- circRNA: 23 cells x 2,443 circRNAs
-- CNV: 23 cells x 60,607 genomic bins
-- RNA/circRNA/CNV overlap: 23 cells
-- host-gene annotation: 2,429 / 2,443 circRNAs, 99.4% recovery
-
-Primary interpretation:
-
-IMR90 does not show a strong global CNV-burden to circRNA-burden relationship, but CNV-high cells show biologically coherent fibroblast, ECM, and stress-associated host-gene programs.
-
-Local CNV analysis should test whether circRNA abundance follows copy number at the circRNA locus for host genes such as `COL1A1`, `FN1`, `VIM`, `COL6A3`, and `P4HB`.
-
-## Cross-Dataset Analyses
-
-- Pairwise and three-way circRNA host-gene overlap across Smart-seq3, HAP1, and IMR90.
-- Shared positive host-gene programs between HAP1 RT-high and IMR90 CNV-high analyses when enrichment tables are available.
-- Known versus novel circRNA summaries if circAtlas annotation fields exist in the processed objects.
-
-## Interpretation Rules
-
-- HAP1 and IMR90 public scRR analyses are proof-of-concept genome-state integrations, not exposure-specific conclusions.
-- The current manuscript should emphasize framework plus proof-of-concept discovery, not causality.
-- SComatic-derived layers must be described as RNA-derived candidate variant signals.
+- HAP1 RT-circRNA regression or discovery claims;
+- IMR90 CNV-burden biology or CNV-high host-gene programs;
+- local CNV-at-circRNA-locus inference;
+- cross-dataset host-gene programs;
+- radiation/exposure interpretation;
+- predictive circRNA biogenesis modelling;
+- CRR194209 or single-cell CIRI-long validation.

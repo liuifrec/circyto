@@ -1,10 +1,29 @@
-# Caveats and Conservative Language
+# Caveats and required wording boundaries
 
-- HAP1 and IMR90 are public validation datasets, not RERF exposure cohorts.
-- HAP1 is a transformed/near-haploid cell line.
-- IMR90 has only 23 cells in the current processed tri-modal object.
-- CNV burden is a crude global summary; local CNV-at-circRNA-locus analysis is needed before making locus-level copy-number claims.
-- RT association may be mediated by detected gene number or broader transcriptional complexity.
-- SComatic output should be described as RNA-derived candidate variant signals.
-- The current manuscript should emphasize framework plus proof-of-concept discovery, not causality.
-- Public scRR analyses demonstrate feasibility of linking circRNA profiles with DNA-derived genome-state features; they should not be described as radiation-exposure results.
+- circyto bridges detector output and single-cell/scverse analysis; it is not a
+  new back-splice detection algorithm.
+- Detector-derived features should be called circRNA candidates or detected
+  circRNAs unless orthogonal validation supports stronger language.
+- The Smart-seq3 MAN1A2-associated candidate is an illustrative overlay, not a
+  functional or disease association.
+- IMR90 CNV is imported from processed GEO summaries. The 23-cell object shows
+  multimodal interoperability and does not support broad CNV biology claims.
+- The validated HAP1 evidence is the real-data paired-end RNA/circRNA route.
+  Real processed-file RT validation is unresolved in the current evidence
+  base, so no completed RT-circRNA discovery analysis should be claimed.
+- SComatic-derived layers are exploratory RNA-derived candidate variant signals,
+  not orthogonally confirmed DNA variants.
+- Generic ONT cDNA interoperability is alignment/QC/provenance evidence only;
+  `circRNA_call=false` and non-detection is not biological absence.
+- The official CIRI-long demonstration is bulk, chemistry-gated adapter
+  interoperability and does not establish single-cell performance or
+  biological accuracy.
+- Biogenesis exports implement positive/unlabelled schemas and provenance; no
+  predictive biogenesis model or true-negative semantics exist.
+- MuData compatibility preserves circyto's historical synchronization policy;
+  broader AnnData 0.13 string-dtype migration is deferred.
+- Public HAP1 and IMR90 data are not radiation-exposure cohorts.
+
+HAP1 RT association, IMR90 CNV-burden biology, local CNV-locus inference,
+cross-dataset host-gene programs, and radiation applications are deferred
+biological follow-up rather than Application Note requirements.

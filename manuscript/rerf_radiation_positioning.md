@@ -1,5 +1,8 @@
 # RERF/Radiation Positioning
 
+> **Deferred biological follow-up:** this internal positioning is outside the
+> Bioinformatics Application Note and is not a current manuscript requirement.
+
 The primary RP objective remains clone identification and cell-state analysis. circyto provides an additional exploratory layer that can use the same full-length RamDA/ShinRamDA data to evaluate circRNA and other noncanonical RNA features in relation to clone status, genome instability, and radiation-associated cellular states.
 
 ## Conservative Position
