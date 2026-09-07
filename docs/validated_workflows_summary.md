@@ -27,6 +27,12 @@ The intent is to separate:
 
 ## Experimental Or Future
 
+Validated RNA+circ and IMR90 RNA+circ+CNV exports in the first row remain
+validated capabilities; their inclusion below describes optional extensions,
+not a downgrade of the real-data evidence. The manuscript object regeneration
+and scoped legacy-reader limitation are documented in
+[`../manuscript/reproduce.md`](../manuscript/reproduce.md).
+
 | Area | Current state | Notes |
 | --- | --- | --- |
 | MuData multimodal export for full-length workflows | validated for RNA+circ and IMR90 RNA+circ+CNV | `export-mudata` writes RNA+circ; `merge-scrr-cnv` writes tri-modal scRR MuData after GSM remapping |

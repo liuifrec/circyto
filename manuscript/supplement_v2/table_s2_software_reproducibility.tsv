@@ -1,0 +1,11 @@
+check	dataset_or_fixture	result	evidence_class	source	limitation
+Frozen full suite	source tests	345 passed; 8 skipped; 5 warnings	committed frozen validation	docs/manuscript_software_baseline.md	not rerun as a raw-data pipeline
+MuData transition warnings	synchronization regression	0 behavior-change FutureWarnings	committed frozen validation	docs/mudata_compatibility.md	broad AnnData 0.13 migration deferred
+Distribution build	wheel and sdist	passed	committed frozen validation	docs/manuscript_software_baseline.md	version 0.10.0
+Clean wheel install	declared dependencies; pip check; CLI	passed	committed frozen validation	docs/manuscript_software_baseline.md	external detector executables separate
+Packaged detector resources	installed resource lookup	passed	committed frozen validation	docs/manuscript_software_baseline.md	not an accuracy benchmark
+H5MU round trip	synthetic RNA+circ	passed; warning-free	committed frozen validation	docs/manuscript_software_baseline.md	does not guarantee legacy global-index synchronization
+Smart-seq3 object	checksum-matched processed object	192 cells; 2503 candidates; 2379 annotated (95.0%)	regenerated	results_v2/provenance.json	host annotation is not independent circRNA validation
+IMR90 object	checksum-matched processed object	23 shared cells; 2443 candidates; 2429 annotated (99.4%)	regenerated	results_v2/provenance.json	processed CNV interoperability only
+HAP1 RNA+circ	real paired-end scRR	10 cells; candidates/annotation not regenerated	committed workflow validation	docs/current_project_status.md	no historical full-object or real RT result used
+Optional RT	synthetic import/merge fixtures	contract tests passed	synthetic only	docs/validated_workflows_summary.md	real processed-file validation pending reconciliation

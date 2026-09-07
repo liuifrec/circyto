@@ -1,0 +1,45 @@
+category	quantity	value	status	source
+software	circyto	0.10.0 (source tree)	frozen production baseline	docs/manuscript_software_baseline.md
+software	baseline commit	44697355bcab1c525ca7ef9b130e2ad0094d9e1b	frozen	docs/manuscript_software_baseline.md
+regeneration	repository commit	7e9c1cb9a09a4f0bfd114bb66c0c34df4f31fdbc	script digest disambiguates uncommitted work	results_v2/provenance.json
+regeneration	script SHA-256	4f97474384bb975f3428d49d4effe62a4dad839af0c46c8027672a61147aec32	executed source	scripts/manuscript/regenerate_application_note_results.py
+environment	Python	3.10.20 | packaged by conda-forge | (main, Jun 11 2026, 03:31:56) [GCC 14.3.0]	regeneration environment	results_v2/provenance.json
+command	results and Figure 1B/C	python scripts/manuscript/regenerate_application_note_results.py --smartseq3 <SMART_H5MU> --imr90 <IMR90_H5MU> --output manuscript/results_v2_reproduced	offline after objects are obtained	manuscript/reproduce.md
+command	schematics and supplement	python scripts/manuscript/build_application_note_supplement.py --results manuscript/results_v2_reproduced --output manuscript/supplement_v2_reproduced	offline; new directory required	manuscript/reproduce.md
+source	object archive commit	c99cddaae2314d3af7d5232150c5b86bb6b52e25	historical Git source; binaries excluded from current tree	manuscript/application_note_evidence.md
+external tools	STAR / BWA / CIRI3	not executed for processed-object regeneration	historical executable versions not independently re-established in this pass	docs/validated_workflows_summary.md
+environment	anndata	0.11.4	regeneration environment	results_v2/provenance.json
+environment	h5py	3.16.0	regeneration environment	results_v2/provenance.json
+environment	llvmlite	0.49.0	regeneration environment	results_v2/provenance.json
+environment	matplotlib	3.10.9	regeneration environment	results_v2/provenance.json
+environment	mudata	0.3.10	regeneration environment	results_v2/provenance.json
+environment	numba	0.67.0	regeneration environment	results_v2/provenance.json
+environment	numpy	2.2.6	regeneration environment	results_v2/provenance.json
+environment	pandas	2.3.3	regeneration environment	results_v2/provenance.json
+environment	pynndescent	0.6.0	regeneration environment	results_v2/provenance.json
+environment	scanpy	1.11.5	regeneration environment	results_v2/provenance.json
+environment	scikit-learn	1.7.2	regeneration environment	results_v2/provenance.json
+environment	scipy	1.15.3	regeneration environment	results_v2/provenance.json
+environment	umap-learn	0.5.12	regeneration environment	results_v2/provenance.json
+input SHA-256	Smart-seq3	0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339	verified before and after reading	load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu
+input SHA-256	IMR90	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8	verified before and after reading	load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu
+embedding	embedding_decision	"""Regenerate using c99cdda historical exporter method; source RNA has no stored embedding"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	highly_variable_genes_flavor	"""seurat"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	n_top_genes	2000	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	neighbors	15	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	neighbors_method	"""umap"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	neighbors_metric	"""euclidean"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	neighbors_representation	"""X_pca"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	normalize_total_target_sum	10000	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	pca_components	50	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	pca_solver	"""arpack"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	random_seed	17	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	scanpy_version	"""1.11.5"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	selected_variable_genes	2000	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	shared_cells	192	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	source_embedding_keys	[]	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	source_matrix	"""rna.X; no circRNA features enter preprocessing or embedding"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	source_modality	"""rna"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	threads	1	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	transform	"""scanpy.pp.log1p"""	RNA-only; historical method; seed 17	results_v2/provenance.json
+embedding	umap	"{""a"": 0.5830300203968329, ""alpha"": 1.0, ""b"": 1.3341669926352966, ""effective_epochs"": 500, ""gamma"": 1.0, ""init_pos"": ""spectral"", ""maxiter"": null, ""min_dist"": 0.5, ""n_components"": 2, ""negative_sample_rate"": 5, ""spread"": 1.0}"	RNA-only; historical method; seed 17	results_v2/provenance.json

@@ -1,0 +1,48 @@
+{
+  "generated_at_utc": "2026-09-07T06:16:35.048015+00:00",
+  "generated_files": {
+    "figure1a_architecture.png": "491c15c0b210b48fc201d0d0ae3c0695a3df9808dce36c1cbe7ba76b2f8996d2",
+    "figure1a_architecture.svg": "004b7924dbc1fe77df2eb0411b06b5873886242105b82faf52fecd49517d1156",
+    "figure_s1_protocol_workflows.png": "10571539fe3bcc322908d4da29f3fb2240b8541a1338ff2bb394107b328a82e8",
+    "figure_s1_protocol_workflows.svg": "e6194df4096460663fe266d199e199dd71938ff22acbe230bcbdb0e75fc761a1",
+    "figure_s2_multimodal_schema.png": "f65b4a885b73ded9b0e0bfc383a127c0f234540d80cb83b0c1e3ccabd42a6bef",
+    "figure_s2_multimodal_schema.svg": "22947613b4aa5d017db108f00cbb92d0752a5005689816449aac1e62b47a973a",
+    "table_s1_dataset_workflow_inventory.tsv": "63a449aa8bc35689208d265e980b7e6b4db45ef061dd8e585de8cd1133eaac66",
+    "table_s2_software_reproducibility.tsv": "f8c26aceac0a19d255ea74cbb9a79d15f0beb5205d1d6cc584f2137a506fec89",
+    "table_s3_versions_commands_provenance.tsv": "2d79a8e1e884dec4d1b779c88fbc18cbb2d14a29e43d8ab8021a1e877a27f716"
+  },
+  "package_versions": {
+    "anndata": "0.11.4",
+    "circyto": "0.10.0 (source tree)",
+    "h5py": "3.16.0",
+    "llvmlite": "0.49.0",
+    "matplotlib": "3.10.9",
+    "mudata": "0.3.10",
+    "numba": "0.67.0",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "pynndescent": "0.6.0",
+    "scanpy": "1.11.5",
+    "scikit-learn": "1.7.2",
+    "scipy": "1.15.3",
+    "umap-learn": "0.5.12"
+  },
+  "randomness": "No random layout or sampling; fixed figure geometry; svg.hashsalt fixed",
+  "repository": {
+    "commit": "7e9c1cb9a09a4f0bfd114bb66c0c34df4f31fdbc",
+    "frozen_baseline": "44697355bcab1c525ca7ef9b130e2ad0094d9e1b",
+    "production_diff_from_baseline": "",
+    "worktree_status": "M README.md\n M docs/manuscript_figure_skeleton.md\n M docs/manuscript_reproducibility.md\n M docs/validated_workflows_summary.md\n M examples/manuscript/reproduce_inventory_and_summaries.sh\n M manuscript/README.md\n M manuscript/analysis_plan.md\n M manuscript/application_note_evidence.md\n M manuscript/data_inventory.md\n M manuscript/figures_plan.md\n M manuscript/methods_commands.md\n M tests/test_manuscript_scripts.py\n?? manuscript/.gitignore\n?? manuscript/figure_legends.md\n?? manuscript/reproduce.md\n?? manuscript/requirements-results.txt\n?? manuscript/results_v2/\n?? manuscript/supplement_v2/\n?? scripts/manuscript/build_application_note_supplement.py\n?? scripts/manuscript/regenerate_application_note_results.py"
+  },
+  "results_provenance_sha256": "5b7916657c04decd114969b49019ee398fe621a849ae855cb2df3e21a416d0d2",
+  "script": "scripts/manuscript/build_application_note_supplement.py",
+  "script_sha256": "650488922eacfe718a154e99d7a39a1211d470582b2b6ed8cf7e5e3768ef13e9",
+  "source_sha256": {
+    "docs/current_project_status.md": "566eaa8c74c9f02d7f04e1f6955f8fb0a75fdb4ccc859057a20f82d6f88dad2d",
+    "docs/manuscript_figure_skeleton.md": "ad4409a7c75356269c9e81c9a52a27a0cfa8e5ed6ecc2e120d863721c1a30240",
+    "docs/manuscript_software_baseline.md": "06aeee8d2d95bfbfd24c1621f6d73087f5d427051c92717016368ba2aa472f10",
+    "docs/modality_schema.md": "8a320e13e300dcb3b305e268bde307663c179240a194393e6d1ea5a31e48d0cf",
+    "docs/validated_workflows_summary.md": "7670a0e3b3859f30ed398b6e37cfaa704b121def7edf46844d5236e75923c059",
+    "manuscript/application_note_evidence.md": "4cec156217db9336b275274946b6449b3553366a892f04c572ecc0cd64a7dc28"
+  }
+}

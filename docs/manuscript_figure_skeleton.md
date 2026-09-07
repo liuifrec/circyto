@@ -3,6 +3,9 @@
 The main paper has one figure. This scaffold supersedes the former five-figure
 genome-state biology design.
 
+Current rendered assets and legends are linked from
+[`../manuscript/submission_readiness.md`](../manuscript/submission_readiness.md).
+
 ## Figure 1. circyto workflow and Smart-seq3 outputs
 
 ### 1A. Architecture
@@ -29,15 +32,15 @@ Design rules:
 - E-MTAB-8735, 192 cells;
 - RNA-derived UMAP with fixed preprocessing and seed;
 - per-cell detected circRNA candidates as an overlay;
-- median 12 detected circRNAs/cell may be stated only after regeneration from
-  the checksum-matched manuscript object.
+- median 12 detected circRNAs/cell is independently checksum-verified in
+  `manuscript/results_v2/smartseq3_summary.tsv`.
 
 ### 1C. Representative MAN1A2-associated candidate
 
 - same RNA-derived coordinates as 1B;
 - binary detection overlay for `chr1:117402186|117420649`;
 - annotate the feature as MAN1A2-associated;
-- historical values (6/192 cells, total support 15) require regeneration;
+- regenerated values: 6/192 cells, total support 15;
 - no functional or mechanistic interpretation.
 
 ## Supplementary Figure S1. Protocol/workflow validation

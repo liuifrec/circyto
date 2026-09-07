@@ -5,6 +5,9 @@
 Figure 1 is the only main-paper figure. It should read from architecture to
 real-data output in one visual sequence.
 
+Rendered assets are available in `results_v2/` (1B/C) and `supplement_v2/`
+(1A, S1/S2); see `figure_legends.md` and `reproduce.md`.
+
 ### Panel A: circyto architecture
 
 Primary path:
@@ -26,8 +29,7 @@ variant signals should be smaller, lighter, and labelled optional.
 
 - Dataset: E-MTAB-8735, 192 cells.
 - Construct the embedding from RNA features only.
-- Colour cells by detected circRNAs per cell; include median = 12 only after
-  regeneration from the checksum-matched object.
+- Colour cells by detected circRNAs per cell; regenerated median = 12.
 - State in the legend that the circRNA metric is an overlay and did not define
   the embedding.
 
@@ -37,8 +39,7 @@ variant signals should be smaller, lighter, and labelled optional.
 - Reuse the Panel B RNA-derived coordinates.
 - Prefer a binary detected/not-detected overlay for clarity; support may be a
   continuous overlay only if the legend says “support,” not expression.
-- Historical export: detected in 6/192 cells, total support 15. Regenerate
-  before putting either number in the legend.
+- Regenerated export: detected in 6/192 cells, total support 15.
 - Treat the feature as an illustrative output, not evidence for MAN1A2 biology.
 
 ## Supplementary Figure S1: protocol/workflow validation
