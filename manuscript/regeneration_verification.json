@@ -1,0 +1,92 @@
+{
+  "verified_at_utc": "2026-09-07T23:32:08.579608+00:00",
+  "primary_provenance_sha256": "5b7916657c04decd114969b49019ee398fe621a849ae855cb2df3e21a416d0d2",
+  "recheck_provenance_sha256": "998347c890abe4a03a44baa9ce12bfb8aeb2b1c563822bad77bd32caa52333b5",
+  "primary_generated_at_utc": "2026-09-07T06:11:40.010323+00:00",
+  "recheck_generated_at_utc": "2026-09-07T06:16:51.556857+00:00",
+  "script_sha256": "4f97474384bb975f3428d49d4effe62a4dad839af0c46c8027672a61147aec32",
+  "input_checksums": [
+    {
+      "checksum_match": true,
+      "dataset": "Smart-seq3",
+      "expected_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "observed_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "path": "load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu",
+      "size_bytes": 30911142
+    },
+    {
+      "checksum_match": true,
+      "dataset": "IMR90",
+      "expected_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "observed_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "path": "load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu",
+      "size_bytes": 41036354
+    }
+  ],
+  "comparison_rows": 18,
+  "historical_discrepancies": 0,
+  "identical_artifacts": [
+    {
+      "file": "evidence_comparison.tsv",
+      "primary_sha256": "093b69d9b3d72a924bb7414bf22235e145d4b9c8a6df71ffa6321be731910083",
+      "recheck_sha256": "093b69d9b3d72a924bb7414bf22235e145d4b9c8a6df71ffa6321be731910083",
+      "byte_identical": true
+    },
+    {
+      "file": "figure1b_smartseq3_circrna_burden.png",
+      "primary_sha256": "9fdfb2974e26da00fafe7f02f895e43936f81cbf7d4e09122fb956d4d0a6fa4f",
+      "recheck_sha256": "9fdfb2974e26da00fafe7f02f895e43936f81cbf7d4e09122fb956d4d0a6fa4f",
+      "byte_identical": true
+    },
+    {
+      "file": "figure1b_smartseq3_circrna_burden.svg",
+      "primary_sha256": "32dcc6646af19a0c6d4db4f127087cf76f37df82b489eb13610d1d52ef19de74",
+      "recheck_sha256": "32dcc6646af19a0c6d4db4f127087cf76f37df82b489eb13610d1d52ef19de74",
+      "byte_identical": true
+    },
+    {
+      "file": "figure1c_smartseq3_man1a2_detection.png",
+      "primary_sha256": "ba23f75904eee5a44c6a3bcd7267b08bdeb9e981a131876f6fd25d3b86932746",
+      "recheck_sha256": "ba23f75904eee5a44c6a3bcd7267b08bdeb9e981a131876f6fd25d3b86932746",
+      "byte_identical": true
+    },
+    {
+      "file": "figure1c_smartseq3_man1a2_detection.svg",
+      "primary_sha256": "2a962ba8aac26bbd11bd25b3b1c6eee37cf3dce2e03238c0a9e8aac3705b972c",
+      "recheck_sha256": "2a962ba8aac26bbd11bd25b3b1c6eee37cf3dce2e03238c0a9e8aac3705b972c",
+      "byte_identical": true
+    },
+    {
+      "file": "imr90_summary.tsv",
+      "primary_sha256": "6c2d95f876cdb202ed61a145b08d635592d5e0dca04d6e9c8298a03f1e229a30",
+      "recheck_sha256": "6c2d95f876cdb202ed61a145b08d635592d5e0dca04d6e9c8298a03f1e229a30",
+      "byte_identical": true
+    },
+    {
+      "file": "regeneration_summary.json",
+      "primary_sha256": "757adcf826791f7ea0c63e95b0fe714c856d8c10581ebf8fb329d5b207e5d49a",
+      "recheck_sha256": "757adcf826791f7ea0c63e95b0fe714c856d8c10581ebf8fb329d5b207e5d49a",
+      "byte_identical": true
+    },
+    {
+      "file": "smartseq3_selected_candidate.tsv",
+      "primary_sha256": "a9cb59b0ea20649ffee6ac44eeae5774d306b87d46edcf62e4619132393c177b",
+      "recheck_sha256": "a9cb59b0ea20649ffee6ac44eeae5774d306b87d46edcf62e4619132393c177b",
+      "byte_identical": true
+    },
+    {
+      "file": "smartseq3_summary.tsv",
+      "primary_sha256": "f0925107c111433b8512ddf806b5344ad66446bffc8046d32742d89336d433bc",
+      "recheck_sha256": "f0925107c111433b8512ddf806b5344ad66446bffc8046d32742d89336d433bc",
+      "byte_identical": true
+    },
+    {
+      "file": "smartseq3_umap_cells.tsv",
+      "primary_sha256": "8326cb72ff4ea2f8b4e71fe24e9888b47e4909fe3d18291c878f1e004df04438",
+      "recheck_sha256": "8326cb72ff4ea2f8b4e71fe24e9888b47e4909fe3d18291c878f1e004df04438",
+      "byte_identical": true
+    }
+  ],
+  "supplement_verified_artifacts": 9,
+  "scope": "Verification of existing independent runs; no analysis rerun. Full duplicate figures remain local; recheck tables and provenance are retained in Git."
+}

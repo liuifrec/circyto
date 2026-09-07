@@ -15,7 +15,7 @@ load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu
 SHA-256: 0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339
 ```
 
-Historical checksum-backed audit:
+Checksum-verified regeneration (2026-09-07; `results_v2/smartseq3_summary.tsv`):
 
 - RNA: 192 cells x 63,187 features;
 - circRNA: 192 cells x 2,503 candidates;
@@ -24,13 +24,12 @@ Historical checksum-backed audit:
 - median detected circRNAs per cell: 12;
 - median total circRNA support per cell: 22.5;
 - representative candidate: `chr1:117402186|117420649`, annotated to
-  `MAN1A2`, detected in 6/192 cells with total support 15 in the historical
+  `MAN1A2`, detected in 6/192 cells with total support 15 in the regenerated
   export.
 
-Status: the 192-cell and 2,503-candidate workflow result is also documented in
-the current README. All manuscript-facing values and Figure 1 plot data still
-need one independent regeneration from the checksum-matched object because the
-object and derived tables were removed from the frozen tree.
+Status: all manuscript quantities and Figure 1B/C are independently regenerated
+and agree with the historical register. Source objects remain outside the
+current tree; see `reproduce.md` for recovery and rerun commands.
 
 ## IMR90 scRR / GSE278958
 
@@ -49,13 +48,11 @@ Committed validation evidence:
 - circRNA: 23 cells x 2,443 candidates;
 - processed CNV: 23 cells x 60,607 bins;
 - trimodal overlap: 23 cells;
-- historical host-gene audit: 2,429 / 2,443 (99.4%).
+- regenerated host-gene audit: 2,429 / 2,443 (99.4%).
 
-Status: modality shapes and overlap are repeated in current authoritative
-workflow documentation and supported by a historical machine-readable merge
-summary. Regenerate the Supplementary Table row from the checksum-matched
-object before submission. Do not interpret processed CNV biology in the main
-paper.
+Status: independently regenerated from checksum-matched bytes in
+`results_v2/imr90_summary.tsv`; all historical comparisons agree. Do not
+interpret processed CNV biology in the main paper.
 
 ## HAP1 scRR / GSE278952
 

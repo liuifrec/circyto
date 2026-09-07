@@ -1,0 +1,70 @@
+{
+  "all_evidence_values_agree": true,
+  "imr90": {
+    "circRNA_shape": [
+      23,
+      2443
+    ],
+    "cnv_shape": [
+      23,
+      60607
+    ],
+    "dataset": "IMR90 scRR / GSE278958",
+    "host_gene_annotated_count": 2429,
+    "host_gene_annotation_fraction": 0.994269340974212,
+    "rna_shape": [
+      23,
+      63187
+    ],
+    "trimodal_cell_overlap": 23
+  },
+  "smartseq3": {
+    "cell_count": 192,
+    "circRNA_candidate_count": 2503,
+    "circRNA_nonzero_entries": 2659,
+    "dataset": "Smart-seq3 / E-MTAB-8735",
+    "host_gene_annotated_count": 2379,
+    "host_gene_annotation_fraction": 0.950459448661606,
+    "man1a2_candidate_detecting_cells": 6,
+    "man1a2_candidate_host_gene": "MAN1A2",
+    "man1a2_candidate_id": "chr1:117402186|117420649",
+    "man1a2_candidate_total_support": 15.0,
+    "median_detected_circRNAs_per_cell": 12.0,
+    "median_total_circRNA_support_per_cell": 22.5,
+    "rna_feature_count": 63187,
+    "umap_method": {
+      "embedding_decision": "Regenerate using c99cdda historical exporter method; source RNA has no stored embedding",
+      "highly_variable_genes_flavor": "seurat",
+      "n_top_genes": 2000,
+      "neighbors": 15,
+      "neighbors_method": "umap",
+      "neighbors_metric": "euclidean",
+      "neighbors_representation": "X_pca",
+      "normalize_total_target_sum": 10000,
+      "pca_components": 50,
+      "pca_solver": "arpack",
+      "random_seed": 17,
+      "scanpy_version": "1.11.5",
+      "selected_variable_genes": 2000,
+      "shared_cells": 192,
+      "source_embedding_keys": [],
+      "source_matrix": "rna.X; no circRNA features enter preprocessing or embedding",
+      "source_modality": "rna",
+      "threads": 1,
+      "transform": "scanpy.pp.log1p",
+      "umap": {
+        "a": 0.5830300203968329,
+        "alpha": 1.0,
+        "b": 1.3341669926352966,
+        "effective_epochs": 500,
+        "gamma": 1.0,
+        "init_pos": "spectral",
+        "maxiter": null,
+        "min_dist": 0.5,
+        "n_components": 2,
+        "negative_sample_rate": 5,
+        "spread": 1.0
+      }
+    }
+  }
+}

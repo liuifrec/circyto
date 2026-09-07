@@ -1,0 +1,5 @@
+# Plotting/JIT runtime caches are confined here and never published.
+**/.cache/
+# Preserve independent-run tables/provenance; duplicate figure bytes stay local.
+results_v2_recheck/*.png
+results_v2_recheck/*.svg

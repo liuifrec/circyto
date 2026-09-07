@@ -1,0 +1,14 @@
+quantity	value
+dataset	Smart-seq3 / E-MTAB-8735
+cell_count	192
+rna_feature_count	63187
+circRNA_candidate_count	2503
+circRNA_nonzero_entries	2659
+host_gene_annotated_count	2379
+host_gene_annotation_fraction	0.950459448661606
+median_detected_circRNAs_per_cell	12.0
+median_total_circRNA_support_per_cell	22.5
+man1a2_candidate_id	chr1:117402186|117420649
+man1a2_candidate_host_gene	MAN1A2
+man1a2_candidate_detecting_cells	6
+man1a2_candidate_total_support	15.0

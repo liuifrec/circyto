@@ -6,6 +6,15 @@ material. When another manuscript planning file disagrees with this file or
 with the frozen software reports cited here, use this file and resolve the
 disagreement before drafting.
 
+Regeneration completed on 2026-09-07: both expected H5MU hashes match and all
+18 quantitative historical comparisons agree. Authoritative current outputs
+are [`results_v2/regeneration_summary.json`](results_v2/regeneration_summary.json),
+[`results_v2/evidence_comparison.tsv`](results_v2/evidence_comparison.tsv), and
+[`results_v2/provenance.json`](results_v2/provenance.json). See
+[`reproduce.md`](reproduce.md) for the offline entry point and the documented
+legacy-object reader/embedding decisions. S1/S2 and Tables S1-S3 are in
+[`supplement_v2/`](supplement_v2/).
+
 ## Authority and evidence classes
 
 - Software baseline: circyto 0.10.0 at
@@ -17,6 +26,9 @@ disagreement before drafting.
 - **historical/unverified**: appears in prior manuscript artifacts but
   conflicts with, or is not established by, the current authoritative
   workflow evidence.
+- **checksum-verified regeneration**: independently recalculated from the
+  expected processed-object bytes; small tables and figures are committed,
+  with input/output digests and the execution environment recorded.
 - **needs rerun**: must be independently regenerated before the final
   manuscript is submitted. This normally means a small read-only pass over a
   checksum-matched processed object, not an expensive raw-data workflow.
@@ -43,13 +55,13 @@ Required adjacent sentence:
 | --- | --- | --- | --- | --- |
 | circyto provides protocol-aware full-length single-cell routes, cell-by-circRNA matrices, QC, annotation, and AnnData/MuData export | `docs/manuscript_software_baseline.md`; `docs/validated_workflows_summary.md`; workflow and export tests | Yes, committed/reproducible | Main paper | Framework/orchestration claim only; not a novel detector |
 | The pooled Smart-seq3 / E-MTAB-8735 route ran end to end on real data | `README.md` “Validated benchmark result”; `docs/validated_workflows_summary.md` | Yes, committed/reproducible | Main paper | Call outputs circRNA candidates/detections unless orthogonally validated |
-| The audited Smart-seq3 object contains 192 cells, 63,187 RNA features, and 2,503 circRNA candidates | `c99cdda:manuscript/results/manuscript_object_audit.md`; object SHA-256 below; current `README.md` independently records 192 cells and 2,503 candidates | Historically checksum-audited; needs rerun for final text | Main paper | RNA feature count and final object shape come from the processed object, not a current tracked artifact |
-| Smart-seq3 host-gene annotation recovered 2,379/2,503 candidates (95.0%) | `c99cdda:manuscript/results/host_gene_annotation_recovery.tsv`; historical object audit | Local processed-data derived; needs rerun | Main paper or legend | Host-gene annotation, not validation of circRNA biology; 95.0% is one-decimal rounding of 0.9504594487 |
-| Smart-seq3 has median 12 detected circRNAs and median total support 22.5 per cell | `c99cdda:manuscript/results/manuscript_object_audit.md` | Local processed-data derived; needs rerun | Main paper or Figure 1 legend | Define “detected” as nonzero candidate support; do not call support normalized expression |
-| RNA-derived UMAP coordinates can be overlaid with cell circRNA burden | `c99cdda:manuscript/results/smartseq3_umap_cells.tsv`; `c99cdda:scripts/manuscript/export_smartseq3_figure1_data.py`; method record | Historically generated; needs rerun with fixed environment | Main Figure 1B | UMAP is derived only from RNA; circRNA burden is an overlay, not an embedding input |
-| A representative MAN1A2-associated candidate can be overlaid on the same UMAP | Historical top-candidate and selected-feature tables at `c99cdda:manuscript/results/`; candidate `chr1:117402186|117420649` | Historically generated; needs rerun | Main Figure 1C | Illustrative detection, not MAN1A2 functional biology or independent circRNA validation |
+| The audited Smart-seq3 object contains 192 cells, 63,187 RNA features, and 2,503 circRNA candidates | `results_v2/smartseq3_summary.tsv`; historical object audit at `c99cdda` | Checksum-verified regeneration | Main paper | Quantities derived from the processed object; source bytes unchanged |
+| Smart-seq3 host-gene annotation recovered 2,379/2,503 candidates (95.0%) | `results_v2/smartseq3_summary.tsv` | Checksum-verified regeneration | Main paper or legend | Host-gene annotation, not validation of circRNA biology; 95.0% is one-decimal rounding of 0.9504594487 |
+| Smart-seq3 has median 12 detected circRNAs and median total support 22.5 per cell | `results_v2/smartseq3_summary.tsv` | Checksum-verified regeneration | Main paper or Figure 1 legend | Define “detected” as nonzero candidate support; do not call support normalized expression |
+| RNA-derived UMAP coordinates can be overlaid with cell circRNA burden | `results_v2/smartseq3_umap_cells.tsv`; `results_v2/provenance.json` | Checksum-verified regeneration; historical method and seed 17 | Main Figure 1B | UMAP is derived only from RNA; circRNA burden is an overlay, not an embedding input |
+| A representative MAN1A2-associated candidate can be overlaid on the same UMAP | `results_v2/smartseq3_selected_candidate.tsv`; candidate `chr1:117402186\|117420649` | Checksum-verified regeneration | Main Figure 1C | Illustrative detection, not MAN1A2 functional biology or independent circRNA validation |
 | circyto outputs operate as scverse AnnData/MuData objects | `docs/manuscript_software_baseline.md`; `docs/mudata_compatibility.md`; H5MU round-trip and multimodal tests | Yes, committed/reproducible | Main paper | Claim interoperability and preserved semantics; do not claim the deferred broad AnnData 0.13 dtype migration |
-| IMR90 demonstrates RNA+circ+processed-CNV integration with 23 shared cells | `docs/validated_workflows_summary.md`; `docs/current_project_status.md`; `c3971ec^:load_work/scrr_imr90/full_length_rna_circ_cnv.summary.json` | Yes, committed/reproducible; regenerate supplement row | Brief main text and Supplement | Processed GEO CNV import; no raw-DNA CNV inference and no CNV biological conclusion |
+| IMR90 demonstrates RNA+circ+processed-CNV integration with 23 shared cells | `docs/validated_workflows_summary.md`; `results_v2/imr90_summary.tsv` | Committed workflow evidence plus checksum-verified regeneration | Brief main text and Supplement | Processed GEO CNV import; no raw-DNA CNV inference and no CNV biological conclusion |
 | The HAP1 paired-end scRR RNA/circ route executes on real data | `docs/validated_workflows_summary.md`; `docs/current_project_status.md` | Yes, on a 10-cell batch | Supplement | Protocol validation only; do not substitute unresolved 63-cell/RT claims |
 | HAP1 RT import/merge contracts exist | `docs/validated_workflows_summary.md`; RT import/merge tests and documentation | Yes, implemented with synthetic tests | Supplementary schema only | Do not claim completed real-file RT biology or RT-circRNA discovery |
 | Generic Nanopore cDNA interoperability is validated on SRR4048177 | `docs/validation/srr4048177_nanopore_interoperability.md`; expectation profile and smoke script | Yes, committed/reproducible | Optional Supplement | Alignment/QC/provenance only; `circRNA_call=false`; no single-cell Nanopore circRNA validation |
@@ -143,17 +155,17 @@ Audited object SHA-256:
 
 | Quantity | Value | Classification | Source/action |
 | --- | ---: | --- | --- |
-| Cells | 192 | committed/reproducible and local processed-data derived | Current `README.md` plus historical checksum-backed audit; independently regenerate for final table/legend |
-| RNA features | 63,187 | local processed-data derived; needs rerun | Historical object audit; regenerate from checksum-matched H5MU |
-| circRNA candidates | 2,503 | committed/reproducible and local processed-data derived | Current `README.md` plus historical audit; regenerate for final table/legend |
-| Nonzero circ matrix entries | 2,659 | committed/reproducible | Current `README.md`; supplementary-only if useful |
-| Host-gene annotated candidates | 2,379 | local processed-data derived; needs rerun | Historical recovery table/object audit |
-| Host-gene recovery | 95.0% | local processed-data derived; needs rerun | 2,379/2,503 = 95.0459%, rounded to one decimal |
-| Median detected circRNAs/cell | 12 | local processed-data derived; needs rerun | Historical object audit |
-| Median total circRNA support/cell | 22.5 | local processed-data derived; needs rerun | Historical object audit |
+| Cells | 192 | checksum-verified regeneration | `results_v2/smartseq3_summary.tsv` |
+| RNA features | 63,187 | checksum-verified regeneration | Same summary |
+| circRNA candidates | 2,503 | checksum-verified regeneration | Same summary |
+| Nonzero circ matrix entries | 2,659 | checksum-verified regeneration | Same summary |
+| Host-gene annotated candidates | 2,379 | checksum-verified regeneration | Same summary |
+| Host-gene recovery | 95.0% | checksum-verified regeneration | Exact fraction 0.950459448661606; one-decimal percentage |
+| Median detected circRNAs/cell | 12 | checksum-verified regeneration | Same summary |
+| Median total circRNA support/cell | 22.5 | checksum-verified regeneration | Same summary |
 | MAN1A2-associated candidates in historical host aggregate | 3 | local processed-data derived; needs rerun | Historical top-host table; not required in main text |
-| Cells detecting representative `chr1:117402186\|117420649` | 6/192 | local processed-data derived; needs rerun | Historical top-candidate/selected-feature exports |
-| Total support for representative candidate | 15 | local processed-data derived; needs rerun | Historical export; optional legend value only |
+| Cells detecting representative `chr1:117402186\|117420649` | 6/192 | checksum-verified regeneration | `results_v2/smartseq3_selected_candidate.tsv` |
+| Total support for representative candidate | 15 | checksum-verified regeneration | Same per-cell export; illustrative only |
 
 ### IMR90 scRR / GSE278958
 
@@ -162,11 +174,11 @@ Audited object SHA-256:
 
 | Quantity | Value | Classification | Source/action |
 | --- | ---: | --- | --- |
-| RNA cells/features | 23 / 63,187 | committed/reproducible | Current workflow docs plus historical machine-readable merge/object audit; regenerate S1/S2 row |
-| circRNA cells/candidates | 23 / 2,443 | committed/reproducible | Same sources; 2,443 is the authoritative IMR90 circRNA count |
-| CNV cells/bins | 23 / 60,607 | committed/reproducible | Same sources; processed GEO CNV summaries |
-| Trimodal overlap | 23 cells | committed/reproducible | `docs/validated_workflows_summary.md` and merge summary |
-| Host-gene annotated candidates | 2,429/2,443 (99.4%) | local processed-data derived; needs rerun | Historical object audit; supplementary-only |
+| RNA cells/features | 23 / 63,187 | checksum-verified regeneration | `results_v2/imr90_summary.tsv` |
+| circRNA cells/candidates | 23 / 2,443 | checksum-verified regeneration | Same summary |
+| CNV cells/bins | 23 / 60,607 | checksum-verified regeneration | Same summary; processed GEO CNV |
+| Trimodal overlap | 23 cells | checksum-verified regeneration | Same summary; modality cell-ID intersection |
+| Host-gene annotated candidates | 2,429/2,443 (99.4%) | checksum-verified regeneration | Exact fraction 0.994269340974212; supplementary-only |
 
 ### HAP1 scRR / GSE278952
 
@@ -225,11 +237,13 @@ Historical checksum/object and Figure 1 sources:
 - `c3971ec^:load_work/scrr_imr90/full_length_rna_circ_cnv.summary.json`
 - `c3971ec^:load_work/scrr_hap1/full_length_rna_circ_rt.summary.json`
 
-For final regeneration, first verify the archived object's SHA-256, then run
-the current inventory script. Reuse or restore the historical fixed-seed
-Smart-seq3 export logic in a controlled manuscript environment and record its
-full package versions. Do not regenerate from an object with a different hash
-without documenting why it changed.
+The authoritative entry point is now
+`scripts/manuscript/regenerate_application_note_results.py`; follow
+[`reproduce.md`](reproduce.md). It verifies both hashes before reading stored
+modality groups, regenerates the historical RNA-only embedding method, and
+records full provenance. Legacy global metadata synchronization fails for these
+objects in the analysis stack; the read-only modality reader avoids that step.
+No input repair, production change, raw pipeline, or detector run was needed.
 
 ## Scientific boundaries and claims that must not be made
 
@@ -252,22 +266,17 @@ without documenting why it changed.
 
 ## Remaining pre-submission tasks
 
-1. Retrieve the Smart-seq3 and IMR90 processed objects from the manuscript data
-   archive and verify their recorded SHA-256 values.
-2. Independently regenerate the Smart-seq3 quantitative row, RNA-only UMAP,
-   burden overlay, and MAN1A2-candidate overlay; capture package versions and
-   commands in Supplementary Table S3.
-3. Regenerate the IMR90 23-cell modality/overlap row from its object.
-4. Reconcile or formally retire the historical HAP1 63-cell/RT object. Until
-   then, use only the validated 10-cell RNA/circ route and the synthetic RT
-   contract.
-5. Generate Supplementary Figures S1-S2 and Tables S1-S3; add long-read rows
-   only if they fit without creating a second story.
-6. Audit every manuscript and legend number against this register. Record
-   “not regenerated” rather than filling a gap from old Markdown.
-7. Confirm the data/code archive and public accession statements used in
-   “Availability and implementation” before submission.
+1. Draft manuscript v3 and audit its abstract/text/legends against the committed
+   regenerated tables; the external manuscript document was not supplied here.
+2. Confirm a public processed-data deposit and final code/data availability
+   statement before journal submission. Historical Git recovery is documented;
+   no new release or archive DOI is claimed.
+3. Obtain coauthor review of text, figures, author/citation details, funding,
+   conflicts, and contact information.
 
-The repository is ready for v3 text drafting from a claim-control perspective.
-Final quantitative prose, Figure 1, and the supplementary numeric tables are
-not submission-ready until tasks 1-4 are completed.
+The Smart-seq3 and IMR90 regeneration and minimal supplement are complete.
+Historical HAP1 full-object/RT numbers are formally excluded from this
+Application Note and remain deferred, nonblocking work. The historical count
+of three MAN1A2-associated candidates was not needed or regenerated and is not
+a manuscript claim. This register supports v3 drafting and coauthor review;
+final journal submission still requires the availability and editorial steps.

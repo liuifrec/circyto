@@ -1,6 +1,8 @@
 from __future__ import annotations
 
 import shutil
+import importlib.util
+import json
 import subprocess
 import sys
 from pathlib import Path
@@ -13,6 +15,97 @@ from circyto.multimodal.sync import mudata_from_modalities, read_h5mu, write_h5m
 
 
 SCRIPT_DIR = Path("scripts/manuscript")
+
+
+@pytest.fixture
+def regeneration():
+    spec = importlib.util.spec_from_file_location(
+        "manuscript_regeneration", SCRIPT_DIR / "regenerate_application_note_results.py"
+    )
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@pytest.mark.parametrize("mismatched", ["smartseq3", "imr90"])
+def test_regeneration_checksum_failure_precedes_reads_and_writes(tmp_path, monkeypatch, regeneration, mismatched):
+    paths = {key: tmp_path / f"{key}.h5mu" for key in ("smartseq3", "imr90")}
+    for key, path in paths.items():
+        path.write_bytes(b"checksum fixture")
+        monkeypatch.setattr(regeneration, "SMARTSEQ3_SHA256" if key == "smartseq3" else "IMR90_SHA256",
+                            "0" * 64 if key == mismatched else regeneration.sha256_file(path))
+    monkeypatch.setattr(regeneration, "read_modalities", lambda *_: pytest.fail("Must checksum both inputs before reading"))
+    output = tmp_path / "manuscript" / "results"
+    with pytest.raises(SystemExit, match="SHA-256 mismatch"):
+        regeneration.main(["--smartseq3", str(paths["smartseq3"]), "--imr90", str(paths["imr90"]), "--output", str(output)])
+    assert not output.exists()
+    assert all(path.read_bytes() == b"checksum fixture" for path in paths.values())
+
+
+def test_regeneration_output_scope_and_existing_directory(tmp_path, monkeypatch, regeneration):
+    monkeypatch.setattr(regeneration, "REPO_ROOT", tmp_path)
+    root = tmp_path / "manuscript"
+    root.mkdir()
+    outside = tmp_path / "outside"
+    outside.mkdir()
+    (root / "escape").symlink_to(outside, target_is_directory=True)
+    for path in (root, outside / "results", root / "escape" / "results", root / ".." / "results"):
+        with pytest.raises(SystemExit, match="Output"):
+            regeneration.validate_output_directory(path, [])
+    assert regeneration.validate_output_directory(root / "results", []) == root / "results"
+
+
+def test_regeneration_sparse_stored_zeros_and_categorical_hosts(regeneration):
+    from scipy import sparse
+    from types import SimpleNamespace
+
+    matrix = sparse.csr_matrix(([0, 2, 3], ([0, 0, 1], [0, 1, 0])), shape=(2, 2))
+    assert regeneration.nonzero_per_row(matrix).tolist() == [1, 1]
+    assert matrix.nnz == 3
+    circ = SimpleNamespace(var=pd.DataFrame({"host_gene": pd.Categorical(["MAN1A2", None, "", "NA"])}))
+    assert regeneration.nonempty_host_gene_count(circ) == 1
+
+
+def test_regeneration_aligns_cells_and_publishes_disagreements(tmp_path, monkeypatch, regeneration):
+    script_copy = tmp_path / "scripts" / "manuscript" / "regenerate_application_note_results.py"
+    script_copy.parent.mkdir(parents=True)
+    shutil.copyfile(regeneration.__file__, script_copy)
+    monkeypatch.setattr(regeneration, "__file__", str(script_copy))
+    monkeypatch.setattr(regeneration, "REPO_ROOT", tmp_path)
+    source = tmp_path / "smart.h5mu"
+    other = tmp_path / "imr.h5mu"
+    _write_tiny_mudata(source, include_rt=False)
+    data = read_h5mu(source)
+    data.mod["circ"].var_names = [regeneration.MAN1A2_CIRC_ID, "circ2", "circ3", "circ4"]
+    data.mod["circ"].var["host_gene"] = ["MAN1A2", "FN1", "VIM", ""]
+    data.mod["circ"] = data.mod["circ"][list(reversed(data.mod["circ"].obs_names)), :].copy()
+    write_h5mu(mudata_from_modalities(dict(data.mod)), source)
+    shutil.copyfile(source, other)
+    before = [regeneration.sha256_file(path) for path in (source, other)]
+    monkeypatch.setattr(regeneration, "SMARTSEQ3_SHA256", before[0])
+    monkeypatch.setattr(regeneration, "IMR90_SHA256", before[1])
+    monkeypatch.setattr(regeneration, "repository_provenance", lambda: {"production_diff_from_baseline": ""})
+    monkeypatch.setattr(regeneration, "compute_rna_umap", lambda rna, cells: (np.arange(10).reshape(5, 2), {"source_modality": "rna"}))
+    monkeypatch.setattr(regeneration, "write_figures", lambda *_: [])
+    output = tmp_path / "manuscript" / "results"
+    assert regeneration.main(["--smartseq3", str(source), "--imr90", str(other), "--output", str(output)]) == 0
+    cells = pd.read_csv(output / "smartseq3_umap_cells.tsv", sep="\t")
+    candidate = pd.read_csv(output / "smartseq3_selected_candidate.tsv", sep="\t")
+    assert cells["cell_id"].tolist() == [f"cell{i}" for i in range(1, 6)]
+    assert candidate["man1a2_candidate_support"].tolist() == [1, 0, 1, 2, 3]
+    pd.testing.assert_frame_equal(cells[["cell_id", "UMAP1", "UMAP2"]], candidate[["cell_id", "UMAP1", "UMAP2"]])
+    comparison = pd.read_csv(output / "evidence_comparison.tsv", sep="\t")
+    assert not comparison["match"].all()
+    assert {"quantity", "historical_value", "regenerated_value", "match", "source_checksum", "evidence_class"} <= set(comparison)
+    assert json.loads((output / "provenance.json").read_text())["all_evidence_values_agree"] is False
+    assert [regeneration.sha256_file(path) for path in (source, other)] == before
+
+
+def test_regeneration_rejects_duplicate_cell_ids(regeneration):
+    from types import SimpleNamespace
+
+    with pytest.raises(SystemExit, match="Duplicate cell IDs"):
+        regeneration.shared_obs_in_left_order(SimpleNamespace(obs_names=pd.Index(["cell1", "cell1"])))
 
 
 def _run_script(args: list[str]) -> subprocess.CompletedProcess[str]:
@@ -122,6 +215,7 @@ def test_manuscript_script_help_runs_without_mudata() -> None:
         "imr90_cnv_circ_analysis.py",
         "cross_dataset_host_overlap.py",
         "known_novel_circ_summary.py",
+        "regenerate_application_note_results.py",
     ]:
         result = _run_script([str(SCRIPT_DIR / script_name), "--help"])
         assert result.returncode == 0, result.stderr + result.stdout

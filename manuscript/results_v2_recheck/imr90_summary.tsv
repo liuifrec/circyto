@@ -1,0 +1,8 @@
+quantity	value
+dataset	IMR90 scRR / GSE278958
+rna_shape	[23, 63187]
+circRNA_shape	[23, 2443]
+cnv_shape	[23, 60607]
+trimodal_cell_overlap	23
+host_gene_annotated_count	2429
+host_gene_annotation_fraction	0.994269340974212
