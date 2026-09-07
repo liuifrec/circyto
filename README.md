@@ -16,7 +16,9 @@
 
 A CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
 
-The main output is a circRNA-by-cell matrix, with `h5ad` export and optional RNA+circ MuData integration. Capability boundaries are intentionally narrow:
+circyto is not a new back-splice detection algorithm. It bridges established
+detectors and the single-cell/scverse ecosystem through annotated cell-by-circRNA
+AnnData matrices and RNA+circ MuData objects. Capability boundaries are intentionally narrow:
 
 | Input mode | Current support |
 | --- | --- |
@@ -37,6 +39,22 @@ circyto workflow full-length-circrna \
 ```
 
 Run `circyto doctor` and `circyto detectors` first to distinguish core package readiness from optional workflow-tool readiness.
+
+## Paper / Application Note
+
+The manuscript uses **circyto 0.10.0**, frozen at
+`main@44697355bcab1c525ca7ef9b130e2ad0094d9e1b`. Smart-seq3 / E-MTAB-8735
+is the principal demonstration (192 cells, 2,503 circRNA candidates); IMR90 /
+GSE278958 demonstrates processed RNA+circ+CNV interoperability in 23 cells.
+
+Start with the [reproduction guide](manuscript/reproduce.md) for one offline
+command that verifies the processed-object checksums and regenerates manuscript
+numbers, Figure 1B/C source tables, figures, and provenance. The
+[evidence register](manuscript/application_note_evidence.md),
+[small result tables](manuscript/results_v2/), and
+[submission readiness report](manuscript/submission_readiness.md) trace each claim.
+[Scientific limitations](manuscript/caveats.md) distinguish detector candidates,
+validated workflows, and optional or experimental integrations.
 
 ## Status
 
@@ -459,6 +477,9 @@ Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-
 
 ## Citation
 
-A methods manuscript is under preparation. In the meantime, please cite this repository:
-
-> Liu, Y.-C. et al. "Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto." GitHub repository: https://github.com/liuifrec/circyto
+An Application Note is in preparation under the working title
+“circyto: a scverse-compatible framework for circular RNA analysis in
+full-length single-cell sequencing.” Until publication, cite the
+[software repository](https://github.com/liuifrec/circyto), version 0.10.0,
+and manuscript baseline `44697355bcab1c525ca7ef9b130e2ad0094d9e1b`.
+No published-paper DOI is currently asserted.

@@ -30,10 +30,9 @@ run. The intended main-paper summaries are:
 - median 12 detected circRNAs per cell;
 - median total circRNA support 22.5 per cell.
 
-These values agree with the historical committed object audit, but the object
-is not present in the frozen tree. They require pre-submission regeneration,
-not a full raw-data workflow rerun, unless the archived object fails its
-recorded SHA-256 check.
+These values now agree in an independent checksum-verified regeneration;
+see `results_v2/` and `reproduce.md`. The source object remains outside the
+current tree. No raw-data workflow rerun was needed.
 
 Figure analysis:
 

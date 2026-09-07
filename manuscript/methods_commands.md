@@ -1,5 +1,9 @@
 # Methods Commands
 
+For the final checksum-gated numbers and figure generation, use
+[`reproduce.md`](reproduce.md). The commands below document upstream processing
+and deferred analyses; they are not required to regenerate the final tables.
+
 These command shapes document how manuscript-scale objects are expected to be regenerated. Paths are placeholders unless explicitly described as committed repo assets.
 
 For the current Application Note, the Smart-seq3 commands support the primary

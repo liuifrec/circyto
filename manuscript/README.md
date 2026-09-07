@@ -45,6 +45,11 @@ must remain visually secondary.
 
 ## Files
 
+- `submission_readiness.md`: verified numbers, assets, remaining submission gates.
+- `reproduce.md`: two-command offline result/figure and supplement reproduction.
+- `results_v2/`: checksum-verified numbers, Figure 1B/C, and exact provenance.
+- `supplement_v2/`: Figure 1A, S1/S2, and Tables S1-S3 with provenance.
+- `figure_legends.md`: conservative legends ready for manuscript v3 drafting.
 - `application_note_evidence.md`: authoritative claim, number, source, and
   boundary register for manuscript v2/v3.
 - `analysis_plan.md`: compact Application Note analysis strategy.
@@ -66,6 +71,8 @@ example command files live under `examples/manuscript/`.
 Large FASTQ files, references, GEO processed tables, circAtlas tables, and
 manuscript-scale H5MU objects are intentionally not in the frozen tree. Earlier
 commits contain checksum-backed audits and small derived tables, but the large
-objects were removed for release hygiene. Quantitative text and final figure
-exports must therefore be regenerated from checksum-matched archived objects
-before submission, as recorded in `application_note_evidence.md`.
+objects were removed for release hygiene. The two required objects have now
+been recovered from historical Git and independently checksum-verified. Current
+small outputs and figures are in `results_v2/`; follow `reproduce.md` to
+regenerate them. Confirm public processed-data access and the final availability
+statement before journal submission.

@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Historical exploratory command template, including deferred RT/CNV analyses.
+# For the current Application Note, use manuscript/reproduce.md instead.
+# Do not treat this template as the final manuscript reproduction entry point.
+
 # Replace these paths with local manuscript objects and an output directory.
 SMART_H5MU="/path/to/work/mtab8735_smartseq3/full_length.hostgene_fixed.h5mu"
 HAP1_H5MU="/path/to/work/scrr_hap1/mudata/full_length_rna_circ_rt.hostgene_fixed.h5mu"
