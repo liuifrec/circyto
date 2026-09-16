@@ -87,13 +87,31 @@ checksum define the source identity independently of its local mount point.
 
 ## Reader and embedding decisions
 
-These historical H5MU files trigger `ValueError: cannot join with no overlapping
-index names` when MuData 0.3.10 tries to synchronize global metadata with pandas
-2.3.3. The manuscript reader opens HDF5 with mode `r` and uses the public
-`anndata.io.read_elem` API on each `mod/*` group. It uses modality-specific
-matrices, feature annotations, and cell IDs; it never synchronizes or repairs
-the legacy global index. This does not alter production MuData behavior or
-extend the frozen compatibility claim to arbitrary historical objects.
+The [real-object interoperability audit](real_object_interoperability.md)
+establishes that **both checksum-identified originals** open through ordinary
+MuData 0.3.10 in the pinned stack and preserve their semantics through native
+read/write/read. In a fresh Python process, use:
+
+```python
+import mudata
+
+mdata = mudata.read_h5mu("<ORIGINAL_H5MU>")
+mdata.write_h5mu("<NEW_ROUNDTRIP_H5MU>")
+restored = mudata.read_h5mu("<NEW_ROUNDTRIP_H5MU>")
+```
+
+Choose a new output path; preserve the original. No global option override,
+warning suppression, or compatibility conversion is needed. The default
+native API emits upstream FutureWarnings, documented in the audit.
+`circyto.multimodal.sync.read_h5mu` is a separate interface: its explicit-pull
+policy fails on Smart-seq3's named modality / unnamed global observation
+indices, but reads IMR90. The audit gives the confirmed diagnosis and an
+offline verification command; it does not claim a production helper fix.
+
+The figure-regeneration reader still opens HDF5 in mode `r` and uses public
+`anndata.io.read_elem` on each `mod/*` group for numerical reconstruction.
+That extraction uses only modality matrices, annotations and cell IDs and is
+distinct from the successful native MuData tests. No figure method was changed.
 
 Neither source RNA modality has an embedding. Figure 1B/C therefore regenerate
 the method in `c99cdda:scripts/manuscript/export_smartseq3_figure1_data.py`:

@@ -4,6 +4,11 @@ Status: **READY FOR MANUSCRIPT V3 + COAUTHOR REVIEW**.
 Finalization audit: 2026-09-08. The numerical evidence is complete; this is not
 a claim that the external manuscript has already received coauthor approval.
 
+2026-09-16 bounded interoperability update: **PASS for ordinary MuData APIs
+on both actual archived objects**, including native read/write/read and full
+semantic checks. See [real_object_interoperability.md](real_object_interoperability.md)
+for the evidence and the separately confirmed Smart-seq3 circyto-helper failure.
+
 ## Frozen software
 
 circyto **0.10.0**, baseline
@@ -103,10 +108,13 @@ Replace the bracketed placeholders with local paths; output directories must
 be new. [reproduce.md](reproduce.md) gives exact archive-member paths and
 recovery commands. Both scripts are offline; source objects are never written.
 Source-tree circyto imports are reported truthfully as `0.10.0 (source tree)`.
-The legacy global MuData index cannot synchronize in this analysis stack;
-read-only `anndata.io.read_elem` loads stored modality groups instead. This
-limitation and the one historical Scanpy PCA-argument deprecation warning are
-documented; production MuData semantics are unchanged.
+The regeneration script uses read-only `anndata.io.read_elem` for numerical
+extraction from stored modality groups. The subsequent
+[real-object audit](real_object_interoperability.md) corrects the earlier
+blanket reader limitation: ordinary MuData 0.3.10 reads both originals in this
+stack; circyto's explicit-pull helper fails only on Smart-seq3's mismatched
+global/modality observation index names. Production code is unchanged. The
+historical Scanpy PCA-argument deprecation warning is separate.
 
 The independent `results_v2_recheck` run already establishes determinism:
 **all 10 result/table/figure artifacts are byte-identical**. Both runs' script,
@@ -116,11 +124,17 @@ and [recheck provenance](results_v2_recheck/provenance.json). Duplicate recheck
 figures and runtime caches remain preserved locally and are excluded from Git;
 recheck tables and provenance are retained. No analysis was rerun at finalization.
 
-Final focused checks: `python -m compileall -q scripts/manuscript`,
+2026-09-08 focused checks: `python -m compileall -q scripts/manuscript`,
 `python -m pytest -q tests/test_manuscript_scripts.py` (**12 passed, 4 warnings**),
 and `git diff --check`. The four test warnings concern intentional overlapping
 feature names; none is a MuData behavior-change FutureWarning. No raw pipeline
 was executed. Large inputs and caches are excluded from the manuscript commits.
+
+2026-09-16 focused checks: `PYTHONPATH=. python -m pytest -q
+tests/test_real_object_interoperability.py tests/test_manuscript_scripts.py`
+(**25 passed, 4 warnings**) and `git diff --check`. The native real-object
+audit separately records **12 upstream FutureWarnings**, without suppression.
+The frozen full production suite was not rerun.
 
 ## Deferred / nonblocking
 

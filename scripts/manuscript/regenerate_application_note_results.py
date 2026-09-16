@@ -33,8 +33,11 @@ UMAP_SEED = 17
 def read_modalities(path: Path) -> dict:
     """Read stored AnnData groups without synchronizing legacy global metadata.
 
-    MuData 0.3.10 cannot synchronize these historical global obs indices with
-    pandas 2.3.3. No global attributes are used for manuscript quantities.
+    This is numerical extraction, not a public MuData interoperability test.
+    Ordinary MuData 0.3.10 reads both originals; circyto's explicit-pull helper
+    fails on Smart-seq3's mismatched global/modality index names. See
+    manuscript/real_object_interoperability.md. No global attributes are used
+    for manuscript quantities.
     h5py mode 'r' and AnnData's public reader preserve the archived bytes.
     """
     import h5py

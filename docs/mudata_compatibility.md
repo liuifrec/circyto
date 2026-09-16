@@ -37,6 +37,14 @@ Pandas 3 stack changes string round-trip dtypes. Broad MuData 0.4 support is
 therefore not claimed until that dependency-stack migration receives its own
 semantic validation.
 
+The subsequent [actual manuscript-object audit](../manuscript/real_object_interoperability.md)
+adds a limitation to the helper claim: Smart-seq3's named modality observation
+indices and unnamed global index fail in the explicit-pull path. IMR90 reads
+successfully through the helper. Both checksum-identified originals pass
+ordinary MuData 0.3.10 reads and native round trips using its unchanged default.
+The frozen synthetic/package checks below did not cover that named-index case;
+no production helper repair is claimed by the new audit.
+
 The full release suite changed from 337 passed, 8 skipped, 131 warnings (126
 MuData behavior-change warnings) to 345 passed, 8 skipped, 5 warnings (zero
 MuData behavior-change warnings). The remaining warnings are four duplicate

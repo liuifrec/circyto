@@ -1,0 +1,722 @@
+{
+  "archive_commit": "c99cddaae2314d3af7d5232150c5b86bb6b52e25",
+  "baseline": "44697355bcab1c525ca7ef9b130e2ad0094d9e1b",
+  "environment": {
+    "distributions": [
+      "Jinja2==3.1.6",
+      "Levenshtein==0.27.4",
+      "MarkupSafe==3.0.3",
+      "PyYAML==6.0.3",
+      "Pygments==2.20.0",
+      "RapidFuzz==3.14.5",
+      "SecretStorage==3.5.0",
+      "Sphinx==8.1.3",
+      "adjustText==1.4.0",
+      "airr==2.0.0",
+      "alabaster==1.0.0",
+      "anndata==0.11.4",
+      "array-api-compat==1.15.0",
+      "attrs==26.1.0",
+      "awkward==2.13.0",
+      "awkward_cpp==56",
+      "babel==2.18.0",
+      "backports.tarfile==1.2.0",
+      "bleach==6.3.0",
+      "build==1.5.0",
+      "certifi==2026.7.22",
+      "cffi==2.1.1",
+      "charset-normalizer==3.4.4",
+      "circyto==0.10.0",
+      "contourpy==1.3.2",
+      "coverage==7.16.0",
+      "cryptography==50.0.1",
+      "cycler==0.12.1",
+      "docutils==0.21.2",
+      "exceptiongroup==1.3.1",
+      "fonttools==4.63.0",
+      "formulaic==1.2.2",
+      "fsspec==2026.7.0",
+      "h5py==3.16.0",
+      "hatchling==1.32.0",
+      "id==1.6.1",
+      "idna==3.19",
+      "igraph==1.0.0",
+      "imagesize==2.0.1",
+      "importlib_metadata==9.0.1",
+      "iniconfig==2.3.0",
+      "interface_meta==2.0.1",
+      "jaraco.classes==3.4.0",
+      "jaraco.context==6.1.2",
+      "jaraco.functools==4.6.0",
+      "jeepney==0.9.0",
+      "joblib==1.5.3",
+      "jsonschema-specifications==2025.9.1",
+      "jsonschema==4.26.0",
+      "kaggle==1.7.4.5",
+      "keyring==25.7.0",
+      "kiwisolver==1.5.0",
+      "legacy-api-wrap==1.5",
+      "lightgbm==4.6.0",
+      "llvmlite==0.49.0",
+      "logomaker==0.8.7",
+      "markdown-it-py==3.0.0",
+      "matplotlib==3.10.9",
+      "mdit-py-plugins==0.6.1",
+      "mdurl==0.1.2",
+      "more-itertools==11.1.0",
+      "mudata==0.3.10",
+      "myst-parser==4.0.1",
+      "narwhals==2.25.0",
+      "natsort==8.4.0",
+      "networkx==3.4.2",
+      "nh3==0.3.7",
+      "numba==0.67.0",
+      "numpy==2.2.6",
+      "packaging==26.3",
+      "pandas==2.3.3",
+      "pathspec==1.1.1",
+      "patsy==1.0.3",
+      "pillow==12.3.0",
+      "pip==26.2.1",
+      "platformdirs==4.11.5",
+      "pluggy==1.6.0",
+      "pooch==1.9.0",
+      "pycparser==3.0",
+      "pynndescent==0.6.0",
+      "pyparsing==3.3.2",
+      "pyproject_hooks==1.2.0",
+      "pytest-cov==7.1.0",
+      "pytest==9.1.1",
+      "python-Levenshtein==0.27.4",
+      "python-dateutil==2.9.0.post0",
+      "python-slugify==8.0.4",
+      "pytz==2026.3.post1",
+      "readme_renderer==46.0",
+      "referencing==0.37.0",
+      "requests-toolbelt==1.0.0",
+      "requests==2.34.2",
+      "rfc3986==2.0.0",
+      "rich==15.0.0",
+      "rpds-py==0.30.0",
+      "ruff==0.16.1",
+      "scanpy==1.11.5",
+      "scikit-learn==1.7.2",
+      "scipy==1.15.3",
+      "scirpy==0.22.4",
+      "scrfu==0.4.0",
+      "scverse-misc==0.0.3",
+      "seaborn==0.13.2",
+      "session-info2==0.4.1",
+      "setuptools==83.0.0",
+      "six==1.17.0",
+      "snowballstemmer==3.1.1",
+      "sphinxcontrib-applehelp==2.0.0",
+      "sphinxcontrib-devhelp==2.0.0",
+      "sphinxcontrib-htmlhelp==2.1.0",
+      "sphinxcontrib-jsmath==1.0.1",
+      "sphinxcontrib-qthelp==2.0.0",
+      "sphinxcontrib-serializinghtml==2.0.0",
+      "squarify==0.4.4",
+      "statsmodels==0.15.0",
+      "text-unidecode==1.3",
+      "texttable==1.7.0",
+      "threadpoolctl==3.6.0",
+      "tomli==2.4.1",
+      "tomlkit==0.15.1",
+      "tqdm==4.67.1",
+      "trove-classifiers==2026.6.1.19",
+      "twine==7.0.0",
+      "typing_extensions==4.16.0",
+      "tzdata==2026.3",
+      "umap-learn==0.5.12",
+      "urllib3==2.7.0",
+      "webencodings==0.5.1",
+      "wheel==0.47.0",
+      "wrapt==2.4.0",
+      "yamlordereddictloader==0.4.2",
+      "zipp==4.1.0"
+    ],
+    "pins": {
+      "anndata": "0.11.4",
+      "h5py": "3.16.0",
+      "llvmlite": "0.49.0",
+      "matplotlib": "3.10.9",
+      "mudata": "0.3.10",
+      "numba": "0.67.0",
+      "numpy": "2.2.6",
+      "pandas": "2.3.3",
+      "pynndescent": "0.6.0",
+      "scanpy": "1.11.5",
+      "scikit-learn": "1.7.2",
+      "scipy": "1.15.3",
+      "umap-learn": "0.5.12"
+    },
+    "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+    "pull_on_update": null,
+    "python": "3.10.20 | packaged by conda-forge | (main, Jun 11 2026, 03:31:56) [GCC 14.3.0]",
+    "requirements_sha256": "450beb7ea153eb82f5e11d6213a85a9aa195e116f0fa0979ac5a583c6b61cf8f"
+  },
+  "git_head": "fd52761dcf32436a53633ff7e0f9f30bf7b661cb",
+  "objects": {
+    "imr90": {
+      "circyto_helper_read": {
+        "status": "PASS",
+        "warnings": []
+      },
+      "equivalence": "PASS: modality axes/metadata/values/slots; global values/maps/slots; all HDF5 datasets and non-encoder attributes",
+      "global_read_changes": {
+        "obs": {
+          "added_columns": [
+            "rna:membership",
+            "rna:total_rna_counts",
+            "rna:detected_genes",
+            "rna:mitochondrial_fraction",
+            "rna:ribosomal_fraction",
+            "rna:circRNA_count",
+            "rna:circRNA_total_support",
+            "rna:original_obs_id",
+            "rna:gsm_id",
+            "rna:canonical_cell_id",
+            "rna:rna_cell_id",
+            "rna:dna_cell_id",
+            "rna:sample_title",
+            "rna:molecule",
+            "rna:original_rna_obs_id",
+            "circ:membership",
+            "circ:total_rna_counts",
+            "circ:detected_genes",
+            "circ:mitochondrial_fraction",
+            "circ:ribosomal_fraction",
+            "circ:circRNA_count",
+            "circ:circRNA_total_support",
+            "circ:original_obs_id",
+            "circ:gsm_id",
+            "circ:canonical_cell_id",
+            "circ:rna_cell_id",
+            "circ:dna_cell_id",
+            "circ:sample_title",
+            "circ:molecule",
+            "circ:original_circ_obs_id",
+            "cnv:cell_id",
+            "cnv:canonical_cell_id",
+            "cnv:dna_cell_id",
+            "cnv:rna_cell_id",
+            "cnv:pairing_strategy"
+          ],
+          "in_memory_dtype_changes": {},
+          "native_shape": [
+            23,
+            51
+          ],
+          "removed_columns": [],
+          "stored_shape": [
+            23,
+            16
+          ],
+          "stored_values_and_missingness_equal": true
+        },
+        "var": {
+          "added_columns": [
+            "rna:gene_id",
+            "rna:gene_name",
+            "rna:chrom",
+            "rna:strand",
+            "rna:gene_biotype",
+            "circ:circ_id",
+            "circ:chrom",
+            "circ:strand",
+            "circ:host_gene",
+            "circ:host_gene_from_gtf",
+            "circ:host_gene_id",
+            "circ:host_genes_multi",
+            "circ:host_gene_ids_multi",
+            "circ:host_gene_n",
+            "circ:host_gene_source",
+            "circ:host_gene_from_circatlas",
+            "circ:host_gene_from_circatlas_id",
+            "cnv:bin_id",
+            "cnv:seqname",
+            "cnv:bin_size"
+          ],
+          "in_memory_dtype_changes": {},
+          "native_shape": [
+            126237,
+            22
+          ],
+          "removed_columns": [],
+          "stored_shape": [
+            126237,
+            2
+          ],
+          "stored_values_and_missingness_equal": true
+        }
+      },
+      "hdf5_roundtrip": {
+        "allowed_encoder_changes": [
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "/"
+          },
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "mod/circ"
+          },
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "mod/cnv"
+          },
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "mod/rna"
+          }
+        ],
+        "attributes_checked": 531,
+        "datasets_checked": 177,
+        "nodes_checked": 247
+      },
+      "metrics": {
+        "annotated_candidates": 2429,
+        "matrices": {
+          "circ": {
+            "dtype": "int32",
+            "format": "csr",
+            "nonzero_values": 2914,
+            "total": 7422.0
+          },
+          "cnv": {
+            "dtype": "int16",
+            "format": "dense",
+            "nonzero_values": 1278868,
+            "total": 2543431.0
+          },
+          "rna": {
+            "dtype": "int32",
+            "format": "csr",
+            "nonzero_values": 376158,
+            "total": 67525881.0
+          }
+        },
+        "median_detected": 119.0,
+        "median_support": 317.0,
+        "modalities": [
+          "rna",
+          "circ",
+          "cnv"
+        ],
+        "overlap": 23,
+        "selected_candidate": {
+          "cells": 3,
+          "id": "chr1:117402186|117420649",
+          "support": 5.0
+        },
+        "shapes": {
+          "circ": [
+            23,
+            2443
+          ],
+          "cnv": [
+            23,
+            60607
+          ],
+          "rna": [
+            23,
+            63187
+          ]
+        },
+        "slots": {
+          "circ": {
+            "layers": [],
+            "obsm": [],
+            "obsp": [],
+            "uns": [],
+            "varm": [],
+            "varp": []
+          },
+          "cnv": {
+            "layers": [
+              "mappabilitynorm"
+            ],
+            "obsm": [],
+            "obsp": [],
+            "uns": [
+              "circyto"
+            ],
+            "varm": [],
+            "varp": []
+          },
+          "rna": {
+            "layers": [],
+            "obsm": [],
+            "obsp": [],
+            "uns": [],
+            "varm": [],
+            "varp": []
+          }
+        }
+      },
+      "native_read": {
+        "status": "PASS",
+        "warnings": [
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          },
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          }
+        ]
+      },
+      "native_reread": {
+        "status": "PASS",
+        "warnings": [
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          },
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          }
+        ]
+      },
+      "native_write": {
+        "status": "PASS",
+        "warnings": [
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          },
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          }
+        ]
+      },
+      "original": {
+        "archive_member": "load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu",
+        "sha256_after": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+        "sha256_before": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+        "size_bytes": 41036354
+      },
+      "roundtrip": {
+        "filename": "imr90.ordinary-roundtrip.h5mu",
+        "purpose": "verification scratch only",
+        "sha256": "81bfe10de7638160daf52f0211478e6e80c6f1308fec32d0d5c4c8a913ef0ccd",
+        "size_bytes": 41036354
+      },
+      "stored_obs_indices": {
+        "circ": {
+          "dtype": "object",
+          "name": null,
+          "unique": true
+        },
+        "cnv": {
+          "dtype": "object",
+          "name": null,
+          "unique": true
+        },
+        "global": {
+          "dtype": "object",
+          "name": null,
+          "unique": true
+        },
+        "rna": {
+          "dtype": "object",
+          "name": null,
+          "unique": true
+        }
+      }
+    },
+    "smartseq3": {
+      "circyto_helper_read": {
+        "exception": "ValueError: cannot join with no overlapping index names",
+        "status": "FAIL",
+        "traceback": "Traceback (most recent call last):\n  File \"<checkout>/scripts/manuscript/verify_real_object_interoperability.py\", line 78, in operation\n    result = function()\n  File \"<checkout>/scripts/manuscript/verify_real_object_interoperability.py\", line 286, in <lambda>\n    _, helper_record = operation(lambda: circyto_read_h5mu(source))\n  File \"<checkout>/circyto/multimodal/sync.py\", line 35, in read_h5mu\n    return mu.read_h5mu(path, **kwargs)\n  File \"<environment>/lib/python3.10/site-packages/mudata/_core/io.py\", line 474, in read_h5mu\n    mu = MuData._init_from_dict_(**d)\n  File \"<environment>/lib/python3.10/site-packages/mudata/_core/mudata.py\", line 389, in _init_from_dict_\n    return cls(\n  File \"<environment>/lib/python3.10/site-packages/mudata/_core/mudata.py\", line 243, in __init__\n    self.update()\n  File \"<environment>/lib/python3.10/site-packages/mudata/_core/mudata.py\", line 1652, in update\n    self.update_obs()\n  File \"<environment>/lib/python3.10/site-packages/mudata/_core/mudata.py\", line 1322, in update_obs\n    self._update_attr(\"obs\", axis=1, join_common=join_common)\n  File \"<environment>/lib/python3.10/site-packages/mudata/_core/mudata.py\", line 697, in _update_attr\n    data_mod.join(data_global.convert_dtypes(), how=\"left\", sort=False)\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/frame.py\", line 10784, in join\n    return merge(\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/reshape/merge.py\", line 184, in merge\n    return op.get_result(copy=copy)\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/reshape/merge.py\", line 886, in get_result\n    join_index, left_indexer, right_indexer = self._get_join_info()\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/reshape/merge.py\", line 1138, in _get_join_info\n    join_index, left_indexer, right_indexer = left_ax.join(\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/indexes/base.py\", line 279, in join\n    join_index, lidx, ridx = meth(self, other, how=how, level=level, sort=sort)\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/indexes/base.py\", line 4622, in join\n    return self._join_multi(other, how=how)\n  File \"<environment>/lib/python3.10/site-packages/pandas/core/indexes/base.py\", line 4746, in _join_multi\n    raise ValueError(\"cannot join with no overlapping index names\")\nValueError: cannot join with no overlapping index names\n",
+        "warnings": []
+      },
+      "equivalence": "PASS: modality axes/metadata/values/slots; global values/maps/slots; all HDF5 datasets and non-encoder attributes",
+      "global_read_changes": {
+        "obs": {
+          "added_columns": [
+            "rna:membership",
+            "rna:total_rna_counts",
+            "rna:detected_genes",
+            "rna:mitochondrial_fraction",
+            "rna:ribosomal_fraction",
+            "rna:circRNA_count",
+            "rna:circRNA_total_support",
+            "circ:membership",
+            "circ:total_rna_counts",
+            "circ:detected_genes",
+            "circ:mitochondrial_fraction",
+            "circ:ribosomal_fraction",
+            "circ:circRNA_count",
+            "circ:circRNA_total_support"
+          ],
+          "in_memory_dtype_changes": {},
+          "native_shape": [
+            192,
+            21
+          ],
+          "removed_columns": [],
+          "stored_shape": [
+            192,
+            7
+          ],
+          "stored_values_and_missingness_equal": true
+        },
+        "var": {
+          "added_columns": [
+            "rna:gene_id",
+            "rna:gene_name",
+            "rna:gene_biotype",
+            "circ:circ_id",
+            "circ:host_gene",
+            "circ:host_gene_from_gtf",
+            "circ:host_gene_id",
+            "circ:host_genes_multi",
+            "circ:host_gene_ids_multi",
+            "circ:host_gene_n",
+            "circ:host_gene_source",
+            "circ:host_gene_from_circatlas",
+            "circ:host_gene_from_circatlas_id"
+          ],
+          "in_memory_dtype_changes": {
+            "chrom": {
+              "after": "object",
+              "before": "category",
+              "before_categories": [
+                "chr1",
+                "chr1_KI270711v1_random",
+                "chr2",
+                "chr3",
+                "chr4",
+                "chr5",
+                "chr5_GL339449v2_alt",
+                "chr5_KI270897v1_alt",
+                "chr6",
+                "chr6_GL000251v2_alt",
+                "chr6_GL000252v2_alt",
+                "chr6_GL000254v2_alt",
+                "chr7",
+                "chr8",
+                "chr9",
+                "chr10",
+                "chr11",
+                "chr12",
+                "chr12_KI270904v1_alt",
+                "chr13",
+                "chr14",
+                "chr15",
+                "chr15_KI270905v1_alt",
+                "chr16",
+                "chr17",
+                "chr17_GL000258v2_alt",
+                "chr17_KI270857v1_alt",
+                "chr17_KI270908v1_alt",
+                "chr18",
+                "chr19",
+                "chr19_GL383574v1_alt",
+                "chr20",
+                "chr21",
+                "chr22",
+                "chrM",
+                "chrX",
+                "chrY"
+              ],
+              "before_ordered": false
+            }
+          },
+          "native_shape": [
+            65690,
+            17
+          ],
+          "removed_columns": [],
+          "stored_shape": [
+            65690,
+            4
+          ],
+          "stored_values_and_missingness_equal": true
+        }
+      },
+      "hdf5_roundtrip": {
+        "allowed_encoder_changes": [
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "/"
+          },
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "mod/circ"
+          },
+          {
+            "after": "0.3.10",
+            "attribute": "encoder-version",
+            "before": "0.3.8",
+            "node": "mod/rna"
+          }
+        ],
+        "attributes_checked": 331,
+        "datasets_checked": 101,
+        "nodes_checked": 152
+      },
+      "metrics": {
+        "annotated_candidates": 2379,
+        "matrices": {
+          "circ": {
+            "dtype": "int32",
+            "format": "csr",
+            "nonzero_values": 2659,
+            "total": 5711.0
+          },
+          "rna": {
+            "dtype": "int32",
+            "format": "csr",
+            "nonzero_values": 1695807,
+            "total": 42535540.0
+          }
+        },
+        "median_detected": 12.0,
+        "median_support": 22.5,
+        "modalities": [
+          "rna",
+          "circ"
+        ],
+        "overlap": 192,
+        "selected_candidate": {
+          "cells": 6,
+          "id": "chr1:117402186|117420649",
+          "support": 15.0
+        },
+        "shapes": {
+          "circ": [
+            192,
+            2503
+          ],
+          "rna": [
+            192,
+            63187
+          ]
+        },
+        "slots": {
+          "circ": {
+            "layers": [],
+            "obsm": [],
+            "obsp": [],
+            "uns": [],
+            "varm": [],
+            "varp": []
+          },
+          "rna": {
+            "layers": [],
+            "obsm": [],
+            "obsp": [],
+            "uns": [],
+            "varm": [],
+            "varp": []
+          }
+        }
+      },
+      "name_only_diagnostic": {
+        "all_other_stored_semantics_equal": true,
+        "change": {
+          "global_obs_index_name_after": "cell_id",
+          "global_obs_index_name_before": null
+        },
+        "filename": "smartseq3.ordinary-roundtrip.diagnostic-index-name.h5mu",
+        "helper_read": {
+          "status": "PASS",
+          "warnings": []
+        },
+        "purpose": "causal diagnostic scratch only; not a proposed public file",
+        "sha256": "7fe64b944def5543f92be0beb189fc1d6db45f46e05a6f86893dff9af769c690"
+      },
+      "native_read": {
+        "status": "PASS",
+        "warnings": [
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          },
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          }
+        ]
+      },
+      "native_reread": {
+        "status": "PASS",
+        "warnings": [
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          },
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          }
+        ]
+      },
+      "native_write": {
+        "status": "PASS",
+        "warnings": [
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          },
+          {
+            "category": "FutureWarning",
+            "message": "From 0.4 .update() will not pull obs/var columns from individual modalities by default anymore. Set mudata.set_options(pull_on_update=False) to adopt the new behaviour, which will become the default. Use new pull_obs/pull_var and push_obs/push_var methods for more flexibility."
+          }
+        ]
+      },
+      "original": {
+        "archive_member": "load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu",
+        "sha256_after": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+        "sha256_before": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+        "size_bytes": 30911142
+      },
+      "roundtrip": {
+        "filename": "smartseq3.ordinary-roundtrip.h5mu",
+        "purpose": "verification scratch only",
+        "sha256": "04eefbaab120d5b59c54e33f174e082e036567331cb40bbd99c3f9ed7370ae5c",
+        "size_bytes": 30911142
+      },
+      "stored_obs_indices": {
+        "circ": {
+          "dtype": "object",
+          "name": "cell_id",
+          "unique": true
+        },
+        "global": {
+          "dtype": "object",
+          "name": null,
+          "unique": true
+        },
+        "rna": {
+          "dtype": "object",
+          "name": "cell_id",
+          "unique": true
+        }
+      }
+    }
+  },
+  "production_diff_from_baseline": "",
+  "remedy": "A: original public files; ordinary MuData API",
+  "script_sha256": "22b4fdc3f23e5d03e5e55e02e6d9de64a4f67749b61a06f72bbe8d42946fbad2",
+  "status": "PASS",
+  "time_utc": "2026-09-16T06:45:08.277769+00:00"
+}
