@@ -59,8 +59,8 @@ def create_demo(outdir: Path) -> None:
     (outdir / "inputs/genome.fa").write_text(">chr1\nACGTACGTACGTACGT\n", encoding="utf-8")
     (outdir / "inputs/genes.gtf").write_text('chr1\tdemo\texon\t1\t16\t.\t+\t.\tgene_id "DEMO_GENE"; transcript_id "DEMO_TX";\n', encoding="utf-8")
     (outdir / "inputs/manifest.tsv").write_text(
-        "sample_id\tfastq_1\tfastq_2\tprotocol\tstrandedness\tread_layout\n"
-        f"demo_cell\t{(outdir / 'inputs/reads.fastq').resolve()}\t\tramda\tunstranded\tsingle\n", encoding="utf-8")
+        "cell_id\tplatform\tread1\tread2\tbam\tlibrary_id\tn_input_reads\tprotocol\tstrandedness\tread_layout\n"
+        f"demo_cell\tplate\t{(outdir / 'inputs/reads.fastq').resolve()}\t\t\tdemo\t1\tramda\tunstranded\tsingle\n", encoding="utf-8")
 
 
 def main() -> None:

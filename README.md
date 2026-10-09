@@ -37,6 +37,11 @@ circyto workflow full-length-circrna \
 ```
 
 Run `circyto doctor` and `circyto detectors` first to distinguish core package readiness from optional workflow-tool readiness.
+For a real single-end run, first index the exact reference with
+`bwa index ref/genome.fa`; the workflow does not build this index. The optional
+[RamDA environment recipe](environment.ramda-se.yml) supplies tested external
+runtimes. See the concise [reviewer guide](docs/reviewer_guide.md) for installation,
+commands, outputs, and the separate frozen manuscript reproduction route.
 
 ## Offline QC report quick start (feature branch)
 
@@ -61,6 +66,11 @@ Open `work/qc_report_demo/qc/report.html` directly in a browser; no web server,
 JavaScript, or internet connection is needed to view or regenerate a report
 after package installation. All values and source SHA-256 checksums are in
 `work/qc_report_demo/qc/metrics.json`.
+
+For a wheel-only installation, `examples/qc_report_demo.py` is supplied in the
+matching source archive, not installed as a CLI command. The
+[outside-repository example](docs/reviewer_guide.md#reviewer-quick-guide) shows
+how to use these distributed materials without an editable checkout.
 
 Download the [sample HTML](docs/examples/qc_report/qc/report.html) to open it
 locally, or inspect its [metrics](docs/examples/qc_report/qc/metrics.json) and
@@ -141,7 +151,18 @@ python -m pip install -e .
 
 The repo-root [environment.yml](environment.yml) is the supported baseline for source installs. It provides the Python scientific stack and CLI dependencies, but it intentionally does not install external detector executables.
 
+The optional [environment.ramda-se.yml](environment.ramda-se.yml) was separately
+tested for Linux x86_64 installation, BWA/SAMtools/Java runtime discovery and a
+single-end planning run. Its validation does not rerun the public-data analysis.
+The Python wheel works independently for reporting and other commands that do
+not need these tools.
+
 ### External tools
+
+Bundled detectors retain their upstream licenses; circyto's MIT license does
+not cover them. [Third-party notices](THIRD_PARTY_NOTICES.md) record attribution,
+packaged contents and unresolved CIRI-full/CIRI3 distribution questions.
+Use [CITATION.cff](CITATION.cff) to cite circyto and also cite the detector used.
 
 Install only the external tools needed for the workflow you plan to run:
 
@@ -159,7 +180,10 @@ For bundled CIRI3 direct mode, supported environment variables include:
 - `CIRCYTO_CIRI3_EXTRA_ARGS`
 - `CIRCYTO_CIRI3_CMD_TEMPLATE`
 
-Expected vendored layout:
+Wheel installations automatically find detector assets inside the installed
+`circyto/resources/tools/` package; no repository checkout or extra `tools/`
+directory is required. `circyto doctor` prints the resolved locations.
+The corresponding source-checkout layout is:
 
 ```text
 tools/

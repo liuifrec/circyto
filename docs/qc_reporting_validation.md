@@ -1,6 +1,9 @@
 # QC reporting validation
 
 Validation date: 2026-10-09. Feature branch: `feature/qc-report-usability`.
+This records the initial feature pass; the later
+[reviewer-readiness audit](reviewer_readiness.md) supersedes its acceptance
+assessment and documents a manifest-example validation correction.
 Base: `44697355bcab1c525ca7ef9b130e2ad0094d9e1b` (v0.10.0). The package version
 is unchanged. The manuscript branch remains at
 `c29831c3f6e7a31b708cce493c0be8036176077a`; no merge or manuscript edits were made.
@@ -41,7 +44,9 @@ simulated reporting errors after scientific outputs have been persisted.
   6 candidates, 77 support, median 2 candidates/cell, 2/12 zero-count cells,
   and 4/6 recorded host-gene coverage. Every per-cell/per-candidate count agrees
   with both the source TSVs and the synthetic matrix.
-- The documented manifest validation passed with `--strict`.
+- The later independent-user check found that the example's legacy manifest
+  columns were rejected by `manifest validate --strict`, despite being accepted
+  by the workflow. The reviewer pass corrects the example and verifies both.
 - The real `workflow full-length-circrna --dry-run` command passed using the
   generated toy manifest and reference, with installed BWA/SAMtools on `PATH`.
   CIRI3 runtime was unavailable for detector-command preview; no detector ran.

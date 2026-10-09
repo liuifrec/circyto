@@ -46,8 +46,9 @@ as synthetic; it does not document a real analysis run.
 
 First run `circyto doctor` and inspect both core readiness and its CIRI3 entries.
 The doctor lists
-missing tools and asset locations. A single-end RamDA/Shin-RamDA run uses BWA,
-SAMtools, Java >=12, and the configured CIRI3 jar/wrapper. Paired-end routes
+missing tools and asset locations. A single-end RamDA/Shin-RamDA direct-SAM run
+uses BWA, Java >=12, and the configured CIRI3 jar/wrapper; SAMtools is needed
+for BAM handling and is included in the optional setup recipe. Paired-end routes
 add STAR and a compatible STAR genome index. Install these external tools
 separately; `pip install circyto` does not install them. See
 [full-length workflows](full_length_workflow.md) and the README external-tool
@@ -74,20 +75,25 @@ command preview is unavailable. Do not remove `--dry-run` for these toy inputs:
 they are not suitable for a biological analysis.
 
 For your real data, create a tab-separated manifest with one row per cell, such
-as the following single-end RamDA example (replace the paths with real files):
+as the following single-end RamDA example (replace paths, library labels and
+`COUNT_A`/`COUNT_B` with your actual nonnegative integer input read counts):
 
 ```text
-sample_id	fastq_1	fastq_2	protocol	strandedness	read_layout
-cell_A	/absolute/path/cell_A.fastq.gz		ramda	unstranded	single
-cell_B	/absolute/path/cell_B.fastq.gz		ramda	unstranded	single
+cell_id	platform	read1	read2	bam	library_id	n_input_reads	protocol	strandedness	read_layout
+cell_A	plate	/absolute/path/cell_A.fastq.gz			library_A	COUNT_A	ramda	unstranded	single
+cell_B	plate	/absolute/path/cell_B.fastq.gz			library_B	COUNT_B	ramda	unstranded	single
 ```
 
-Keep the empty `fastq_2` column for single-end reads. Cell IDs must be unique.
+Keep the empty `read2` and `bam` columns for single-end FASTQ input. Cell IDs must be unique.
+These canonical columns work with both the manifest validator and workflow.
+The workflow also accepts some legacy aliases (such as `sample_id`/`fastq_1`)
+that the standalone v1 validator does not accept.
 Use absolute FASTQ paths to avoid working-directory ambiguity; supply the
 genome FASTA and matching annotation GTF for your organism/build. Validate the
 manifest with `circyto manifest validate manifest.tsv --strict`, then run:
 
 ```bash
+bwa index ref/genome.fa
 circyto workflow full-length-circrna \
   --manifest manifest.tsv --protocol ramda \
   --genome-fasta ref/genome.fa --gtf ref/genes.gtf \
@@ -95,6 +101,10 @@ circyto workflow full-length-circrna \
 ```
 
 These real-data paths are user inputs, unlike the self-contained demo above.
+Index the exact FASTA once before the first real run; the workflow does not
+create BWA indices. A successful dry run does not check that those indices
+exist or that the toy inputs are biologically suitable. See the tested optional
+[RamDA setup](reviewer_guide.md) for BWA, SAMtools, and Java installation.
 For paired-end RamDA/Shin-RamDA, supply both FASTQs, use `paired` read layout,
 and supply `--star-index` plus the existing `--allow-paired-ramda` opt-in.
 For already demultiplexed SMART-Seq3, use `--protocol smartseq3 --skip-demux`
@@ -126,8 +136,8 @@ not load AnnData/MuData or recount the matrix.
 | Per-cell support | `cell_qc.tsv:total_circRNA_support`, unchanged |
 | Total support | Sum of `total_circRNA_support`; checked independently against sum of `circ_qc.tsv:total_support` |
 | Median candidates/cell | Median of every QC cell's `circRNA_count`, including zeroes |
-| Candidate prevalence | `circ_qc.tsv:n_cells_detected` divided by the QC cell count |
-| Zero-count frequency | Number of QC rows with `circRNA_count == 0` divided by all QC cells |
+| Candidate prevalence | `circ_qc.tsv:n_cells_detected` / all QC cells, only when the entire QC cohort was evaluated |
+| Zero-count frequency | QC rows with `circRNA_count == 0` / all QC cells, only when the entire QC cohort was evaluated |
 | Recorded host-gene coverage | Nonblank, non-placeholder `host_gene` rows divided by all candidate QC rows |
 
 Support retains the detector's count semantics; it is not automatically a UMI,
@@ -138,6 +148,16 @@ orthogonal confirmation. A present but entirely blank `host_gene` column yields
 0 recorded annotations; an absent column yields **Not available**. Placeholders
 `NA`, `N/A`, `NaN`, `None`, `null`, `unknown`, `unassigned`, `-`, and `.` are
 treated as unannotated (case-insensitive).
+
+Rates require consistent completion evidence and completed statuses for
+**every** QC cell: alignment `aligned`, `reused_input`, or `reused_cached`, and
+detector `success`, `empty`, or `skipped_existing`. Failed, unprocessed,
+missing-status, and dry-run cohorts have unavailable prevalence and zero-count
+rates. The aggregate candidate TSV cannot supply a numerator restricted to a
+successful-cell subset, so the reporter does not silently remove failed cells
+from the denominator. `zero_candidate_cells`, per-cell counts, and the median
+still describe all source QC rows and may include failed cells. These raw
+counts are retained for diagnosis, not interpreted as biological nondetections.
 
 Missing or invalid numeric values invalidate the affected aggregate; they are
 never imputed or silently excluded from a sum. An empty, valid table records
@@ -151,7 +171,9 @@ never repaired; prevalence is suppressed if cross-table consistency checks fail.
 `value`, `unit`, `source`, `definition`, and `reason`; fractions also retain
 integer `numerator` and `denominator`. `per_cell` and `per_candidate` include
 all rows in source order. Candidate prevalence uses the shared
-`candidate_prevalence_denominator`. Percentages in HTML are rounded; original
+`candidate_prevalence_denominator` (null when unavailable), with
+`candidate_prevalence_reason` and a `cell_evaluation` status summary.
+Percentages in HTML are rounded; original
 integer counts and denominators remain exact. HTML tables show at most 100 rows
 to keep the document manageable; JSON and source TSVs retain all rows.
 
@@ -166,6 +188,10 @@ Original matrix/index file presence is reported without opening or validating
 their contents. A completion timestamp, usable QC, consistent populations,
 completed alignment/detector evidence, and matrix/index file presence are
 required for the report's **Completed** label.
+Missing optional exports or an unreadable optional RNA summary do not by
+themselves invalidate circRNA workflow completion. A malformed RNA summary
+still produces a visible warning. Contradictory alignment/detector evidence
+does prevent a successful label.
 
 Explicit failures override completed stage labels. Planned, pending, missing,
 or conflicting statuses prevent a successful label. Missing summaries produce

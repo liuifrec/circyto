@@ -1,5 +1,11 @@
 {
   "candidate_prevalence_denominator": 12,
+  "candidate_prevalence_reason": null,
+  "cell_evaluation": {
+    "cohort_eligible_for_rates": true,
+    "completed_status_cells": 12,
+    "other_status_cells": 0
+  },
   "consistency_checks": [
     {
       "check": "cell support sum = candidate support sum",
@@ -124,7 +130,7 @@
       "value": 2
     },
     "zero_candidate_fraction": {
-      "definition": "Zero-count QC cells / all QC cells; this is not a biological absence estimate.",
+      "definition": "Zero-count cells / all QC cells, available only when the entire QC cohort was evaluated; not biological absence.",
       "denominator": 12,
       "numerator": 2,
       "reason": null,

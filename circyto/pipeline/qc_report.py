@@ -25,6 +25,10 @@ from circyto import __version__
 SCHEMA_VERSION = "circyto.qc_report.v1"
 REPORT_FEATURE = "qc-report-usability (unreleased; outside the v0.10.0 manuscript baseline)"
 SUCCESS = {"success", "empty", "skipped_existing", "aligned", "reused_input", "reused_cached", "completed"}
+CELL_COMPLETION = {
+    "alignment": {"aligned", "reused_input", "reused_cached"},
+    "detector": {"success", "empty", "skipped_existing"},
+}
 FAILED = {"failed", "error", "partial_failure", "aborted"}
 OUTPUTS = {
     "matrix/circ_counts.mtx": "circRNA candidates × cells (Matrix Market)",
@@ -85,6 +89,8 @@ class _Inputs:
         except (OSError, UnicodeError, ValueError) as exc:
             reason = "File is missing" if isinstance(exc, FileNotFoundError) else "File is unreadable or outside the workflow directory"
             source["reason"] = reason
+            if not isinstance(exc, FileNotFoundError):
+                source["valid"] = False
             if not optional or not isinstance(exc, FileNotFoundError):
                 self.warnings.append(f"{name}: {reason}.")
             return None
@@ -190,8 +196,6 @@ def collect_report_metrics(workdir: Path) -> dict[str, Any]:
         "zero_candidate_cells": _metric(counts.count(0) if _complete(counts) else None, "cells", cell_source,
                                         "Number of QC cells with circRNA_count = 0; failed cells are not biological negatives.", missing),
     }
-    metrics["zero_candidate_fraction"] = _fraction(metrics["zero_candidate_cells"]["value"], n_cells, cell_source,
-        "Zero-count QC cells / all QC cells; this is not a biological absence estimate.")
     has_host = candidates is not None and "host_gene" in circ_fields
     blank_hosts = {"", ".", "-", "na", "n/a", "nan", "none", "null", "unknown", "unassigned"}
     annotated = sum(row["host_gene"].strip().lower() not in blank_hosts for row in candidates) if has_host else None
@@ -240,7 +244,7 @@ def collect_report_metrics(workdir: Path) -> dict[str, Any]:
         per_candidate.append({"circ_id": row["circ_id"], "n_cells_detected": value,
                               "total_support": circ_support[index] if circ_support is not None else None,
                               "host_gene": row["host_gene"] if has_host else None,
-                              "prevalence": value / n_cells if prevalence_valid else None})
+                              "prevalence": None})
 
     evidence: list[dict[str, Any]] = []
     for kind, data in (("alignment", alignment), ("detector", detector)):
@@ -275,7 +279,7 @@ def collect_report_metrics(workdir: Path) -> dict[str, Any]:
         for status, count in record["status_counts"].items():
             if count and status.lower() in FAILED:
                 failed = True
-            elif count and status.lower() not in SUCCESS:
+            elif count and status.lower() not in CELL_COMPLETION[record["kind"]]:
                 reasons.append(f"{record['kind']} has cells with status {status}.")
     if failed:
         reasons.append("Recorded stage, alignment, or detector failures; QC may describe partial outputs.")
@@ -300,10 +304,33 @@ def collect_report_metrics(workdir: Path) -> dict[str, Any]:
                 reasons.append(f"{kind.capitalize()} status distributions disagree between sources.")
     if cells is None or candidates is None:
         reasons.append("Required QC tables are unavailable.")
-    if any(source.get("valid") is False for source in inputs.sources):
+    if any(source.get("valid") is False for source in inputs.sources if source["path"] != "rna/rna_import_summary.json"):
         reasons.append("One or more source artifacts could not be interpreted reliably.")
     if any(item["ok"] is False for item in checks):
         reasons.append("QC sources are inconsistent; inspect the recorded values before interpretation.")
+
+    # The aggregate candidate TSV cannot be restricted to a subset of cells.
+    # Only use its denominator when the entire QC cohort was evaluated. Keep
+    # raw QC counts (including failed/missing rows) intact for troubleshooting.
+    evaluated_cells = sum(all(row[f"{kind}_status"].lower() in statuses
+                              for kind, statuses in CELL_COMPLETION.items()) for row in per_cell)
+    cohort_valid = bool(n_cells) and evaluated_cells == n_cells and not reasons and summary.get("dry_run") is not True
+    cohort_reason = (
+        "Detection rates require consistent completion evidence and completed alignment and detector statuses for every QC cell. "
+        "Failed, missing, or unprocessed cells are not negative detections. Aggregate candidate QC cannot be restricted to an evaluated subset."
+    )
+    metrics["zero_candidate_fraction"] = _fraction(
+        metrics["zero_candidate_cells"]["value"], n_cells if cohort_valid else None, cell_source,
+        "Zero-count cells / all QC cells, available only when the entire QC cohort was evaluated; not biological absence.")
+    if not cohort_valid:
+        metrics["zero_candidate_fraction"]["reason"] = cohort_reason
+        inputs.warnings.append(cohort_reason)
+    prevalence_valid = prevalence_valid and cohort_valid and _complete(counts)
+    prevalence_reason = None if prevalence_valid else (
+        cohort_reason if not cohort_valid else "Complete, consistent candidate and cell counts are required for prevalence.")
+    if prevalence_valid:
+        for row in per_candidate:
+            row["prevalence"] = row["n_cells_detected"] / n_cells
     outputs = [{"path": name, "description": description,
                 "available": (root / name).is_file() and (root / name).resolve().is_relative_to(root)}
                for name, description in OUTPUTS.items()]
@@ -322,7 +349,7 @@ def collect_report_metrics(workdir: Path) -> dict[str, Any]:
     if n_cells == 0:
         inputs.warnings.append("The cell QC table contains no cells; fractions requiring a cell denominator are unavailable.")
     if not prevalence_valid:
-        inputs.warnings.append("Candidate prevalence is unavailable: complete, consistent n_cells_detected values and a nonzero QC cell denominator are required.")
+        inputs.warnings.append(f"Candidate prevalence is unavailable: {prevalence_reason}")
     for name, values in (("circRNA_count", counts), ("total_circRNA_support", support), ("n_cells_detected", detected), ("total_support", circ_support)):
         if not _complete(values):
             inputs.warnings.append(f"{name}: {missing}")
@@ -339,7 +366,12 @@ def collect_report_metrics(workdir: Path) -> dict[str, Any]:
         "schema_version": SCHEMA_VERSION, "reporter_version": __version__, "reporter_feature": REPORT_FEATURE,
         "workflow": {"status": state, "reasons": list(dict.fromkeys(reasons)), "stages": stage_rows},
         "metrics": metrics, "per_cell": per_cell, "per_candidate": per_candidate,
-        "candidate_prevalence_denominator": n_cells, "detector_evidence": evidence,
+        "candidate_prevalence_denominator": n_cells if prevalence_valid else None,
+        "candidate_prevalence_reason": prevalence_reason,
+        "cell_evaluation": {"completed_status_cells": evaluated_cells if cells is not None else None,
+                            "other_status_cells": n_cells - evaluated_cells if n_cells is not None else None,
+                            "cohort_eligible_for_rates": cohort_valid},
+        "detector_evidence": evidence,
         "consistency_checks": checks, "warnings": list(dict.fromkeys(inputs.warnings)),
         "provenance": provenance, "sources": inputs.sources, "outputs": outputs,
         "optional_summaries": {"rna": {key: _text(rna[key]) for key in ("method", "n_cells", "n_genes") if key in rna}},
@@ -431,6 +463,9 @@ def render_report(payload: dict[str, Any]) -> str:
     rna_table = _table(["RNA summary field", "Recorded value"], [[key, value] for key, value in optional.items()])
     definition_table = _table(["Metric", "Source", "Definition / missing-value reason"],
         [[key, value["source"], value["definition"] + (" " + value["reason"] if value["reason"] else "")] for key, value in metrics.items()])
+    prevalence_note = ("Prevalence: Not available. " + payload["candidate_prevalence_reason"]
+                       if payload["candidate_prevalence_reason"] else
+                       f'Prevalence = n_cells_detected / all {payload["candidate_prevalence_denominator"]} evaluated QC cells.')
     return f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
@@ -443,7 +478,7 @@ def render_report(payload: dict[str, Any]) -> str:
 <p class="interpretation">Detector-supported circRNA candidates require orthogonal confirmation. Workflow completion, detector evidence, and biological validation are separate questions.</p>
 <div class="metrics">{"".join(cards)}</div></section>
 <section><div class="section-heading"><h2>Candidate detection across cells</h2><span>Source QC values · no filtering</span></div><div class="charts"><article><h3>Per-cell candidate counts</h3>{_histogram([row["candidate_count"] for row in cells], "Distribution of circRNA candidate counts; labels above bars count cells", "circRNA candidates per cell")}</article><article><h3>Candidate prevalence</h3>{_histogram([row["n_cells_detected"] for row in candidates] if all(row["prevalence"] is not None for row in candidates) else [], "Distribution of detected-cell counts; labels above bars count candidates", "QC cells detecting each candidate")}</article></div>
-<p class="muted">Bar labels give frequencies. Prevalence = n_cells_detected / all {_escape(_display(payload["candidate_prevalence_denominator"]))} QC cells. Percentages are rounded for display; exact counts and denominators are retained in metrics.json. Failed or unprocessed cells must not be interpreted as negative detections.</p></section>
+<p class="muted">Bar labels give frequencies. {_escape(prevalence_note)} Percentages are rounded for display; exact counts and denominators are retained in metrics.json. Raw cell counts include every QC row; failed or unprocessed cells must not be interpreted as negative detections.</p></section>
 <section id="evidence"><h2>Detector evidence and workflow stages</h2><p>Statuses are reported separately for each source; counts across sources must not be added together. “Empty” means the detector recorded no candidates; “skipped_existing” means existing output was reused.</p>{_table(["Stage", "Status", "Cells", "Source"], evidence_rows)}<details><summary>Recorded workflow stages</summary>{stage_table}</details></section>
 <section id="warnings" class="warnings"><h2>Warnings and availability</h2>{warnings}<p>Host-gene coverage measures recorded annotation fields only. A blank field does not establish that no host gene exists. Missing metrics are never replaced with zero.</p></section>
 <section><h2>Per-cell QC</h2>{cell_table}</section><section><h2>Per-candidate QC</h2>{candidate_table}</section>

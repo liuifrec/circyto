@@ -136,14 +136,23 @@ def test_failures_override_completed_stages(workdir, source):
     write_json(path, summary)
     payload = generate_report(workdir)
     assert payload["workflow"]["status"] == "failed"
+    assert payload["metrics"]["zero_candidate_cells"]["value"] == 1
+    assert payload["metrics"]["zero_candidate_fraction"]["value"] is None
+    assert payload["candidate_prevalence_denominator"] is None
+    assert all(row["prevalence"] is None for row in payload["per_candidate"])
     assert "Workflow: Failed" in (workdir / "qc/report.html").read_text()
+    assert "Prevalence: Not available" in (workdir / "qc/report.html").read_text()
 
 
 @pytest.mark.parametrize("status", ["missing", "pending", "unknown", "running"])
 def test_incomplete_cells_never_mean_success(workdir, status):
     path = workdir / "qc/cell_qc.tsv"
     path.write_text(path.read_text().replace("empty", status))
-    assert generate_report(workdir)["workflow"]["status"] == "incomplete"
+    payload = generate_report(workdir)
+    assert payload["workflow"]["status"] == "incomplete"
+    assert payload["cell_evaluation"]["other_status_cells"] == 1
+    assert payload["metrics"]["zero_candidate_fraction"]["value"] is None
+    assert all(row["prevalence"] is None for row in payload["per_candidate"])
 
 
 def test_dry_run_with_old_qc_does_not_mean_success(workdir):
@@ -151,17 +160,71 @@ def test_dry_run_with_old_qc_does_not_mean_success(workdir):
     value = json.loads(path.read_text())
     value["dry_run"] = True
     write_json(path, value)
-    assert generate_report(workdir)["workflow"]["status"] == "dry_run"
+    payload = generate_report(workdir)
+    assert payload["workflow"]["status"] == "dry_run"
+    assert payload["metrics"]["zero_candidate_fraction"]["value"] is None
+    assert payload["candidate_prevalence_denominator"] is None
 
 
 def test_zero_candidates_has_zero_counts_but_no_host_fraction(workdir):
     (workdir / "qc/cell_qc.tsv").write_text("cell_id\tcircRNA_count\ttotal_circRNA_support\tdetector_status\talignment_status\ncellA\t0\t0\tempty\taligned\n")
     (workdir / "qc/circ_qc.tsv").write_text("circ_id\tn_cells_detected\ttotal_support\thost_gene\n")
+    summary = json.loads((workdir / "workflow_summary.json").read_text())
+    summary.update(matrix={"n_cells": 1, "n_circRNAs": 0}, planned_cells=1,
+                   alignment_status_counts={"aligned": 1}, detector_status_counts={"empty": 1})
+    write_json(workdir / "workflow_summary.json", summary)
     payload = generate_report(workdir)
     assert payload["metrics"]["total_support"]["value"] == 0
     assert payload["metrics"]["candidates"]["value"] == 0
     assert payload["metrics"]["zero_candidate_fraction"]["value"] == 1
     assert payload["metrics"]["host_gene_coverage"]["value"] is None
+    assert payload["cell_evaluation"]["cohort_eligible_for_rates"] is True
+
+
+@pytest.mark.parametrize("kind,status", [("alignment", "empty"), ("detector", "aligned"), ("detector", "")])
+def test_stage_inappropriate_or_missing_cell_status_cannot_qualify_denominator(workdir, kind, status):
+    path = workdir / "qc/cell_qc.tsv"
+    rows = list(csv.DictReader(path.read_text().splitlines(), delimiter="\t"))
+    rows[-1][f"{kind}_status"] = status
+    with path.open("w", newline="") as handle:
+        writer = csv.DictWriter(handle, fieldnames=list(rows[0]), delimiter="\t")
+        writer.writeheader()
+        writer.writerows(rows)
+    payload = generate_report(workdir)
+    assert payload["workflow"]["status"] == "incomplete"
+    assert payload["metrics"]["zero_candidate_cells"]["value"] == 1
+    assert payload["metrics"]["zero_candidate_fraction"]["denominator"] is None
+    assert payload["candidate_prevalence_denominator"] is None
+
+
+def test_aggregate_success_does_not_replace_missing_per_cell_statuses(workdir):
+    path = workdir / "qc/cell_qc.tsv"
+    path.write_text("cell_id\tcircRNA_count\ttotal_circRNA_support\ncellA\t2\t7\ncellB\t1\t3\ncellC\t0\t0\n")
+    payload = generate_report(workdir)
+    assert payload["metrics"]["zero_candidate_fraction"]["value"] is None
+    assert payload["cell_evaluation"]["completed_status_cells"] == 0
+    assert "every QC cell" in payload["candidate_prevalence_reason"]
+
+
+def test_invalid_optional_rna_warns_without_changing_circ_workflow_completion(workdir):
+    path = workdir / "rna/rna_import_summary.json"
+    path.parent.mkdir()
+    path.write_text("{broken")
+    payload = generate_report(workdir)
+    assert payload["workflow"]["status"] == "completed"
+    assert payload["metrics"]["zero_candidate_fraction"]["value"] == 1 / 3
+    assert payload["optional_summaries"]["rna"] == {}
+    assert any("rna/rna_import_summary.json: Invalid" in value for value in payload["warnings"])
+
+
+def test_unreadable_detector_summary_does_not_establish_completion(workdir):
+    path = workdir / "ciri3/detector_run_summary.json"
+    path.parent.mkdir()
+    path.write_bytes(b"\xff\xfe")
+    payload = generate_report(workdir)
+    assert payload["workflow"]["status"] == "incomplete"
+    assert payload["candidate_prevalence_denominator"] is None
+    assert any("unreadable" in value for value in payload["warnings"])
 
 
 def test_zero_cells_never_produces_nan_or_division_by_zero(workdir):
@@ -365,6 +428,10 @@ def test_documentation_demo_matches_matrix_and_checked_in_metrics(tmp_path):
     demo = runpy.run_path(str(repo / "examples/qc_report_demo.py"))
     root = tmp_path / "demo"
     demo["create_demo"](root)
+    # The documented validator and workflow must accept the same demo manifest.
+    validation = CliRunner().invoke(app, ["manifest", "validate", str(root / "inputs/manifest.tsv"), "--strict"])
+    assert validation.exit_code == 0, validation.output
+    assert "missing_files=0" in validation.output
     with pytest.raises(ValueError, match="never overwrites"):
         demo["create_demo"](root)
     payload = generate_report(root)

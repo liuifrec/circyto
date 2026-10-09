@@ -1,4 +1,10 @@
 include examples/qc_report_demo.py
+include CITATION.cff
+include THIRD_PARTY_NOTICES.md
+include environment.ramda-se.yml
+include docs/reviewer_guide.md
+include docs/reviewer_readiness.md
+include docs/circrna_workflow_comparison.md
 include docs/qc_reporting.md
 include docs/qc_reporting_validation.md
 include docs/images/qc_report.png
