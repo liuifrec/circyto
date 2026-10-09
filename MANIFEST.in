@@ -1,0 +1,5 @@
+include examples/qc_report_demo.py
+include docs/qc_reporting.md
+include docs/qc_reporting_validation.md
+include docs/images/qc_report.png
+recursive-include docs/examples/qc_report *.json *.tsv *.txt *.mtx *.html

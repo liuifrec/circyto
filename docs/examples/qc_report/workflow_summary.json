@@ -1,0 +1,44 @@
+{
+  "alignment_status_counts": {
+    "aligned": 12
+  },
+  "circyto_version": "synthetic fixture (no analysis run)",
+  "completed_at": "2026-01-01T00:01:00Z",
+  "detector_backend": "ciri3",
+  "detector_status_counts": {
+    "empty": 2,
+    "success": 10
+  },
+  "dry_run": false,
+  "matrix": {
+    "n_cells": 12,
+    "n_circRNAs": 6
+  },
+  "planned_cells": 12,
+  "protocol": "ramda",
+  "read_layout": "single-end",
+  "stage_graph": [
+    {
+      "stage": "alignment",
+      "status": "completed"
+    },
+    {
+      "stage": "detector",
+      "status": "completed"
+    },
+    {
+      "stage": "matrix",
+      "status": "completed"
+    },
+    {
+      "stage": "summary_qc",
+      "status": "completed"
+    }
+  ],
+  "started_at": "2026-01-01T00:00:00Z",
+  "warnings": [
+    "SYNTHETIC DEMONSTRATION: counts, identifiers, annotation labels, statuses, and timestamps are illustrative. No biological analysis or CIRI3 execution was performed."
+  ],
+  "workflow_type": "full-length-circrna",
+  "workflow_uuid": "synthetic-report-demonstration"
+}

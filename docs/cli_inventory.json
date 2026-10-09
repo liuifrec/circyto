@@ -1,7 +1,7 @@
 {
   "schema_version": "circyto.release_cli_inventory.v1",
   "circyto_version": "0.10.0",
-  "command_count": 90,
+  "command_count": 91,
   "notes": {
     "experimental": "True denotes an explicitly experimental or exploratory public command family.",
     "manuscript_facing": "True denotes commands used by the repository's manuscript reproducibility path.",
@@ -1382,6 +1382,22 @@
       "optional_external_tools": [],
       "experimental": false,
       "manuscript_facing": true,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "report",
+      "one_line_purpose": "Create an offline HTML QC report and metrics.json from existing outputs.",
+      "required_arguments": [
+        {
+          "name": "workdir",
+          "cli_spelling": "--workdir",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
+      "manuscript_facing": false,
       "lifecycle": "current",
       "alias_for": null
     },

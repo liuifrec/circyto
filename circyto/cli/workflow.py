@@ -38,6 +38,7 @@ def full_length_circrna(
     cleanup_intermediates: str | None = typer.Option(None, "--cleanup-intermediates", help="[EXPERIMENTAL] After successful completion, optionally clean regenerable workflow intermediates. One of: alignments, demux, all"),
     dry_run: bool = typer.Option(False, "--dry-run", help="[EXPERIMENTAL] Plan stages and underlying commands without executing"),
     fail_fast: bool = typer.Option(False, "--fail-fast", help="[EXPERIMENTAL] Stop after the first failed chunk"),
+    report: bool = typer.Option(True, "--report/--no-report", help="Write offline qc/report.html and qc/metrics.json after execution."),
     command_template: str | None = typer.Option(None, "--command-template", help="[EXPERIMENTAL] Optional CIRI3 command template override"),
     allow_paired_ramda: bool = typer.Option(
         False,
@@ -72,6 +73,7 @@ def full_length_circrna(
             fail_fast=fail_fast,
             command_template=command_template,
             experimental_paired_ramda=allow_paired_ramda,
+            report=report,
         ),
         progress=typer.echo,
     )
@@ -104,6 +106,7 @@ def smartseq3_ciri3(
     gene_counts_format: str = typer.Option("tsv", "--gene-counts-format", help="[EXPERIMENTAL] Gene-count format: tsv or mtx-dir"),
     export_mudata: bool = typer.Option(False, "--export-mudata/--no-export-mudata", help="[EXPERIMENTAL] Write OUTDIR/mudata/circyto_multimodal.h5mu"),
     cell_join: str = typer.Option("inner", "--cell-join", help="[EXPERIMENTAL] How to align RNA and circ cells: inner or outer"),
+    report: bool = typer.Option(True, "--report/--no-report", help="Write offline qc/report.html and qc/metrics.json after execution."),
 ) -> None:
     """
     Experimental end-to-end SMART-Seq3 to CIRI3 workflow.
@@ -135,6 +138,7 @@ def smartseq3_ciri3(
             gene_counts_format=gene_counts_format,
             export_mudata=export_mudata,
             cell_join=cell_join,
+            report=report,
         ),
         progress=typer.echo,
     )

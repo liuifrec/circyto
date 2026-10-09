@@ -1,0 +1,384 @@
+{
+  "candidate_prevalence_denominator": 12,
+  "consistency_checks": [
+    {
+      "check": "cell support sum = candidate support sum",
+      "left": 77,
+      "ok": true,
+      "right": 77
+    },
+    {
+      "check": "cell candidate counts sum = candidate detected-cell counts sum",
+      "left": 21,
+      "ok": true,
+      "right": 21
+    },
+    {
+      "check": "QC cells = summary matrix cells",
+      "left": 12,
+      "ok": true,
+      "right": 12
+    },
+    {
+      "check": "QC candidates = summary matrix candidates",
+      "left": 6,
+      "ok": true,
+      "right": 6
+    },
+    {
+      "check": "QC cells = selected/planned cells",
+      "left": 12,
+      "ok": true,
+      "right": 12
+    }
+  ],
+  "detector_evidence": [
+    {
+      "kind": "alignment",
+      "source": "workflow_summary.json",
+      "status_counts": {
+        "aligned": 12
+      }
+    },
+    {
+      "kind": "alignment",
+      "source": "qc/cell_qc.tsv",
+      "status_counts": {
+        "aligned": 12
+      }
+    },
+    {
+      "kind": "detector",
+      "source": "workflow_summary.json",
+      "status_counts": {
+        "empty": 2,
+        "success": 10
+      }
+    },
+    {
+      "kind": "detector",
+      "source": "qc/cell_qc.tsv",
+      "status_counts": {
+        "empty": 2,
+        "success": 10
+      }
+    }
+  ],
+  "metrics": {
+    "candidate_total_support": {
+      "definition": "Independent sum of total_support over every candidate QC row.",
+      "reason": null,
+      "source": "qc/circ_qc.tsv",
+      "unit": "support",
+      "value": 77
+    },
+    "candidates": {
+      "definition": "Number of unique circ_id rows in circ_qc.tsv.",
+      "reason": null,
+      "source": "qc/circ_qc.tsv",
+      "unit": "candidates",
+      "value": 6
+    },
+    "cells": {
+      "definition": "Number of unique cell_id rows in cell_qc.tsv.",
+      "reason": null,
+      "source": "qc/cell_qc.tsv",
+      "unit": "cells",
+      "value": 12
+    },
+    "host_gene_annotated_candidates": {
+      "definition": "Candidate rows with a recorded, non-placeholder host_gene; annotation is not experimental validation.",
+      "reason": null,
+      "source": "qc/circ_qc.tsv",
+      "unit": "candidates",
+      "value": 4
+    },
+    "host_gene_coverage": {
+      "definition": "Candidate rows with a recorded host_gene / all candidate QC rows. Does not establish annotation completeness or correctness.",
+      "denominator": 6,
+      "numerator": 4,
+      "reason": null,
+      "source": "qc/circ_qc.tsv",
+      "unit": "fraction",
+      "value": 0.6666666666666666
+    },
+    "median_candidates_per_cell": {
+      "definition": "Median circRNA_count over every QC cell, including zero-count cells.",
+      "reason": null,
+      "source": "qc/cell_qc.tsv",
+      "unit": "candidates/cell",
+      "value": 2.0
+    },
+    "total_support": {
+      "definition": "Sum of total_circRNA_support over every QC cell; detector support units, not molecules or UMIs.",
+      "reason": null,
+      "source": "qc/cell_qc.tsv",
+      "unit": "support",
+      "value": 77
+    },
+    "zero_candidate_cells": {
+      "definition": "Number of QC cells with circRNA_count = 0; failed cells are not biological negatives.",
+      "reason": null,
+      "source": "qc/cell_qc.tsv",
+      "unit": "cells",
+      "value": 2
+    },
+    "zero_candidate_fraction": {
+      "definition": "Zero-count QC cells / all QC cells; this is not a biological absence estimate.",
+      "denominator": 12,
+      "numerator": 2,
+      "reason": null,
+      "source": "qc/cell_qc.tsv",
+      "unit": "fraction",
+      "value": 0.16666666666666666
+    }
+  },
+  "optional_summaries": {
+    "rna": {}
+  },
+  "outputs": [
+    {
+      "available": true,
+      "description": "circRNA candidates \u00d7 cells (Matrix Market)",
+      "path": "matrix/circ_counts.mtx"
+    },
+    {
+      "available": true,
+      "description": "Matrix row identities, in order",
+      "path": "matrix/circ_index.txt"
+    },
+    {
+      "available": true,
+      "description": "Matrix column identities, in order",
+      "path": "matrix/cell_index.txt"
+    },
+    {
+      "available": false,
+      "description": "Candidate coordinates and annotations",
+      "path": "matrix/circ_feature_table.tsv"
+    },
+    {
+      "available": false,
+      "description": "AnnData: cells \u00d7 circRNA candidates (optional)",
+      "path": "anndata/circ_counts.h5ad"
+    },
+    {
+      "available": false,
+      "description": "MuData: aligned modalities (optional)",
+      "path": "mudata/circyto_multimodal.h5mu"
+    },
+    {
+      "available": true,
+      "description": "Per-cell QC, including selected zero-count cells",
+      "path": "qc/cell_qc.tsv"
+    },
+    {
+      "available": true,
+      "description": "Per-candidate QC and host-gene annotations",
+      "path": "qc/circ_qc.tsv"
+    }
+  ],
+  "per_candidate": [
+    {
+      "circ_id": "chr1:1000|1400",
+      "host_gene": "DEMO_GENE_A",
+      "n_cells_detected": 8,
+      "prevalence": 0.6666666666666666,
+      "total_support": 46
+    },
+    {
+      "circ_id": "chr1:2000|2400",
+      "host_gene": "DEMO_GENE_B",
+      "n_cells_detected": 5,
+      "prevalence": 0.4166666666666667,
+      "total_support": 13
+    },
+    {
+      "circ_id": "chr1:3000|3400",
+      "host_gene": "",
+      "n_cells_detected": 3,
+      "prevalence": 0.25,
+      "total_support": 6
+    },
+    {
+      "circ_id": "chr1:4000|4400",
+      "host_gene": "DEMO_GENE_D",
+      "n_cells_detected": 1,
+      "prevalence": 0.08333333333333333,
+      "total_support": 1
+    },
+    {
+      "circ_id": "chr1:5000|5400",
+      "host_gene": "DEMO_GENE_E",
+      "n_cells_detected": 2,
+      "prevalence": 0.16666666666666666,
+      "total_support": 7
+    },
+    {
+      "circ_id": "chr1:6000|6400",
+      "host_gene": "",
+      "n_cells_detected": 2,
+      "prevalence": 0.16666666666666666,
+      "total_support": 4
+    }
+  ],
+  "per_cell": [
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 2,
+      "cell_id": "demo_A01",
+      "detector_status": "success",
+      "total_support": 11
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 2,
+      "cell_id": "demo_A02",
+      "detector_status": "success",
+      "total_support": 8
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 0,
+      "cell_id": "demo_A03",
+      "detector_status": "empty",
+      "total_support": 0
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 4,
+      "cell_id": "demo_A04",
+      "detector_status": "success",
+      "total_support": 16
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 2,
+      "cell_id": "demo_A05",
+      "detector_status": "success",
+      "total_support": 8
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 1,
+      "cell_id": "demo_A06",
+      "detector_status": "success",
+      "total_support": 5
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 3,
+      "cell_id": "demo_B01",
+      "detector_status": "success",
+      "total_support": 13
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 0,
+      "cell_id": "demo_B02",
+      "detector_status": "empty",
+      "total_support": 0
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 2,
+      "cell_id": "demo_B03",
+      "detector_status": "success",
+      "total_support": 3
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 2,
+      "cell_id": "demo_B04",
+      "detector_status": "success",
+      "total_support": 3
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 1,
+      "cell_id": "demo_B05",
+      "detector_status": "success",
+      "total_support": 2
+    },
+    {
+      "alignment_status": "aligned",
+      "candidate_count": 2,
+      "cell_id": "demo_B06",
+      "detector_status": "success",
+      "total_support": 8
+    }
+  ],
+  "provenance": {
+    "circyto_version": "synthetic fixture (no analysis run)",
+    "completed_at": "2026-01-01T00:01:00Z",
+    "detector_backend": "ciri3",
+    "protocol": "ramda",
+    "read_layout": "single-end",
+    "started_at": "2026-01-01T00:00:00Z",
+    "workflow_type": "full-length-circrna",
+    "workflow_uuid": "synthetic-report-demonstration"
+  },
+  "reporter_feature": "qc-report-usability (unreleased; outside the v0.10.0 manuscript baseline)",
+  "reporter_version": "0.10.0",
+  "schema_version": "circyto.qc_report.v1",
+  "sources": [
+    {
+      "available": true,
+      "bytes": 1037,
+      "path": "workflow_summary.json",
+      "sha256": "3f1840d271c7016c2c7631418067dcf38c9e4fe1d77fff37ce974dbabbd81398"
+    },
+    {
+      "available": true,
+      "bytes": 424,
+      "path": "qc/cell_qc.tsv",
+      "sha256": "4f34d9ee4544b65b5ae568c77211c8689f117ec514ec30ef75eaf5c9da0105ec"
+    },
+    {
+      "available": true,
+      "bytes": 215,
+      "path": "qc/circ_qc.tsv",
+      "sha256": "ec67c30fc438a5f930776009b42ba51916e33fdee92c445ad834c30dec89e5f9"
+    },
+    {
+      "available": false,
+      "path": "ciri3/detector_run_summary.json",
+      "reason": "File is missing"
+    },
+    {
+      "available": false,
+      "path": "align/alignment_prepare_summary.json",
+      "reason": "File is missing"
+    },
+    {
+      "available": false,
+      "path": "rna/rna_import_summary.json",
+      "reason": "File is missing"
+    }
+  ],
+  "warnings": [
+    "SYNTHETIC DEMONSTRATION: counts, identifiers, annotation labels, statuses, and timestamps are illustrative. No biological analysis or CIRI3 execution was performed."
+  ],
+  "workflow": {
+    "reasons": [],
+    "stages": [
+      {
+        "stage": "alignment",
+        "status": "completed"
+      },
+      {
+        "stage": "detector",
+        "status": "completed"
+      },
+      {
+        "stage": "matrix",
+        "status": "completed"
+      },
+      {
+        "stage": "summary_qc",
+        "status": "completed"
+      }
+    ],
+    "status": "completed"
+  }
+}

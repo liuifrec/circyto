@@ -17,6 +17,7 @@ from circyto.pipeline.align_manifest import (
 )
 from circyto.pipeline.annotate_host_gene import annotate_host_genes
 from circyto.pipeline.collect import collect_matrix
+from circyto.pipeline.qc_report import report_after_workflow
 from circyto.pipeline.workflow_reporting import (
     apply_standard_provenance,
     build_cell_qc_table,
@@ -68,6 +69,7 @@ class SmartSeq3Ciri3WorkflowParams:
     gene_counts_format: str = "tsv"
     export_mudata: bool = False
     cell_join: str = "inner"
+    report: bool = True
 
 
 def _workflow_paths(outdir: Path) -> dict[str, Path]:
@@ -670,4 +672,6 @@ def run_smartseq3_ciri3_workflow(
     summary["workflow_timing"]["total_elapsed_seconds"] = stage_seconds["workflow_total"]
     write_json(paths["workflow_summary"], summary)
     _emit(progress, f"workflow summary: {paths['workflow_summary']}")
+    if params.report:
+        report_after_workflow(params.outdir, progress=progress)
     return summary

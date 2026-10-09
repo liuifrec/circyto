@@ -38,6 +38,58 @@ circyto workflow full-length-circrna \
 
 Run `circyto doctor` and `circyto detectors` first to distinguish core package readiness from optional workflow-tool readiness.
 
+## Offline QC report quick start (feature branch)
+
+The `feature/qc-report-usability` branch adds offline HTML reporting. This feature
+is **not part of the v0.10.0 manuscript software baseline**; the package version
+has deliberately not changed. From a checkout of this feature branch, this
+example is executable without reference downloads or external detectors:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install .
+circyto doctor
+python examples/qc_report_demo.py --outdir work/qc_report_demo
+circyto report --workdir work/qc_report_demo
+```
+
+Use a new demo directory if it already exists. The example creates **synthetic
+documentation data**, not biological results: 12 QC cells, 6 circRNA candidates,
+77 total support, 2 zero-count cells, and 4 candidates with recorded host genes.
+Open `work/qc_report_demo/qc/report.html` directly in a browser; no web server,
+JavaScript, or internet connection is needed to view or regenerate a report
+after package installation. All values and source SHA-256 checksums are in
+`work/qc_report_demo/qc/metrics.json`.
+
+Download the [sample HTML](docs/examples/qc_report/qc/report.html) to open it
+locally, or inspect its [metrics](docs/examples/qc_report/qc/metrics.json) and
+[source QC tables](docs/examples/qc_report/qc/).
+
+![Synthetic offline QC report](docs/images/qc_report.png)
+
+For a real analysis, prepare a per-cell manifest and matching reference files,
+run `circyto doctor` and check its CIRI3 readiness entries, then use the established workflow
+shown above. Both `workflow full-length-circrna` and `workflow smartseq3-ciri3`
+automatically generate the report after writing their outputs. Use `--no-report`
+to opt out, or run `circyto report --workdir YOUR_RESULTS_DIRECTORY` later.
+The existing `circyto run` remains the legacy CIRI-full command.
+
+| Result | Where to find it | Interpretation |
+| --- | --- | --- |
+| Counts | `matrix/circ_counts.mtx` | circRNA candidate rows × cell columns; support counts |
+| Matrix identities | `matrix/circ_index.txt`, `matrix/cell_index.txt` | Row and column order; use these indices with the matrix |
+| AnnData | `anndata/circ_counts.h5ad` | Cells × candidates, when export is enabled |
+| Source QC | `qc/cell_qc.tsv`, `qc/circ_qc.tsv` | Selected-cell and candidate QC, including zero-count cells |
+| Human-readable report | `qc/report.html` | Completion, detector evidence, QC, warnings, and provenance |
+| Report data | `qc/metrics.json` | Exact counts, definitions, fractions, consistency checks, and checksums |
+
+Workflow completion does not validate a circRNA candidate biologically. A failed
+cell is not a negative detection, and missing values appear as “Not available.”
+See the [report and workflow guide](docs/qc_reporting.md) for an executable
+planning example, manifest requirements, metric definitions, failure handling,
+and screenshot reproduction.
+
 ## Status
 
 `circyto` `v0.10.0` is the current experimental milestone.

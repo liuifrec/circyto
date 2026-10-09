@@ -12,6 +12,7 @@ from circyto.cli.analyze import analyze_app
 from circyto.cli.demux import demux_app
 from circyto.cli.manifest import manifest_app
 from circyto.cli.workflow import workflow_app
+from circyto.cli.report import report
 
 from circyto.pipeline.prepare import extract_per_cell_fastq
 from circyto.pipeline.run_cirifull import (
@@ -95,6 +96,13 @@ app = typer.Typer(
     add_completion=False,
     help=(
         "circyto — CLI toolkit for single-cell circRNA detection and integration.\n\n"
+        "Start here:\n"
+        "  circyto doctor - check package and external tool readiness\n"
+        "  circyto workflow full-length-circrna --help - per-cell FASTQ quick start\n"
+        "  circyto workflow smartseq3-ciri3 --help - pooled SMART-Seq3 quick start\n"
+        "  circyto report --workdir RESULTS_DIRECTORY - offline HTML QC summary\n\n"
+        "High-level workflows retain their experimental CLI status.\n"
+        "The legacy run command remains a CIRI-full wrapper.\n\n"
         "Conventions (locked):\n"
         "  - Output directories use:  --outdir / -o\n"
         "  - Input directories use:   --indir\n"
@@ -120,6 +128,7 @@ app = typer.Typer(
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
     ),
 )
+app.command("report", rich_help_panel="Start here")(report)
 console = Console()
 
 
@@ -144,12 +153,12 @@ def app_callback(
     Top-level CLI callback for global options.
     """
 
-app.add_typer(doctor_app, name="doctor")
+app.add_typer(doctor_app, name="doctor", rich_help_panel="Start here")
 app.add_typer(detectors_app, name="detectors")
 
 app.add_typer(demux_app, name="demux")
 app.add_typer(manifest_app, name="manifest")
-app.add_typer(workflow_app, name="workflow")
+app.add_typer(workflow_app, name="workflow", rich_help_panel="Start here")
 app.add_typer(analyze_app, name="analyze")
 app.add_typer(smoke_app, name="smoke")
 app.add_typer(nanopore_app, name="nanopore")
