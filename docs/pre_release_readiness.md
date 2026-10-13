@@ -68,6 +68,19 @@ candidate annotations become `var` columns.
   and exact build/CI identifiers; previous milestone measurements remain linked
   below and are not presented as a fresh biological benchmark.
 
+The initial remote run [38350168819](https://github.com/liuifrec/circyto/actions/runs/38350168819)
+actually executed importer/MuData/QC tests but failed: Python 3.10 had 10 CLI
+text-assertion failures (465 passed); Python 3.12 had those plus six MuData test
+compatibility failures (459 passed). Both had the same 10 explicit skips.
+GitHub forces Typer ANSI styling in captured output, so CI now disables forced
+terminal rendering. The newer stack (AnnData 0.13.4, MuData 0.4.1, pandas 3.0.6)
+uses `settings.override` and infers StringDtype when reading HDF5 strings.
+The synchronization tests now use the available settings API and permit only
+object-string to StringDtype storage changes, retaining exact values, NA masks,
+axes and all numeric/nullable/category dtype checks. Production synchronization
+already supports both APIs; it is unchanged. This does not promise byte-for-byte
+metadata dtype identity across dependency generations.
+
 Remote CI is a separate acceptance record: the draft PR runs the complete suite
 on Python 3.10 and 3.12 with MuData, audits JUnit, builds wheel/sdist, installs the
 wheel in a separate venv and runs the authentic native demo from outside the

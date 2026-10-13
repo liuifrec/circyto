@@ -21,6 +21,8 @@ jobs:
       # Detector-backed integration tests are intentionally gated in default CI.
       # They require external tools and larger reference assets than this workflow installs.
       CIRCYTO_SKIP_INTEGRATION: "1"
+      # Typer forces ANSI styling under GITHUB_ACTIONS even in captured output.
+      _TYPER_FORCE_DISABLE_TERMINAL: "1"
 
     steps:
       - uses: actions/checkout@v4
