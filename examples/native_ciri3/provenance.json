@@ -1,0 +1,43 @@
+{
+  "upstream_repository": "https://github.com/gyjames/CIRI3",
+  "inspected_commit": "73108c4478a7e691cb93360921b65203e0701516",
+  "inspected_tag": "v3.0.1",
+  "first_result_commit": "27031610c234e7459bc44fb9bd9bded2050599b5",
+  "producer_version": "unknown; result committed in 2023, retained byte-identically in v3.0.1",
+  "native_schema": "ciri3.native-result-13.v1",
+  "genome_build": "upstream_demo_chr1_unverified",
+  "coordinate_convention": "1-based-closed",
+  "support_definition": "CIRI3_junction_reads",
+  "biological_scope": "Official single-sample demonstration, not a validated biological single cell. No accession or matched RNA asserted. Native output is copied, not generated or reconstructed.",
+  "files": {
+    "result.txt": {
+      "upstream_path": "data/circRNA/Single/result.txt",
+      "sha256": "4885fc00bd30817ebdf81ba9f3344c48ddb18bcb56d2a077cee2297ff7f594ed",
+      "bytes": 1913
+    },
+    "result.txt.log": {
+      "upstream_path": "data/circRNA/Single/result.txt.log",
+      "sha256": "f2aabca9870f621c3e1c520b6ade555677ec57d8edbb0c33cfd31ef224464b6f",
+      "bytes": 299
+    },
+    "LICENSE.upstream.txt": {
+      "upstream_path": "LICENSE.txt",
+      "sha256": "c03cea027b4b40e4402fabd08557736727ec3d5bc54ad64ab6472de432198cad",
+      "bytes": 18047
+    },
+    "annotated_simulation.txt": {
+      "upstream_path": "data/DE/BSJ/With_RE/case1_CIRI3.txt",
+      "sha256": "e670a3e91b40ab67807135f2d1833b0e1a7d6497f96e1d2efe91f19c8809c136",
+      "bytes": 22761,
+      "scope": "Official detector output from simulated reads (simulate: read IDs); annotation-contract validation only"
+    }
+  },
+  "companion_sam_check": {
+    "upstream_path": "data/circRNA/Single/sample.sam",
+    "sha256": "4872d2cc5c73f95f18cf404cebc6f9cc4941106a5eb64e6c68c2a6f4a9e986c9",
+    "native_junction_read_ids": 50,
+    "present_in_sam": 50,
+    "native_counts_equal_unique_listed_ids": true,
+    "scope": "Read-ID correspondence only; no alignment or detector rerun; large SAM not redistributed"
+  }
+}

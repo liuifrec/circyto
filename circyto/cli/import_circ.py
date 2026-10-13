@@ -52,6 +52,13 @@ def import_circ(
         file_okay=False,
         help="Existing circ_counts.mtx (circ x cell), indexes and circ_feature_table.tsv.",
     ),
+    ciri3_manifest: Path | None = typer.Option(
+        None,
+        "--ciri3-manifest",
+        exists=True,
+        dir_okay=False,
+        help="Native 13-column CIRI3 single-sample results: TSV mapping cell_id,sample_id,path,detector_version,result_scope. Exclusive with --calls/--matrix-dir.",
+    ),
     rna: Path | None = typer.Option(
         None,
         "--rna",
@@ -79,6 +86,7 @@ def import_circ(
             calls=calls,
             matrix_dir=matrix_dir,
             rna=rna,
+            ciri3_manifest=ciri3_manifest,
         )
     except (ValueError, OSError) as exc:
         raise typer.BadParameter(str(exc)) from exc

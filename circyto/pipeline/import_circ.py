@@ -213,7 +213,8 @@ def _report(metrics: dict, obs: pd.DataFrame, var: pd.DataFrame) -> str:
     declaration = html.escape(json.dumps(metrics["declarations"], sort_keys=True))
     return f"""<!doctype html><html lang="en"><meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1"><title>circyto import QC</title>
-<style>{STYLE}</style><body><header><div class="brand">CIRCYTO</div>Detector-free import QC</header>
+<style>{STYLE}
+.table-scroll th,.table-scroll td{{white-space:nowrap;overflow-wrap:normal}}</style><body><header><div class="brand">CIRCYTO</div>Detector-free import QC</header>
 <main><section><h1>Imported candidate support</h1><p>{html.escape(NOTE)}</p>
 <p>Import succeeded; this is not evidence that a detector workflow completed.</p>
 <p>{metrics["n_cells"]} metadata cells; {metrics["n_candidates"]} candidates; {metrics["total_support"]} total support.</p>
@@ -222,7 +223,7 @@ def _report(metrics: dict, obs: pd.DataFrame, var: pd.DataFrame) -> str:
 <p>RNA overlap: {html.escape(json.dumps(metrics["rna_overlap"], sort_keys=True))}</p></section>
 <section><h2>Observation states</h2>{table(pd.DataFrame(list(metrics["observation_status_counts"].items()), columns=["state", "cells"]))}</section>
 <section><h2>Cells</h2><p>First 100 rows; full values in cell_qc.tsv.</p><div class="table-scroll">{table(obs.reset_index())}</div></section>
-<section><h2>Candidates</h2><p>First 100 rows; completed-cell prevalence uses the same denominator above. Full values in circ_qc.tsv.</p><div class="table-scroll">{table(var.reset_index(drop=True))}</div></section>
+<section><h2>Candidates</h2><p>First 100 rows; completed-cell prevalence uses the same denominator above. Full values in circ_qc.tsv. Scroll horizontally for additional annotations.</p><div class="table-scroll">{table(var.reset_index(drop=True))}</div></section>
 <section><h2>Provenance</h2><p>Original supplied evidence is copied under evidence/. File hashes and exact rates are in metrics.json.</p></section></main></body></html>"""
 
 
@@ -237,10 +238,13 @@ def import_circ(
     calls: Path | None = None,
     matrix_dir: Path | None = None,
     rna: Path | None = None,
+    ciri3_manifest: Path | None = None,
 ) -> dict:
     """Import one homogeneous support assay, preserving counts and declared states."""
-    if (calls is None) == (matrix_dir is None):
-        raise ValueError("Supply exactly one of --calls or --matrix-dir")
+    if sum(x is not None for x in (calls, matrix_dir, ciri3_manifest)) != 1:
+        raise ValueError(
+            "Supply exactly one of --calls, --matrix-dir or --ciri3-manifest"
+        )
     if coordinate_convention not in COORDINATES:
         raise ValueError(f"coordinate-convention must be one of {sorted(COORDINATES)}")
     declarations = {
@@ -255,10 +259,18 @@ def import_circ(
         )
     if outdir.exists() or outdir.is_symlink():
         raise ValueError("Output directory already exists; choose a new directory")
+    native_info = None
+    native_sources = {}
+    manifest_hash = None
+    if ciri3_manifest is not None:
+        from circyto.pipeline.import_ciri3 import plan_native
+
+        manifest_hash = _sha256(ciri3_manifest)
+        native_sources, native_info = plan_native(ciri3_manifest)
     input_paths = [cells]
     if calls is not None:
         input_paths.append(calls)
-    else:
+    elif matrix_dir is not None:
         input_paths.extend(
             matrix_dir / name
             for name in (
@@ -268,9 +280,12 @@ def import_circ(
                 "circ_feature_table.tsv",
             )
         )
+    input_paths.extend(native_sources.values())
     if rna is not None:
         input_paths.append(rna)
     before_hashes = {path: _sha256(path) for path in input_paths}
+    if ciri3_manifest is not None and before_hashes[ciri3_manifest] != manifest_hash:
+        raise ValueError("Source changed during import")
     obs = _table(cells, ["cell_id"])
     cell_ids = _ids(obs.cell_id, "metadata cell")
     if not cell_ids:
@@ -287,6 +302,11 @@ def import_circ(
     obs = obs.set_index("cell_id")
     if calls is not None:
         X, var, sources = _load_calls(calls, cell_ids, declarations)
+    elif ciri3_manifest is not None:
+        from circyto.pipeline.import_ciri3 import load_native
+
+        X, var = load_native(native_sources, native_info, obs, declarations)
+        sources = native_sources
     else:
         X, var, sources, missing = _load_matrix(matrix_dir, cell_ids, declarations)
         if any(obs.loc[cell, "detector_status"] == "completed" for cell in missing):
@@ -378,6 +398,8 @@ def import_circ(
         },
         "interpretation": NOTE,
     }
+    if native_info is not None:
+        metrics["native_ciri3"] = native_info
     provenance = {
         "schema_version": SCHEMA,
         "command_name": "circyto import-circ",
@@ -387,6 +409,8 @@ def import_circ(
         "metrics_json": json.dumps(metrics, sort_keys=True),
         "observation_status_definition": NOTE,
     }
+    if native_info is not None:
+        provenance["native_ciri3_json"] = json.dumps(native_info, sort_keys=True)
     circ = ad.AnnData(X=X, obs=obs, var=var, uns={"circyto": provenance})
     # Stage a complete bundle before publishing it; no partial import on validation failure.
     outdir.parent.mkdir(parents=True, exist_ok=True)

@@ -16,3 +16,10 @@ include docs/import_circ_assessment.md
 include docs/import_circ_validation.md
 include scripts/validate_import_circ_evidence.py
 include docs/examples/import_circ/validation.json
+
+include docs/native_ciri3_import.md
+include docs/native_ciri3_validation.md
+include examples/validate_native_ciri3.py
+recursive-include examples/native_ciri3 *.txt *.log *.tsv *.json
+
+recursive-include docs/examples/native_ciri3 *.json

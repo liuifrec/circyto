@@ -47,6 +47,30 @@ Existing cell-resolved circRNA results can be imported without running a detecto
 [`circyto import-circ`](docs/import_circ.md) for validated AnnData/MuData export,
 processing-status metadata and an offline QC report.
 
+## Import native CIRI3 results without rerunning CIRI3
+
+The feature branch accepts native **13-column single-sample** CIRI3 result files.
+With the installed wheel on PATH, the included official output example runs without
+Java, an aligner or raw sequencing data:
+
+```bash
+circyto import-circ \
+  --ciri3-manifest examples/native_ciri3/manifest.tsv \
+  --cells examples/native_ciri3/cells.tsv \
+  --detector CIRI3 --genome-build upstream_demo_chr1_unverified \
+  --coordinate-convention 1-based-closed \
+  --support-definition CIRI3_junction_reads --outdir /tmp/native-ciri3-import
+```
+
+This is an authentic upstream **demonstration sample**, not a validated biological
+single cell: six candidates, 50 support, unknown processing status. The producing
+version and assembly are explicitly unverified. For your data, supply an explicit
+sample-to-cell mapping and actual genome build. Add `--rna matched.h5ad` with the
+`mudata` extra for optional MuData. See the [native input contract](docs/native_ciri3_import.md)
+and [acceptance evidence](docs/native_ciri3_validation.md), including version,
+pooled-output and coordinate limitations. The example directory is distributed
+in the source archive and can be copied outside the checkout.
+
 ## Offline QC report quick start (feature branch)
 
 The `feature/qc-report-usability` branch adds offline HTML reporting. This feature

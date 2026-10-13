@@ -5,6 +5,10 @@ circyto collector matrix into sparse AnnData, optional RNA+circ MuData, and an
 offline HTML report. It runs no aligner or detector. Install `circyto[mudata]`
 when using `--rna`; AnnData-only import uses the core installation.
 
+For native 13-column single-sample CIRI3 results, use the additional
+[`--ciri3-manifest` pathway](native_ciri3_import.md). It requires explicit mapping
+and source semantics and reuses this import/export contract.
+
 ## Short executable example
 
 With the installed wheel on PATH, run the distributed

@@ -1,2 +1,9 @@
 # Preserve vendored detector documentation, licenses, and scripts byte-for-byte.
 circyto/resources/tools/** -whitespace
+
+# Authentic upstream CIRI3 evidence must keep its recorded SHA-256 on checkout.
+examples/native_ciri3/result.txt -text
+examples/native_ciri3/result.txt.log -text
+examples/native_ciri3/annotated_simulation.txt -text
+# The original license ends with a blank line; retain the published bytes.
+examples/native_ciri3/LICENSE.upstream.txt -text whitespace=-blank-at-eof
