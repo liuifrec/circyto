@@ -73,7 +73,7 @@ class CiriFullDetector(DetectorBase):
     def _resolve_ciri_full_jar(self) -> Path:
         resolution = find_ciri_full_jar(self.ciri_full_jar)
         if resolution.resolved_path is None:
-            raise FileNotFoundError(format_missing_resolution("CIRI-full jar", resolution))
+            raise FileNotFoundError(format_missing_resolution("CIRI-full jar", resolution) + "\nJARs are not bundled; obtain a permitted local copy and set CIRCYTO_CIRI_FULL_JAR (see docs/external_detectors.md).")
         return resolution.resolved_path
 
     def _resolve_adapter_script(self) -> Path:

@@ -106,7 +106,7 @@ def _print_ciri3_details() -> None:
         _print(
             "OPT",
             "CIRI3-jar",
-            "not found; use the packaged asset or set CIRCYTO_CIRI3_JAR/CIRCYTO_CIRI3_HOME",
+            "not bundled; install CIRI3 externally and set CIRCYTO_CIRI3_JAR/CIRCYTO_CIRI3_HOME (see docs/external_detectors.md)",
         )
     java = runtime.get("java")
     if java:
@@ -156,7 +156,7 @@ def doctor() -> None:
 
     _section("Bundled/configured detector assets")
     _asset_line("CIRI2-adapter", purpose="CIRI2 and single-end CIRI-full fallback")
-    _asset_line("CIRI-full-jar", purpose="paired-end CIRI-full")
+    _asset_line("CIRI-full-jar", purpose="paired-end CIRI-full; install a permitted local copy and set CIRCYTO_CIRI_FULL_JAR")
     _asset_line("CIRI-full-adapter", purpose="CIRI-full orchestration")
     _print_ciri3_details()
 

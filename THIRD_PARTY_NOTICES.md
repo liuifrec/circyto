@@ -1,4 +1,57 @@
-# Third-party detector distribution and attribution
+# Third-party distribution policy: external Java detectors
+
+Packaging branch audit: 2026-10-13, based on PR #19 head
+`f841c296db8a6fda870eebc5b553eab10095fa0d`. No package version change.
+The MIT license covers circyto-authored code, not third-party assets.
+
+| Asset | Current wheel/sdist policy | Confirmed evidence / unresolved questions |
+| --- | --- | --- |
+| CIRI3 JARs, embedded HTSJDK classes | **Excluded**; external user installation | Official pinned CIRI3 tree supplies GPLv2 and Java source. Exact corresponding build/dependency notice route is not certified. |
+| CIRI-full JAR and CIRI-full manual | **Excluded** | No applicable permission found for bundled v2.0 JAR or manual; source visibility/newer binaries do not resolve it. |
+| CIRI2 / CIRI-AS Perl scripts, their manuals and adjacent GPLv2 texts | Retained unchanged | Script copyright headers refer to accompanying license; complete supplied Perl source is shipped. Preserve notices and GPL obligations when redistributing. |
+| CIRI3 README / license and authentic example / provenance / license | Retained unchanged | Supplied upstream GPLv2 notice retained. These are documentation/input evidence, not executable JARs or new biological validation. |
+| circyto shell adapters and Python code | Retained | External JAR resolution remains available; no calling algorithms or thresholds changed. |
+
+`MANIFEST.in` excludes Java binaries/classes and the unresolved manual from the
+sdist. Setuptools package-data exclusions apply to wheels too. A build guard
+rejects those assets if stale build trees bypass the exclusion lists. Regression
+tests inspect direct wheels, sdists and wheels rebuilt from sdists, and seed
+stale files to verify refusal. This policy applies to **newly built Python
+artifacts only**. Historical tracked binaries, previous releases, and GitHub
+source archives still require separate maintainer/legal review; preserving
+existing branches/history is not retroactive redistribution clearance. Do not
+publish old or automatic Git source archives as if this policy covered them.
+
+## Upstream evidence checked in this pass
+
+- CIRI3 pinned tree `73108c4478a7e691cb93360921b65203e0701516` (v3.0.1)
+  contains GPLv2, Java source, `.classpath` with JavaSE-12 and
+  `lib/htsjdk-3.0.4.jar`; current upstream main queried as
+  `a19560452a94a63ee23757fb4a7032582d052b45`. Its updated Java-8 binary is not
+  substituted for the existing reviewed runtime. Binary hashes are below.
+- All 1,181 embedded HTSJDK class entries match the 3.0.4 library already
+  identified below. Official HTSJDK tag 3.0.4 resolves to
+  `e2943b78ff595e144281b8a3c126be5a4d70085d`.
+  Its [SAMRecord source header](https://github.com/samtools/htsjdk/blob/3.0.4/src/main/java/htsjdk/samtools/SAMRecord.java)
+  supplies the Broad Institute MIT permission and notice requirement. This
+  confirms permission for that source, not a completed inventory of every
+  embedded component. Neither inspected JAR has LICENSE/NOTICE archive entries.
+- CIRI-full current upstream tree remains
+  `03a5719ba0b28ae31c17a4029310ffbfac5b7241`: source/Makefile and newer v2.1.2
+  binary present, no applicable root license found. The locally bundled v2.0
+  manual and JAR contain no permission text. Nested Perl licenses are not
+  assumed to license either asset.
+
+**Decision:** engineering GO for exclusion of the unresolved Java distribution
+and preservation of external adapters, subject to the recorded artifact tests.
+**NO-GO for redistributing those JARs/manual or claiming blanket legal clearance.**
+No maintainer permission was requested/received and no institutional legal
+opinion was obtained. Further clearance of these assets or past releases is a
+maintainer/legal decision, not another code change in this task.
+See [installation and detector citations](docs/external_detectors.md) and
+[validation record](docs/detector_distribution_validation.md).
+
+# Historical detector distribution audit (before packaging exclusion)
 
 Audit date: 2026-10-09. The root MIT license covers circyto-authored code.
 It does **not** relicense the detector assets below. They are already present

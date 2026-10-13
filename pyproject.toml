@@ -26,7 +26,7 @@ loom = ["loompy>=3.0"]
 mudata = ["mudata>=0.3"]
 scanpy = ["mudata>=0.3", "scanpy>=1.10"]
 bam = ["pysam>=0.22"]
-dev = ["build>=1.2", "pytest>=8", "mudata>=0.3"]
+dev = ["build>=1.2", "setuptools>=77", "wheel", "pytest>=8", "mudata>=0.3"]
 
 [project.scripts]
 circyto = "circyto.cli.circyto:app"
@@ -51,10 +51,13 @@ circyto = [
   "resources/**/*.gtf",
   "resources/**/*.fastq",
   "resources/**/*.tsv",
-  "resources/**/*.jar",
   "resources/**/*.pl",
   "resources/**/*.md",
 ]
+
+# Java detectors are externally installed; exclude broad package-data matches too.
+[tool.setuptools.exclude-package-data]
+"*" = ["*.jar", "**/*.jar", "*.class", "**/*.class", "resources/tools/CIRI-full_v2.0/CIRI-full_manual.txt"]
 
 [tool.pytest.ini_options]
 markers = [

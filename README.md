@@ -187,8 +187,8 @@ not need these tools.
 
 ### External tools
 
-Bundled detectors retain their upstream licenses; circyto's MIT license does
-not cover them. [Third-party notices](THIRD_PARTY_NOTICES.md) record attribution,
+CIRI3 and CIRI-full JARs are now externally installed and excluded from wheels
+and sdists. Packaged Perl detectors retain their upstream licenses; circyto's MIT license does not cover them. [Third-party notices](THIRD_PARTY_NOTICES.md) record attribution,
 packaged contents and unresolved CIRI-full/CIRI3 distribution questions.
 Use [CITATION.cff](CITATION.cff) to cite circyto and also cite the detector used.
 
@@ -197,10 +197,10 @@ Install only the external tools needed for the workflow you plan to run:
 - `STAR` for STAR-based alignment preparation
 - `bwa` for CIRI3 rescue alignment and BWA-based workflows
 - `samtools` for alignment handling
-- `java` >= 12 for the bundled CIRI3 jar; Java 17 recommended
+- `java` >= 12 for the reviewed external CIRI3 jar; Java 17 recommended
 - detector-specific tools such as `bowtie2` or `find-circ3` only when using those detector paths
 
-For bundled CIRI3 direct mode, supported environment variables include:
+For externally installed CIRI3 direct mode, supported environment variables include:
 
 - `CIRCYTO_CIRI3_HOME`
 - `CIRCYTO_CIRI3_JAR`
@@ -208,9 +208,12 @@ For bundled CIRI3 direct mode, supported environment variables include:
 - `CIRCYTO_CIRI3_EXTRA_ARGS`
 - `CIRCYTO_CIRI3_CMD_TEMPLATE`
 
-Wheel installations automatically find detector assets inside the installed
-`circyto/resources/tools/` package; no repository checkout or extra `tools/`
-directory is required. `circyto doctor` prints the resolved locations.
+Wheel installations automatically find the retained shell adapters and licensed
+Perl sources in `circyto/resources/tools/`. Install Java detectors separately
+using the [exact external installation instructions](docs/external_detectors.md).
+Native import/export/reporting remain detector-independent. `circyto doctor`
+prints the resolved locations and distinguishes missing optional detectors from
+core Python readiness.
 The corresponding source-checkout layout is:
 
 ```text

@@ -55,9 +55,11 @@ jobs:
           "$RUNNER_TEMP/wheel-env/bin/python" -m pip check
           cp -r examples/native_ciri3 "$RUNNER_TEMP/native_ciri3"
           cp examples/validate_native_ciri3.py "$RUNNER_TEMP/validate_native_ciri3.py"
+          cp .github/scripts/check_installed_distribution.py "$RUNNER_TEMP/check_installed_distribution.py"
           cd "$RUNNER_TEMP"
           export PATH="$RUNNER_TEMP/wheel-env/bin:$PATH"
           python -c 'import circyto; print(circyto.__file__); assert "site-packages" in circyto.__file__'
+          python check_installed_distribution.py
           circyto import-circ --help
           circyto report --help
           python validate_native_ciri3.py --fixtures native_ciri3 --out native-acceptance

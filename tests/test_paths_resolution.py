@@ -174,7 +174,7 @@ def test_ciri3_java8_is_not_ready_and_doctor_reports_version(
 
     doctor_res = runner.invoke(doctor_app, [])
     assert doctor_res.exit_code in {0, 1}
-    assert "Java version too old (found 8, need >=12 for bundled CIRI3 jar)" in doctor_res.stdout
+    assert "Java version too old (found 8, need >=12 for reviewed CIRI3 jar)" in doctor_res.stdout
     assert str(fake_java) in doctor_res.stdout
     assert "java_version: 8 (required >= 12, recommended 17)" in doctor_res.stdout
     assert str(fake_jar) in doctor_res.stdout
@@ -377,3 +377,31 @@ def test_run_cirifull_manifest_resolves_relative_paths_from_manifest_dir(
 
     assert str((fastq_dir / "sc01_R1.fastq.gz").resolve()) in captured[0]
     assert str((fastq_dir / "sc01_R2.fastq.gz").resolve()) in captured[0]
+
+
+def test_external_jars_with_packaged_adapters(monkeypatch, tmp_path):
+    """Installed package resources remain usable without packaged Java binaries."""
+    from circyto.paths import find_ciri_full_adapter, find_ciri2_adapter
+    package = tmp_path / "site-packages/circyto"
+    adapters = package / "resources/tools/CIRI-full_v2.0/bin"
+    adapters.mkdir(parents=True)
+    for name in ("ciri_full_adapter.sh", "ciri2_adapter.sh"):
+        (adapters / name).write_text("#!/bin/sh\n")
+    monkeypatch.setattr("circyto.paths.get_repo_root", lambda: None)
+    monkeypatch.setattr("circyto.paths.get_package_root", lambda: package)
+    for key in ("CIRCYTO_TOOLS_DIR", "CIRCYTO_CIRI3_HOME", "CIRCYTO_CIRI3_JAR",
+                "CIRCYTO_CIRI3_SEARCH_ROOTS", "CIRCYTO_CIRI_FULL_JAR"):
+        monkeypatch.delenv(key, raising=False)
+    assert find_ciri3_jar().resolved_path is None
+    assert find_ciri_full_jar().resolved_path is None
+    assert find_ciri_full_adapter().resolved_path == adapters / "ciri_full_adapter.sh"
+    assert find_ciri2_adapter().resolved_path == adapters / "ciri2_adapter.sh"
+    external = tmp_path / "external detectors"
+    external.mkdir()
+    for name, key, resolver in (("CIRI3.jar", "CIRCYTO_CIRI3_JAR", find_ciri3_jar),
+                                ("CIRI-full.jar", "CIRCYTO_CIRI_FULL_JAR", find_ciri_full_jar)):
+        jar = external / name
+        jar.write_bytes(b"path-discovery fixture, not a working detector")
+        monkeypatch.setenv(key, str(jar))
+        assert resolver().resolved_path == jar
+        assert resolver().source == "env:" + key

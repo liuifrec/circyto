@@ -26,3 +26,10 @@ recursive-include docs/examples/native_ciri3 *.json
 
 include docs/pre_release_readiness.md
 include docs/external_ciri3_acceptance.md
+
+# Never redistribute unresolved Java assets, including through an sdist rebuild.
+global-exclude *.jar *.class
+exclude circyto/resources/tools/CIRI-full_v2.0/CIRI-full_manual.txt
+include setup.py
+include docs/external_detectors.md
+include docs/detector_distribution_validation.md
