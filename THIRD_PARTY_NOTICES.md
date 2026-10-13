@@ -44,3 +44,38 @@ in the inspected Python wheel/sdist.
 Cite the actual detector and protocol used, in addition to circyto's
 [`CITATION.cff`](CITATION.cff). Tool attribution and a software citation do not
 establish biological validation of a circRNA candidate.
+
+## Pre-release packaging recommendation (2026-10-13)
+
+The integration audit reconfirmed both JAR hashes above. Neither archive has
+LICENSE/NOTICE entries. All **1,181** embedded `htsjdk/*.class` entries in CIRI3
+are byte-identical to the corresponding entries in upstream
+`lib/htsjdk-3.0.4.jar` (SHA-256
+`41c98336c12f5df81d6a3bef024d98dbb8344396cc140c3df955edf79ef726d6`).
+This identifies matching class bytes; it does not complete a transitive
+license audit or establish the reproducible source/build correspondence of
+CIRI3 as a whole. The library archive also lacks LICENSE/NOTICE entries.
+
+**Recommendation, not implemented:** make the narrow packaging change that
+excludes the two unresolved JARs from both wheel and sdist, while retaining the
+Python import/report commands, detector adapters, and separately reviewed
+source scripts/notices. Preserve detector execution through the existing
+`CIRCYTO_CIRI3_JAR` / `CIRCYTO_CIRI3_HOME` and `CIRCYTO_CIRI_FULL_JAR`
+external-install resolution. Document user acquisition from upstream, supported
+versions/checksums and Java requirements; test installed adapters with externally
+supplied tools before shipping this migration. Do not add automatic downloads,
+mirror the unresolved binaries, or call a Python extra a licensing remedy.
+Do not remove an adapter or silently change its default availability.
+
+If maintainers instead retain CIRI3 redistribution, first provide a reviewed
+GPLv2 section 3 compliance route with exact corresponding source, build
+instructions and dependency notices; a repository link alone is not the
+completed review. See the supplied [GPLv2 text](https://github.com/gyjames/CIRI3/blob/73108c4478a7e691cb93360921b65203e0701516/LICENSE.txt)
+and the [FSF GPLv2 distribution FAQ](https://www.gnu.org/licenses/old-licenses/gpl-2.0-faq.html).
+CIRI-full v2.0 additionally needs an applicable permission grant from the rights
+holder before redistribution; newer source visibility is not that grant.
+Existing GPL Perl sources and the native example/license still need their
+notices retained and a final artifact inventory review. This is a release
+engineering recommendation pending maintainer/legal review, not legal clearance.
+No third-party files or packaging inclusion rules are changed by this audit.
+CI retains test records only, not built detector-containing distributions.

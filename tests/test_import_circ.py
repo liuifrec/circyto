@@ -356,3 +356,19 @@ def test_changed_input_aborts_without_partial_bundle(inputs, monkeypatch):
         import_circ(**inputs)
     assert not inputs["outdir"].exists()
     assert not list(inputs["outdir"].parent.glob(".circyto-import-*"))
+
+
+def test_workflow_report_cannot_overwrite_import_qc(inputs):
+    import hashlib
+
+    import_circ(**inputs)
+    root = inputs["outdir"]
+    before = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+              for p in root.rglob("*") if p.is_file()}
+    result = CliRunner().invoke(app, ["report", "--workdir", str(root)])
+    assert result.exit_code == 1
+    assert "import-circ bundle" in result.output
+    assert "new output directory" in result.output
+    after = {str(p.relative_to(root)): hashlib.sha256(p.read_bytes()).hexdigest()
+             for p in root.rglob("*") if p.is_file()}
+    assert after == before

@@ -502,6 +502,17 @@ def generate_report(workdir: Path) -> dict[str, Any]:
     for path in targets:
         if path.is_symlink() or (path.exists() and not path.is_file()):
             raise ValueError(f"Refusing unsafe report destination: qc/{path.name}")
+    if targets[0].is_file():
+        try:
+            existing = json.loads(targets[0].read_text(encoding="utf-8"))
+        except (ValueError, UnicodeError):
+            existing = {}
+        if isinstance(existing, dict) and str(existing.get("schema_version", "")).startswith("circyto.import_circ."):
+            raise ValueError(
+                "This is an import-circ bundle, not a workflow report. "
+                "Open its existing qc/report.html; to regenerate, rerun import-circ "
+                "from the original inputs into a new output directory. Existing QC is unchanged."
+            )
     if any((root / name).resolve() in targets for name in SOURCES):
         raise ValueError("A source artifact resolves to a report destination; refusing to replace source data")
     payload = collect_report_metrics(root)

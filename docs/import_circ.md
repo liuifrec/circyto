@@ -195,3 +195,13 @@ a new directory to regenerate it. JSON/TSV/HTML and scientific values are
 reproducible for identical inputs; HDF5 byte identity is not promised. Existing
 output directories are never overwritten. Reports include supplied cell metadata;
 review their contents before sharing.
+
+## Report regeneration boundary
+
+Import QC uses `circyto.import_circ.v1`; workflow QC uses
+`circyto.qc_report.v1`. `circyto report` is for workflow directories and refuses
+to replace a recognized import bundle's report/metrics. Open the import's existing
+`qc/report.html`, or rerun the same import from original inputs into a new
+output directory. The copied native manifest retains original path strings;
+it is evidence, not a relocated executable manifest. Review cell identifiers,
+metadata and source path strings before sharing the bundle.

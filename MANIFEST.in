@@ -23,3 +23,6 @@ include examples/validate_native_ciri3.py
 recursive-include examples/native_ciri3 *.txt *.log *.tsv *.json
 
 recursive-include docs/examples/native_ciri3 *.json
+
+include docs/pre_release_readiness.md
+include docs/external_ciri3_acceptance.md

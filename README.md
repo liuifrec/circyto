@@ -566,3 +566,12 @@ Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-
 A methods manuscript is under preparation. In the meantime, please cite this repository:
 
 > Liu, Y.-C. et al. "Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto." GitHub repository: https://github.com/liuifrec/circyto
+
+## Pre-release review status
+
+See the [integration review and release-readiness matrix](docs/pre_release_readiness.md)
+and [external per-cell CIRI3 + RNA acceptance checklist](docs/external_ciri3_acceptance.md).
+These features are ready for draft code review, not cleared for public release.
+Native demonstration compatibility does not establish biological single-cell
+acceptance. Detector distribution review remains open. RERF internal review
+and the frozen manuscript baseline remain independent.
