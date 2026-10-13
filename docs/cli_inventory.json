@@ -1,7 +1,7 @@
 {
   "schema_version": "circyto.release_cli_inventory.v1",
   "circyto_version": "0.10.0",
-  "command_count": 91,
+  "command_count": 92,
   "notes": {
     "experimental": "True denotes an explicitly experimental or exploratory public command family.",
     "manuscript_facing": "True denotes commands used by the repository's manuscript reproducibility path.",
@@ -737,6 +737,47 @@
       ],
       "optional_external_tools": [],
       "experimental": true,
+      "manuscript_facing": false,
+      "lifecycle": "current",
+      "alias_for": null
+    },
+    {
+      "command_path": "import-circ",
+      "one_line_purpose": "Import existing cell-resolved support into sparse AnnData, optional MuData and QC HTML.",
+      "required_arguments": [
+        {
+          "name": "cells",
+          "cli_spelling": "--cells",
+          "kind": "option"
+        },
+        {
+          "name": "outdir",
+          "cli_spelling": "--outdir",
+          "kind": "option"
+        },
+        {
+          "name": "genome_build",
+          "cli_spelling": "--genome-build",
+          "kind": "option"
+        },
+        {
+          "name": "coordinate_convention",
+          "cli_spelling": "--coordinate-convention",
+          "kind": "option"
+        },
+        {
+          "name": "support_definition",
+          "cli_spelling": "--support-definition",
+          "kind": "option"
+        },
+        {
+          "name": "detector",
+          "cli_spelling": "--detector",
+          "kind": "option"
+        }
+      ],
+      "optional_external_tools": [],
+      "experimental": false,
       "manuscript_facing": false,
       "lifecycle": "current",
       "alias_for": null

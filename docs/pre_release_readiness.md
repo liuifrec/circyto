@@ -22,6 +22,7 @@ historical objects are unchanged. The integration review found:
 
 | Finding | Severity / disposition |
 | --- | --- |
+| CLI inventory omitted `import-circ` | Regenerated from the command tree: 92 command paths; frozen manuscript inventories unchanged |
 | Base CI installed no MuData, permitting importer/export tests to skip | Review blocker fixed: install dev extra, import dependency preflight, JUnit audit of nine critical modules; Python 3.10/3.12 matrix |
 | Workflow `report` overwrote import-circ's HTML and machine-readable provenance because both use qc/metrics.json | Fixed: refuse recognized `circyto.import_circ.*` bundles with actionable instructions; regression checks every bundle file hash |
 | Native pooled tables may have identical headers; genome, producer version and cell mapping cannot be inferred from syntax | Explicit user assertions remain necessary; genuine per-cell + matching RNA gate pending |
