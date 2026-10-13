@@ -128,6 +128,9 @@ app = typer.Typer(
         "  [COMPARE] compare-ids (fuzzy/exact), compare-detectors (merged outputs)\n"
     ),
 )
+from circyto.cli.import_circ import import_circ
+
+app.command("import-circ", rich_help_panel="Start here")(import_circ)
 app.command("report", rich_help_panel="Start here")(report)
 console = Console()
 

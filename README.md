@@ -43,6 +43,10 @@ For a real single-end run, first index the exact reference with
 runtimes. See the concise [reviewer guide](docs/reviewer_guide.md) for installation,
 commands, outputs, and the separate frozen manuscript reproduction route.
 
+Existing cell-resolved circRNA results can be imported without running a detector: see
+[`circyto import-circ`](docs/import_circ.md) for validated AnnData/MuData export,
+processing-status metadata and an offline QC report.
+
 ## Offline QC report quick start (feature branch)
 
 The `feature/qc-report-usability` branch adds offline HTML reporting. This feature

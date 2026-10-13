@@ -1,0 +1,94 @@
+{
+  "collectors": {
+    "ciri2": {
+      "n_candidates": 6,
+      "scope": "normalized historical detector output, not native CIRI2 parser validation",
+      "source_commit": "a2c934ec1a629528aae69dfb61df10af0f1407cd",
+      "source_member": "tests/ciri2_err1041421_integration/ERR1041421.tsv",
+      "source_sha256": "7fc1be53e7c141d47b99fce7dd4d034011b0515638af3ac7f66cf4755304977c",
+      "total_support": 11
+    },
+    "find_circ": {
+      "n_candidates": 27,
+      "raw_rows": 86217,
+      "scope": "original archived splice-sites output; existing flag-filter and unique-bridge semantics",
+      "source_commit": "bfb52c5499f4c64ac0a360e180d7acd6bef29076",
+      "source_member": "tests/find_circ3_manifest2_integration/ERR2139486/ERR2139486_splice_sites.bed",
+      "source_sha256": "dc292574b65401ec06cdb7a10adad3f4716e3b8731fc560b82e726df8a77cd41",
+      "total_support": 27
+    }
+  },
+  "native_CIRI3_and_CIRCexplorer_acceptance": "pending: original native call files not recovered",
+  "processed_objects": {
+    "imr90": {
+      "declaration_scope": "GRCh38 from archived workflow reference paths; CIRI 1-based convention declared, no reference revalidation",
+      "host_gene_annotated": 2429,
+      "matched_cell_overlap": 23,
+      "median_candidates_per_cell": 119.0,
+      "median_support_per_cell": 317.0,
+      "n_candidates": 2443,
+      "n_cells": 23,
+      "nnz": 2914,
+      "observation_status": "unknown; no per-cell source status asserted",
+      "source_annotation_columns_preserved": [
+        "circ_id",
+        "chrom",
+        "start",
+        "end",
+        "strand",
+        "host_gene",
+        "host_gene_from_gtf",
+        "host_gene_id",
+        "host_genes_multi",
+        "host_gene_ids_multi",
+        "host_gene_n",
+        "host_gene_source",
+        "host_gene_from_circatlas",
+        "host_gene_from_circatlas_id"
+      ],
+      "source_commit": "c99cddaae2314d3af7d5232150c5b86bb6b52e25",
+      "source_member": "load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu",
+      "source_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "total_support": 7422
+    },
+    "smartseq3": {
+      "DIYHEK_192": "source RNA-only padded circ row preserved; unknown status, not a completed zero",
+      "MAN1A2": {
+        "candidate": "chr1:117402186|117420649",
+        "detecting_cells": 6,
+        "host_gene": "MAN1A2",
+        "support": 15
+      },
+      "declaration_scope": "GRCh38 from archived workflow reference paths; CIRI 1-based convention declared, no reference revalidation",
+      "host_gene_annotated": 2379,
+      "matched_cell_overlap": 192,
+      "median_candidates_per_cell": 12.0,
+      "median_support_per_cell": 22.5,
+      "n_candidates": 2503,
+      "n_cells": 192,
+      "nnz": 2659,
+      "observation_status": "unknown; no per-cell source status asserted",
+      "source_annotation_columns_preserved": [
+        "circ_id",
+        "chrom",
+        "start",
+        "end",
+        "strand",
+        "host_gene",
+        "host_gene_from_gtf",
+        "host_gene_id",
+        "host_genes_multi",
+        "host_gene_ids_multi",
+        "host_gene_n",
+        "host_gene_source",
+        "host_gene_from_circatlas",
+        "host_gene_from_circatlas_id"
+      ],
+      "source_commit": "c99cddaae2314d3af7d5232150c5b86bb6b52e25",
+      "source_member": "load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu",
+      "source_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "total_support": 5711
+    }
+  },
+  "scope": "Archived collector acceptance and checksum-verified processed-object round trips; no raw analysis"
+}
