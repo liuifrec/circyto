@@ -117,6 +117,19 @@ def _dense(matrix: Any) -> np.ndarray:
     return matrix.toarray() if sp.issparse(matrix) else np.asarray(matrix)
 
 
+def _assert_metadata_roundtrip(actual: pd.DataFrame, expected: pd.DataFrame) -> None:
+    # pandas 3 infers StringDtype when AnnData reads HDF5 string arrays. Accept
+    # only that storage transition, retaining exact values, NA masks, axes and
+    # all numeric/nullable/category dtypes. Do not disable dtype checks globally.
+    expected = expected.copy()
+    for column in expected:
+        if (expected[column].dtype == object
+                and isinstance(actual[column].dtype, pd.StringDtype)
+                and expected[column].dropna().map(lambda value: isinstance(value, str)).all()):
+            expected[column] = expected[column].astype(actual[column].dtype)
+    assert_frame_equal(actual, expected, check_dtype=True)
+
+
 def test_historical_partial_overlap_construction_semantics() -> None:
     modalities = _partial_modalities()
     mdata = mudata_from_modalities(modalities)
@@ -185,8 +198,8 @@ def test_representative_mudata_round_trip_semantics(
     for name in expected_modalities:
         assert list(restored.mod[name].obs_names) == ["cell_b", "cell_a"]
         assert list(restored.mod[name].var_names) == list(expected_var[name].index)
-        assert_frame_equal(restored.mod[name].obs, expected_obs[name], check_dtype=True)
-        assert_frame_equal(restored.mod[name].var, expected_var[name], check_dtype=True)
+        _assert_metadata_roundtrip(restored.mod[name].obs, expected_obs[name])
+        _assert_metadata_roundtrip(restored.mod[name].var, expected_var[name])
         np.testing.assert_array_equal(_dense(restored.mod[name].X), expected_x[name])
         for column in expected_obs[name].columns:
             assert f"{name}:{column}" in restored.obs.columns
@@ -210,7 +223,9 @@ def test_partial_overlap_round_trip_keeps_union_order_and_missing_values(tmp_pat
 
 
 def test_future_default_differs_but_explicit_policy_preserves_global_metadata() -> None:
-    with mu.set_options(pull_on_update=False):
+    override = getattr(getattr(mu, "settings", None), "override", None)
+    context = override if override is not None else mu.set_options
+    with context(pull_on_update=False):
         future_default = mu.MuData(_partial_modalities())
         explicit = mudata_from_modalities(_partial_modalities())
         restored_future_default = mu.MuData(_partial_modalities())

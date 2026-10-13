@@ -1,0 +1,7 @@
+circ_id	n_cells_detected	host_gene	total_support
+chr1:1000|1400	8	DEMO_GENE_A	46
+chr1:2000|2400	5	DEMO_GENE_B	13
+chr1:3000|3400	3		6
+chr1:4000|4400	1	DEMO_GENE_D	1
+chr1:5000|5400	2	DEMO_GENE_E	7
+chr1:6000|6400	2		4

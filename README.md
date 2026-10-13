@@ -37,6 +37,96 @@ circyto workflow full-length-circrna \
 ```
 
 Run `circyto doctor` and `circyto detectors` first to distinguish core package readiness from optional workflow-tool readiness.
+For a real single-end run, first index the exact reference with
+`bwa index ref/genome.fa`; the workflow does not build this index. The optional
+[RamDA environment recipe](environment.ramda-se.yml) supplies tested external
+runtimes. See the concise [reviewer guide](docs/reviewer_guide.md) for installation,
+commands, outputs, and the separate frozen manuscript reproduction route.
+
+Existing cell-resolved circRNA results can be imported without running a detector: see
+[`circyto import-circ`](docs/import_circ.md) for validated AnnData/MuData export,
+processing-status metadata and an offline QC report.
+
+## Import native CIRI3 results without rerunning CIRI3
+
+The feature branch accepts native **13-column single-sample** CIRI3 result files.
+With the installed wheel on PATH, the included official output example runs without
+Java, an aligner or raw sequencing data:
+
+```bash
+circyto import-circ \
+  --ciri3-manifest examples/native_ciri3/manifest.tsv \
+  --cells examples/native_ciri3/cells.tsv \
+  --detector CIRI3 --genome-build upstream_demo_chr1_unverified \
+  --coordinate-convention 1-based-closed \
+  --support-definition CIRI3_junction_reads --outdir /tmp/native-ciri3-import
+```
+
+This is an authentic upstream **demonstration sample**, not a validated biological
+single cell: six candidates, 50 support, unknown processing status. The producing
+version and assembly are explicitly unverified. For your data, supply an explicit
+sample-to-cell mapping and actual genome build. Add `--rna matched.h5ad` with the
+`mudata` extra for optional MuData. See the [native input contract](docs/native_ciri3_import.md)
+and [acceptance evidence](docs/native_ciri3_validation.md), including version,
+pooled-output and coordinate limitations. The example directory is distributed
+in the source archive and can be copied outside the checkout.
+
+## Offline QC report quick start (feature branch)
+
+The `feature/qc-report-usability` branch adds offline HTML reporting. This feature
+is **not part of the v0.10.0 manuscript software baseline**; the package version
+has deliberately not changed. From a checkout of this feature branch, this
+example is executable without reference downloads or external detectors:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+python -m pip install .
+circyto doctor
+python examples/qc_report_demo.py --outdir work/qc_report_demo
+circyto report --workdir work/qc_report_demo
+```
+
+Use a new demo directory if it already exists. The example creates **synthetic
+documentation data**, not biological results: 12 QC cells, 6 circRNA candidates,
+77 total support, 2 zero-count cells, and 4 candidates with recorded host genes.
+Open `work/qc_report_demo/qc/report.html` directly in a browser; no web server,
+JavaScript, or internet connection is needed to view or regenerate a report
+after package installation. All values and source SHA-256 checksums are in
+`work/qc_report_demo/qc/metrics.json`.
+
+For a wheel-only installation, `examples/qc_report_demo.py` is supplied in the
+matching source archive, not installed as a CLI command. The
+[outside-repository example](docs/reviewer_guide.md#reviewer-quick-guide) shows
+how to use these distributed materials without an editable checkout.
+
+Download the [sample HTML](docs/examples/qc_report/qc/report.html) to open it
+locally, or inspect its [metrics](docs/examples/qc_report/qc/metrics.json) and
+[source QC tables](docs/examples/qc_report/qc/).
+
+![Synthetic offline QC report](docs/images/qc_report.png)
+
+For a real analysis, prepare a per-cell manifest and matching reference files,
+run `circyto doctor` and check its CIRI3 readiness entries, then use the established workflow
+shown above. Both `workflow full-length-circrna` and `workflow smartseq3-ciri3`
+automatically generate the report after writing their outputs. Use `--no-report`
+to opt out, or run `circyto report --workdir YOUR_RESULTS_DIRECTORY` later.
+The existing `circyto run` remains the legacy CIRI-full command.
+
+| Result | Where to find it | Interpretation |
+| --- | --- | --- |
+| Counts | `matrix/circ_counts.mtx` | circRNA candidate rows × cell columns; support counts |
+| Matrix identities | `matrix/circ_index.txt`, `matrix/cell_index.txt` | Row and column order; use these indices with the matrix |
+| AnnData | `anndata/circ_counts.h5ad` | Cells × candidates, when export is enabled |
+| Source QC | `qc/cell_qc.tsv`, `qc/circ_qc.tsv` | Selected-cell and candidate QC, including zero-count cells |
+| Human-readable report | `qc/report.html` | Completion, detector evidence, QC, warnings, and provenance |
+| Report data | `qc/metrics.json` | Exact counts, definitions, fractions, consistency checks, and checksums |
+
+Workflow completion does not validate a circRNA candidate biologically. A failed
+cell is not a negative detection, and missing values appear as “Not available.”
+See the [report and workflow guide](docs/qc_reporting.md) for an executable
+planning example, manifest requirements, metric definitions, failure handling,
+and screenshot reproduction.
 
 ## Status
 
@@ -89,7 +179,18 @@ python -m pip install -e .
 
 The repo-root [environment.yml](environment.yml) is the supported baseline for source installs. It provides the Python scientific stack and CLI dependencies, but it intentionally does not install external detector executables.
 
+The optional [environment.ramda-se.yml](environment.ramda-se.yml) was separately
+tested for Linux x86_64 installation, BWA/SAMtools/Java runtime discovery and a
+single-end planning run. Its validation does not rerun the public-data analysis.
+The Python wheel works independently for reporting and other commands that do
+not need these tools.
+
 ### External tools
+
+Bundled detectors retain their upstream licenses; circyto's MIT license does
+not cover them. [Third-party notices](THIRD_PARTY_NOTICES.md) record attribution,
+packaged contents and unresolved CIRI-full/CIRI3 distribution questions.
+Use [CITATION.cff](CITATION.cff) to cite circyto and also cite the detector used.
 
 Install only the external tools needed for the workflow you plan to run:
 
@@ -107,7 +208,10 @@ For bundled CIRI3 direct mode, supported environment variables include:
 - `CIRCYTO_CIRI3_EXTRA_ARGS`
 - `CIRCYTO_CIRI3_CMD_TEMPLATE`
 
-Expected vendored layout:
+Wheel installations automatically find detector assets inside the installed
+`circyto/resources/tools/` package; no repository checkout or extra `tools/`
+directory is required. `circyto doctor` prints the resolved locations.
+The corresponding source-checkout layout is:
 
 ```text
 tools/
@@ -462,3 +566,12 @@ Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-
 A methods manuscript is under preparation. In the meantime, please cite this repository:
 
 > Liu, Y.-C. et al. "Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto." GitHub repository: https://github.com/liuifrec/circyto
+
+## Pre-release review status
+
+See the [integration review and release-readiness matrix](docs/pre_release_readiness.md)
+and [external per-cell CIRI3 + RNA acceptance checklist](docs/external_ciri3_acceptance.md).
+These features are ready for draft code review, not cleared for public release.
+Native demonstration compatibility does not establish biological single-cell
+acceptance. Detector distribution review remains open. RERF internal review
+and the frozen manuscript baseline remain independent.

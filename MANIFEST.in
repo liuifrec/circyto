@@ -1,0 +1,28 @@
+include examples/qc_report_demo.py
+include CITATION.cff
+include THIRD_PARTY_NOTICES.md
+include environment.ramda-se.yml
+include docs/reviewer_guide.md
+include docs/reviewer_readiness.md
+include docs/circrna_workflow_comparison.md
+include docs/qc_reporting.md
+include docs/qc_reporting_validation.md
+include docs/images/qc_report.png
+recursive-include docs/examples/qc_report *.json *.tsv *.txt *.mtx *.html
+
+include examples/import_circ_demo.py
+include docs/import_circ.md
+include docs/import_circ_assessment.md
+include docs/import_circ_validation.md
+include scripts/validate_import_circ_evidence.py
+include docs/examples/import_circ/validation.json
+
+include docs/native_ciri3_import.md
+include docs/native_ciri3_validation.md
+include examples/validate_native_ciri3.py
+recursive-include examples/native_ciri3 *.txt *.log *.tsv *.json
+
+recursive-include docs/examples/native_ciri3 *.json
+
+include docs/pre_release_readiness.md
+include docs/external_ciri3_acceptance.md

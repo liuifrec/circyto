@@ -7,6 +7,7 @@ import csv
 import time
 
 from circyto.manifest.alignment import read_alignment_manifest_tsv
+from circyto.pipeline.qc_report import report_after_workflow
 from circyto.pipeline.align_manifest import read_source_manifest
 from circyto.pipeline.gene_expression_velocity import (
     build_cleanup_plan,
@@ -77,6 +78,7 @@ class FullLengthCircRNAWorkflowParams:
     fail_fast: bool = False
     command_template: Optional[str] = None
     experimental_paired_ramda: bool = False
+    report: bool = True
 
 
 def _workflow_paths(outdir: Path) -> dict[str, Path]:
@@ -859,4 +861,6 @@ def run_full_length_circrna_workflow(
 
     write_json(paths["workflow_summary"], summary)
     _emit(progress, f"workflow summary: {paths['workflow_summary']}")
+    if params.report and not params.dry_run:
+        report_after_workflow(params.outdir, progress=progress)
     return summary
