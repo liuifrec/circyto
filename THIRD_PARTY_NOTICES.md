@@ -36,6 +36,11 @@ publish old or automatic Git source archives as if this policy covered them.
   supplies the Broad Institute MIT permission and notice requirement. This
   confirms permission for that source, not a completed inventory of every
   embedded component. Neither inspected JAR has LICENSE/NOTICE archive entries.
+  The CIRI3 archive also contains seven `smith/*` classes with corresponding
+  upstream source; six source headers attribute DulanDias (AS2014347), without
+  a separate permission grant in those headers. Any provenance/permission
+  question for that embedded code belongs in upstream's full dependency review;
+  it is not resolved by assuming CIRI3's root notice overrides other authors.
 - CIRI-full current upstream tree remains
   `03a5719ba0b28ae31c17a4029310ffbfac5b7241`: source/Makefile and newer v2.1.2
   binary present, no applicable root license found. The locally bundled v2.0

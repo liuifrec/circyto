@@ -97,6 +97,18 @@ result = Ciri3Detector().run(DetectorRunInputs(
 print(result.tsv_path)
 ```
 
+## Remote CI evidence
+
+[Workflow run 38355386066](https://github.com/liuifrec/circyto/actions/runs/38355386066)
+passed on implementation commit `c9c7ac68c5b2956c38da7c1bbfd83dad7520678b`:
+Python 3.10 and 3.12 each ran **480 passing tests, 10 explicit skips**. Both
+passed the critical-module execution audit, source/wheel builds, fresh isolated
+wheel installation, missing-detector/package-content checks and authentic native
+import. Logs and retained XML/acceptance artifacts were retrieved and inspected.
+This is separate from the local actual external CIRI3 process execution above;
+remote CI did not download or execute CIRI3. Later documentation commits do not
+change detector behavior; subsequent run results are identified separately.
+
 ## Decision and stopping boundary
 
 **Engineering GO:** newly built wheel/sdist exclude unresolved Java distribution,
