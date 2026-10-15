@@ -1,0 +1,1774 @@
+{
+  "active_stage_elapsed_seconds": 5046.323993214974,
+  "caps": {
+    "cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "deadline_epoch": 1792102494.4280953,
+    "disk_cap_bytes": 85899345920,
+    "disk_stop_bytes": 84825604096,
+    "first_cell_memory_max_bytes": 21474836480,
+    "first_cell_wall_cap_seconds": 14400,
+    "shared_memory_max_bytes": 25769803776,
+    "started_epoch": 1792044894.4280953,
+    "started_utc": "2026-10-15T06:14:54.428103+00:00",
+    "wall_cap_seconds": 57600
+  },
+  "conservative_elapsed_since_budget_start_seconds": 61283.4746966362,
+  "control_probe_seconds": 10.241171592002502,
+  "evaluation_footprint_bytes_now": 20649247854,
+  "evaluation_root": "/home/liuyuchen/data/circyto_cmpb_a02_20261015",
+  "execution_envelope_through_last_stage_seconds": 7472.438556671143,
+  "first_cell_stage_seconds": 691.7681198979844,
+  "handoff_gap_after_execution_seconds": 53811.03614401817,
+  "last_managed_stage_finished_utc": "2026-10-15T08:19:26.866652+00:00",
+  "measurement_limits": [
+    "RSS and cgroup memory sampled every 0.25 s; disk each ~1 s including traversal time.",
+    "Initial acquisition/preparation recorded cgroup memory; summed process RSS added before index and first-cell work.",
+    "CPU quota controller unavailable; eight-CPU affinity inheritance and all-thread violation stop tested.",
+    "Disk auto-stop at 79 GiB provides headroom below 80 GiB; not a filesystem quota.",
+    "Storage uses max(logical,allocated) per file, counting hard-linked cache copies conservatively.",
+    "Final audit writing resumed after a server restart; calendar elapsed includes the non-execution handoff gap, reported separately. No budget reset or resumed scientific stage."
+  ],
+  "recorded_utc": "2026-10-15T23:16:17.902778+00:00",
+  "sampled_cgroup_memory_peak_bytes": 19476078592,
+  "sampled_evaluation_footprint_peak_bytes": 20649243758,
+  "sampled_process_tree_RSS_peak_bytes_where_recorded": 12141371392,
+  "shared_preparation_stage_seconds": 4344.314701724987,
+  "stages": [
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.3160197819961468,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-probe-inheritance.service",
+        "child_exit_code": 0,
+        "child_pid": 129943,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 36864,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:14:54.730268+00:00",
+        "memory_current_peak_bytes": 8634368,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:14:54.475259+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:14:54.478755+00:00"
+      },
+      "stage": "probe-inheritance",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.3121538529958343,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-probe-exit-failure.service",
+        "child_exit_code": 7,
+        "child_pid": 129954,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 61440,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:14:55.175236+00:00",
+        "memory_current_peak_bytes": 8626176,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:14:54.920641+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:14:54.923740+00:00"
+      },
+      "stage": "probe-exit-failure",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=7",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=38167000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 2.2633534600026906,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-probe-wall-stop.service",
+        "child_pid": 129959,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 90112,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 13242368,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:14:55.381246+00:00",
+        "status": "running",
+        "updated_utc": "2026-10-15T06:14:57.403468+00:00"
+      },
+      "stage": "probe-wall-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=timeout",
+        "ExecMainStatus=15",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=47610000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.08646628400310874,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-probe-memory-stop.service",
+        "child_pid": 129969,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "67108864",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 114688,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 9101312,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:14:57.798013+00:00",
+        "status": "running",
+        "updated_utc": "2026-10-15T06:14:57.801363+00:00"
+      },
+      "stage": "probe-memory-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=oom-kill",
+        "ExecMainStatus=9",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=57965000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 1.0770589599997038,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-probe-disk-stop.service",
+        "child_pid": 129976,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 4337664,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 18214912,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:14:58.027605+00:00",
+        "status": "stopped",
+        "stop_reason": "automatic disk threshold",
+        "updated_utc": "2026-10-15T06:14:58.031013+00:00"
+      },
+      "stage": "probe-disk-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=125",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=52089000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.32445412199012935,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-probe-affinity-stop.service",
+        "child_pid": 129983,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 4362240,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 13225984,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:14:59.240489+00:00",
+        "status": "stopped",
+        "stop_reason": "CPU affinity widened",
+        "updated_utc": "2026-10-15T06:14:59.243285+00:00"
+      },
+      "stage": "probe-affinity-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=125",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=47891000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 0.31655535800382495,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-prepare-artifacts.service",
+        "child_exit_code": 0,
+        "child_pid": 130065,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 4386816,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:19:24.450374+00:00",
+        "memory_current_peak_bytes": 8626176,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:19:24.195308+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:19:24.198950+00:00"
+      },
+      "stage": "prepare-artifacts",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 3.3552182209969033,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-refresh-metadata.service",
+        "child_exit_code": 0,
+        "child_pid": 130085,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 48144384,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:19:57.571495+00:00",
+        "memory_current_peak_bytes": 18829312,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:19:54.277701+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:19:57.313380+00:00"
+      },
+      "stage": "refresh-metadata",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 11.182086456989055,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-create-environment.service",
+        "child_exit_code": 1,
+        "child_pid": 130314,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 1080578048,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:20:43.920972+00:00",
+        "memory_current_peak_bytes": 2166255616,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:20:32.802814+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:20:42.916462+00:00"
+      },
+      "stage": "create-environment",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=1",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=9141969000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 11.11603441099578,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-create-python-java.service",
+        "child_exit_code": 0,
+        "child_pid": 130734,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 2710156158,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:24:44.424462+00:00",
+        "memory_current_peak_bytes": 1435037696,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:24:33.374920+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:24:44.165312+00:00"
+      },
+      "stage": "create-python-java",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 3.528220431006048,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-create-bwa.service",
+        "child_exit_code": 0,
+        "child_pid": 131022,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 2713617278,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:24:56.784823+00:00",
+        "memory_current_peak_bytes": 538066944,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:24:53.319874+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:24:56.025263+00:00"
+      },
+      "stage": "create-bwa",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 9.72797064599581,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-install-reviewed-wheel.service",
+        "child_exit_code": 0,
+        "child_pid": 131093,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 3252802670,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:26:29.831353+00:00",
+        "memory_current_peak_bytes": 502939648,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:26:20.175322+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:26:29.322833+00:00"
+      },
+      "stage": "install-reviewed-wheel",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 2.3763948029954918,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-audit-environment.service",
+        "child_exit_code": 0,
+        "child_pid": 131204,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 3184923758,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:28:57.476472+00:00",
+        "memory_current_peak_bytes": 134324224,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:28:55.157880+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:28:56.974074+00:00"
+      },
+      "stage": "audit-environment",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 1203.094045552003,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-acquire-full-inputs.service",
+        "child_exit_code": 0,
+        "child_pid": 131364,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9026737262,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:50:02.180411+00:00",
+        "memory_current_peak_bytes": 5956890624,
+        "poll_seconds": 0.25,
+        "started_utc": "2026-10-15T06:29:59.138859+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:50:01.175525+00:00"
+      },
+      "stage": "acquire-full-inputs",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.8665671260096133,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-final-probe-inheritance.service",
+        "child_exit_code": 0,
+        "child_pid": 132398,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9026790510,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:51:52.618622+00:00",
+        "memory_current_peak_bytes": 11104256,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 24846336,
+        "started_utc": "2026-10-15T06:51:51.819072+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:51:52.360120+00:00"
+      },
+      "stage": "final-probe-inheritance",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.8621318410005188,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-final-probe-exit-failure.service",
+        "child_exit_code": 7,
+        "child_pid": 132410,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9026815086,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:51:54.165833+00:00",
+        "memory_current_peak_bytes": 9494528,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 22343680,
+        "started_utc": "2026-10-15T06:51:53.366578+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:51:53.908224+00:00"
+      },
+      "stage": "final-probe-exit-failure",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=7",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=576292000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 2.243655697995564,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-final-probe-wall-stop.service",
+        "child_pid": 132416,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9026843758,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 14569472,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 31645696,
+        "started_utc": "2026-10-15T06:51:54.902728+00:00",
+        "status": "running",
+        "updated_utc": "2026-10-15T06:51:56.771507+00:00"
+      },
+      "stage": "final-probe-wall-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=timeout",
+        "ExecMainStatus=15",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=892311000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.3710943949990906,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-final-probe-memory-stop.service",
+        "child_pid": 132423,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "67108864",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9026864238,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 0,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 0,
+        "started_utc": "2026-10-15T06:51:57.817715+00:00",
+        "status": "running"
+      },
+      "stage": "final-probe-memory-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=oom-kill",
+        "ExecMainStatus=9",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=371457000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.6267995350062847,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-final-probe-disk-stop.service",
+        "child_pid": 132431,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9031095406,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 11272192,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 24948736,
+        "started_utc": "2026-10-15T06:51:59.197816+00:00",
+        "status": "stopped",
+        "stop_reason": "automatic disk threshold"
+      },
+      "stage": "final-probe-disk-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=125",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=602065000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "probe",
+      "elapsed_seconds": 0.8914165360038169,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-final-probe-affinity-stop.service",
+        "child_pid": 132438,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "134217728",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9031119982,
+        "disk_poll_seconds": 1,
+        "memory_current_peak_bytes": 14401536,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 31924224,
+        "started_utc": "2026-10-15T06:52:00.560984+00:00",
+        "status": "stopped",
+        "stop_reason": "CPU affinity widened",
+        "updated_utc": "2026-10-15T06:52:01.120064+00:00"
+      },
+      "stage": "final-probe-affinity-stop",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=125",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=594065000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 0.8788142800040077,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-freeze-execution-helpers.service",
+        "child_exit_code": 0,
+        "child_pid": 132570,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9031271534,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:53:48.204632+00:00",
+        "memory_current_peak_bytes": 9625600,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 22102016,
+        "started_utc": "2026-10-15T06:53:47.392141+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:53:47.952969+00:00"
+      },
+      "stage": "freeze-execution-helpers",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 44.70125544400071,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-recheck-full-fastq-headers.service",
+        "child_exit_code": 0,
+        "child_pid": 132591,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 9031435374,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T06:55:18.842404+00:00",
+        "memory_current_peak_bytes": 529166336,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 477380608,
+        "started_utc": "2026-10-15T06:54:34.200660+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T06:55:17.831712+00:00"
+      },
+      "stage": "recheck-full-fastq-headers",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 3050.5713585939957,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-build-bwa-index.service",
+        "child_exit_code": 0,
+        "child_pid": 132634,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 14456091758,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T07:46:40.071914+00:00",
+        "memory_current_peak_bytes": 11043708928,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 4690214912,
+        "started_utc": "2026-10-15T06:55:49.564366+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T07:46:39.820404+00:00"
+      },
+      "stage": "build-bwa-index",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "shared_preparation",
+      "elapsed_seconds": 3.466747528000269,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-record-index.service",
+        "child_exit_code": 0,
+        "child_pid": 134267,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "25769803776",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 14456108142,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T07:47:51.049095+00:00",
+        "memory_current_peak_bytes": 582193152,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 37240832,
+        "started_utc": "2026-10-15T07:47:47.644861+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T07:47:50.790785+00:00"
+      },
+      "stage": "record-index",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 1.1470164969941834,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-extract-original-rna.service",
+        "child_exit_code": 0,
+        "child_pid": 134314,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 14456140910,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T07:51:00.422679+00:00",
+        "memory_current_peak_bytes": 224731136,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 196530176,
+        "started_utc": "2026-10-15T07:50:59.335058+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T07:50:59.919779+00:00"
+      },
+      "stage": "extract-original-rna",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.9113064489938552,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-validate-firstcell-manifest.service",
+        "child_exit_code": 0,
+        "child_pid": 134383,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 14466614382,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T07:56:24.410822+00:00",
+        "memory_current_peak_bytes": 9367552,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 21704704,
+        "started_utc": "2026-10-15T07:56:23.573382+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T07:56:24.159188+00:00"
+      },
+      "stage": "validate-firstcell-manifest",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.8979464019939769,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-mark-firstcell-start.service",
+        "child_exit_code": 0,
+        "child_pid": 134412,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 14466630766,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T07:56:40.505495+00:00",
+        "memory_current_peak_bytes": 9613312,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 22413312,
+        "started_utc": "2026-10-15T07:56:39.671002+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T07:56:40.247860+00:00"
+      },
+      "stage": "mark-firstcell-start",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 669.28931697199,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-workflow-firstcell.service",
+        "child_exit_code": 0,
+        "child_pid": 134441,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20579062894,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:08:10.817991+00:00",
+        "memory_current_peak_bytes": 19476078592,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 12141371392,
+        "started_utc": "2026-10-15T07:57:01.596114+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:08:10.565815+00:00"
+      },
+      "stage": "workflow-firstcell",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.8717703520087525,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-audit-helper-tests-pipe-binding.service",
+        "child_exit_code": 0,
+        "child_pid": 135306,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20582450286,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:09:13.865083+00:00",
+        "memory_current_peak_bytes": 10076160,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 22949888,
+        "started_utc": "2026-10-15T08:09:13.052100+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:09:13.613826+00:00"
+      },
+      "stage": "audit-helper-tests-pipe-binding",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 6.075369770987891,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-bind-firstcell-native.service",
+        "child_exit_code": 0,
+        "child_pid": 135351,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20582536302,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:10:00.503186+00:00",
+        "memory_current_peak_bytes": 19169280,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 37552128,
+        "started_utc": "2026-10-15T08:09:54.489161+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:10:00.245430+00:00"
+      },
+      "stage": "bind-firstcell-native",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.879878831008682,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-report-new-workflow.service",
+        "child_exit_code": 0,
+        "child_pid": 135387,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20582564974,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:10:47.478381+00:00",
+        "memory_current_peak_bytes": 10158080,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 23175168,
+        "started_utc": "2026-10-15T08:10:46.656942+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:10:47.226673+00:00"
+      },
+      "stage": "report-new-workflow",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 1.630012789988541,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-import-firstcell-native-rna.service",
+        "child_exit_code": 0,
+        "child_pid": 135421,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20582650990,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:10:59.020879+00:00",
+        "memory_current_peak_bytes": 175038464,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 205754368,
+        "started_utc": "2026-10-15T08:10:57.467917+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:10:58.009789+00:00"
+      },
+      "stage": "import-firstcell-native-rna",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 2.1727196970023215,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-independent-value-report-checks.service",
+        "child_exit_code": 1,
+        "child_pid": 135465,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20625699950,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:11:19.089829+00:00",
+        "memory_current_peak_bytes": 264888320,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 270270464,
+        "started_utc": "2026-10-15T08:11:16.992055+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:11:18.837306+00:00"
+      },
+      "stage": "independent-value-report-checks",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=1",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=2382017000",
+        "ActiveState=failed"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.8959398459992371,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-preserve-acceptance-firstattempt.service",
+        "child_exit_code": 0,
+        "child_pid": 135876,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20641768558,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:13:35.511809+00:00",
+        "memory_current_peak_bytes": 9887744,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 23277568,
+        "started_utc": "2026-10-15T08:13:34.675608+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:13:35.253587+00:00"
+      },
+      "stage": "preserve-acceptance-firstattempt",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.8528619310091017,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-audit-helper-tests-integer-width.service",
+        "child_exit_code": 0,
+        "child_pid": 135902,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20641784942,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:14:07.358474+00:00",
+        "memory_current_peak_bytes": 9633792,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 22110208,
+        "started_utc": "2026-10-15T08:14:06.567249+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:14:07.106404+00:00"
+      },
+      "stage": "audit-helper-tests-integer-width",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 2.16872182500083,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-independent-value-report-checks-v2.service",
+        "child_exit_code": 0,
+        "child_pid": 135942,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20641862766,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:14:19.715796+00:00",
+        "memory_current_peak_bytes": 217710592,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 265043968,
+        "started_utc": "2026-10-15T08:14:17.606626+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:14:19.463739+00:00"
+      },
+      "stage": "independent-value-report-checks-v2",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 2.2244726750068367,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-open-offline-reports.service",
+        "child_exit_code": 0,
+        "child_pid": 136040,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20649145454,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:14:51.270699+00:00",
+        "memory_current_peak_bytes": 651407360,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 1124966400,
+        "started_utc": "2026-10-15T08:14:49.112674+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:14:51.012758+00:00"
+      },
+      "stage": "open-offline-reports",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.8844685699878028,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-audit-helper-tests-status-semantics.service",
+        "child_exit_code": 0,
+        "child_pid": 136681,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20649161838,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:18:47.470127+00:00",
+        "memory_current_peak_bytes": 9572352,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 21651456,
+        "started_utc": "2026-10-15T08:18:46.642523+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:18:47.218591+00:00"
+      },
+      "stage": "audit-helper-tests-status-semantics",
+      "status": "succeeded",
+      "unit_result": [
+        "Result=success",
+        "ExecMainStatus=0",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=[not set]",
+        "ActiveState=inactive"
+      ]
+    },
+    {
+      "category": "firstcell",
+      "elapsed_seconds": 0.8663172900123755,
+      "guard": {
+        "affinity": [
+          0,
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7
+        ],
+        "cgroup": "/sys/fs/cgroup/user.slice/user-1001.slice/user@1001.service/app.slice/circyto-a02-workflow-status-acceptance.service",
+        "child_exit_code": 1,
+        "child_pid": 136715,
+        "controls": {
+          "cgroup.controllers": "memory pids",
+          "cpu.max": null,
+          "memory.max": "21474836480",
+          "memory.swap.max": "0"
+        },
+        "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+        "disk_peak_bytes": 20649243758,
+        "disk_poll_seconds": 1,
+        "finished_utc": "2026-10-15T08:19:26.845837+00:00",
+        "memory_current_peak_bytes": 9764864,
+        "poll_seconds": 0.25,
+        "process_tree_rss_peak_bytes": 22134784,
+        "started_utc": "2026-10-15T08:19:26.039068+00:00",
+        "status": "finished",
+        "updated_utc": "2026-10-15T08:19:26.589386+00:00"
+      },
+      "stage": "workflow-status-acceptance",
+      "status": "failed",
+      "unit_result": [
+        "Result=exit-code",
+        "ExecMainStatus=1",
+        "ControlGroup=",
+        "MemoryCurrent=[not set]",
+        "CPUUsageNSec=883477000",
+        "ActiveState=failed"
+      ]
+    }
+  ]
+}

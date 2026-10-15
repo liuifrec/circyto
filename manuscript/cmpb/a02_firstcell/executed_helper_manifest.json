@@ -1,0 +1,39 @@
+{
+  "acquisition_helper_v1_sha256": "887325811089285b1f675d7886903fd3b5f06ed3b66b594a19451c83491ed66c",
+  "acquisition_v1_snapshot_timing": "captured while acquisition ran, before editing its source; not a launch-time hash",
+  "directory": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/helpers/execution-ee8285668f224d24",
+  "previous_wrapper_bytes": {
+    "bwa": {
+      "sha256": "c9bcfb0b1b30c09fb5cde0aab6a9f4e71fdbbc3aaa2f58c77eadf46788b3c463",
+      "text": "#!/bin/sh\nexec /usr/bin/python3 /home/liuyuchen/data/circyto_cmpb_a02_20261015/helpers/runtime/tool_audit.py --root /home/liuyuchen/data/circyto_cmpb_a02_20261015 --tool bwa --real /home/liuyuchen/data/circyto_cmpb_a02_20261015/env-bwa/bin/bwa -- \"$@\"\n"
+    },
+    "java": {
+      "sha256": "4ab0dafc42f7abca8342d989ab3fdd92180f2d0910abda38d5fe5b2a2d7ff1fa",
+      "text": "#!/bin/sh\nexec /usr/bin/python3 /home/liuyuchen/data/circyto_cmpb_a02_20261015/helpers/runtime/tool_audit.py --root /home/liuyuchen/data/circyto_cmpb_a02_20261015 --tool java --real /home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin/java -- \"$@\"\n"
+    }
+  },
+  "recorded_utc": "2026-10-15T06:53:47.689049+00:00",
+  "source_sha256": {
+    "environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+    "execution_records.py": "910ddb40ef8a3b3e6bdabbae3a52549a620611f95c2588d91986cb935ed88022",
+    "independent_checks.py": "0dadec2f00d9e6c2c254195d15de133ae942810e4fc01f37c4329d54ee4503a2",
+    "prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+    "probe_controls.py": "d04843be8e97603f5872e1d99a85e513b1393e0ba3e64c19444ab38d0a350ce0",
+    "run_stage.py": "a0c9ca90a95dd1e05020a75d181d835a629362e0676056fbee48dd84219eb152",
+    "test_execution_records.py": "a5bdd0645a958986645b06e99ef1b4fa1847250c27c59d5bb22499c33302dccb",
+    "test_independent_checks.py": "23e3dfa1d8a23f34d5f8691f846be64bba8fa9f355525ed4c01ce0a5db0ba8d7",
+    "test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+    "test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+    "tool_audit.py": "89b84c6e89e53b56f14d1daa6cda6ba54fe3be76a2c1822707fa214d3be2fe7e"
+  },
+  "wrappers": {
+    "bwa": {
+      "path": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/bwa",
+      "sha256": "e95019c84ee7b63b942b870cf188497fd85a292d48f596cb4f94e9a8d662baa2"
+    },
+    "java": {
+      "path": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/java",
+      "sha256": "461c3508284e77edcf7f20baf8183fa63ca6ff2a07a33221e3cc1122e1ee4c85"
+    }
+  }
+}

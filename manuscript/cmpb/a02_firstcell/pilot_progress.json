@@ -1,0 +1,51 @@
+{
+  "cells": [
+    {
+      "acceptance": "failed",
+      "cell_id": "IMR90_A_100",
+      "execution_status": "finished",
+      "fastq_sha256": "35ccce9237daaf578254014348ebec209063764daef69273bb9c2bdeca4a6448",
+      "gsm": "GSM8558852",
+      "native_sha256": "4c807adc516e5367a315b4ac3d6d41c9d6d573a3bf222904c05865c24c5964f6",
+      "new_detector_status": "completed",
+      "original_detector_status": "unknown",
+      "srr": "SRR30918126"
+    },
+    {
+      "acceptance": "pending",
+      "cell_id": "IMR90_A_101",
+      "execution_status": "not_started",
+      "gsm": "GSM8558853",
+      "new_detector_status": "unprocessed",
+      "original_detector_status": "unknown",
+      "srr": "SRR30918117"
+    },
+    {
+      "acceptance": "pending",
+      "cell_id": "IMR90_A_102",
+      "execution_status": "not_started",
+      "gsm": "GSM8558854",
+      "new_detector_status": "unprocessed",
+      "original_detector_status": "unknown",
+      "srr": "SRR30918116"
+    },
+    {
+      "acceptance": "pending",
+      "cell_id": "IMR90_A_103",
+      "execution_status": "not_started",
+      "gsm": "GSM8558855",
+      "new_detector_status": "unprocessed",
+      "original_detector_status": "unknown",
+      "srr": "SRR30918115"
+    }
+  ],
+  "first_cell_outcome": "failed",
+  "four_cell_pilot_complete": false,
+  "reason": "Workflow alignment-status propagation defect: fresh aligner summary records aligned, but workflow QC/AnnData mark alignment missing; workflow report is incomplete and completed-cohort prevalence is unavailable. Native/RNA value preservation passed.",
+  "registration_head": "17b733c8f21bb128a035e7b100e704099e2bdb0e",
+  "route": "NEW technical validation",
+  "schema": "circyto.cmpb.a02.progress.v1",
+  "source_commit": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+  "stage": "first_cell_acceptance_failed",
+  "updated_utc": "2026-10-15T23:16:17.900430+00:00"
+}

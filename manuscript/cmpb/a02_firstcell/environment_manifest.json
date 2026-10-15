@@ -1,0 +1,297 @@
+{
+  "ciri3_configuration": {
+    "bin": null,
+    "bin_source": null,
+    "checked_paths": {
+      "bin": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/bin/CIRI3",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/scripts/CIRI3",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/bin/ciri3",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/scripts/ciri3",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/bin/CIRI3.sh",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/scripts/CIRI3.sh",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/bin/ciri3.sh",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/scripts/ciri3.sh",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/bin/CIRI3.pl",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/scripts/CIRI3.pl",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/bin/ciri3.pl",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3/scripts/ciri3.pl"
+      ],
+      "home": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3"
+      ],
+      "jar": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/external/CIRI3_Java_18.0.1.jar"
+      ],
+      "java": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/java"
+      ]
+    },
+    "direct_ready": true,
+    "home": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/resources/tools/CIRI3",
+    "home_source": "configured-search-root",
+    "jar": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/external/CIRI3_Java_18.0.1.jar",
+    "jar_source": "env:CIRCYTO_CIRI3_JAR",
+    "java": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/java",
+    "java_source": "env:CIRCYTO_CIRI3_JAVA",
+    "java_version": "17",
+    "java_version_error": null,
+    "java_version_major": 17,
+    "java_version_ok": true,
+    "java_version_raw_output": "Picked up JAVA_TOOL_OPTIONS: -Xmx16g -XX:ActiveProcessorCount=8\nopenjdk version \"17.0.18-internal\" 2026-01-20\nOpenJDK Runtime Environment (build 17.0.18-internal+0-adhoc.rattler.src)\nOpenJDK 64-Bit Server VM (build 17.0.18-internal+0-adhoc.rattler.src, mixed mode, sharing)",
+    "preferred_mode": "direct-jar",
+    "recommended_java_major": 17,
+    "required_java_major": 12,
+    "template_configured": false,
+    "template_errors": [],
+    "template_source": null,
+    "template_summary": null,
+    "wrapper_ready": false
+  },
+  "commands": [
+    {
+      "argv": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "exit_code": 0,
+      "output": "records/pip-check.txt",
+      "sha256": "9261363b733079a641c2e4cc9bc46ffa1d8336945a87f807b6cf68847dbc9b09"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin/python",
+        "-m",
+        "pip",
+        "freeze",
+        "--all"
+      ],
+      "exit_code": 0,
+      "output": "records/pip-freeze.txt",
+      "sha256": "f347ec44b1c651b4325f52134931e52bd00d5046a0b355bed595d0eeaea7e3d3"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/bwa"
+      ],
+      "exit_code": 1,
+      "output": "records/bwa-version.txt",
+      "sha256": "57d02e431df9a5d5f3f4b6ad987c9d64844ff136bd58f29671feb346648712eb"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/java",
+        "-version"
+      ],
+      "exit_code": 0,
+      "output": "records/java-version.txt",
+      "sha256": "68dafe5145d20ee4ed54e62fe167637fb007334da0b4a01e599c69686a98e4b4"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin/circyto",
+        "--help"
+      ],
+      "exit_code": 0,
+      "output": "records/cli-help.txt",
+      "sha256": "9ef9c8972c73ba977551369536cb9b69ef5dd7bc6aeedc4758deae3edd3dc633"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin/circyto",
+        "doctor"
+      ],
+      "exit_code": 0,
+      "output": "records/doctor.txt",
+      "sha256": "17836c06bad1651bc6f9384206e614ba52fb4b4bb13284dd9b524f60bac48e50"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/.local/bin/micromamba",
+        "--no-rc",
+        "list",
+        "--prefix",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env",
+        "--explicit"
+      ],
+      "exit_code": 0,
+      "output": "records/conda-explicit-python-java.txt",
+      "sha256": "1c2aea74880185fad96a294b0a6374606703c83806a8185319c67d16d72dfd34"
+    },
+    {
+      "argv": [
+        "/home/liuyuchen/.local/bin/micromamba",
+        "--no-rc",
+        "list",
+        "--prefix",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env-bwa",
+        "--explicit"
+      ],
+      "exit_code": 0,
+      "output": "records/conda-explicit-bwa.txt",
+      "sha256": "2d28b3184e42edeefe1b8154ffb3ff32458f435f07502b9d55c4904610f93a91"
+    }
+  ],
+  "environment": {
+    "CIRCYTO_CIRI3_EXTRA_ARGS": "-S 0 -Ma 0",
+    "CIRCYTO_CIRI3_JAR": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/external/CIRI3_Java_18.0.1.jar",
+    "CIRCYTO_CIRI3_JAVA": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin/java",
+    "JAVA_TOOL_OPTIONS": "-Xmx16g -XX:ActiveProcessorCount=8",
+    "MKL_NUM_THREADS": "1",
+    "NUMEXPR_NUM_THREADS": "1",
+    "OMP_NUM_THREADS": "1",
+    "OPENBLAS_NUM_THREADS": "1",
+    "PATH": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/audit-bin:/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin:/home/liuyuchen/data/circyto_cmpb_a02_20261015/env-bwa/bin:/usr/bin:/bin",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "executable": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/bin/python",
+  "external_executables": {
+    "bwa": {
+      "path": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env-bwa/bin/bwa",
+      "sha256": "598c1303107857bfcf1c954c09871d6c16811988020ffd95ce518983ffc0c85c"
+    },
+    "java": {
+      "path": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/jvm/bin/java",
+      "sha256": "9966bf6337aec59196f96f95cf5acd509139688bbe8cf1b81aad112ffca4aaf2"
+    }
+  },
+  "external_jar_sha256": "569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0",
+  "helper_sha256": {
+    "run_stage.py": "cfbb70d6b27ab035918e1a4cabc660a2d4f7487db1ab2290b55164464c89fbdf",
+    "tool_audit.py": "7f171d740337fcb8f521e0202f960254f791a729d95594ccda1aad3d5e1076a3"
+  },
+  "installed_python_members_equal_wheel": [
+    "circyto/__init__.py",
+    "circyto/init.py",
+    "circyto/paths.py",
+    "circyto/protocols.py",
+    "circyto/utils.py",
+    "circyto/analysis/compare_detectors.py",
+    "circyto/biogenesis/__init__.py",
+    "circyto/biogenesis/export.py",
+    "circyto/biogenesis/schema.py",
+    "circyto/cli/analyze.py",
+    "circyto/cli/circyto.py",
+    "circyto/cli/ciri_long.py",
+    "circyto/cli/demux.py",
+    "circyto/cli/detectors.py",
+    "circyto/cli/doctor.py",
+    "circyto/cli/doctor_meta.py",
+    "circyto/cli/import_circ.py",
+    "circyto/cli/manifest.py",
+    "circyto/cli/nanopore.py",
+    "circyto/cli/report.py",
+    "circyto/cli/smoke.py",
+    "circyto/cli/workflow.py",
+    "circyto/compare/__init__.py",
+    "circyto/compare/detector_compare.py",
+    "circyto/demux/__init__.py",
+    "circyto/demux/smartseq2.py",
+    "circyto/demux/smartseq3.py",
+    "circyto/detectors/__init__.py",
+    "circyto/detectors/base.py",
+    "circyto/detectors/circ_explorer2.py",
+    "circyto/detectors/circexplorer2_adapter.py",
+    "circyto/detectors/ciri2.py",
+    "circyto/detectors/ciri3.py",
+    "circyto/detectors/ciri_full.py",
+    "circyto/detectors/ciri_long.py",
+    "circyto/detectors/find_circ.py",
+    "circyto/detectors/find_circ3.py",
+    "circyto/detectors/find_circ3_adapter.py",
+    "circyto/detectors/install_tools.py",
+    "circyto/manifest/__init__.py",
+    "circyto/manifest/alignment.py",
+    "circyto/manifest/ciri_long.py",
+    "circyto/manifest/long_read.py",
+    "circyto/manifest/v1.py",
+    "circyto/multimodal/__init__.py",
+    "circyto/multimodal/sync.py",
+    "circyto/parsers/cirifull.py",
+    "circyto/pipeline/__init__.py",
+    "circyto/pipeline/align_manifest.py",
+    "circyto/pipeline/annotate_circs.py",
+    "circyto/pipeline/annotate_host_gene.py",
+    "circyto/pipeline/ciri_long_adapter.py",
+    "circyto/pipeline/collect.py",
+    "circyto/pipeline/collect_circexplorer2.py",
+    "circyto/pipeline/collect_circexplorer2_matrix.py",
+    "circyto/pipeline/collect_find_circ3.py",
+    "circyto/pipeline/compare_detectors.py",
+    "circyto/pipeline/export_multimodal.py",
+    "circyto/pipeline/gene_expression_velocity.py",
+    "circyto/pipeline/import_circ.py",
+    "circyto/pipeline/import_ciri3.py",
+    "circyto/pipeline/merge_detectors.py",
+    "circyto/pipeline/merge_results.py",
+    "circyto/pipeline/multidetector_collect.py",
+    "circyto/pipeline/nanopore_archive.py",
+    "circyto/pipeline/nanopore_interop.py",
+    "circyto/pipeline/prepare.py",
+    "circyto/pipeline/public_dataset_prepare.py",
+    "circyto/pipeline/qc_report.py",
+    "circyto/pipeline/qc_report_style.py",
+    "circyto/pipeline/run_ciri3.py",
+    "circyto/pipeline/run_cirifull.py",
+    "circyto/pipeline/run_detector.py",
+    "circyto/pipeline/run_multidetector.py",
+    "circyto/pipeline/scanpy_downstream.py",
+    "circyto/pipeline/scomatic_chr21_poc.py",
+    "circyto/pipeline/scomatic_full_length_adapter.py",
+    "circyto/pipeline/scomatic_interop.py",
+    "circyto/pipeline/scomatic_normalization.py",
+    "circyto/pipeline/scrr_cell_mapping.py",
+    "circyto/pipeline/scrr_cnv_import.py",
+    "circyto/pipeline/scrr_rt_import.py",
+    "circyto/pipeline/workflow_full_length_circrna.py",
+    "circyto/pipeline/workflow_integrity.py",
+    "circyto/pipeline/workflow_reporting.py",
+    "circyto/pipeline/workflow_smartseq3_ciri3.py",
+    "circyto/writers/convert.py"
+  ],
+  "module_origins": {
+    "anndata": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/anndata/__init__.py",
+    "circyto": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/circyto/__init__.py",
+    "h5py": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/h5py/__init__.py",
+    "mudata": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/mudata/__init__.py",
+    "numpy": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/numpy/__init__.py",
+    "pandas": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/pandas/__init__.py",
+    "scipy": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env/lib/python3.10/site-packages/scipy/__init__.py"
+  },
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+  "python": "3.10.22 | packaged by conda-forge | (main, Oct  6 2026, 23:02:24) [GCC 14.4.0]",
+  "recorded_utc": "2026-10-15T06:28:57.245802+00:00",
+  "resolved_distributions": {
+    "Pygments": "2.21.0",
+    "anndata": "0.11.4",
+    "annotated-doc": "0.0.5",
+    "array-api-compat": "1.15.0",
+    "circyto": "0.10.0",
+    "exceptiongroup": "1.3.1",
+    "h5py": "3.16.0",
+    "markdown-it-py": "4.2.0",
+    "mdurl": "0.1.2",
+    "mudata": "0.3.10",
+    "natsort": "8.4.0",
+    "numpy": "2.2.6",
+    "packaging": "26.3",
+    "pandas": "2.3.3",
+    "pip": "26.2.1",
+    "python-dateutil": "2.9.0.post0",
+    "pytz": "2026.5",
+    "rich": "15.0.0",
+    "scipy": "1.15.3",
+    "scverse-misc": "0.0.3",
+    "session-info2": "0.4.1",
+    "setuptools": "84.0.0",
+    "shellingham": "1.5.4",
+    "six": "1.17.0",
+    "typer": "0.27.3",
+    "typing_extensions": "4.16.0",
+    "tzdata": "2026.5",
+    "wheel": "0.48.0"
+  },
+  "wheel_sha256": "eca5f45f35b351ec44df4e5b0f73eb4e5e0564e2691631f8eb417b0e8a7ca03b"
+}

@@ -1,0 +1,600 @@
+{
+  "ENA": {
+    "differences": {},
+    "expected": {
+      "base_count": "577477454",
+      "experiment_accession": "SRX26321174",
+      "fastq_bytes": "225876952",
+      "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/026/SRR30918126/SRR30918126.fastq.gz",
+      "fastq_md5": "dfd377ce81eeeb23503f8e4756ef60ae",
+      "library_layout": "SINGLE",
+      "read_count": "3824354",
+      "run_accession": "SRR30918126",
+      "sample_accession": "SAMN44108155",
+      "study_accession": "PRJNA1169833"
+    },
+    "layout_conflict": "Generic GEO prose says paired-end; run-specific ENA says SINGLE, one file. Acquired FASTQ still requires structural/layout validation.",
+    "matches_registration": true,
+    "observed": {
+      "base_count": "577477454",
+      "experiment_accession": "SRX26321174",
+      "fastq_bytes": "225876952",
+      "fastq_ftp": "ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/026/SRR30918126/SRR30918126.fastq.gz",
+      "fastq_md5": "dfd377ce81eeeb23503f8e4756ef60ae",
+      "library_layout": "SINGLE",
+      "read_count": "3824354",
+      "run_accession": "SRR30918126",
+      "sample_accession": "SAMN44108155",
+      "study_accession": "PRJNA1169833"
+    }
+  },
+  "FASTA": {
+    "compressed": {
+      "bytes": 844691642,
+      "md5": "ad62ff4d71d0b5b8d7feabbec5ce86bf",
+      "sha256": "993af7ca2ce274f835352dbb227dbe7dbb8323304ffb972206d1d32f4f226c74"
+    },
+    "genome_chain": "NEW validation only",
+    "gzip_crc_valid": true,
+    "provider_md5": "ad62ff4d71d0b5b8d7feabbec5ce86bf",
+    "provider_md5_verified": true,
+    "uncompressed": {
+      "bytes": 3151417447,
+      "md5": "49bdb80d21a64dcb16acfc941843356e",
+      "sha256": "e49b92b3e4f321bf254c042f25b726d9931c4d74c7523e8b6bb530e63b0cfd4b"
+    }
+  },
+  "FASTQ": {
+    "amendment": "Recognize /1 or /2 on the original flow-cell identifier in the second header field; do not mistake bare SRA spot ordinals for mates. Initial validation retained separately.",
+    "bases": 577477454,
+    "bytes": 225876952,
+    "explicit_mate_header_counts": {
+      "1": 3824354,
+      "2": 0,
+      "unspecified": 0
+    },
+    "explicit_mates_observed": [
+      "1"
+    ],
+    "gzip_crc_valid": true,
+    "layout": "single-end",
+    "md5": "dfd377ce81eeeb23503f8e4756ef60ae",
+    "ordered_read_ids_sha256": "6d3bf1529025553f97ea37d38e8b148cdd7a60ba74ff7b6cf7d6304fe0193b9c",
+    "read_lengths": [
+      151
+    ],
+    "reads": 3824354,
+    "sha256": "35ccce9237daaf578254014348ebec209063764daef69273bb9c2bdeca4a6448",
+    "structure_valid": true,
+    "subsampling": false,
+    "unique_read_identifiers": 3824354
+  },
+  "GTF": {
+    "compressed": {
+      "bytes": 49779090,
+      "md5": "1095998c1d72ed4c64d616b038486012",
+      "sha256": "ce683e6c7f2ddbc049560fdad41520704e06247cf0f88d9a8b9c363e26540669"
+    },
+    "genome_chain": "NEW validation only",
+    "gzip_crc_valid": true,
+    "provider_md5": "1095998c1d72ed4c64d616b038486012",
+    "provider_md5_verified": true,
+    "uncompressed": {
+      "bytes": 1569937674,
+      "md5": "57cefa3a0e9369106171c795f4e245c7",
+      "sha256": "e93ee43555a8b5c9079b0ce8f91fa56e27450bb1da6bdda091d22cadeeca007f"
+    }
+  },
+  "RNA": {
+    "all_available_rna_fields_equal": true,
+    "cell_id": "IMR90_A_100",
+    "historical_reference_hash": "unknown",
+    "metadata_policy": "RNA metadata unchanged; extraction provenance kept separately here",
+    "new_reference_verifies_old_profile": false,
+    "original_parent_metadata": "inputs/rna/original_parent_metadata.h5",
+    "original_parent_metadata_sha256": "53853eb2622d1ff0e8fb8f921acfc0003afec9ddf4b782d69bb779541b282fa2",
+    "output": "inputs/rna/imr90_original_overlap_profile.firstcell.h5ad",
+    "output_sha256": "c72ce2b9aaa581128fba48d239c0f19716694a641918a32bc2a996a1acf73aea",
+    "parent_metadata_evidence_class": "original processed-object declarations, not recovered original run records",
+    "profile": "historical same-cell lightweight simple-overlap",
+    "recorded_utc": "2026-10-15T07:51:00.226312+00:00",
+    "shape": [
+      1,
+      63187
+    ],
+    "source_modality": "/mod/rna",
+    "source_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8"
+  },
+  "artifacts": {
+    "ciri3_jar": {
+      "bytes": 2285370,
+      "copy": "external/CIRI3_Java_18.0.1.jar",
+      "sha256": "569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0",
+      "source": "/tmp/circyto-distribution/external/CIRI3_Java_18.0.1.jar"
+    },
+    "original_imr90": {
+      "bytes": 41036354,
+      "copy": "inputs/original/full_length_rna_circ_cnv.hostgene_fixed.h5mu",
+      "sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "source": "/tmp/circyto-import/load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu"
+    },
+    "wheel": {
+      "bytes": 388502,
+      "copy": "inputs/artifacts/circyto-0.10.0-py3-none-any.whl",
+      "sha256": "eca5f45f35b351ec44df4e5b0f73eb4e5e0564e2691631f8eb417b0e8a7ca03b",
+      "source": "/tmp/circyto-distribution/reviewed-packages/circyto-0.10.0-py3-none-any.whl"
+    }
+  },
+  "compatibility": {
+    "all_gtf_contigs_and_coordinates_compatible": true,
+    "annotation_contigs": [
+      "GL000009.2",
+      "GL000194.1",
+      "GL000195.1",
+      "GL000205.2",
+      "GL000213.1",
+      "GL000216.2",
+      "GL000218.1",
+      "GL000219.1",
+      "GL000220.1",
+      "GL000225.1",
+      "KI270442.1",
+      "KI270711.1",
+      "KI270713.1",
+      "KI270721.1",
+      "KI270726.1",
+      "KI270727.1",
+      "KI270728.1",
+      "KI270731.1",
+      "KI270733.1",
+      "KI270734.1",
+      "KI270744.1",
+      "KI270750.1",
+      "chr1",
+      "chr10",
+      "chr11",
+      "chr12",
+      "chr13",
+      "chr14",
+      "chr15",
+      "chr16",
+      "chr17",
+      "chr18",
+      "chr19",
+      "chr2",
+      "chr20",
+      "chr21",
+      "chr22",
+      "chr3",
+      "chr4",
+      "chr5",
+      "chr6",
+      "chr7",
+      "chr8",
+      "chr9",
+      "chrM",
+      "chrX",
+      "chrY"
+    ],
+    "annotation_headers": [
+      "##description: evidence-based annotation of the human genome (GRCh38), version 45 (Ensembl 111)",
+      "##provider: GENCODE",
+      "##contact: gencode-help@ebi.ac.uk",
+      "##format: gtf",
+      "##date: 2023-09-19"
+    ],
+    "annotation_records": 3428055,
+    "fasta_bases": 3099750718,
+    "fasta_contig_lengths": {
+      "GL000008.2": 209709,
+      "GL000009.2": 201709,
+      "GL000194.1": 191469,
+      "GL000195.1": 182896,
+      "GL000205.2": 185591,
+      "GL000208.1": 92689,
+      "GL000213.1": 164239,
+      "GL000214.1": 137718,
+      "GL000216.2": 176608,
+      "GL000218.1": 161147,
+      "GL000219.1": 179198,
+      "GL000220.1": 161802,
+      "GL000221.1": 155397,
+      "GL000224.1": 179693,
+      "GL000225.1": 211173,
+      "GL000226.1": 15008,
+      "KI270302.1": 2274,
+      "KI270303.1": 1942,
+      "KI270304.1": 2165,
+      "KI270305.1": 1472,
+      "KI270310.1": 1201,
+      "KI270311.1": 12399,
+      "KI270312.1": 998,
+      "KI270315.1": 2276,
+      "KI270316.1": 1444,
+      "KI270317.1": 37690,
+      "KI270320.1": 4416,
+      "KI270322.1": 21476,
+      "KI270329.1": 1040,
+      "KI270330.1": 1652,
+      "KI270333.1": 2699,
+      "KI270334.1": 1368,
+      "KI270335.1": 1048,
+      "KI270336.1": 1026,
+      "KI270337.1": 1121,
+      "KI270338.1": 1428,
+      "KI270340.1": 1428,
+      "KI270362.1": 3530,
+      "KI270363.1": 1803,
+      "KI270364.1": 2855,
+      "KI270366.1": 8320,
+      "KI270371.1": 2805,
+      "KI270372.1": 1650,
+      "KI270373.1": 1451,
+      "KI270374.1": 2656,
+      "KI270375.1": 2378,
+      "KI270376.1": 1136,
+      "KI270378.1": 1048,
+      "KI270379.1": 1045,
+      "KI270381.1": 1930,
+      "KI270382.1": 4215,
+      "KI270383.1": 1750,
+      "KI270384.1": 1658,
+      "KI270385.1": 990,
+      "KI270386.1": 1788,
+      "KI270387.1": 1537,
+      "KI270388.1": 1216,
+      "KI270389.1": 1298,
+      "KI270390.1": 2387,
+      "KI270391.1": 1484,
+      "KI270392.1": 971,
+      "KI270393.1": 1308,
+      "KI270394.1": 970,
+      "KI270395.1": 1143,
+      "KI270396.1": 1880,
+      "KI270411.1": 2646,
+      "KI270412.1": 1179,
+      "KI270414.1": 2489,
+      "KI270417.1": 2043,
+      "KI270418.1": 2145,
+      "KI270419.1": 1029,
+      "KI270420.1": 2321,
+      "KI270422.1": 1445,
+      "KI270423.1": 981,
+      "KI270424.1": 2140,
+      "KI270425.1": 1884,
+      "KI270429.1": 1361,
+      "KI270435.1": 92983,
+      "KI270438.1": 112505,
+      "KI270442.1": 392061,
+      "KI270448.1": 7992,
+      "KI270465.1": 1774,
+      "KI270466.1": 1233,
+      "KI270467.1": 3920,
+      "KI270468.1": 4055,
+      "KI270507.1": 5353,
+      "KI270508.1": 1951,
+      "KI270509.1": 2318,
+      "KI270510.1": 2415,
+      "KI270511.1": 8127,
+      "KI270512.1": 22689,
+      "KI270515.1": 6361,
+      "KI270516.1": 1300,
+      "KI270517.1": 3253,
+      "KI270518.1": 2186,
+      "KI270519.1": 138126,
+      "KI270521.1": 7642,
+      "KI270522.1": 5674,
+      "KI270528.1": 2983,
+      "KI270529.1": 1899,
+      "KI270530.1": 2168,
+      "KI270538.1": 91309,
+      "KI270539.1": 993,
+      "KI270544.1": 1202,
+      "KI270548.1": 1599,
+      "KI270579.1": 31033,
+      "KI270580.1": 1553,
+      "KI270581.1": 7046,
+      "KI270582.1": 6504,
+      "KI270583.1": 1400,
+      "KI270584.1": 4513,
+      "KI270587.1": 2969,
+      "KI270588.1": 6158,
+      "KI270589.1": 44474,
+      "KI270590.1": 4685,
+      "KI270591.1": 5796,
+      "KI270593.1": 3041,
+      "KI270706.1": 175055,
+      "KI270707.1": 32032,
+      "KI270708.1": 127682,
+      "KI270709.1": 66860,
+      "KI270710.1": 40176,
+      "KI270711.1": 42210,
+      "KI270712.1": 176043,
+      "KI270713.1": 40745,
+      "KI270714.1": 41717,
+      "KI270715.1": 161471,
+      "KI270716.1": 153799,
+      "KI270717.1": 40062,
+      "KI270718.1": 38054,
+      "KI270719.1": 176845,
+      "KI270720.1": 39050,
+      "KI270721.1": 100316,
+      "KI270722.1": 194050,
+      "KI270723.1": 38115,
+      "KI270724.1": 39555,
+      "KI270725.1": 172810,
+      "KI270726.1": 43739,
+      "KI270727.1": 448248,
+      "KI270728.1": 1872759,
+      "KI270729.1": 280839,
+      "KI270730.1": 112551,
+      "KI270731.1": 150754,
+      "KI270732.1": 41543,
+      "KI270733.1": 179772,
+      "KI270734.1": 165050,
+      "KI270735.1": 42811,
+      "KI270736.1": 181920,
+      "KI270737.1": 103838,
+      "KI270738.1": 99375,
+      "KI270739.1": 73985,
+      "KI270740.1": 37240,
+      "KI270741.1": 157432,
+      "KI270742.1": 186739,
+      "KI270743.1": 210658,
+      "KI270744.1": 168472,
+      "KI270745.1": 41891,
+      "KI270746.1": 66486,
+      "KI270747.1": 198735,
+      "KI270748.1": 93321,
+      "KI270749.1": 158759,
+      "KI270750.1": 148850,
+      "KI270751.1": 150742,
+      "KI270752.1": 27745,
+      "KI270753.1": 62944,
+      "KI270754.1": 40191,
+      "KI270755.1": 36723,
+      "KI270756.1": 79590,
+      "KI270757.1": 71251,
+      "chr1": 248956422,
+      "chr10": 133797422,
+      "chr11": 135086622,
+      "chr12": 133275309,
+      "chr13": 114364328,
+      "chr14": 107043718,
+      "chr15": 101991189,
+      "chr16": 90338345,
+      "chr17": 83257441,
+      "chr18": 80373285,
+      "chr19": 58617616,
+      "chr2": 242193529,
+      "chr20": 64444167,
+      "chr21": 46709983,
+      "chr22": 50818468,
+      "chr3": 198295559,
+      "chr4": 190214555,
+      "chr5": 181538259,
+      "chr6": 170805979,
+      "chr7": 159345973,
+      "chr8": 145138636,
+      "chr9": 138394717,
+      "chrM": 16569,
+      "chrX": 156040895,
+      "chrY": 57227415
+    }
+  },
+  "data_provenance_class": "NEW executed technical validation; original processed RNA preserved; historical detection metadata remains missing",
+  "execution_and_selection_manifests": {
+    "cells_firstcell.tsv": {
+      "rows": [
+        {
+          "cell_id": "IMR90_A_100",
+          "detector_status": "completed"
+        }
+      ],
+      "sha256": "2b29b3eb03de374cec20064101634a37991d4470121f19ebd53f5cf7f2cc1c16"
+    },
+    "manifest_firstcell.tsv": {
+      "rows": [
+        {
+          "bam": "",
+          "cell_id": "IMR90_A_100",
+          "library_id": "SRX26321174",
+          "n_input_reads": "3824354",
+          "platform": "plate",
+          "protocol": "ramda",
+          "read1": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/inputs/fastq/SRR30918126.fastq.gz",
+          "read2": "",
+          "read_layout": "single",
+          "strandedness": "unstranded"
+        }
+      ],
+      "sha256": "67e50996a8632536070ea1ad47c6126c3a3a891710501ec3a17aa7fbb9760826"
+    },
+    "native_firstcell.tsv": {
+      "rows": [
+        {
+          "cell_id": "IMR90_A_100",
+          "detector_version": "3.0.1",
+          "path": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/workflow_firstcell/ciri3/IMR90_A_100.ciri3_run/ciri3_raw.tsv",
+          "result_scope": "single-sample",
+          "sample_id": "GSM8558852"
+        }
+      ],
+      "sha256": "a0e2d6776986f8d0a6248937e7963b2e6b81e7881567dbd73297267c1b1e5663"
+    },
+    "registered_cohort.tsv": {
+      "rows": [
+        {
+          "cell_id": "IMR90_A_100",
+          "gsm": "GSM8558852",
+          "session_selection": "first_cell_only",
+          "srr": "SRR30918126"
+        },
+        {
+          "cell_id": "IMR90_A_101",
+          "gsm": "GSM8558853",
+          "session_selection": "pending_separate_review",
+          "srr": "SRR30918117"
+        },
+        {
+          "cell_id": "IMR90_A_102",
+          "gsm": "GSM8558854",
+          "session_selection": "pending_separate_review",
+          "srr": "SRR30918116"
+        },
+        {
+          "cell_id": "IMR90_A_103",
+          "gsm": "GSM8558855",
+          "session_selection": "pending_separate_review",
+          "srr": "SRR30918115"
+        }
+      ],
+      "sha256": "63b5126128a2447ebf2790bff23ff216b370476c8dce2c70ccc72563e5cc0743"
+    }
+  },
+  "index": {
+    "argv": [
+      "/home/liuyuchen/data/circyto_cmpb_a02_20261015/env-bwa/bin/bwa",
+      "index",
+      "/home/liuyuchen/data/circyto_cmpb_a02_20261015/ref/GRCh38.primary_assembly.genome.fa"
+    ],
+    "input_sha256": {
+      "/home/liuyuchen/data/circyto_cmpb_a02_20261015/ref/GRCh38.primary_assembly.genome.fa": "e49b92b3e4f321bf254c042f25b726d9931c4d74c7523e8b6bb530e63b0cfd4b"
+    },
+    "new_validation_only": true,
+    "outputs": {
+      "ref/GRCh38.primary_assembly.genome.fa.amb": {
+        "bytes": 18415,
+        "sha256": "1aad327e383a831bda72d036fbeac6d00b390cceb2cb5bb2b29a0baff15e77fc"
+      },
+      "ref/GRCh38.primary_assembly.genome.fa.ann": {
+        "bytes": 8060,
+        "sha256": "95a87da9aca5d09ffb6069a067e1e568f745e5e8fdf47d3803a2e4873fa939b4"
+      },
+      "ref/GRCh38.primary_assembly.genome.fa.bwt": {
+        "bytes": 3099750792,
+        "sha256": "475efbbe58ceb9ce0642f28ac8be57d26f4a77be5216a6ec7eedf2faa0230106"
+      },
+      "ref/GRCh38.primary_assembly.genome.fa.pac": {
+        "bytes": 774937681,
+        "sha256": "8d808415c4b2136cef3abbc2ea679d26c0c538adb70daa76782e8119aab244f8"
+      },
+      "ref/GRCh38.primary_assembly.genome.fa.sa": {
+        "bytes": 1549875408,
+        "sha256": "4aab6230cc69863e0b12638d22e9c0244919d967663cfec54f2de025ed7d09bd"
+      }
+    },
+    "tool_sha256": "598c1303107857bfcf1c954c09871d6c16811988020ffd95ce518983ffc0c85c"
+  },
+  "native_completion_binding": {
+    "alignment_output_binding": {
+      "alignment_log": "workflow_firstcell/align/bwa_mem/cache/4a93adcd9db128a2/IMR90_A_100.align.log",
+      "alignment_log_sha256": "d5014425123869f445b26a7950fe39cdc96ad2538c9dc6e18a13c26070c68e81",
+      "limitation": "No independent hash of BWA stdout stream; reviewed workflow byte-copy/rename contract binds the SAM path.",
+      "manifest": "workflow_firstcell/align/bwa_mem/alignment_manifest.tsv",
+      "manifest_sha256": "5435f09ddabf8e048c450b6f961e42aa4902c843a0f3b3cb1083f18edc265933",
+      "method": "fresh workflow manifest + BWA exit 0 + detector pre-input hash",
+      "output_path": "/home/liuyuchen/data/circyto_cmpb_a02_20261015/workflow_firstcell/align/bwa_mem/cache/4a93adcd9db128a2/alignment.sam",
+      "output_sha256": "28063551b209bafdb5d55f7a1ef37f4636436040512df0acf56da904717c80e0",
+      "wrapper_direct_output_hash_available": false
+    },
+    "alignment_record": "records/tool_commands/1792051022199976866-134444-bwa.json",
+    "basis": "executed argv + unchanged input/tool hashes + exit 0 + output hash; independent of counts",
+    "cell_id": "IMR90_A_100",
+    "detector_record": "records/tool_commands/1792051517586357734-134956-java.json",
+    "gsm": "GSM8558852",
+    "native_sha256": "4c807adc516e5367a315b4ac3d6d41c9d6d573a3bf222904c05865c24c5964f6",
+    "new_detector_status": "completed",
+    "original_detector_status": "unknown",
+    "srr": "SRR30918126"
+  },
+  "reference_provider": {
+    "files": {
+      "GRCh38.primary_assembly.genome.fa.gz": {
+        "checksum_status": "recorded",
+        "provider_md5": "ad62ff4d71d0b5b8d7feabbec5ce86bf",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/GRCh38.primary_assembly.genome.fa.gz"
+      },
+      "gencode.v45.primary_assembly.annotation.gtf.gz": {
+        "checksum_status": "recorded",
+        "provider_md5": "1095998c1d72ed4c64d616b038486012",
+        "url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/gencode.v45.primary_assembly.annotation.gtf.gz"
+      }
+    },
+    "provider": "GENCODE release 45",
+    "provider_checksum_response": {
+      "accessed_utc": "2026-10-15T06:19:57.455008+00:00",
+      "argv": [
+        "/usr/bin/curl",
+        "--fail",
+        "--location",
+        "--show-error",
+        "--silent",
+        "--connect-timeout",
+        "30",
+        "--max-time",
+        "300",
+        "--retry",
+        "1",
+        "--output",
+        "/home/liuyuchen/data/circyto_cmpb_a02_20261015/inputs/metadata/gencode-v45-MD5SUMS",
+        "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/MD5SUMS"
+      ],
+      "bytes": 3003,
+      "exit_code": 0,
+      "path": "inputs/metadata/gencode-v45-MD5SUMS",
+      "sha256": "d08eac8c0c88e7ac4b7ef2356ce2fb04a21e5edd7f608fc32d8132768e91865d"
+    },
+    "source_url": "https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/MD5SUMS"
+  },
+  "registration_preservation": {
+    "changed_preserved_files": [],
+    "method": "Compared actual preserved paths, sizes and SHA-256; no historical entry-count assertion.",
+    "missing_recheck_paths": [],
+    "new_recheck_paths": [],
+    "original_objects": [
+      {
+        "expected_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+        "observed_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+        "path": "/tmp/circyto-import/load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu"
+      },
+      {
+        "expected_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+        "observed_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+        "path": "/tmp/circyto-import/load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu"
+      }
+    ],
+    "registered_packet": [
+      {
+        "name": "claim_evidence.tsv",
+        "sha256": "a3fbc349f45fe83d420fa2081efdf2cb617f56750e6f4c951d680208d55e719c",
+        "unchanged": true
+      },
+      {
+        "name": "data_provenance.tsv",
+        "sha256": "e36ef371fb091648274462d4557564ca081f64613fe1849619cd7230b78fff5b",
+        "unchanged": true
+      },
+      {
+        "name": "benchmark_plan.yaml",
+        "sha256": "d638847b30016fd76f4ec14f6e79932e61c4f29f6e341c7d096763a1a2d6516b",
+        "unchanged": true
+      },
+      {
+        "name": "missing_inputs.md",
+        "sha256": "1894057e697c6a536d6bed302024100790b7edb7378d0b58ce88e50d50638568",
+        "unchanged": true
+      },
+      {
+        "name": "figure_plan.md",
+        "sha256": "86bbfcafadd64c402f6127b24c5d72851c4c789694834f5185449dab0b808f1c",
+        "unchanged": true
+      },
+      {
+        "name": "study_design.md",
+        "sha256": "26b350b95b0cc82d1767136f9eb5292875255f43ac5f93d450ed16c5ddd04f32",
+        "unchanged": true
+      }
+    ]
+  }
+}

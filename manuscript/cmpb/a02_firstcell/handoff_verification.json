@@ -1,0 +1,32 @@
+{
+  "verified_utc": "2026-10-15T23:19:41.465663+00:00",
+  "base_head": "17b733c8f21bb128a035e7b100e704099e2bdb0e",
+  "source_commit": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+  "changed_preserved_files": [],
+  "added_recheck_paths": [],
+  "missing_recheck_paths": [],
+  "registered_packet_sha256": {
+    "claim_evidence.tsv": "a3fbc349f45fe83d420fa2081efdf2cb617f56750e6f4c951d680208d55e719c",
+    "data_provenance.tsv": "e36ef371fb091648274462d4557564ca081f64613fe1849619cd7230b78fff5b",
+    "benchmark_plan.yaml": "d638847b30016fd76f4ec14f6e79932e61c4f29f6e341c7d096763a1a2d6516b",
+    "missing_inputs.md": "1894057e697c6a536d6bed302024100790b7edb7378d0b58ce88e50d50638568",
+    "figure_plan.md": "86bbfcafadd64c402f6127b24c5d72851c4c789694834f5185449dab0b808f1c",
+    "study_design.md": "26b350b95b0cc82d1767136f9eb5292875255f43ac5f93d450ed16c5ddd04f32"
+  },
+  "original_object_sha256": {
+    "/tmp/circyto-import/load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+    "/tmp/circyto-import/load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339"
+  },
+  "failed_status_evidence_bytes_still_match": true,
+  "native_source_bytes_still_match": true,
+  "validation": {
+    "full_analysis_helper_suite": "17 passed; no skips; retained 2026-10-15 log",
+    "full_helper_test_log_sha256": "c992c1ee6219124c30594340285eed83443c676f6219ee84775cbb16e260cb80",
+    "post_restart_finalizer_tests": "2 passed",
+    "ruff_format_check": "15 files already formatted",
+    "ruff_F_E9": "passed",
+    "post_restart_scientific_stages": "none"
+  },
+  "staged_scope_intended": "analysis scripts, registration amendment and small audit records only; no production code, figures, raw inputs, JAR, alignment or large scientific object",
+  "handoff_python": "3.10.12 (main, Aug 31 2026, 10:18:17) [GCC 11.4.0]"
+}
