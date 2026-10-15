@@ -1,12 +1,12 @@
 # External Java detectors
 
-This packaging branch does **not** ship CIRI3 or CIRI-full JARs in wheels or
-sdists. It also excludes the CIRI-full manual whose redistribution permission
+The prepared Python and conda artifacts do **not** ship CIRI3 or CIRI-full JARs.
+They also exclude the CIRI-full manual whose redistribution permission
 has not been established. Adapters, licensed CIRI2/CIRI-AS Perl source and their
-notices remain packaged. No automatic detector download occurs. The version
-remains 0.10.0; use the exact packaging-branch wheel, not an older same-version
-wheel. Historical wheels and Git source archives are not made compliant by
-these changes.
+notices remain packaged. No automatic detector download occurs. Use the exact
+candidate artifacts in the [installation guide](installation.md), with the
+proposed distinct local version `0.11.0rc1`. Historical 0.10.0 and Git source
+archives are not made compliant by these changes.
 
 `import-circ` (including native CIRI3 import), AnnData/MuData export and HTML
 reporting require **no Java or detector executable**. Install the reviewed wheel
@@ -15,16 +15,15 @@ in a fresh environment; add `[mudata]` if you need RNA integration:
 ```bash
 python -m venv circ-env
 . circ-env/bin/activate
-python -m pip install '/absolute/path/circyto-0.10.0-py3-none-any.whl[mudata]'
+python -m pip install '/absolute/path/circyto-0.11.0rc1-py3-none-any.whl[mudata]'
 python -m pip check
 circyto doctor
 circyto import-circ --help
 ```
 
-The example assumes POSIX shell and Python >=3.10. Use a new environment or
-`--force-reinstall --no-deps` for an existing installation of the same circyto
-version. Record the wheel SHA-256. Ordinary pip upgrades cannot distinguish
-same-version feature wheels. Do not copy a new wheel over an old installed tree.
+The example assumes POSIX shell and Python >=3.10. Use a fresh environment and
+verify the exact artifact SHA-256 from the preparation record. It is a local
+wheel installation, not a PyPI publication.
 
 ## CIRI3 installation for established workflows
 
@@ -68,6 +67,19 @@ and use the existing [workflow instructions](../README.md). `--dry-run` verifies
 planning, not biological execution. `doctor` reports core Python readiness
 separately from optional detector readiness; exit zero alone is not a detector
 readiness assertion.
+
+An optional additional runtime installation into your selected conda environment
+uses the same strict channel order (not performed during candidate acceptance):
+
+```bash
+micromamba install --no-rc -p /absolute/path/circyto-env \
+  --override-channels -c conda-forge -c bioconda --strict-channel-priority \
+  openjdk=17 bwa samtools star perl
+```
+
+Perl is needed for the retained CIRI2/CIRI-AS source adapters. This command does
+not install or redistribute CIRI3/CIRI-full JARs. Select only the tools needed by
+your workflow; availability and behavior on another platform require validation.
 
 ## CIRI-full
 

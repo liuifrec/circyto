@@ -1,0 +1,562 @@
+{
+  "status": "PREPARED FOR OWNER REVIEW; NOT PUBLICLY RELEASED",
+  "date": "2026-10-15",
+  "source": {
+    "source_commit": "48dd8d2bc45af4978f238a6fa5f31031c44549d3",
+    "base_commit": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+    "local_version": "0.11.0rc1",
+    "changes": {
+      "pyproject.toml": "e699c6a2ad82bbd90f79acee4ce5be842f671f8a5f8b8ba9e5c3bc792c0816bd",
+      "circyto/__init__.py": "a37ac0d76200123d249ba454e291d44edf4c6c47b1de809b96435f34d0e2deb4"
+    },
+    "scope": "Only two version literals changed in disposable source; no tag or tracked version change"
+  },
+  "registries": [
+    {
+      "registry": "PyPI",
+      "url": "https://pypi.org/pypi/circyto/json",
+      "http_status": 404,
+      "interpretation": "unlisted at this endpoint; not proof that the name can be claimed",
+      "checked_utc": "2026-10-15T00:51:25.711118+00:00"
+    },
+    {
+      "registry": "TestPyPI",
+      "url": "https://test.pypi.org/pypi/circyto/json",
+      "http_status": 404,
+      "interpretation": "unlisted at this endpoint; not proof that the name can be claimed",
+      "checked_utc": "2026-10-15T00:51:26.218427+00:00"
+    },
+    {
+      "registry": "Bioconda",
+      "url": "https://api.anaconda.org/package/bioconda/circyto",
+      "http_status": 404,
+      "interpretation": "unlisted at this endpoint; not proof that the name can be claimed",
+      "checked_utc": "2026-10-15T00:51:26.470048+00:00"
+    }
+  ],
+  "artifacts": [
+    {
+      "path": "/tmp/circyto-install-lab/dist/circyto-0.11.0rc1.tar.gz",
+      "sha256": "99c46f476c402ad6894cad00f5b6af49b48428c6edee00104fb5476d20aa813f",
+      "bytes": 695519,
+      "members": 273,
+      "excluded_assets": []
+    },
+    {
+      "path": "/tmp/circyto-install-lab/dist/circyto-0.11.0rc1-py3-none-any.whl",
+      "sha256": "42a9f6a63f0d9a9761cc1872744701a2a7d639ddd705c93a000b1c89aa9d04c2",
+      "bytes": 417978,
+      "members": 113,
+      "excluded_assets": []
+    },
+    {
+      "path": "/tmp/circyto-install-lab/rebuilt/circyto-0.11.0rc1-py3-none-any.whl",
+      "sha256": "dd7ecbb1b9636872402bf05a4780e8d86a9d2856afba8e347bfdfda54b292471",
+      "bytes": 417978,
+      "members": 113,
+      "excluded_assets": []
+    },
+    {
+      "path": "/tmp/circyto-install-lab/conda-artifacts/noarch/circyto-0.11.0rc1-py_0.conda",
+      "sha256": "fa0741c4f1e56de1cc3d80c3911d72c75d92b7506ebe61c698989c710064311a",
+      "bytes": 293577,
+      "members": 145,
+      "excluded_assets": []
+    }
+  ],
+  "installed_acceptance": {
+    "conda-native-base": {
+      "result": "PASS",
+      "python": "3.12.15",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/conda-native-base/lib/python3.12/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.13.4",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.0.6",
+        "typer": "0.27.3",
+        "rich": "15.0.0"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": null,
+      "offline_html": "/tmp/circyto-install-lab/acceptance-conda-native-base/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    },
+    "conda-native-multi": {
+      "result": "PASS",
+      "python": "3.12.15",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/conda-native-multi/lib/python3.12/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.13.4",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.0.6",
+        "typer": "0.27.3",
+        "rich": "15.0.0",
+        "mudata": "0.4.1"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": {
+        "scope": "Synthetic identity fixture; no biological match to upstream CIRI3 demo",
+        "shared_ids": 1,
+        "rna_shape": [
+          3,
+          1
+        ],
+        "values_preserved": true
+      },
+      "offline_html": "/tmp/circyto-install-lab/acceptance-conda-native-multi/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    },
+    "conda-wheel": {
+      "result": "PASS",
+      "python": "3.12.15",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/conda-wheel/lib/python3.12/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.13.4",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.0.6",
+        "typer": "0.27.3",
+        "rich": "15.0.0",
+        "mudata": "0.4.1"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": {
+        "scope": "Synthetic identity fixture; no biological match to upstream CIRI3 demo",
+        "shared_ids": 1,
+        "rna_shape": [
+          3,
+          1
+        ],
+        "values_preserved": true
+      },
+      "offline_html": "/tmp/circyto-install-lab/acceptance-conda-wheel/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    },
+    "pip310-base": {
+      "result": "PASS",
+      "python": "3.10.22",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/pip310-base/lib/python3.10/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.11.4",
+        "numpy": "2.2.6",
+        "scipy": "1.15.3",
+        "pandas": "2.3.3",
+        "typer": "0.27.3",
+        "rich": "15.0.0"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": null,
+      "offline_html": "/tmp/circyto-install-lab/acceptance-pip310-base/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    },
+    "pip310-multi": {
+      "result": "PASS",
+      "python": "3.10.22",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/pip310-multi/lib/python3.10/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.11.4",
+        "numpy": "2.2.6",
+        "scipy": "1.15.3",
+        "pandas": "2.3.3",
+        "typer": "0.27.3",
+        "rich": "15.0.0",
+        "mudata": "0.3.10"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": {
+        "scope": "Synthetic identity fixture; no biological match to upstream CIRI3 demo",
+        "shared_ids": 1,
+        "rna_shape": [
+          3,
+          1
+        ],
+        "values_preserved": true
+      },
+      "offline_html": "/tmp/circyto-install-lab/acceptance-pip310-multi/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    },
+    "pip312-base": {
+      "result": "PASS",
+      "python": "3.12.15",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/pip312-base/lib/python3.12/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.13.4",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.0.6",
+        "typer": "0.27.3",
+        "rich": "15.0.0"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": null,
+      "offline_html": "/tmp/circyto-install-lab/acceptance-pip312-base/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    },
+    "pip312-multi": {
+      "result": "PASS",
+      "python": "3.12.15",
+      "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+      "module_origin": "/tmp/circyto-install-lab/pip312-multi/lib/python3.12/site-packages/circyto/__init__.py",
+      "versions": {
+        "circyto": "0.11.0rc1",
+        "anndata": "0.13.4",
+        "numpy": "2.5.4",
+        "scipy": "1.18.1",
+        "pandas": "3.0.6",
+        "typer": "0.27.3",
+        "rich": "15.0.0",
+        "mudata": "0.4.1"
+      },
+      "external_on_path": {
+        "java": null,
+        "bwa": null,
+        "STAR": null
+      },
+      "native": {
+        "shape": [
+          1,
+          6
+        ],
+        "support": 50,
+        "processing_status": "unknown",
+        "scope": "Authentic format example, not an established biological single cell"
+      },
+      "multimodal": {
+        "scope": "Synthetic identity fixture; no biological match to upstream CIRI3 demo",
+        "shared_ids": 1,
+        "rna_shape": [
+          3,
+          1
+        ],
+        "values_preserved": true
+      },
+      "offline_html": "/tmp/circyto-install-lab/acceptance-pip312-multi/native/qc/report.html",
+      "original_workflow_report": "not tested; import directory correctly refused"
+    }
+  },
+  "full_test_suites": {
+    "310": {
+      "passed": 480,
+      "skipped": [
+        {
+          "module": "tests.test_circexplorer2_chr21_manifest2_integration",
+          "test": "test_circexplorer2_cli_smoke",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 CLI smoke test"
+        },
+        {
+          "module": "tests.test_circexplorer2_integration",
+          "test": "test_circexplorer2_chr21_manifest2_integration",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 integration test"
+        },
+        {
+          "module": "tests.test_ciri2_se_chr21_integration",
+          "test": "test_ciri2_single_end_chr21_known_positive",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_cirifull_chr21_integration",
+          "test": "test_cirifull_chr21_nonempty_matrix",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_find_circ3_integration",
+          "test": "test_find_circ3_chr21_manifest2_integration",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_mudata_export",
+          "test": "test_export_mudata_missing_package_gives_clear_error",
+          "reason": "mudata installed"
+        },
+        {
+          "module": "tests.test_multidetector_demo",
+          "test": "test_multidetector_ciri_full_and_find_circ3_demo",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_scanpy_downstream",
+          "test": "test_scanpy_qc_report_outputs",
+          "reason": "mudata or scanpy not installed"
+        },
+        {
+          "module": "tests.test_scanpy_downstream",
+          "test": "test_scanpy_pca_outputs",
+          "reason": "mudata or scanpy not installed"
+        },
+        {
+          "module": "tests.test_smartseq3_ciri3_workflow",
+          "test": "test_mudata_requested_without_package_raises",
+          "reason": "mudata installed"
+        }
+      ],
+      "xml_sha256": "02ac2ead567aca256133d1113aad30eeb02f6eaf1f34e10e4be3352b459dbb10",
+      "critical_success_path_skips": 0
+    },
+    "312": {
+      "passed": 480,
+      "skipped": [
+        {
+          "module": "tests.test_circexplorer2_chr21_manifest2_integration",
+          "test": "test_circexplorer2_cli_smoke",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 CLI smoke test"
+        },
+        {
+          "module": "tests.test_circexplorer2_integration",
+          "test": "test_circexplorer2_chr21_manifest2_integration",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 integration test"
+        },
+        {
+          "module": "tests.test_ciri2_se_chr21_integration",
+          "test": "test_ciri2_single_end_chr21_known_positive",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_cirifull_chr21_integration",
+          "test": "test_cirifull_chr21_nonempty_matrix",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_find_circ3_integration",
+          "test": "test_find_circ3_chr21_manifest2_integration",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_mudata_export",
+          "test": "test_export_mudata_missing_package_gives_clear_error",
+          "reason": "mudata installed"
+        },
+        {
+          "module": "tests.test_multidetector_demo",
+          "test": "test_multidetector_ciri_full_and_find_circ3_demo",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_scanpy_downstream",
+          "test": "test_scanpy_qc_report_outputs",
+          "reason": "mudata or scanpy not installed"
+        },
+        {
+          "module": "tests.test_scanpy_downstream",
+          "test": "test_scanpy_pca_outputs",
+          "reason": "mudata or scanpy not installed"
+        },
+        {
+          "module": "tests.test_smartseq3_ciri3_workflow",
+          "test": "test_mudata_requested_without_package_raises",
+          "reason": "mudata installed"
+        }
+      ],
+      "xml_sha256": "9c77f55dff152c66dd8a905cdc560836b9bc61dbab5f74cf4025e8304e524d95",
+      "critical_success_path_skips": 0
+    }
+  },
+  "conda": {
+    "builder": "conda-build 26.9.1",
+    "build_host_and_recipe_test_python": "3.15.0",
+    "fresh_install_python": "3.12.15",
+    "noarch": "python",
+    "runtime_channels": [
+      "conda-forge",
+      "bioconda"
+    ],
+    "channel_priority": "strict",
+    "observed_runtime_dependency_channel": "conda-forge",
+    "pip_runtime_downloads": false,
+    "recipe_pip_flags": [
+      "--no-deps",
+      "--no-build-isolation",
+      "--no-index"
+    ],
+    "bioconda_lint_or_container_acceptance": "not performed; requires final stable source URL and Bioconda configuration",
+    "uploaded": false
+  },
+  "checks": {
+    "twine_strict": "direct wheel, sdist, rebuilt wheel passed",
+    "sdist_wheel_payload": "all 113 member bytes identical to direct wheel; ZIP hashes differ",
+    "artifact_exclusions": "all four archives passed",
+    "release_actionlint": "1.7.12 passed",
+    "workflow_dispatched": false,
+    "offline_browser": "local file rendered with DNS blocked; no script tags; six candidates/support 50/unknown shown"
+  },
+  "limits": [
+    "Linux x86_64 only",
+    "Authentic native format example is not an established biological single cell",
+    "RNA is explicitly synthetic, not biologically matched",
+    "Original completed-workflow report not tested",
+    "Optional external detector execution not repeated for this candidate",
+    "No PyPI/TestPyPI/Anaconda upload, Bioconda PR, tag or merge"
+  ],
+  "local_logs": "/tmp/circyto-install-lab/logs",
+  "preservation": {
+    "files": 61,
+    "original_status_unchanged": true,
+    "original_refs_unchanged": 30
+  },
+  "verified_refs": {
+    "main": "44697355bcab1c525ca7ef9b130e2ad0094d9e1b",
+    "manuscript/bioinformatics-application-note-v2": "c29831c3f6e7a31b708cce493c0be8036176077a",
+    "review/pre-release-integration": "f841c296db8a6fda870eebc5b553eab10095fa0d",
+    "fix/external-detector-distribution": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+    "manuscript/nikaido-response": "42459975b055d771197fbe181c6c56ffec7647cb"
+  },
+  "pr19": {
+    "state": "open",
+    "draft": true,
+    "merged_at": null,
+    "head": "f841c296db8a6fda870eebc5b553eab10095fa0d"
+  },
+  "local_records": {
+    "/tmp/circyto-install-lab/pip310-base-dependencies.txt": {
+      "bytes": 444,
+      "sha256": "2536efcdee9eeee069335f494849f9c50bd2e286dc43faa9e574250bb5471409"
+    },
+    "/tmp/circyto-install-lab/pip310-multi-dependencies.txt": {
+      "bytes": 500,
+      "sha256": "285e6822094ea100ae290e2cdacbbce58e55b921336c3d2279c99638cbce51fa"
+    },
+    "/tmp/circyto-install-lab/pip312-base-dependencies.txt": {
+      "bytes": 763,
+      "sha256": "ae231ace63076d2e4422b029b4d278464b30f88e2a20ab209f7d3e336819d487"
+    },
+    "/tmp/circyto-install-lab/pip312-multi-dependencies.txt": {
+      "bytes": 777,
+      "sha256": "4d8f9fdb6f0e15f8aa06908cd15aa51231cbb04e8d7e725ff5d9e1065dcb38d0"
+    },
+    "/tmp/circyto-install-lab/conda-native-base-dependencies.json": {
+      "bytes": 28449,
+      "sha256": "85ebc70ceff923899532242ed2d44fefd9e01cdf1cf72a844756f630aa431ffd"
+    },
+    "/tmp/circyto-install-lab/conda-native-multi-dependencies.json": {
+      "bytes": 28736,
+      "sha256": "0cb03f6d2fde2c71bf040a73d8f76dd518a799dcff46381d7525367c864da331"
+    },
+    "/tmp/circyto-install-lab/conda-wheel-dependencies.json": {
+      "bytes": 28403,
+      "sha256": "3acec9481b994b35603bde7dd11d1efa2a770b54ac26d6b957d5d86703efbbce"
+    },
+    "/tmp/circyto-install-lab/conda-inventory.json": {
+      "bytes": 8641,
+      "sha256": "3b701b0c4275f67e95cb3857836503955b0d7fcdb7cd3f19e2e84ce28700fb95"
+    },
+    "/tmp/circyto-install-lab/python-inventory.json": {
+      "bytes": 22058,
+      "sha256": "9e9004553ff01e193bbd97c9b782623ef664b5df04529e096e37935e5d59afda"
+    },
+    "/tmp/circyto-install-lab/rebuilt-inventory.json": {
+      "bytes": 5562,
+      "sha256": "794be3017a4abae75949288b858200dcc05e50478b30801975bb899449928c52"
+    },
+    "/tmp/circyto-install-lab/source.json": {
+      "bytes": 466,
+      "sha256": "40f3db1ef550c146ab8f6075ea1654ca9d91b030b9d17aeef1e2117a676594dc"
+    },
+    "/tmp/circyto-install-lab/tests310-initial.xml": {
+      "bytes": 89244,
+      "sha256": "544f5907571c43a958034f798bc86350bc1ca37dd51f80a9ed0b55ed166f4c16"
+    },
+    "/tmp/circyto-install-lab/tests310.xml": {
+      "bytes": 65524,
+      "sha256": "02ac2ead567aca256133d1113aad30eeb02f6eaf1f34e10e4be3352b459dbb10"
+    },
+    "/tmp/circyto-install-lab/tests312-initial.xml": {
+      "bytes": 89439,
+      "sha256": "5171786909e2012c20b56183f5eb6ac4ae6702e26cccfbb60708c37d9293249c"
+    },
+    "/tmp/circyto-install-lab/tests312.xml": {
+      "bytes": 65524,
+      "sha256": "9c77f55dff152c66dd8a905cdc560836b9bc61dbab5f74cf4025e8304e524d95"
+    }
+  }
+}

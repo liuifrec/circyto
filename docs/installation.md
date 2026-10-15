@@ -14,6 +14,7 @@ candidate version is **0.11.0rc1**, proposed for owner approval. The version was
 changed only in a disposable build tree; tracked historical 0.10.0 is unchanged.
 Obtain the audited wheel **and matching clean sdist** from the preparation output
 directory documented in the evidence record. They have not been uploaded.
+For this local handoff that directory is `/tmp/circyto-install-lab/dist/`.
 Verify their recorded SHA-256 before installing. For example, from a new working
 directory outside any checkout:
 
@@ -93,6 +94,8 @@ This is an **environment installation**, not a native conda package. Extract
 this branch. The file includes MuData. Use a new environment prefix:
 
 ```bash
+tar -xzf /absolute/path/circyto-0.11.0rc1.tar.gz \
+  --strip-components=1 circyto-0.11.0rc1/packaging/environment.yml
 micromamba create --no-rc -y -p /absolute/path/circyto-env \
   --override-channels -c conda-forge -c bioconda --strict-channel-priority \
   -f packaging/environment.yml
@@ -111,13 +114,28 @@ pip installs only the exact local wheel. No global `.condarc` changes are needed
 
 The separate recipe at `packaging/conda/meta.yaml` builds from the audited sdist,
 not a GitHub source archive. See the evidence record for its exact filename/hash.
-To install the artifact, first solve the Python/scientific dependencies in a new
-environment using the channel order above, then install the exact local `.conda`
-file with `micromamba install --offline -p PREFIX /absolute/path/ARTIFACT.conda`.
-The tested commands and exported environment records are in the evidence record.
+The local artifact is
+`/tmp/circyto-install-lab/conda-artifacts/noarch/circyto-0.11.0rc1-py_0.conda`.
+Use the extracted environment file to solve scientific dependencies, then install
+that exact local package offline into a new prefix:
+
+```bash
+micromamba create --no-rc -y -p /absolute/path/circyto-conda \
+  --override-channels -c conda-forge -c bioconda --strict-channel-priority \
+  -f packaging/environment.yml
+micromamba install --no-rc -y --offline -p /absolute/path/circyto-conda \
+  --override-channels -c conda-forge -c bioconda --strict-channel-priority \
+  /absolute/path/circyto-0.11.0rc1-py_0.conda
+micromamba run -p /absolute/path/circyto-conda python -m pip check
+micromamba run -p /absolute/path/circyto-conda python -I \
+  examples/installed_release_check.py --fixtures examples/native_ciri3 \
+  --out conda-package-check --multimodal
+```
 
 MuData is an optional conda dependency: include `mudata>=0.3` in the environment
-solve for multimodal work. `circyto[mudata]` is pip syntax, not a conda package
+solve for multimodal work, as this file does. For a base environment, omit its
+MuData line and the check's `--multimodal` flag. Both variants were tested.
+`circyto[mudata]` is pip syntax, not a conda package
 name. The recipe's MuData acceptance runs as a test dependency; core recipe tests
 use only runtime dependencies. Noarch eligibility covers the pure Python package
 and text resources, not portability of external shell/Perl/Java/aligner tools.

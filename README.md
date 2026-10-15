@@ -135,7 +135,8 @@ and screenshot reproduction.
 
 ## Status
 
-`circyto` `v0.10.0` is the current experimental milestone.
+`circyto` `v0.10.0` remains the historical manuscript milestone. The installation
+candidate uses a proposed distinct version documented in the release record.
 
 - The validated pooled SMART-Seq3 end-to-end path is FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
 - The validated single-end full-length RamDA/scRR path is FASTQ -> BWA-MEM -> CIRI3 direct SAM -> matrix -> `h5ad`.
@@ -146,7 +147,7 @@ and screenshot reproduction.
 - The experimental SMART-Seq3 workflow has been validated end to end on real E-MTAB-8735 diySpike data.
 - Generic Nanopore cDNA support is experimental interoperability only (alignment/QC/provenance, never circRNA validation); CIRI-long support is a separate optional RCRT/circRNA-enriched workflow.
 - Core detector integrations remain heterogeneous and should still be treated as experimental interfaces rather than a frozen `v1.0` contract.
-- Default CI is now a clean Python 3.12 `pytest -q .` run; external detector integrations are gated and skipped by default.
+- CI tests Python 3.10 and 3.12; external detector integrations are gated and skipped by default.
 
 A concise benchmark-oriented summary of validated and exploratory workflow tiers is available in [`docs/validated_workflows_summary.md`](docs/validated_workflows_summary.md).
 
