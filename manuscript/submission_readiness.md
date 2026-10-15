@@ -4,6 +4,14 @@ Status: **READY FOR MANUSCRIPT V3 + COAUTHOR REVIEW**.
 Finalization audit: 2026-09-08. The numerical evidence is complete; this is not
 a claim that the external manuscript has already received coauthor approval.
 
+2026-10-15 Nikaido revision package: **comparison and claim audit prepared;
+original-detection Methods partially documented, source records pending**.
+See [the point-by-point response](nikaido_response.md). This qualifies the
+older numerical-readiness assessment below; it does not alter the current RERF
+review submission. Route A is recommended. Genuine native per-cell + matched
+RNA acceptance and original-workflow HTML acceptance remain pending and are
+not supplied by existing object round trips or CI.
+
 2026-09-16 bounded interoperability update: **PASS for ordinary MuData APIs
 on both actual archived objects**, including native read/write/read and full
 semantic checks. See [real_object_interoperability.md](real_object_interoperability.md)
@@ -61,6 +69,10 @@ historical full-object/RT numbers are excluded.
 
 All figures have SVG originals and 300-dpi PNG previews; conservative text is
 provided in [figure_legends.md](figure_legends.md).
+
+The Figure 1A row below records the repository's historical scaffold. The
+current **BioRender Figure 1A is preserved** and is not replaced by that
+scaffold or this response package. No figure asset was regenerated here.
 
 | Asset | Source and rendered output |
 | --- | --- |
@@ -148,5 +160,12 @@ broad AnnData 0.13 migration; new detector work. These do not block v3 drafting.
 - Public processed-object access and the final availability statement must be
   confirmed before journal submission. Historical Git recovery is documented;
   a dedicated data deposit or DOI is not yet confirmed.
+- Nikaido comment 3 requires the original run/selection, executable and
+  reference/annotation records listed in [the provenance audit](original_detection_provenance.md).
+  Metadata in the checksum-matched objects partially closes this gap; pilot
+  scripts and contemporary defaults do not close it. Comment 2's expanded
+  route B additionally requires genuine matched-cell acceptance.
 
-There are no remaining repository-evidence blockers to manuscript v3 drafting.
+The numerical evidence supports drafting. Original-detection source-record
+gaps remain explicit in the Nikaido revision package; no complete original
+Methods or expanded import/report validation is claimed.

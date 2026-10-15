@@ -1,5 +1,11 @@
 # Application Note figures plan
 
+2026-10-15 response constraint: preserve the current **BioRender Figure 1A**,
+all numerical evidence and existing Figure 1B/C. The historical architecture
+scaffold described below is retained as documentation, not a replacement for
+the BioRender panel. Nikaido's comments are addressed in text/evidence tables;
+no figure is regenerated or new main figure proposed.
+
 ## Main Figure 1: workflow and Smart-seq3 output
 
 Figure 1 is the only main-paper figure. It should read from architecture to

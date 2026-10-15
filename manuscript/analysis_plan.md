@@ -2,9 +2,15 @@
 
 ## Framing
 
-The paper evaluates circyto as the missing workflow and data-model layer
-between established circRNA detectors and scverse analysis. It does not
+The paper evaluates the protocol, cell-mapping and data-model steps circyto
+standardizes between established circRNA detectors and scverse analysis. It does not
 present a new detector or a circRNA biology survey.
+
+For the Nikaido revision, follow [route A and the response register](nikaido_response.md).
+Retain the existing biological evidence; treat import/report extensions as
+secondary technical capabilities, with genuine matched-cell and original-workflow
+HTML acceptance still pending. The [task comparison](../docs/circrna_workflow_comparison.md)
+recognizes capabilities shared with existing workflows.
 
 The main paper must establish, in order:
 

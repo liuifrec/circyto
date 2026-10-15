@@ -6,6 +6,15 @@ scripts and committed small outputs. Production code and package metadata are
 unchanged from that baseline. circyto orchestrates established detectors; it
 is not a new back-splice detection algorithm.
 
+This guide reproduces **processed-object statistics and figure outputs**.
+It does not recover original STAR/BWA/CIRI3 commands, versions, cell selection
+or reference/annotation identity. See [original detection provenance](original_detection_provenance.md)
+for recovered metadata and unknown fields. The archived export/refresh version
+is 0.9.0; 0.10.0 is the later validated software baseline. Do not backfill
+original Methods with the environment below. The existing BioRender Figure 1A
+and current RERF submission remain unchanged; historical scaffold generation
+below is not an instruction to replace that panel.
+
 ## Environment
 
 Use Python 3.10.20 and an isolated environment with

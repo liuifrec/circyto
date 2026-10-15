@@ -6,6 +6,15 @@ and deferred analyses; they are not required to regenerate the final tables.
 
 These command shapes document how manuscript-scale objects are expected to be regenerated. Paths are placeholders unless explicitly described as committed repo assets.
 
+**2026-10-15 provenance qualification:** these are command shapes, not recovered
+original invocations. In particular, the `gencode.v38.annotation.gtf`
+placeholders below differ from the v45-labelled paths stored in the archived
+Smart-seq3/IMR90 workflow/RNA metadata. Neither filename supplies a GTF checksum
+or proves detector/repair annotation usage. Do not use these shapes to populate
+historical Methods. The [original-detection table](original_detection_provenance.md)
+separates directly recorded options, unconfirmed historical code and unknowns;
+its request for James lists the missing launch/log/reference records.
+
 For the current Application Note, the Smart-seq3 commands support the primary
 demonstration and the IMR90 commands support a multimodal object/schema
 example. The HAP1 RT analysis and IMR90 CNV association scripts below are

@@ -3,6 +3,21 @@
 No main-paper table is planned. Keep the supplement to the smallest set needed
 to audit datasets, claims, and reproducibility.
 
+## Nikaido response additions — descriptive names, numbering deferred
+
+Use the existing [claim register](application_note_evidence.md#claim-to-evidence-matrix)
+and its [claim_evidence.tsv](claim_evidence.tsv) as the single feature/version/
+dataset/test/operation/result/limitation matrix. The
+[task comparison](../docs/circrna_workflow_comparison.md) includes both
+nf-core/circrna and CirComPara2 with immutable source pins.
+
+The [original-detection table](original_detection_provenance.md),
+[field-level TSV](original_detection_provenance.tsv) and
+[stored-cell list](original_cell_identity.tsv) supply Methods evidence and
+explicit missing records. Their eventual placement can be reconciled with
+Tables S1–S3 after review. Existing `supplement_v2/table_s1_*`, `table_s2_*`
+and `table_s3_*` files are not overwritten or assigned conflicting meanings.
+
 ## Supplementary Table S1: dataset/workflow inventory
 
 Columns:
