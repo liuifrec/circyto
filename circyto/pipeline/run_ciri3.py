@@ -244,6 +244,9 @@ def _write_alignment_summary(path: Path, *, source_rows, manifest_paths: list[Pa
                 if record.get("read_layout") and record["read_layout"] != layouts[cell_id]:
                     raise ValueError(f"Conflicting alignment read layout for {cell_id}: {summary_path}")
                 status = str(record.get("status", "unknown"))
+                if status in completed_statuses and "reused_alignment" in record:
+                    if record["reused_alignment"] is not (status != "aligned"):
+                        raise ValueError(f"Conflicting alignment reuse evidence for {cell_id}: {summary_path}")
                 if summary.get("dry_run") is True and status in completed_statuses:
                     raise ValueError(f"Dry-run alignment records claim completion: {summary_path}")
                 child_counts[status] += 1

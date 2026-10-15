@@ -186,7 +186,7 @@ def test_dry_run_does_not_reuse_old_success_evidence(tmp_path):
     assert combined["completed_cells"] == 0
 
 
-@pytest.mark.parametrize("case", ["duplicate", "conflicting", "foreign", "missing_id", "count_conflict", "dry_success"])
+@pytest.mark.parametrize("case", ["duplicate", "conflicting", "foreign", "missing_id", "count_conflict", "reuse_conflict", "dry_success"])
 def test_ambiguous_child_evidence_is_rejected_without_writing_success(tmp_path, case):
     paths, rows, _, _ = _case(tmp_path)
     records = [_record()]
@@ -201,6 +201,8 @@ def test_ambiguous_child_evidence_is_rejected_without_writing_success(tmp_path, 
         records[0].pop("cell_id")
     elif case == "count_conflict":
         extra["status_counts"] = {"failed": 1}
+    elif case == "reuse_conflict":
+        records[0]["reused_alignment"] = True
     else:
         extra["dry_run"] = True
     child = _child(paths, records, **extra)
