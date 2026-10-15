@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import csv
 import json
+from collections import Counter
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Callable, Optional
@@ -202,6 +203,69 @@ def _print_dry_run_commands(progress: ProgressFn, plan_path: Path, detector_plan
 
 
 def _write_alignment_summary(path: Path, *, source_rows, manifest_paths: list[Path], dry_run: bool) -> None:
+    cell_ids = [row.cell_id for row in source_rows]
+    if len(set(cell_ids)) != len(cell_ids):
+        raise ValueError("Duplicate cell identities in alignment source rows")
+    layouts = {row.cell_id: row.read_layout for row in source_rows}
+    records: dict[str, dict] = {}
+    record_sources: dict[str, str] = {}
+    completed_statuses = {"aligned", "reused_input", "reused_cached"}
+    if dry_run:
+        # A plan must not inherit completion from an earlier execution directory.
+        records = {cell_id: {"cell_id": cell_id, "status": "planned"} for cell_id in cell_ids}
+    else:
+        inspected: set[Path] = set()
+        for manifest in manifest_paths:
+            summary_path = manifest.with_name("alignment_prepare_summary.json").resolve()
+            # The merged manifest shares this summary's directory; it is not a
+            # second execution. Also avoid reading one child more than once.
+            if summary_path == path.resolve() or summary_path in inspected:
+                continue
+            inspected.add(summary_path)
+            if not summary_path.exists():
+                continue  # No evidence: downstream QC retains its missing state.
+            summary = json.loads(summary_path.read_text(encoding="utf-8"))
+            if not isinstance(summary, dict):
+                raise ValueError(f"Invalid alignment summary: {summary_path}")
+            if "cells" not in summary:
+                continue  # Legacy aggregate-only evidence cannot identify cells.
+            cells = summary["cells"]
+            if not isinstance(cells, list):
+                raise ValueError(f"Invalid alignment cell records: {summary_path}")
+            child_counts: Counter = Counter()
+            for record in cells:
+                cell_id = record.get("cell_id") if isinstance(record, dict) else None
+                if not isinstance(cell_id, str) or not cell_id or cell_id != cell_id.strip():
+                    raise ValueError(f"Missing or invalid alignment cell identity: {summary_path}")
+                if cell_id not in layouts:
+                    raise ValueError(f"Foreign alignment cell identity {cell_id}: {summary_path}")
+                if cell_id in records:
+                    raise ValueError(f"Duplicate alignment cell identity {cell_id}: {record_sources[cell_id]} and {summary_path}")
+                if record.get("read_layout") and record["read_layout"] != layouts[cell_id]:
+                    raise ValueError(f"Conflicting alignment read layout for {cell_id}: {summary_path}")
+                status = str(record.get("status", "unknown"))
+                if summary.get("dry_run") is True and status in completed_statuses:
+                    raise ValueError(f"Dry-run alignment records claim completion: {summary_path}")
+                child_counts[status] += 1
+                records[cell_id] = dict(record)
+                record_sources[cell_id] = str(summary_path)
+            # Retain unambiguous older record-only summaries, but never erase
+            # conflicting aggregate evidence by replacing it with derived counts.
+            if "status_counts" in summary:
+                counts = summary["status_counts"]
+                if not isinstance(counts, dict) or any(
+                    not isinstance(value, int) or isinstance(value, bool) or value < 0
+                    for value in counts.values()
+                ) or {key: value for key, value in counts.items() if value} != dict(child_counts):
+                    raise ValueError(f"Conflicting alignment status counts: {summary_path}")
+            for field, expected in (
+                ("completed_cells", sum(child_counts[s] for s in completed_statuses)),
+                ("failed_cells", child_counts["failed"]),
+            ):
+                if field in summary and summary[field] != expected:
+                    raise ValueError(f"Conflicting alignment {field}: {summary_path}")
+    cells = [records[cell_id] for cell_id in cell_ids if cell_id in records]
+    status_counts = Counter(str(record.get("status", "unknown")) for record in cells)
     payload = {
         "workflow": "run-ciri3",
         "dry_run": dry_run,
@@ -211,6 +275,12 @@ def _write_alignment_summary(path: Path, *, source_rows, manifest_paths: list[Pa
             "single-end": sum(1 for row in source_rows if row.read_layout == "single-end"),
         },
         "sub_manifests": [str(item.resolve()) for item in manifest_paths],
+        "cells": cells,
+        "status_counts": dict(status_counts),
+        "completed_cells": sum(status_counts[status] for status in completed_statuses),
+        "failed_cells": status_counts["failed"],
+        "missing_cell_ids": [cell_id for cell_id in cell_ids if cell_id not in records],
+        "alignment_summary_sources": record_sources,
     }
     _write_json(path, payload)
 
