@@ -9,8 +9,15 @@ description = "A Python CLI toolkit for single-cell circRNA detection, detector 
 readme = "README.md"
 requires-python = ">=3.10"
 authors = [{ name = "James Liu" }]
-license = "MIT"
-license-files = ["LICENSE", "THIRD_PARTY_NOTICES.md"]
+# Aggregate distribution: circyto code is MIT; retained upstream assets are GPLv2.
+license = "MIT AND GPL-2.0-only"
+license-files = [
+  "LICENSE", "THIRD_PARTY_NOTICES.md",
+  "circyto/resources/tools/CIRI3/LICENSE.txt",
+  "circyto/resources/tools/CIRI-full_v2.0/bin/CIRI_v2.0.6/LICENSE.txt",
+  "circyto/resources/tools/CIRI-full_v2.0/bin/CIRI_AS_v1.2/LICENSE.txt",
+  "examples/native_ciri3/LICENSE.upstream.txt",
+]
 
 dependencies = [
   "typer>=0.9,<1.0",

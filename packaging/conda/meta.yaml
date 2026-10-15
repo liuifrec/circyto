@@ -1,0 +1,75 @@
+{% set version = "0.11.0rc1" %}
+
+package:
+  name: circyto
+  version: {{ version }}
+
+# A LOCAL preparation recipe: no registry artifact is asserted to exist.
+# The local build must supply the audited sdist URL and SHA-256 explicitly.
+# Before Bioconda submission replace these with the accepted release's stable
+# PyPI sdist URL and literal hash. Never substitute a GitHub source archive.
+source:
+  url: {{ environ["CIRCYTO_SDIST_URL"] }}
+  sha256: {{ environ["CIRCYTO_SDIST_SHA256"] }}
+
+build:
+  number: 0
+  noarch: python
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --no-index -vv
+  entry_points:
+    - circyto = circyto.cli.circyto:app
+
+requirements:
+  build: []
+  host:
+    - python >=3.10
+    - pip
+    - setuptools >=77
+    - wheel
+  run:
+    - python >=3.10
+    - typer >=0.9,<1
+    - rich >=13
+    - pandas >=2
+    - numpy >=1.24
+    - scipy >=1.10
+    - anndata >=0.10
+  run_constrained:
+    - mudata >=0.3
+
+test:
+  imports:
+    - circyto
+    - anndata
+  commands:
+    - circyto --help
+    - circyto doctor
+    - circyto import-circ --help
+    - circyto report --help
+  requires:
+    - mudata >=0.3
+  source_files:
+    - examples/installed_release_check.py
+    - examples/native_ciri3
+
+about:
+  home: https://github.com/liuifrec/circyto
+  license: MIT AND GPL-2.0-only
+  license_file:
+    - LICENSE
+    - THIRD_PARTY_NOTICES.md
+    - circyto/resources/tools/CIRI3/LICENSE.txt
+    - circyto/resources/tools/CIRI-full_v2.0/bin/CIRI_v2.0.6/LICENSE.txt
+    - circyto/resources/tools/CIRI-full_v2.0/bin/CIRI_AS_v1.2/LICENSE.txt
+    - examples/native_ciri3/LICENSE.upstream.txt
+  summary: Single-cell circRNA workflow orchestration and detector-free scverse integration
+  dev_url: https://github.com/liuifrec/circyto
+  doc_url: https://github.com/liuifrec/circyto/blob/main/docs/installation.md
+
+extra:
+  recipe-maintainers:
+    - liuifrec
+  notes: >-
+    MuData is optional; install mudata alongside circyto for multimodal output.
+    Java detectors and aligners are external. Packaged shell/Perl adapters need
+    their own runtimes; noarch Python packaging does not certify detector portability.

@@ -13,7 +13,7 @@ ROOT = Path(__file__).resolve().parents[1]
 
 def source_copy(target):
     target.mkdir()
-    for name in ('circyto', 'docs', 'examples'):
+    for name in ('circyto', 'docs', 'examples', 'packaging'):
         shutil.copytree(ROOT / name, target / name,
                         ignore=shutil.ignore_patterns('__pycache__', '*.pyc'))
     for name in ('pyproject.toml', 'setup.py', 'MANIFEST.in', 'README.md',
@@ -46,9 +46,14 @@ def test_wheel_sdist_and_rebuilt_wheel_exclude_unresolved_assets(tmp_path):
     with zipfile.ZipFile(next((source / 'dist').glob('*.whl'))) as archive:
         check_members(archive.namelist())
         assert archive.testzip() is None
+        metadata = archive.read(next(n for n in archive.namelist() if n.endswith('.dist-info/METADATA'))).decode()
+        assert 'License-Expression: MIT AND GPL-2.0-only' in metadata
+        for suffix in ('CIRI3/LICENSE.txt', 'CIRI_v2.0.6/LICENSE.txt', 'CIRI_AS_v1.2/LICENSE.txt'):
+            assert any('.dist-info/licenses/' in n and n.endswith(suffix) for n in archive.namelist())
     expanded = tmp_path / 'expanded'
     with tarfile.open(next((source / 'dist').glob('*.tar.gz'))) as archive:
         check_members(archive.getnames())
+        assert any(n.endswith('examples/installed_release_check.py') for n in archive.getnames())
         # This archive was just built from our own test source tree.
         archive.extractall(expanded, filter='data')
     result = run_build(next(expanded.iterdir()), '--wheel')

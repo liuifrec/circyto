@@ -9,12 +9,19 @@
   <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
   <img alt="License" src="https://img.shields.io/github/license/liuifrec/circyto?cacheSeconds=3600&v=2">
   </a>
-  <a href="https://pypi.org/project/circyto/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
+  <a href="docs/installation.md"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
 </p>
 
 # circyto
 
 A CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
+
+**Installation candidate, not publicly released:** start with the
+[pip and conda installation guide](docs/installation.md). It separates exact
+local wheel installs, a conda environment around that wheel, a native local
+conda artifact, and commands that become usable only after publication.
+`pip install circyto` and `conda install circyto` are future registry routes;
+neither is advertised as available by this preparation.
 
 The main output is a circRNA-by-cell matrix, with `h5ad` export and optional RNA+circ MuData integration. Capability boundaries are intentionally narrow:
 
@@ -49,8 +56,9 @@ processing-status metadata and an offline QC report.
 
 ## Import native CIRI3 results without rerunning CIRI3
 
-The feature branch accepts native **13-column single-sample** CIRI3 result files.
-With the installed wheel on PATH, the included official output example runs without
+The candidate accepts native **13-column single-sample** CIRI3 result files.
+First [extract the examples from the matching clean sdist](docs/installation.md#supplied-native-example-without-a-source-checkout).
+With the installed wheel on PATH, the official output example runs without
 Java, an aligner or raw sequencing data:
 
 ```bash
@@ -71,17 +79,14 @@ and [acceptance evidence](docs/native_ciri3_validation.md), including version,
 pooled-output and coordinate limitations. The example directory is distributed
 in the source archive and can be copied outside the checkout.
 
-## Offline QC report quick start (feature branch)
+## Offline QC report quick start
 
-The `feature/qc-report-usability` branch adds offline HTML reporting. This feature
-is **not part of the v0.10.0 manuscript software baseline**; the package version
-has deliberately not changed. From a checkout of this feature branch, this
-example is executable without reference downloads or external detectors:
+The prepared candidate includes offline HTML reporting. This feature is
+**not part of the v0.10.0 manuscript software baseline**. After installing the
+exact artifact and extracting the examples as described in the installation
+guide, run this synthetic workflow-report example outside the source checkout:
 
 ```bash
-python3 -m venv .venv
-source .venv/bin/activate
-python -m pip install .
 circyto doctor
 python examples/qc_report_demo.py --outdir work/qc_report_demo
 circyto report --workdir work/qc_report_demo
@@ -166,18 +171,12 @@ Manuscript-facing reproducibility plans and reusable summary scripts are organiz
 
 ## Installation
 
-### Source install
-
-```bash
-git clone https://github.com/liuifrec/circyto
-cd circyto
-
-conda env create -f environment.yml
-conda activate circyto
-python -m pip install -e .
-```
-
-The repo-root [environment.yml](environment.yml) is the supported baseline for source installs. It provides the Python scientific stack and CLI dependencies, but it intentionally does not install external detector executables.
+Use the [installation guide](docs/installation.md) for the tested local pip and
+conda routes, the source-archive example, and clearly separated future registry
+commands. [Release preparation](docs/release_preparation.md) records artifact
+hashes, tests and the owner actions still needed. Developer source installs remain
+available through the root [environment.yml](environment.yml); they are distinct
+from installed artifact acceptance.
 
 The optional [environment.ramda-se.yml](environment.ramda-se.yml) was separately
 tested for Linux x86_64 installation, BWA/SAMtools/Java runtime discovery and a

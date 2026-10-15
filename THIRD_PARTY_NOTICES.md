@@ -4,6 +4,13 @@ Packaging branch audit: 2026-10-13, based on PR #19 head
 `f841c296db8a6fda870eebc5b553eab10095fa0d`. No package version change.
 The MIT license covers circyto-authored code, not third-party assets.
 
+Release preparation (2026-10-15) records the aggregate distribution license as
+`MIT AND GPL-2.0-only`, reflecting the retained upstream GPL version 2 texts,
+and includes those texts in Python license metadata and conda `license_file`.
+This describes the shipped components; it does not relicense circyto code,
+extend upstream permissions or clear excluded assets. The same exclusions apply
+to the clean sdist used as the conda source and every resulting conda archive.
+
 | Asset | Current wheel/sdist policy | Confirmed evidence / unresolved questions |
 | --- | --- | --- |
 | CIRI3 JARs, embedded HTSJDK classes | **Excluded**; external user installation | Official pinned CIRI3 tree supplies GPLv2 and Java source. Exact corresponding build/dependency notice route is not certified. |

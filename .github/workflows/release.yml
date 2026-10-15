@@ -1,0 +1,132 @@
+name: Owner-approved Python release
+
+# No push, pull_request, tag or release event can publish.
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: Exact owner-approved version already committed on main
+        required: true
+        type: string
+      target:
+        description: Public index (both options require separate owner approval)
+        required: true
+        type: choice
+        options: [testpypi, pypi]
+      approved_commit:
+        description: Full reviewed main commit SHA
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ inputs.target }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    if: github.repository == 'liuifrec/circyto' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    strategy:
+      matrix:
+        python: ['3.10', '3.12']
+    env:
+      CIRCYTO_SKIP_INTEGRATION: '1'
+      _TYPER_FORCE_DISABLE_TERMINAL: '1'
+      PYTHONNOUSERSITE: '1'
+      APPROVED_VERSION: ${{ inputs.version }}
+      APPROVED_COMMIT: ${{ inputs.approved_commit }}
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+        with:
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Check owner-selected identity; refuse historical version
+        run: |
+          python - <<'PY'
+          import ast, os, re, subprocess
+          from pathlib import Path
+          head = subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip()
+          assert head == os.environ['APPROVED_COMMIT']
+          version = os.environ['APPROVED_VERSION']
+          assert re.fullmatch(r'[0-9]+\.[0-9]+\.[0-9]+(?:rc[0-9]+)?', version)
+          assert version != '0.10.0'
+          text = Path('pyproject.toml').read_text()
+          assert re.search(r'^version = "' + re.escape(version) + r'"$', text, re.M)
+          tree = ast.parse(Path('circyto/__init__.py').read_text())
+          assert any(isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == '__version__' for t in n.targets) and ast.literal_eval(n.value) == version for n in tree.body)
+          PY
+      - name: Full suite and critical execution audit
+        run: |
+          python -m pip install '.[dev]' twine
+          python -m pip check
+          python -m pytest -q --junitxml=tests.xml
+          python .github/scripts/check_acceptance_junit.py tests.xml
+      - name: Build clean source archive and sdist-derived wheel in isolation
+        run: |
+          python -m build --sdist
+          mkdir "$RUNNER_TEMP/source"
+          tar -xzf "dist/circyto-${APPROVED_VERSION}.tar.gz" -C "$RUNNER_TEMP/source"
+          python -m build --wheel "$RUNNER_TEMP/source/circyto-${APPROVED_VERSION}" --outdir dist
+          python -m twine check --strict dist/*
+          python scripts/release/check_artifacts.py dist/* --out inventory.json
+      - name: Fresh base and multimodal installed acceptance outside checkout
+        run: |
+          unset PYTHONPATH
+          cp -r "$RUNNER_TEMP/source/circyto-${APPROVED_VERSION}/examples" "$RUNNER_TEMP/examples"
+          cd "$RUNNER_TEMP"
+          for mode in base multimodal; do
+            python -m venv "$RUNNER_TEMP/$mode"
+            wheel="$GITHUB_WORKSPACE/dist/circyto-${APPROVED_VERSION}-py3-none-any.whl"
+            extra=''
+            args=()
+            if [ "$mode" = multimodal ]; then extra='[mudata]'; args=(--multimodal); fi
+            "$RUNNER_TEMP/$mode/bin/python" -m pip install "$wheel$extra"
+            "$RUNNER_TEMP/$mode/bin/python" -m pip check
+            "$RUNNER_TEMP/$mode/bin/python" -I examples/installed_release_check.py --fixtures examples/native_ciri3 --out "$mode-check" "${args[@]}"
+          done
+      - name: Retain review evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: release-evidence-${{ matrix.python }}
+          path: |
+            tests.xml
+            inventory.json
+            ${{ runner.temp }}/base-check/acceptance.json
+            ${{ runner.temp }}/multimodal-check/acceptance.json
+      - name: Retain exact validated distributions
+        if: matrix.python == '3.12'
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: approved-distributions
+          path: dist/*
+
+  publish:
+    needs: validate
+    if: github.repository == 'liuifrec/circyto' && github.ref == 'refs/heads/main' && vars.CIRCYTO_PUBLISH_ENABLED == 'true'
+    runs-on: ubuntu-latest
+    # Owner MUST configure required reviewers, prevent self-review, and allow only
+    # main for both environments before enabling CIRCYTO_PUBLISH_ENABLED.
+    environment:
+      name: ${{ inputs.target }}
+    permissions:
+      id-token: write
+    steps:
+      # No source checkout, dependency installation or build in this privileged job.
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
+        with:
+          name: approved-distributions
+          path: dist
+      - name: Publish exact validated artifacts to TestPyPI
+        if: inputs.target == 'testpypi'
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
+        with:
+          repository-url: https://test.pypi.org/legacy/
+      - name: Publish exact validated artifacts to PyPI
+        if: inputs.target == 'pypi'
+        uses: pypa/gh-action-pypi-publish@dc37677b2e1c63e2034f94d8a5b11f265b73ba33 # release/v1
