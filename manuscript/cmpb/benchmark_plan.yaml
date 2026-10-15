@@ -1,0 +1,738 @@
+schema: circyto.cmpb.first_session.v1
+registration_date: '2026-10-15'
+purpose: One CMPB subscription-route expansion; TCBB fallback; planning only
+refs:
+  historical_software: 44697355bcab1c525ca7ef9b130e2ad0094d9e1b
+  manuscript: c29831c3f6e7a31b708cce493c0be8036176077a
+  integration: f841c296db8a6fda870eebc5b553eab10095fa0d
+  evaluation_base: 6c280426ebf10abcbcaeab72f87c9d34060d6ee8
+  packaging_ci_implementation: c9c7ac68c5b2956c38da7c1bbfd83dad7520678b
+  nikaido_audit: 42459975b055d771197fbe181c6c56ffec7647cb
+  installation_record: 0f13ad4f21966f65f809ffba3bacaaebd09ec1c3
+  installation_artifact_source: 48dd8d2bc45af4978f238a6fa5f31031c44549d3
+  object_archive: c99cddaae2314d3af7d5232150c5b86bb6b52e25
+session:
+  performed:
+  - Verified local and fetched remote refs; PR19 open/draft/unmerged
+  - Read existing Nikaido, manuscript, importer/report and installation audits
+  - Read-only SHA256 of two original objects and external JAR
+  - Read-only IMR90 obs/var/uns inventory, without X statistics or output extraction
+  - Public GEO/ENA metadata lookup for four predetermined cells
+  - 'Existing reviewed wheel: 87 Python members equal evaluation base'
+  - Six planning/metadata files; TSV/YAML and preservation checks
+  not_performed:
+  - FASTQ/reference download
+  - alignment
+  - detector execution
+  - index build
+  - RNA extraction
+  - native import
+  - report generation
+  - new plots
+  - benchmarking
+  - full test-suite rerun
+  - package build/install
+  - publication
+  - RERF form editing
+  preserved_recheck:
+    files: 61
+    descendant_entries: 71
+    bytes: 2004895
+    identity: per-file SHA256 snapshot retained locally
+  metadata_sources:
+    ena_url: https://www.ebi.ac.uk/ena/portal/api/search?result=read_run&query=experiment_accession%3D%22SRX26321184%22%20OR%20experiment_accession%3D%22SRX26321185%22%20OR%20experiment_accession%3D%22SRX26321174%22%20OR%20experiment_accession%3D%22SRX26321183%22&fields=run_accession,experiment_accession,sample_accession,study_accession,library_layout,read_count,base_count,fastq_ftp,fastq_bytes,fastq_md5&format=tsv&limit=20
+    ena_response_sha256: dca63a73e5a5e02da71f5eb7b1187bf50afc79aafcac23f4502463a5dc31e0c4
+    geo_responses:
+    - id: GSM8558852
+      sha256: 0f2c2de1d82bff67852cbbcd43c89efd381c203eb8261e603b3e46a2f757d98d
+    - id: GSM8558853
+      sha256: 3f531d9b26413531bbf32cbc51b2cd6d6f60a0504194136e759e61426ff60612
+    - id: GSM8558854
+      sha256: f00dc2dd2d7fcf94ad6d2274d97d530612e6b4ac7e50ea784806ed0a5bea17d0
+    - id: GSM8558855
+      sha256: 762b521bde14b0164406f72256b16596c4a8b89ffcc0b8b47550ba1af4aa4d56
+    access_date: '2026-10-15'
+  read_only_axis_check:
+    python: 3.10.22
+    platform: Linux-6.8.0-138-generic-x86_64-with-glibc2.35
+    h5py: 3.16.0
+    anndata: 0.11.4
+    cpu_available: 22
+    ram_bytes: 33074536448
+    tmp_free_bytes: 592597516288
+  measured_check_resources:
+    hash_three_files_wall_seconds: 0.052
+    obs_var_uns_check_wall_seconds: 0.150213
+    obs_var_uns_process_peak_rss_kib: 139244
+    scope: small inventory operations only; not study performance results
+  retrieval_warnings:
+  - Initial ENA filereport experiment queries returned HTTP 500; one search API query succeeded.
+  - GEO generic paired-end protocol text conflicts with run-specific SINGLE records; retained as D100.
+  - CMPB detailed official author guide returned HTTP 403; formatting targets remain planning choices.
+  - No authorized/reachable historical server endpoint supplied; no SSH or credential access attempted.
+inputs:
+  smartseq3:
+    source_commit: c99cddaae2314d3af7d5232150c5b86bb6b52e25
+    member: load_work/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu
+    sha256: 0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339
+    bytes: 30911142
+    available: true
+  imr90:
+    source_commit: c99cddaae2314d3af7d5232150c5b86bb6b52e25
+    member: load_work/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu
+    sha256: bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+    bytes: 41036354
+    available: true
+  hap1_batch10:
+    available: false
+    exact_cells: null
+    substitute_63_cell_rt_object: false
+pilot:
+  analysis_id: A02
+  status: PENDING_REVIEW
+  execution_approved: false
+  preferred_route: 'A: recover original per-cell native calls plus bound status records; missing_inputs.md
+    gives finite list'
+  alternative_route: 'B: NEW full-library single-end technical rerun; never historical provenance recovery'
+  selection:
+    rule: Ascending numeric GSM among original 23 stored IMR90 cells; first four; fixed independent of circRNA
+      signal
+    cells:
+    - cell_id: IMR90_A_100
+      gsm: GSM8558852
+      experiment: SRX26321174
+      run: SRR30918126
+      biosample: SAMN44108155
+      study: PRJNA1169833
+      rna_id: RNA_IMR90_A_100
+      dna_id: DNA_IMR90_A_100
+      layout: single-end
+      read_count: 3824354
+      base_count: 577477454
+      fastq_url: https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/026/SRR30918126/SRR30918126.fastq.gz
+      fastq_bytes: 225876952
+      ena_md5: dfd377ce81eeeb23503f8e4756ef60ae
+      local_fastq_sha256: null
+      local_fastq: not recovered in bounded named locations
+      local_native: not recovered
+      original_detector_status: unknown
+    - cell_id: IMR90_A_101
+      gsm: GSM8558853
+      experiment: SRX26321183
+      run: SRR30918117
+      biosample: SAMN44108154
+      study: PRJNA1169833
+      rna_id: RNA_IMR90_A_101
+      dna_id: DNA_IMR90_A_101
+      layout: single-end
+      read_count: 3935595
+      base_count: 594274845
+      fastq_url: https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/017/SRR30918117/SRR30918117.fastq.gz
+      fastq_bytes: 230818973
+      ena_md5: 09ede82e0f86db6147ce82809bf7fb22
+      local_fastq_sha256: null
+      local_fastq: not recovered in bounded named locations
+      local_native: not recovered
+      original_detector_status: unknown
+    - cell_id: IMR90_A_102
+      gsm: GSM8558854
+      experiment: SRX26321184
+      run: SRR30918116
+      biosample: SAMN44108153
+      study: PRJNA1169833
+      rna_id: RNA_IMR90_A_102
+      dna_id: DNA_IMR90_A_102
+      layout: single-end
+      read_count: 4002138
+      base_count: 604322838
+      fastq_url: https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/016/SRR30918116/SRR30918116.fastq.gz
+      fastq_bytes: 236808421
+      ena_md5: ed7668e9efa214a1bda5d3ea2bf899eb
+      local_fastq_sha256: null
+      local_fastq: not recovered in bounded named locations
+      local_native: not recovered
+      original_detector_status: unknown
+    - cell_id: IMR90_A_103
+      gsm: GSM8558855
+      experiment: SRX26321185
+      run: SRR30918115
+      biosample: SAMN44108152
+      study: PRJNA1169833
+      rna_id: RNA_IMR90_A_103
+      dna_id: DNA_IMR90_A_103
+      layout: single-end
+      read_count: 3954925
+      base_count: 597193675
+      fastq_url: https://ftp.sra.ebi.ac.uk/vol1/fastq/SRR309/015/SRR30918115/SRR30918115.fastq.gz
+      fastq_bytes: 233399236
+      ena_md5: f90306b3462108160d7e35d4b707729b
+      local_fastq_sha256: null
+      local_fastq: not recovered in bounded named locations
+      local_native: not recovered
+      original_detector_status: unknown
+    other_19_reason: outside fixed four-cell technical pilot by accession rank only
+    failure_policy: retain all four outcomes; no substitution for high signal or successful processing
+  input_totals:
+    compressed_fastq_bytes: 926903582
+    reads: 15717012
+    bases: 2373268812
+    downloaded: false
+    sha256_before_use: PENDING acquisition; MD5/size checked against ENA then SHA256 recorded
+  output_root: PILOT_ROOT=${EVALUATION_ROOT}/imr90-four-new-v1; require a new empty absolute root
+  reference:
+    use_for: NEW validation only
+    provider: GENCODE release 45
+    assembly: GRCh38 primary assembly (chromosomes and scaffolds); release page GRCh38.p14
+    guide: https://www.gencodegenes.org/human/release_45.html
+    fasta_url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/GRCh38.primary_assembly.genome.fa.gz
+    gtf_url: https://ftp.ebi.ac.uk/pub/databases/gencode/Gencode_human/release_45/gencode.v45.primary_assembly.annotation.gtf.gz
+    compressed_and_uncompressed_sha256: null
+    index_sha256: null
+    reuse_condition: Only byte-verified matching full primary-assembly source; record provider checksum before
+      indexing
+    index_command:
+    - bwa
+    - index
+    - ${PILOT_ROOT}/ref/GRCh38.primary_assembly.genome.fa
+    star_index: not applicable to SE BWA route
+    chromosome_subset: false
+  software:
+    circyto_commit: 6c280426ebf10abcbcaeab72f87c9d34060d6ee8
+    artifact_sha256: eca5f45f35b351ec44df4e5b0f73eb4e5e0564e2691631f8eb417b0e8a7ca03b
+    artifact_use: Reuse already audited local wheel in fresh isolated environment outside checkout; no new
+      0.10.0 release
+    python: 3.10.22 proposed
+    anndata: 0.11.4 proposed
+    mudata: 0.3.10 proposed
+    numpy: 2.2.6 proposed
+    scipy: 1.15.3 proposed
+    pandas: 2.3.3 proposed
+    bwa: 0.7.17-r1188 proposed; installed executable SHA256/conda build recorded before execution
+    java: 17 proposed; exact runtime/executable SHA256 recorded before execution
+    ciri3_release: 3.0.1 pinned upstream artifact
+    ciri3_upstream_commit: 73108c4478a7e691cb93360921b65203e0701516
+    ciri3_jar_sha256: 569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0
+    ciri3_help_banner: literal $version in prior execution; artifact identity is authoritative
+    star: not used
+    samtools: not required for direct SAM; record version if used for any input inspection
+    install_command: python -m pip install --constraint "${PILOT_ROOT}/inputs/python-constraints.txt" "${CIRCYTO_C2_WHEEL}[mudata]"
+    constraint_file_planned:
+    - anndata==0.11.4
+    - mudata==0.3.10
+    - numpy==2.2.6
+    - scipy==1.15.3
+    - pandas==2.3.3
+    dependency_gate: Prepare the explicit constraints file; pip check, module origins and complete resolved
+      dependency freeze before execution; no editable install or latest-stack substitution
+    environment_rule: new dedicated environment; PYTHONPATH unset; PYTHONNOUSERSITE=1; no editing existing
+      research environments; remove inherited CIRCYTO_CIRI3_CMD_TEMPLATE/BIN overrides and verify actual resolution
+  input_manifest:
+    columns:
+    - cell_id
+    - platform
+    - read1
+    - read2
+    - bam
+    - library_id
+    - n_input_reads
+    - protocol
+    - strandedness
+    - read_layout
+    cell_id: canonical IMR90_A_100 through IMR90_A_103
+    platform: plate
+    read1: ${PILOT_ROOT}/inputs/fastq/<run>.fastq.gz
+    read2: ''
+    bam: ''
+    library_id: SRX accession
+    n_input_reads: verified acquired full-library read count
+    protocol: ramda
+    strandedness: unstranded
+    read_layout: single
+    preprocessing: No trimming, barcode demultiplexing, top-N, minimum-read selection or subsampling; whole
+      acquired library
+  commands:
+  - id: P01
+    argv:
+    - circyto
+    - manifest
+    - validate
+    - ${PILOT_ROOT}/inputs/manifest.tsv
+    - --strict
+  - id: P02
+    argv:
+    - circyto
+    - doctor
+    gate: Verify exact configured external JAR/Java/BWA, not core exit code alone
+  - id: P03
+    argv:
+    - circyto
+    - workflow
+    - full-length-circrna
+    - --manifest
+    - ${PILOT_ROOT}/inputs/manifest.tsv
+    - --outdir
+    - ${PILOT_ROOT}/workflow
+    - --protocol
+    - ramda
+    - --skip-demux
+    - --genome-fasta
+    - ${PILOT_ROOT}/ref/GRCh38.primary_assembly.genome.fa
+    - --gtf
+    - ${PILOT_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf
+    - --detector
+    - ciri3
+    - --threads
+    - '8'
+    - --parallel
+    - '1'
+    - --chunk-size
+    - '1'
+    - --export-h5ad
+    - --gene-expression-method
+    - simple-overlap
+    - --no-report
+  - id: P04
+    argv:
+    - circyto
+    - report
+    - --workdir
+    - ${PILOT_ROOT}/workflow
+    gate: Only NEW or authentic copied workflow QC sources; never an import bundle
+  - id: P05
+    argv:
+    - circyto
+    - import-circ
+    - --ciri3-manifest
+    - ${PILOT_ROOT}/inputs/native.tsv
+    - --cells
+    - ${PILOT_ROOT}/inputs/cells.tsv
+    - --rna
+    - ${PILOT_ROOT}/inputs/rna/imr90_original_overlap_profile.four.h5ad
+    - --detector
+    - CIRI3
+    - --genome-build
+    - GRCh38
+    - --coordinate-convention
+    - 1-based-closed
+    - --support-definition
+    - CIRI3_junction_reads
+    - --outdir
+    - ${PILOT_ROOT}/imported
+  expected_executed_subcommands:
+    bwa: bwa mem -t 8 -k 15 -T 15 REF FASTQ > cell.sam
+    ciri3: java -jar JAR -I cell.sam -O native.tsv -F REF -T 8 -G detector.log -A GTF -S 0 -Ma 0
+    source: C2 circyto/pipeline/align_manifest.py and circyto/detectors/ciri3.py; verify emitted argv before
+      execution
+    environment:
+      CIRCYTO_CIRI3_JAR: ${EXTERNAL_CIRI3_JAR}
+      CIRCYTO_CIRI3_JAVA: ${PILOT_JAVA}
+      CIRCYTO_CIRI3_EXTRA_ARGS: -S 0 -Ma 0
+      JAVA_TOOL_OPTIONS: -Xmx16g
+    settings: Other detector defaults retained under exact JAR hash/help transcript; no post-hoc threshold
+      tuning. Collector cell-total min_count_per_cell=1 must be audited separately from native header-only
+      zeros.
+  rna:
+    source: inputs.imr90 /mod/rna; same biological identities, original lightweight simple-overlap counts
+    extraction: read-only anndata.io.read_elem; retain source relative order A103,A102,A101,A100; all 63187
+      features, values, annotations, layers and metadata; no relabeling
+    output: ${PILOT_ROOT}/inputs/rna/imr90_original_overlap_profile.four.h5ad
+    extraction_performed: false
+    reference_limit: Original RNA reference hash is unknown; do not mark shared build verified merely from
+      path labels
+    new_workflow_RNA: Separate simple-overlap profile produced by P03 from new alignments; label separately;
+      never overwrite historic RNA
+  native_contract:
+    schema: ciri3.native-result-13.v1
+    mapping_columns:
+    - cell_id
+    - sample_id
+    - path
+    - detector_version
+    - result_scope
+    sample_id: GSM accession; retained mapping to canonical ID and SRX/SRR
+    path: ../workflow/ciri3/<canonical_cell_id>.ciri3_run/ciri3_raw.tsv; resolve actual summary path
+    new_detector_version: 3.0.1 from executed pinned release artifact; keep banner limitation
+    result_scope: single-sample
+    original_route_version: Actual original producer only; unknown permitted only genuinely unrecorded; known
+      unsupported version is a stop/review gate
+    status: Each cell needs native hash, input hashes, exact argv, executable/ref hashes, exit code and log
+      binding; zero count or file existence is insufficient
+    execution_capture: Review a small run-audit helper before execution to capture per-cell subprocess argv/exit
+      codes and bind them to output hashes; production algorithms and CLI remain unchanged. If existing logs
+      do not bind an exit code, keep status unknown rather than infer it.
+  acceptance:
+    oracle: Independent csv.DictReader -> exact int -> (cell_id,circ_id) mapping and scipy CSR; no circyto
+      parser, normalizer or report functions
+    expected: Exact scientific agreement on valid input; no required circRNA yield or positive association
+    checks:
+    - Every coordinate, chromosome, strand, support and native gene/type annotation
+    - Native ancillary fields and read IDs preserved byte-for-byte in source evidence
+    - Cell and feature axes, matrix orientation, int64 values and nonzero entries
+    - All RNA X/layers/obs/var/obsm/uns fields and original relative order, exact biological overlap
+    - Normal anndata.read_h5ad and mudata.read_h5mu/write_h5mu/read_h5mu; preserve values, maps, NA masks,
+      annotations
+    - Displayed HTML against independent values and JSON/TSV, including documented first-100 candidate display
+      limit
+    - Separate workflow versus IMPORT reports and denominator policies
+    - Retain genuine header-only results and partial failed-cell counts/status; if none occur record not observed
+    stop: Source hash mismatch, ambiguous identity, unsupported native producer/schema, scientific value corruption,
+      resource cap; preserve failure evidence before review
+  resources:
+    status: estimate only; approval pending
+    threads: 8
+    parallel_cells: 1
+    ram_cap_gib: 24
+    java_heap_gib: 16
+    disk_cap_gib: 80
+    wall_cap_hours: 16
+    expected_wall_hours_range:
+    - 4
+    - 12
+    first_cell_review_trigger_hours: 4
+    first_cell_review_trigger_peak_rss_gib: 20
+    includes: full reference acquisition/index, four complete libraries, serial alignment/detection, both reports
+      and independent checks
+    disk_estimate: ~0.927 GB compressed reads; reference/index ~10-15 GiB; SAM/detector temporaries potentially
+      tens of GiB; cap includes environments and copies
+    enforcement: Dedicated process group/cgroup or job scheduler limits; monitor disk before each cell; record
+      timed-out/OOM/cancelled outcomes without replacement. Stop if cap cannot be enforced.
+    retain: Inputs, native outputs, statuses, commands, QC, scientific objects, reports, checksums and failure
+      logs; no automatic cleanup
+  paired_end_extension:
+    status: DEFERRED
+    reason: Exact HAP1 batch10 membership/native inputs and Smart-seq3 raw/index mapping missing; not part
+      of this pilot budget
+comparisons:
+  analysis_id: A03
+  status: PENDING_REVIEW
+  execution_approved: false
+  primary:
+    arms:
+    - installed circyto C2
+    - independent competent ID-aware Python/AnnData/MuData reference
+    input: identical pilot native records, explicit cell/status metadata and same-cell RNA
+    endpoint: native+RNA to sparse objects, copied evidence, equivalent QC TSV/JSON and offline HTML
+    reference_implementation: 'PENDING helper: stdlib csv, Python int, scipy CSR, AnnData and ordinary MuData;
+      separate source/sha before run; no circyto imports'
+    metrics:
+    - exact values/axes/annotations/status preservation
+    - invalid-input errors and valid-input false rejection
+    - explicit preparation steps and bespoke transformations
+    - wall_seconds
+    - peak_rss_kib
+    - input/output bytes
+    timing_contract: same complete conversion/export/report endpoint and I/O policy; equal verification outside
+      measured process; startup included; three fresh processes per arm; one separate unmeasured warm-up per
+      arm; no OS cache flushing
+    step_definition: One user-created mapping/configuration or bespoke transformation; retain scripts and count
+      operations descriptively; no human usability inference
+  nf_core_shared_task:
+    source_commit: 23fdf1d22698a34e06efa99bf5af68d1bb963b78
+    task: Genuine four-library sample identity, layout and lane-group construction at the documented input
+      stage
+    input: sample,fastq_1,fastq_2,strandedness CSV; canonical cell IDs used as ordinary sample IDs; empty fastq_2;
+      unstranded
+    implementation: Proposed small Nextflow harness invoking unmodified PIPELINE_INITIALISATION and capturing
+      emitted samplesheet; no aligner/detector processes
+    source: subworkflows/local/utils_nfcore_circrna_pipeline/main.nf; assets/schema_input.json
+    runtime_proposed: Nextflow 25.10.4 (satisfies !>=25.10.4), nf-schema 2.5.1, compatible Java; exact binary/container
+      hashes before execution
+    command_template:
+    - nextflow
+    - run
+    - ${NFCORE_CIRCRNA_ROOT}/cmpb_input_only.nf
+    - -c
+    - ${NFCORE_CIRCRNA_ROOT}/nextflow.config
+    - -params-file
+    - ${PILOT_ROOT}/comparison/nf_input_params.yaml
+    harness_status: NOT WRITTEN; inspect/test only after approval; add the harness to a disposable pinned upstream
+      checkout to retain projectDir/schema references; unmodified original module tree
+    parameters:
+      input: ${PILOT_ROOT}/comparison/nf_samplesheet.csv
+      outdir: ${PILOT_ROOT}/comparison/nf_input
+      fli_tools: ''
+      longread: false
+      validate_params: true
+      igenomes_ignore: true
+      genome: null
+      fasta: ${PILOT_ROOT}/ref/GRCh38.primary_assembly.genome.fa
+      gtf: ${PILOT_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf
+    oracle: All four IDs, source file hashes, SE layout and one library per biological cell retained; order
+      is recorded, not required to equal original input when group semantics differ
+    extra_cases: Separate labeled same-cell extra lane, literal 001/NA, cell-order permutation. Repeated sample
+      IDs are valid lane aggregation under nf-core contract, not automatically an error.
+    scope_limit: An empirical input-preparation task, not full nf-core execution, MuData export, workflow speed
+      or caller accuracy. Container/plugin setup failure remains a setup outcome.
+    resource_proposal:
+      cores: 2
+      ram_gib: 4
+      disk_gib: 4
+      wall_minutes: 30
+  named_functional_comparators:
+  - name: CIRI3
+    version: v3.0.1
+    commit: 73108c4478a7e691cb93360921b65203e0701516
+    role: Same native outputs plus independent reference conversion; detection is held fixed
+  - name: nf-core/circrna
+    commit: 23fdf1d22698a34e06efa99bf5af68d1bb963b78
+    role: Documented full workflow; input-stage empirical proposal above
+  - name: CirComPara2
+    version: v0.1.2.1
+    commit: 303c3621579c1a412493e40772c2ff2660148942
+    role: Documented preprocessing/multi-caller/linear-RNA/annotation workflow; full run not assessed; freeze
+      a separate supported task and budget before execution
+  - name: circtools
+    version: v2.0.4
+    commit: 3f941e3d5ccc311caa76d8c674736da063c40d34
+    role: Documented detect/metatool, quickcheck and downstream scope; not executed
+  access_date: '2026-10-15'
+  prohibited_endpoints:
+  - import-only vs complete alignment/detection time
+  - call count or overlap as precision/recall
+  - installation failure as biological inferiority
+robustness:
+  analysis_id: A04
+  status: PENDING_REVIEW
+  execution_approved: false
+  seed_values:
+  - 2026101500
+  - 2026101501
+  - 2026101502
+  - 2026101503
+  - 2026101504
+  - 2026101505
+  - 2026101506
+  - 2026101507
+  - 2026101508
+  - 2026101509
+  - 2026101510
+  - 2026101511
+  - 2026101512
+  - 2026101513
+  - 2026101514
+  - 2026101515
+  - 2026101516
+  - 2026101517
+  - 2026101518
+  - 2026101519
+  fractions:
+  - 0
+  - 0.05
+  - 0.1
+  - 0.25
+  - 0.5
+  arms:
+  - circyto
+  - competent ID-aware reference
+  - unsafe positional/zero-fill heuristic (illustration only)
+  base: Separate perturbation copy of checksum-matched IMR90 matrix and mapping; recorded historical status
+    stays unknown in original and descriptive analyses
+  simulation_status: For this labeled experiment only, all rows start explicitly completed; these invented
+    simulation labels do not certify historical assays
+  stochastic_rounding: k=floor(fraction*n_cells+0.5); report realized k/n; permutation uses chosen IDs without
+    changing source values; k=1 permits identity permutation and is recorded
+  missingness_models:
+  - uniform without replacement
+  - depth-associated weighted sampling without replacement, weight=1/(1+stored RNA template count); require
+    finite nonnegative values
+  depth_label: Stored overlap-profile total, not established sequencing depth; selection effects compared separately
+  scenarios:
+  - id: R01
+    case: independent RNA cell-order permutation
+    valid: true
+  - id: R02
+    case: partial modality overlap; RNA-only/circ-only membership retained
+    valid: true
+  - id: R03
+    case: duplicate cell IDs in cells, RNA or native mapping
+    valid: false
+  - id: R04
+    case: literal 001 and NA IDs; exact string-preserving mapping
+    valid: true
+  - id: R05
+    case: failed/unknown/unprocessed/skipped rows; alter only status, retain all support
+    valid: true
+  - id: R06
+    case: failed rows with positive partial support
+    valid: true
+  - id: R07
+    case: mixed declared build/coordinate/support units
+    valid: false
+  - id: R08
+    case: duplicate cell/candidate records or duplicate native candidate rows
+    valid: false
+  - id: R09
+    case: explicit sparse zero entries; numerical values preserved, zero removed from nonzero statistics
+    valid: true
+  - id: R10
+    case: all statuses unknown/no completed denominator
+    valid: true
+  - id: R11
+    case: completed-zero lacking a mapped native result/source zero column
+    valid: false
+  native_label: H5MU-derived calls use --calls or --matrix-dir; never relabel as authentic native evidence.
+    Native-only perturbations use clearly synthetic or separately perturbed genuine native copies.
+  no_fraction_cross_product_for: Deterministic invalid-schema/duplicate/literal-ID/no-denominator controls
+    use one fixed case plus clean control; fractions/seeds apply only meaningful stochastic scenarios
+  completed_cohort_prevalence: sum_i[e_i * I(x_ij > 0)] / sum_i[e_i]; undefined if sum_i[e_i]==0
+  oracle: Independent per-record sums for exactly the same completed cohort and declared assay; no comparison
+    to full cohort as if dropout bias were corrected
+  endpoints:
+  - cell-assignment errors
+  - count and annotation preservation
+  - invalid-input detection
+  - false rejection on valid input
+  - missing-state preservation
+  - absolute completed-cohort prevalence error
+  - HTML/JSON/TSV/matrix disagreement
+  retention: All configurations, warnings, failures and seed-level rows; seeds are simulation repeats, not
+    biological replicates
+  resource_proposal:
+    cores: 2
+    ram_gib: 4
+    disk_gib: 10
+    wall_hours: 2
+descriptive:
+  analysis_id: A05
+  status: PENDING_REVIEW
+  execution_approved: false
+  sources:
+  - inputs.smartseq3
+  - inputs.imr90
+  thresholds:
+    per_cell_support:
+    - 1
+    - 2
+    - 3
+    - 5
+    pooled_candidate_support:
+    - 1
+    - 2
+    - 3
+    - 5
+    rule: Separate analyses; start independently from original X for each threshold; no automatic biological
+      cutoff recommendation
+  metrics:
+  - per-cell positive candidates and support
+  - per-candidate stored-cell support/prevalence distribution
+  - annotation coverage
+  - physical zero-row versus recorded modality membership
+  - within-dataset RNA nonzero genes/overlap-profile totals versus circ support
+  denominator: Stored modality cells, labeled as such; no completed-cell prevalence for unknown historical
+    statuses; Smart-seq3 RNA-only DIYHEK_192 retained and separately labeled
+  cnv:
+    source: Original IMR90 /mod/cnv, 23 x 60607, imported GEO 50-kb states and mappabilitynorm layer
+    order: Natural genomic chromosome/start order; cells in stored source order; no outcome-based sorting
+    display_aggregation: Fixed 1-Mb windows, median of valid 50-kb state bins; require >=50% covered bases
+      valid; output contributing-bin IDs/counts/valid fraction; continuous visualization only
+    missingness_gate: Verify original CNV state/callability mask and numeric encoding before aggregation; absent/unmapped/uncallable
+      bins stay missing; do not assume numeric zero is missing or callable. Current importer rejects missing
+      numeric input, so source mask cannot be inferred from successful import.
+    missing_mask_status: PENDING source inspection/recovery; if unresolvable defer heatmap or explicitly reduce
+      to stored-state display after review
+    annotations:
+    - circ candidate count
+    - circ support
+    - RNA detected genes
+    - RNA overlap-profile total
+    host_gene_association: Deferred from first pilot; any later addition requires one-to-one mapping/eligibility
+      fixed before values; no selected positive examples
+  nonclaims:
+  - CNV causes circ change
+  - radiation effect
+  - new clones
+  - cross-protocol superiority
+  - validated cutoff
+  - thinning equals raw-read downsampling
+  resource_proposal:
+    cores: 2
+    ram_gib: 4
+    disk_gib: 2
+    wall_hours: 1
+scaling:
+  analysis_id: A06
+  status: PENDING_REVIEW
+  execution_approved: false
+  format: Explicitly synthetic 13-column native CIRI3-compatible files with simulated read IDs; single-sample
+    scope; one file/cell; no biological claim
+  seed: 20261015
+  first_grid:
+  - id: S01
+    cells: 100
+    features: 1000
+    nnz: 10000
+  - id: S02
+    cells: 1000
+    features: 10000
+    nnz: 100000
+  - id: S03
+    cells: 10000
+    features: 50000
+    nnz: 1000000
+  additional_isolated_controls:
+  - id: S04
+    cells: 1000
+    features: 10000
+    nnz: 100000
+    read_id_bytes: 128
+  - id: S05
+    cells: 1000
+    features: 10000
+    nnz: 100000
+    rna_features: 2000
+    rna_nnz: 100000
+  default_read_id_bytes: 32
+  support_rule: 1 per synthetic native record; one synthetic read ID padded to configured byte length; other
+    native fields follow reviewed schema
+  file_bytes: Measure actual UTF-8 bytes including headers/ancillary fields; matrix nnz alone is insufficient
+  feature_axis: All declared candidate features represented at least once; do not inject invisible empty features
+    into a native union
+  warmup: One separate unmeasured process/configuration; three fresh-process measured repeats with warm filesystem
+    cache; no privileged cache drop
+  measurement:
+  - input/output bytes
+  - native file and string sizes
+  - X/RNA shape and nnz
+  - OS/CPU/dependency versions
+  - threads
+  - wall time
+  - peak RSS
+  - output volume
+  - failure/timeout/OOM
+  no_dense_check: Independent execution guard for full sparse toarray/todense plus source/allocation inspection;
+    a guard alone does not prove all numpy allocation paths absent
+  resource_proposal:
+    cores: 2
+    ram_gib: 8
+    disk_gib: 10
+    wall_hours: 2
+    sequential: true
+  stop_rule: Estimate native string/table overhead before S03; skip with explicit resource reason if >8 GiB
+    expected or disk cap threatened; no full Cartesian expansion
+installation:
+  analysis_id: A07
+  status: EXISTING_ACCEPTANCE_REUSED
+  new_execution_approved: false
+  record_commit: 0f13ad4f21966f65f809ffba3bacaaebd09ec1c3
+  new_release_version: 0.11.0rc1 proposed in prior preparation; owner approval pending
+  registry_state: No publication performed; do not equate local wheel/conda artifact with registry availability
+  restriction: Excluded JAR/class/manual boundary remains; no legal clearance inferred
+outputs:
+  root: new dedicated results root after approval, outside preserved Application Note files
+  required_tables:
+  - pilot_cell_trace.tsv
+  - native_value_checks.tsv
+  - report_value_checks.tsv
+  - reference_comparison.tsv
+  - nf_input_mapping.tsv
+  - robustness_outcomes.tsv
+  - completed_cohort_prevalence.tsv
+  - descriptive_cell_metrics.tsv
+  - threshold_sensitivity.tsv
+  - cnv_display_bins.tsv
+  - scaling_runs.tsv
+  machine_record: Every result row includes analysis/config/seed/repeat, exact implementation+helper SHA, input/output
+    SHA256, argv, environment, resource use and status/error
+  result_files_created_this_session: false
+next_decision: 'Choose A: retrieve the four original per-cell native/status records, or approve B: the bounded
+  four-cell NEW rerun. Recommended A first. Other analyses remain separately pending.'
