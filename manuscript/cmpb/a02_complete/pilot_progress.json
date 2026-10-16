@@ -1,0 +1,52 @@
+{
+  "cells": [
+    {
+      "acceptance": "PASS",
+      "cell_id": "IMR90_A_100",
+      "derived_status_source": "e6843a38469d49f96d44758a4e37893ebbe2734b",
+      "detector_status": "completed",
+      "execution_status": "preserved original",
+      "gsm": "GSM8558852",
+      "historical_detector_status": "unknown",
+      "run": "SRR30918126",
+      "scientific_source": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8"
+    },
+    {
+      "acceptance": "PASS",
+      "cell_id": "IMR90_A_101",
+      "derived_status_source": "normal repaired workflow",
+      "detector_status": "completed",
+      "execution_status": "completed",
+      "gsm": "GSM8558853",
+      "historical_detector_status": "unknown",
+      "run": "SRR30918117",
+      "scientific_source": "e6843a38469d49f96d44758a4e37893ebbe2734b"
+    },
+    {
+      "acceptance": "PASS",
+      "cell_id": "IMR90_A_102",
+      "derived_status_source": "normal repaired workflow",
+      "detector_status": "completed",
+      "execution_status": "completed",
+      "gsm": "GSM8558854",
+      "historical_detector_status": "unknown",
+      "run": "SRR30918116",
+      "scientific_source": "e6843a38469d49f96d44758a4e37893ebbe2734b"
+    },
+    {
+      "acceptance": "PASS",
+      "cell_id": "IMR90_A_103",
+      "derived_status_source": "normal repaired workflow",
+      "detector_status": "completed",
+      "execution_status": "completed",
+      "gsm": "GSM8558855",
+      "historical_detector_status": "unknown",
+      "run": "SRR30918115",
+      "scientific_source": "e6843a38469d49f96d44758a4e37893ebbe2734b"
+    }
+  ],
+  "four_cell_acceptance": "PASS",
+  "historical_provenance_recovered": false,
+  "mixed_execution_lineage": true,
+  "updated_utc": "2026-10-16T01:53:14.588034+00:00"
+}

@@ -288,8 +288,8 @@ class Tables(HTMLParser):
             self.table = None
 
 
-def verify_native_object(records, expected, circ):
-    if list(circ.obs_names) != [CELL] or list(circ.var_names) != [
+def verify_native_object(records, expected, circ, cell_id=CELL):
+    if list(circ.obs_names) != [cell_id] or list(circ.var_names) != [
         r["circRNA_ID"] for r in records
     ]:
         raise AssertionError(

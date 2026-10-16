@@ -22,6 +22,7 @@ def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", type=Path, required=True)
     ap.add_argument("--tag", default="probe")
+    ap.add_argument("--footprint-root", type=Path)
     args = ap.parse_args()
     root = args.root.resolve()
     specs = root / "specs"
@@ -74,8 +75,10 @@ def main():
             "memory_bytes": memory,
             "argv": ["/usr/bin/python3", "-c", code.replace("PROBE", stage)],
         }
+        if args.footprint_root:
+            spec["footprint_root"] = str(args.footprint_root.resolve(strict=True))
         if name == "disk-stop":
-            spec["disk_stop_bytes"] = footprint(root) + 2 * 1024**2
+            spec["disk_stop_bytes"] = footprint(args.footprint_root or root) + 2 * 1024**2
         path = specs / (stage + ".request.json")
         dump(path, spec)
         result = subprocess.run(

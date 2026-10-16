@@ -14,19 +14,23 @@ from run_stage import digest, dump, stamp
 def main():
     ap = argparse.ArgumentParser()
     ap.add_argument("--root", type=Path, required=True)
-    root = ap.parse_args().root.resolve()
+    ap.add_argument("--workflow-directory", default="workflow_firstcell")
+    ap.add_argument("--import-directory", default="import_firstcell")
+    ap.add_argument("--audit-directory", default="records/acceptance")
+    args = ap.parse_args()
+    root = args.root.resolve()
     chrome = shutil.which("google-chrome")
     if chrome is None:
         raise RuntimeError("No local headless Chrome available for report opening")
     results = []
     for label, directory in [
-        ("new_workflow", "workflow_firstcell"),
-        ("native_import", "import_firstcell"),
+        ("new_workflow", args.workflow_directory),
+        ("native_import", args.import_directory),
     ]:
         source = root / directory / "qc/report.html"
         if not source.is_file():
             raise FileNotFoundError(source)
-        dest = root / "records/acceptance" / ("browser_" + label)
+        dest = root / args.audit_directory / ("browser_" + label)
         dest.mkdir(parents=True, exist_ok=False)
         screenshot = dest / "report.png"
         dom_path = dest / "dom.html"
@@ -80,7 +84,7 @@ def main():
             }
         )
         dump(
-            root / "records/acceptance/browser_acceptance.json",
+            root / args.audit_directory / "browser_acceptance.json",
             {
                 "recorded_utc": stamp(),
                 "results": results,

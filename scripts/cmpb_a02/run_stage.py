@@ -187,6 +187,11 @@ def launch(root, spec_path):
         raise FileExistsError("Stage already recorded; no automatic rerun: " + stage)
     remaining = int(budget["deadline_epoch"] - time.time())
     memory = 24 * GIB
+    if spec["category"] == "continuation":
+        # Separately approved A101-A103 window, shared by every new stage.
+        if budget.get("scope") != "A02 remaining three and joint import":
+            raise ValueError("Continuation requires its explicit scoped budget")
+        memory = 20 * GIB
     if spec["category"] == "firstcell":
         first = root / "records/firstcell_budget.json"
         if not first.exists():

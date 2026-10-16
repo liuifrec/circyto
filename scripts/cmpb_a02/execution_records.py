@@ -125,7 +125,9 @@ def mark_workflow_start(root):
     dump(root / "records/pilot_progress.json", progress)
 
 
-def alignment_output_binding(root, alignment, detector):
+def alignment_output_binding(root, alignment, detector, *, workflow_name="workflow_firstcell",
+                             cell_id=CELL, group_id="SRX26321174", reference=None,
+                             cohort_ids=None):
     """Bind a pipe-produced SAM using contemporaneous workflow/detector records.
 
     Preserve the wrapper record: it did not hash a pipe's output stream. The
@@ -143,25 +145,29 @@ def alignment_output_binding(root, alignment, detector):
             "inputs_unchanged"
         ):
             raise ValueError("Alignment completion cannot be bound")
-        manifest = root / "workflow_firstcell/align/bwa_mem/alignment_manifest.tsv"
+        manifest = root / workflow_name / "align/bwa_mem/alignment_manifest.tsv"
         with manifest.open(newline="") as handle:
             rows = list(csv.DictReader(handle, delimiter="\t"))
-        if len(rows) != 1:
-            raise ValueError("Exactly one fresh alignment manifest row required")
-        row = rows[0]
+        expected_ids = cohort_ids if cohort_ids is not None else [cell_id]
+        if len(rows) != len(expected_ids) or {r["cell_id"] for r in rows} != set(expected_ids):
+            raise ValueError("Exactly the declared fresh alignment cohort is required")
+        selected = [r for r in rows if r["cell_id"] == cell_id]
+        if len(selected) != 1:
+            raise ValueError("Exactly one fresh alignment manifest row required per cell")
+        row = selected[0]
         expected_fields = {
-            "cell_id": CELL,
+            "cell_id": cell_id,
             "aligner": "bwa-mem",
             "read_layout": "single-end",
             "reused_alignment": "false",
-            "group_id": "SRX26321174",
-            "reference": str(root / "ref/GRCh38.primary_assembly.genome.fa"),
+            "group_id": group_id,
+            "reference": str(reference or root / "ref/GRCh38.primary_assembly.genome.fa"),
         }
         if any(row.get(k) != v for k, v in expected_fields.items()):
             raise ValueError("Fresh alignment manifest identity/settings disagree")
         path = Path(row["sam"])
         if (
-            not path.is_relative_to(root / "workflow_firstcell/align/bwa_mem/cache")
+            not path.is_relative_to(root / workflow_name / "align/bwa_mem/cache")
             or path.name != "alignment.sam"
             or path.with_suffix(".sam.partial").exists()
         ):
@@ -170,7 +176,7 @@ def alignment_output_binding(root, alignment, detector):
         if str(path) != detector_input:
             raise ValueError("Manifest SAM does not match the emitted detector input")
         expected = detector["input_sha256"][str(path)]
-        log = path.parent / (CELL + ".align.log")
+        log = path.parent / (cell_id + ".align.log")
         if not log.is_file() or "[main] Real time:" not in log.read_text():
             raise ValueError("BWA completion log is missing")
         evidence = {

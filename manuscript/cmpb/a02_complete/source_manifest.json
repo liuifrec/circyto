@@ -1,0 +1,1558 @@
+{
+  "actual_failures_retained": {
+    "acceptance": {
+      "path": "records/acceptance/acceptance_failure.json",
+      "result": {
+        "completed_native_checks": 526,
+        "completed_report_checks": 539,
+        "error": "AssertionError(\"four-cell IMPORT: HTML:circ_qc.tsv:20:prevalence_completed: '1.000000' != '1.00'\")",
+        "recorded_utc": "2026-10-16T01:41:22.244550+00:00"
+      },
+      "sha256": "53c11beb488acc745de0d2a35f67fbc2a8c625d8b251a4b8bba4b76b83b57661"
+    },
+    "acceptance_v2": {
+      "path": "records/acceptance_v2/acceptance_failure.json",
+      "result": {
+        "completed_native_checks": 526,
+        "completed_report_checks": 4539,
+        "error": "FileNotFoundError(2, 'No such file or directory')",
+        "recorded_utc": "2026-10-16T01:46:03.415723+00:00"
+      },
+      "sha256": "68460ee291676c12b533469611df19a9f1b91c503db280ca21192eed0cc821de"
+    }
+  },
+  "base_head": "05e5171419bffb96a7890c492b7e4ab7531ba18a",
+  "checks": {
+    "native_value_checks.tsv": {
+      "failed": 0,
+      "rows": 1750,
+      "sha256": "261e04a95051a011cccc9f63cf0b55bb3b5090c1470a8b654e8b994cb7967ffa"
+    },
+    "report_value_checks.tsv": {
+      "failed": 0,
+      "rows": 6133,
+      "sha256": "c905ed381a2ff9d41ef0d9c1c5fabff99007d2b3926d2ec12c263207398715aa"
+    }
+  },
+  "cohort_summary": {
+    "biological_accuracy_assessed": false,
+    "historical_provenance_recovered": false,
+    "mixed_execution_lineage": true,
+    "native_checks": 1750,
+    "nnz": 472,
+    "passed": true,
+    "per_cell_candidates": {
+      "IMR90_A_100": 142,
+      "IMR90_A_101": 95,
+      "IMR90_A_102": 112,
+      "IMR90_A_103": 123
+    },
+    "per_cell_support": {
+      "IMR90_A_100": 474,
+      "IMR90_A_101": 317,
+      "IMR90_A_102": 419,
+      "IMR90_A_103": 489
+    },
+    "recorded_utc": "2026-10-16T01:52:20.833283+00:00",
+    "report_checks": 6133,
+    "states_not_observed_in_real_pilot": [
+      "failed",
+      "unknown",
+      "unprocessed",
+      "completed-zero"
+    ],
+    "total_support": 1699,
+    "unique_candidates": 435
+  },
+  "command_records": [
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_inputs.py",
+        "acquire",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}",
+        "--repo",
+        "${ANALYSIS_WORKTREE}"
+      ],
+      "log": "logs/continuation-acquire.log",
+      "log_sha256": "e2dfe21abae7c43c9191a1c586411eb2f5381c5e4b5a194df8f315386c163ff2",
+      "path": "records/continuation-acquire.json",
+      "sha256": "f44a6e76483aef56b266ed3c42c5763711732ae8a9e823f4a9e672c4de967291"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_records.py",
+        "bind",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}"
+      ],
+      "log": "logs/continuation-bind-native.log",
+      "log_sha256": "9977feafddf2f93449f6e41d328da5fa192f2d61b8e227d3b978bab5cc78378b",
+      "path": "records/continuation-bind-native.json",
+      "sha256": "f41d27a9ba0aa948fe1165563f5d6e24e1c3d545fabbea8806611d043d6e49a6"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02",
+        "--junitxml=${CONTINUATION_ROOT}/records/focused_helpers_v2.xml"
+      ],
+      "log": "logs/continuation-focused-helpers-v2.log",
+      "log_sha256": "0ff6ded1beac53c9110fe6edc45cde1d0f6e85847788a7e197efa92a0a8ba019",
+      "path": "records/continuation-focused-helpers-v2.json",
+      "sha256": "a1e9a4340ab8f9cf75397517fd41517957dcea77f2a7dd1d798c3b7faa5b4890"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02",
+        "--junitxml=${CONTINUATION_ROOT}/records/focused_helpers_v3.xml"
+      ],
+      "log": "logs/continuation-focused-helpers-v3.log",
+      "log_sha256": "d4ae258cdf9e911ddacaedc06fd0a5ca28e6633ca4c32004ffc01863ddb56717",
+      "path": "records/continuation-focused-helpers-v3.json",
+      "sha256": "5dff1e7f8b3daad7dcaaf90192afc1a5cfd0b11dc4be349dbbfd8fc50e89bb28"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02",
+        "--junitxml=${CONTINUATION_ROOT}/records/focused_helpers.xml"
+      ],
+      "log": "logs/continuation-focused-helpers.log",
+      "log_sha256": "d1d3ed4682f5edd9074f4331935f78712190811f678e08921d6cf8e07be0c365",
+      "path": "records/continuation-focused-helpers.json",
+      "sha256": "081449d5950bca21c316397cda9ec4f7d0aec2b293d300c892024b1b2e502ba2"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_records.py",
+        "freeze-recheck",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}",
+        "--audit-revision",
+        "v3"
+      ],
+      "log": "logs/continuation-freeze-recheck-v3.log",
+      "log_sha256": "1299ae35ee89c0d933b5294a7f4441c87abd34d504b0f8209a795e735abd2cf0",
+      "path": "records/continuation-freeze-recheck-v3.json",
+      "sha256": "8bb0ef6c74072db8057370e86610a89fed9d375c8bb4737794f6014ec7208bbe"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_records.py",
+        "freeze-recheck",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}"
+      ],
+      "log": "logs/continuation-freeze-recheck.log",
+      "log_sha256": "1af720bc7b2321b7b57d42fb1e84514ce93b959a3b09837c206879c5e3b37352",
+      "path": "records/continuation-freeze-recheck.json",
+      "sha256": "db93e066c92113cf32b578ecbb8aa2f558b978f697db4f0e8e7bddfc8c120968"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/test_continuation.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/test_prepare_inputs.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/test_tool_audit.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/test_status_revalidation.py",
+        "--junitxml=${CONTINUATION_ROOT}/records/preflight_tests.xml"
+      ],
+      "log": "logs/continuation-helper-preflight-tests.log",
+      "log_sha256": "963c17bb5123b646a316f5db7f0acfe825c1f687b021798456d2edf0ebee260c",
+      "path": "records/continuation-helper-preflight-tests.json",
+      "sha256": "643f0c3f8f2e3fe8dde65f7df096658d1dc5591f1ac0953c0c8002d10b009167"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "import-circ",
+        "--ciri3-manifest",
+        "${CONTINUATION_ROOT}/inputs/native_four.tsv",
+        "--cells",
+        "${CONTINUATION_ROOT}/inputs/cells_four.tsv",
+        "--rna",
+        "${CONTINUATION_ROOT}/inputs/rna/imr90_original_overlap_profile.four.h5ad",
+        "--detector",
+        "CIRI3",
+        "--genome-build",
+        "GRCh38",
+        "--coordinate-convention",
+        "1-based-closed",
+        "--support-definition",
+        "CIRI3_junction_reads",
+        "--outdir",
+        "${CONTINUATION_ROOT}/import_four_repeat"
+      ],
+      "log": "logs/continuation-import-four-repeat.log",
+      "log_sha256": "a7d29d648390b3bd919fb7e2e31b1f23e399cd069d051e17251a3334550f6527",
+      "path": "records/continuation-import-four-repeat.json",
+      "sha256": "c50030029ff3b51c45935b03e1f3381eed2dfc48c80302eab2b0ed21d1e15ed1"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "import-circ",
+        "--ciri3-manifest",
+        "${CONTINUATION_ROOT}/inputs/native_four.tsv",
+        "--cells",
+        "${CONTINUATION_ROOT}/inputs/cells_four.tsv",
+        "--rna",
+        "${CONTINUATION_ROOT}/inputs/rna/imr90_original_overlap_profile.four.h5ad",
+        "--detector",
+        "CIRI3",
+        "--genome-build",
+        "GRCh38",
+        "--coordinate-convention",
+        "1-based-closed",
+        "--support-definition",
+        "CIRI3_junction_reads",
+        "--outdir",
+        "${CONTINUATION_ROOT}/import_four"
+      ],
+      "log": "logs/continuation-import-four.log",
+      "log_sha256": "547c8b0964bed084174a5390a3088422c118424e944a0cc8c476c8fdf83dd399",
+      "path": "records/continuation-import-four.json",
+      "sha256": "3950f9faa5f697ec6bedd65924a557b2d3ce26a11968316236574f6790cba724"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_checks.py",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}",
+        "--audit-directory",
+        "records/acceptance_v2"
+      ],
+      "log": "logs/continuation-independent-acceptance-v2.log",
+      "log_sha256": "d1d7f5715201a29865b0be419652ff2473419899c84cf8d39c797a6204ec51ac",
+      "path": "records/continuation-independent-acceptance-v2.json",
+      "sha256": "701f5c3f6a89ad2dd65efe3fb0fd0926facc349c2090e9a12ac6edb8c63f32c4"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_checks.py",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}",
+        "--audit-directory",
+        "records/acceptance_v3"
+      ],
+      "log": "logs/continuation-independent-acceptance-v3.log",
+      "log_sha256": "8bc42dbf0fd9d23d42e1fd2d2c13936605608d48bfd69d64a544f9089dc59727",
+      "path": "records/continuation-independent-acceptance-v3.json",
+      "sha256": "64e92712e5232959dd41fcb4d73c882d62f66cad4644e1796e509f8331d9a31d"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_checks.py",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}"
+      ],
+      "log": "logs/continuation-independent-acceptance.log",
+      "log_sha256": "9c087ee06096e3c0eefdbb1f6801187fb54580eb0aa1284f6423efec082d0465",
+      "path": "records/continuation-independent-acceptance.json",
+      "sha256": "6de571b2648b44b465f2665fe3105de8a71a9cb1a01c0177acbbdaeececf526e"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_records.py",
+        "joint-inputs",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}"
+      ],
+      "log": "logs/continuation-joint-inputs.log",
+      "log_sha256": "6cc58184f73fc7497e49417ec674d80c1f1ea92eb4efa77bf9c623494b4c7ba8",
+      "path": "records/continuation-joint-inputs.json",
+      "sha256": "311ec23d86111e05f083a93df75963cf86ad4fde28f2249f4a773102aa46789e"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "manifest",
+        "validate",
+        "${CONTINUATION_ROOT}/inputs/manifest_remaining3.tsv",
+        "--strict"
+      ],
+      "log": "logs/continuation-manifest-validate.log",
+      "log_sha256": "558ad5eae4641a63c3108f160127fa646a99eb896b57dbaff75313ed9a6020ea",
+      "path": "records/continuation-manifest-validate.json",
+      "sha256": "51e3ff409a7db11f8d811ee87dac21c4dacc030bc0eb3ac08361c6ea42098909"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/browser_reports.py",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--workflow-directory",
+        "workflow_remaining3",
+        "--import-directory",
+        "import_four",
+        "--audit-directory",
+        "records/acceptance_v3"
+      ],
+      "log": "logs/continuation-offline-browser-v3.log",
+      "log_sha256": "1aaee20df33e063d6d60342ddd1585c2837f5562fb180a4e4a7e60d8a4edd291",
+      "path": "records/continuation-offline-browser-v3.json",
+      "sha256": "7d9940844a29517505fda47eb30dbc343d63175d59533becf4925fc41b6ee875"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_inputs.py",
+        "preflight",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}",
+        "--repo",
+        "${ANALYSIS_WORKTREE}"
+      ],
+      "log": "logs/continuation-preflight.log",
+      "log_sha256": "bec1ded81a0729a59d96d94c39133c622c8850f7b3e025bb5bd1ee8293f0e096",
+      "path": "records/continuation-preflight.json",
+      "sha256": "8a6a4ad0974ed4a983c101b2c6468bfe2829ae99d8aa84111369e8b1520d9025"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_packet.py",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}",
+        "--repo",
+        "${ANALYSIS_WORKTREE}",
+        "--audit-directory",
+        "records/acceptance_v3"
+      ],
+      "log": "logs/continuation-preservation-packet-v3.log",
+      "log_sha256": "a7d4161fecea629b9da780b76cbecb90ea203fdbc4ec086c71879a4bc358fce9",
+      "path": "records/continuation-preservation-packet-v3.json",
+      "sha256": "5a89697fc6ad7d50841f1249c9316a455ad086f4d52b37d1ba5bb963a7549e10"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/continuation-probe-affinity-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); os.sched_setaffinity(0,{8}); time.sleep(30)"
+      ],
+      "log": "logs/continuation-probe-affinity-stop.log",
+      "log_sha256": "1dcf7235d22214c0f160a3e1401595b51469a45dd5163c12c0733289d7a39770",
+      "path": "records/continuation-probe-affinity-stop.json",
+      "sha256": "145e67f5c572d27a467ad51b4ad2143536ce46f62fdbab75eb1790f1544b199a"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/continuation-probe-disk-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); pathlib.Path(\"tmp/continuation-probe-disk-stop-disk.bin\").write_bytes(b\"x\"*(4*1024**2)); time.sleep(30)"
+      ],
+      "log": "logs/continuation-probe-disk-stop.log",
+      "log_sha256": "78314e323c10bf9fb1483a0e047a751653154d18f1246ae027c1f85f83e6ba08",
+      "path": "records/continuation-probe-disk-stop.json",
+      "sha256": "f44744b4cebc8ab035863ab9c1bda3c466f346e84350f689c486eecaf5a749c7"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "raise SystemExit(7)"
+      ],
+      "log": "logs/continuation-probe-exit-failure.log",
+      "log_sha256": "1b81f3917308452cf6970e17fdfb0d2b3da6dd566f4fd74a8e4672378f48044e",
+      "path": "records/continuation-probe-exit-failure.json",
+      "sha256": "8170c5a0be6538c11581db82e2135581fb35bb04d204f12214d40d96b6e39a2a"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,subprocess; print(json.dumps({\"parent_affinity\":sorted(os.sched_getaffinity(0))})); subprocess.run([\"/usr/bin/python3\",\"-c\",\"import os; print(sorted(os.sched_getaffinity(0)))\"],check=True)"
+      ],
+      "log": "logs/continuation-probe-inheritance.log",
+      "log_sha256": "4a3bdeaad3c470bc642d9e921f93d879c989e3e61eb7456abeb27728ea6185fb",
+      "path": "records/continuation-probe-inheritance.json",
+      "sha256": "342d10a661b58c7ec620b864ef3a6ed028949a846bee8a5a65b194fa86b13f17"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/continuation-probe-memory-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); x=bytearray(256*1024**2); time.sleep(30)"
+      ],
+      "log": "logs/continuation-probe-memory-stop.log",
+      "log_sha256": "545bc08973f855a7eb37d507edf5ed397d22d38a6dd99be0086675911668096d",
+      "path": "records/continuation-probe-memory-stop.json",
+      "sha256": "1f27750b9e7765ef9403697b6292a29eafdaaa5e891422a4c1649a0bea06343e"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/continuation-probe-wall-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); time.sleep(30)"
+      ],
+      "log": "logs/continuation-probe-wall-stop.log",
+      "log_sha256": "09821f9aa5ac53510cee16092fc8c3240d5b27dba9a3fa8c70ddfca76c66cd66",
+      "path": "records/continuation-probe-wall-stop.json",
+      "sha256": "397fca5316ef897ee85bb796d65120d88e6b61cf2d5dfdb47d8f1689d874faa0"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "workflow",
+        "full-length-circrna",
+        "--manifest",
+        "${CONTINUATION_ROOT}/inputs/manifest_remaining3.tsv",
+        "--outdir",
+        "${CONTINUATION_ROOT}/workflow_remaining3",
+        "--protocol",
+        "ramda",
+        "--skip-demux",
+        "--genome-fasta",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "--gtf",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf",
+        "--detector",
+        "ciri3",
+        "--threads",
+        "8",
+        "--parallel",
+        "1",
+        "--chunk-size",
+        "1",
+        "--export-h5ad",
+        "--gene-expression-method",
+        "simple-overlap",
+        "--no-report"
+      ],
+      "log": "logs/continuation-workflow-remaining3.log",
+      "log_sha256": "0861e3c461e25eb3580deea3d2bf1481abee1c46847b744c2aec611af33d6f4b",
+      "path": "records/continuation-workflow-remaining3.json",
+      "sha256": "1281957b19293cc4eb728f6b34569def024c398024356115c717377e364d17e9"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "report",
+        "--workdir",
+        "${CONTINUATION_ROOT}/workflow_remaining3"
+      ],
+      "log": "logs/continuation-workflow-report.log",
+      "log_sha256": "1eb0875998d6d208324b6ddedfe0060a931b473fbffce1353e2bcac3535c22d9",
+      "path": "records/continuation-workflow-report.json",
+      "sha256": "adc98aba0868a1ea542e9f0e1b8970854d2da403a12107bbf1e99978fc573998"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a02/continuation_records.py",
+        "start",
+        "--root",
+        "${CONTINUATION_ROOT}",
+        "--original",
+        "${A02_ROOT}"
+      ],
+      "log": "logs/continuation-workflow-request.log",
+      "log_sha256": "d31ac06f83db0eb406bf754d5534a1f7a7f932c351ef8aa6503371ffa51e066e",
+      "path": "records/continuation-workflow-request.json",
+      "sha256": "f96fa8c84cf76912b2f691723cf56a3601a56853cbc841ef4571b23ad63d0f48"
+    }
+  ],
+  "corrected_audit_helper_hashes": {
+    "correction": "Exact rational equality for zero padding; RNA hash checked against command-bound original input; no numerical tolerance or changed scientific assertion",
+    "frozen_utc": "2026-10-16T01:51:45.242057+00:00",
+    "new_audit_directory": "records/acceptance_v3",
+    "original_checker_stage": "records/continuation-independent-acceptance.json",
+    "retained_audit_files": {
+      "records/acceptance/acceptance_failure.json": "53c11beb488acc745de0d2a35f67fbc2a8c625d8b251a4b8bba4b76b83b57661",
+      "records/acceptance/circ_roundtrip.h5ad": "c20cd2cb79e6fe4738041ff76c4bbf384c4b2442031c786f7abec703d0bebd6d",
+      "records/acceptance/multimodal_roundtrip.h5mu": "bfeca591f723dc75c296aa779f04d5f501a95d96230f95545619680e8361d747",
+      "records/acceptance/native_value_checks.tsv": "ce1b91b7ad7eb9c7f500b020a476c2d36ee472569d6b56217c90e5eddfb409b3",
+      "records/acceptance/report_value_checks.tsv": "45d6475d18eb7f8a3b5405d523a11e06d32a358de7d7a788727ea57b5fca7003",
+      "records/acceptance_v2/acceptance_failure.json": "68460ee291676c12b533469611df19a9f1b91c503db280ca21192eed0cc821de",
+      "records/acceptance_v2/circ_roundtrip.h5ad": "c20cd2cb79e6fe4738041ff76c4bbf384c4b2442031c786f7abec703d0bebd6d",
+      "records/acceptance_v2/multimodal_roundtrip.h5mu": "bfeca591f723dc75c296aa779f04d5f501a95d96230f95545619680e8361d747",
+      "records/acceptance_v2/native_value_checks.tsv": "ce1b91b7ad7eb9c7f500b020a476c2d36ee472569d6b56217c90e5eddfb409b3",
+      "records/acceptance_v2/report_value_checks.tsv": "cdcfe6e6185b31ce202ab011b012097b2277c82d2babc59687c576659e4539bd"
+    },
+    "retained_failures": {
+      "acceptance": {
+        "completed_native_checks": 526,
+        "completed_report_checks": 539,
+        "error": "AssertionError(\"four-cell IMPORT: HTML:circ_qc.tsv:20:prevalence_completed: '1.000000' != '1.00'\")",
+        "recorded_utc": "2026-10-16T01:41:22.244550+00:00"
+      },
+      "acceptance_v2": {
+        "completed_native_checks": 526,
+        "completed_report_checks": 4539,
+        "error": "FileNotFoundError(2, 'No such file or directory')",
+        "recorded_utc": "2026-10-16T01:46:03.415723+00:00"
+      }
+    },
+    "sha256": {
+      "browser_reports.py": "ef7b77de93a8e1b4a5595f499ac479c11d73f0930e4b00de4bb8657609f83ded",
+      "build_status_wheel.py": "b67ae6a0859d4a9aaf3c8a7bd689a36bedea73b85801bbc4049052a703d7a85e",
+      "continuation_checks.py": "0319c32f17378df7b927bc4e252c179ca9ec2ad223c55b5f3295079ea753b167",
+      "continuation_inputs.py": "93ac4366fb3011a6d424e20332c59636012daca647a188aec73c59dffc4e0d09",
+      "continuation_packet.py": "07960fb3e2bf76220d38edf46810f7f6fc54b668a8a4eeba57d29464661b074c",
+      "continuation_records.py": "6caedce7b30c0565a09ec8dccd590929e6d8a4c113ccf46c15db4de4433fb5b6",
+      "environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+      "execution_records.py": "45ef3604fc5a123064a685db821d6080dac3e2eaad41d78213d955a0d43e4db4",
+      "finalize_record.py": "ff787b5b6a3c0be2bd162f4d0fcc7c115071249392fd722730d6c824861dbe07",
+      "independent_checks.py": "6a4922b17827dcfd3268af352b2c6574b898f420b1deb317a0622d268d41e425",
+      "prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+      "probe_controls.py": "0998f36ae75548bd7b250a06c814adb8df2692983f2089882dec729ded15dc4e",
+      "replay_alignment_status.py": "699010bae3a66396d5afded9c275bf6eb68aa7523599940355f2a600a4858714",
+      "run_stage.py": "48bcdbc1631d9fc70bf8d1f993e7f3cbb86fe5e4bc2a6309a13ad809a1febdd0",
+      "test_browser_reports.py": "c0badbed8e678474b389651e826e1d7504c291e5f7ddc3d8a33ecbebeaccea95",
+      "test_continuation.py": "29cbfbac62d887e85778007081ed1984f0125965a88c7c9d6f1c26a06355d4ff",
+      "test_execution_records.py": "6fcfcc75edb7e9a214524efdfbe44e1605ee7e9a3e11eddf2e69065218800d9e",
+      "test_finalize_record.py": "ae29ae8cb7b1bd7e6af4563b57506670732a234efcac7a3b4a00265e03478f42",
+      "test_independent_checks.py": "bfa9b24114c3612441c645062dd4d2ce3b7aba2c19d177811a9e8bbdeb66706d",
+      "test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+      "test_status_revalidation.py": "9882d461997d0535397e3e3a14b7e0d5528fe3b06ff4233d98065f8dfeafbe2a",
+      "test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+      "tool_audit.py": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+    }
+  },
+  "environment_record": "records/preflight.json",
+  "execution_environment": {
+    "CIRCYTO_CIRI3_EXTRA_ARGS": "-S 0 -Ma 0",
+    "CIRCYTO_CIRI3_JAR": "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar",
+    "CIRCYTO_CIRI3_JAVA": "${CONTINUATION_ROOT}/audit-bin/java",
+    "JAVA_TOOL_OPTIONS": "-Xmx16g -XX:ActiveProcessorCount=8",
+    "PATH": "${CONTINUATION_ROOT}/audit-bin:${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin:${A02_ROOT}/env-bwa/bin:/usr/bin:/bin",
+    "PYTHONNOUSERSITE": "1"
+  },
+  "expected_control_probe_outcomes": [
+    {
+      "exit_code": 0,
+      "passed": true,
+      "probe": "inheritance",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 7,
+      "passed": true,
+      "probe": "exit-failure",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 1,
+      "passed": true,
+      "probe": "wall-stop",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 1,
+      "passed": true,
+      "probe": "memory-stop",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 125,
+      "passed": true,
+      "probe": "disk-stop",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 125,
+      "passed": true,
+      "probe": "affinity-stop",
+      "surviving_test_pids": []
+    }
+  ],
+  "external_executables": {
+    "bwa": {
+      "path": "${A02_ROOT}/env-bwa/bin/bwa",
+      "sha256": "598c1303107857bfcf1c954c09871d6c16811988020ffd95ce518983ffc0c85c"
+    },
+    "java": {
+      "path": "${A02_ROOT}/env/lib/jvm/bin/java",
+      "sha256": "9966bf6337aec59196f96f95cf5acd509139688bbe8cf1b81aad112ffca4aaf2"
+    }
+  },
+  "external_jar_sha256": "569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0",
+  "files": {
+    "helpers/runtime/run_stage.py": {
+      "bytes": 15316,
+      "sha256": "48bcdbc1631d9fc70bf8d1f993e7f3cbb86fe5e4bc2a6309a13ad809a1febdd0"
+    },
+    "helpers/runtime/tool_audit.py": {
+      "bytes": 3901,
+      "sha256": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+    },
+    "import_four/anndata/circ_counts.h5ad": {
+      "bytes": 213608,
+      "sha256": "0c2b16e89f232343ad3270be855e076cbc875cc0b987709897caf720c3a0f009"
+    },
+    "import_four/evidence/cells.tsv": {
+      "bytes": 112,
+      "sha256": "090ff3f4ba780c83ebf27c7d350ac11d111569f302378295420c94286ab7623c"
+    },
+    "import_four/evidence/ciri3_manifest.tsv": {
+      "bytes": 726,
+      "sha256": "4cb39888dea08da2be40744430ade7b131b3df5e4277e740b44093a8cdb7a593"
+    },
+    "import_four/evidence/ciri3_native_000001.tsv": {
+      "bytes": 22544,
+      "sha256": "4c807adc516e5367a315b4ac3d6d41c9d6d573a3bf222904c05865c24c5964f6"
+    },
+    "import_four/evidence/ciri3_native_000002.tsv": {
+      "bytes": 15067,
+      "sha256": "9e8165d456c60a19b6c4d790ad8c4b64d03a7ce50b388b34c3ff025693a1a84d"
+    },
+    "import_four/evidence/ciri3_native_000003.tsv": {
+      "bytes": 18682,
+      "sha256": "c779310db7d99e8cc432ebd7af965012322d489f0b5df8da943db2a456c1f63e"
+    },
+    "import_four/evidence/ciri3_native_000004.tsv": {
+      "bytes": 21021,
+      "sha256": "9be109dedb5eb87f9843aa6303a66545f24be355aab499e4584a59e747c861b1"
+    },
+    "import_four/matrix/cell_index.txt": {
+      "bytes": 48,
+      "sha256": "00f54d24f0156be76db091c1a1d7298e918cd0d6426658439a0d7297bbf440e3"
+    },
+    "import_four/matrix/circ_counts.mtx": {
+      "bytes": 3733,
+      "sha256": "72af1c3dc5cbb1590ad1ebb94784a02836282b162020b3e6bcb0c7032d85d3d8"
+    },
+    "import_four/matrix/circ_feature_table.tsv": {
+      "bytes": 75128,
+      "sha256": "6ee99a251c6c9cada7b17ff280e22341d2c498fcadcfbb0549eeacc95254e1e8"
+    },
+    "import_four/matrix/circ_index.txt": {
+      "bytes": 10408,
+      "sha256": "9d6fcf1e420432ad5ef62a9a1dd6925e943ad337656a53eb75b7564f9294bb17"
+    },
+    "import_four/mudata/circyto_multimodal.h5mu": {
+      "bytes": 27200089,
+      "sha256": "e6a2f076e594a75da4b4d2ed96b9d882f2c1cc4b837c9424b0da64adb6025d8c"
+    },
+    "import_four/qc/cell_qc.tsv": {
+      "bytes": 500,
+      "sha256": "4cc95819227d41b61ace57f0f37c1351fff5cf238a9ba3714dcf469eb12455f6"
+    },
+    "import_four/qc/circ_qc.tsv": {
+      "bytes": 75128,
+      "sha256": "6ee99a251c6c9cada7b17ff280e22341d2c498fcadcfbb0549eeacc95254e1e8"
+    },
+    "import_four/qc/metrics.json": {
+      "bytes": 2798,
+      "sha256": "031139b0985e9894522b65395c6d5ff26e8a323eed14c34d1d4184e5f6844e92"
+    },
+    "import_four/qc/report.html": {
+      "bytes": 62083,
+      "sha256": "2fc5745c5d6029ff8fc0db9a095c67b576710960c95abd2799aa279c26261163"
+    },
+    "import_four_repeat/anndata/circ_counts.h5ad": {
+      "bytes": 213608,
+      "sha256": "0c2b16e89f232343ad3270be855e076cbc875cc0b987709897caf720c3a0f009"
+    },
+    "import_four_repeat/evidence/cells.tsv": {
+      "bytes": 112,
+      "sha256": "090ff3f4ba780c83ebf27c7d350ac11d111569f302378295420c94286ab7623c"
+    },
+    "import_four_repeat/evidence/ciri3_manifest.tsv": {
+      "bytes": 726,
+      "sha256": "4cb39888dea08da2be40744430ade7b131b3df5e4277e740b44093a8cdb7a593"
+    },
+    "import_four_repeat/evidence/ciri3_native_000001.tsv": {
+      "bytes": 22544,
+      "sha256": "4c807adc516e5367a315b4ac3d6d41c9d6d573a3bf222904c05865c24c5964f6"
+    },
+    "import_four_repeat/evidence/ciri3_native_000002.tsv": {
+      "bytes": 15067,
+      "sha256": "9e8165d456c60a19b6c4d790ad8c4b64d03a7ce50b388b34c3ff025693a1a84d"
+    },
+    "import_four_repeat/evidence/ciri3_native_000003.tsv": {
+      "bytes": 18682,
+      "sha256": "c779310db7d99e8cc432ebd7af965012322d489f0b5df8da943db2a456c1f63e"
+    },
+    "import_four_repeat/evidence/ciri3_native_000004.tsv": {
+      "bytes": 21021,
+      "sha256": "9be109dedb5eb87f9843aa6303a66545f24be355aab499e4584a59e747c861b1"
+    },
+    "import_four_repeat/matrix/cell_index.txt": {
+      "bytes": 48,
+      "sha256": "00f54d24f0156be76db091c1a1d7298e918cd0d6426658439a0d7297bbf440e3"
+    },
+    "import_four_repeat/matrix/circ_counts.mtx": {
+      "bytes": 3733,
+      "sha256": "72af1c3dc5cbb1590ad1ebb94784a02836282b162020b3e6bcb0c7032d85d3d8"
+    },
+    "import_four_repeat/matrix/circ_feature_table.tsv": {
+      "bytes": 75128,
+      "sha256": "6ee99a251c6c9cada7b17ff280e22341d2c498fcadcfbb0549eeacc95254e1e8"
+    },
+    "import_four_repeat/matrix/circ_index.txt": {
+      "bytes": 10408,
+      "sha256": "9d6fcf1e420432ad5ef62a9a1dd6925e943ad337656a53eb75b7564f9294bb17"
+    },
+    "import_four_repeat/mudata/circyto_multimodal.h5mu": {
+      "bytes": 27200089,
+      "sha256": "e6a2f076e594a75da4b4d2ed96b9d882f2c1cc4b837c9424b0da64adb6025d8c"
+    },
+    "import_four_repeat/qc/cell_qc.tsv": {
+      "bytes": 500,
+      "sha256": "4cc95819227d41b61ace57f0f37c1351fff5cf238a9ba3714dcf469eb12455f6"
+    },
+    "import_four_repeat/qc/circ_qc.tsv": {
+      "bytes": 75128,
+      "sha256": "6ee99a251c6c9cada7b17ff280e22341d2c498fcadcfbb0549eeacc95254e1e8"
+    },
+    "import_four_repeat/qc/metrics.json": {
+      "bytes": 2798,
+      "sha256": "031139b0985e9894522b65395c6d5ff26e8a323eed14c34d1d4184e5f6844e92"
+    },
+    "import_four_repeat/qc/report.html": {
+      "bytes": 62083,
+      "sha256": "2fc5745c5d6029ff8fc0db9a095c67b576710960c95abd2799aa279c26261163"
+    },
+    "inputs/cells_four.tsv": {
+      "bytes": 112,
+      "sha256": "090ff3f4ba780c83ebf27c7d350ac11d111569f302378295420c94286ab7623c"
+    },
+    "inputs/ena_remaining3.tsv": {
+      "bytes": 710,
+      "sha256": "e8a40efdca03093ce7bfe8b51cf99d56f1a5ace6543beeaf1cc89cbd7af3b8e4"
+    },
+    "inputs/fastq/SRR30918115.fastq.gz": {
+      "bytes": 233399236,
+      "sha256": "3f04cdbf6fad52bc99de2979cd4ba7701b88bfa41e04c54374e9f95279d3dc31"
+    },
+    "inputs/fastq/SRR30918116.fastq.gz": {
+      "bytes": 236808421,
+      "sha256": "b6fe8136d893fc2c8e3ad33569f91400bd7dc92742ca0f16fde86b32af34efbd"
+    },
+    "inputs/fastq/SRR30918117.fastq.gz": {
+      "bytes": 230818973,
+      "sha256": "7aa0076827961ad8fecbf5b4aebb5494151551c7006757e5a04a120c6f538443"
+    },
+    "inputs/manifest_remaining3.tsv": {
+      "bytes": 593,
+      "sha256": "7be6f4224f1bce053e1d00a7e7d919aad1da1c1683152617cf00c14dbf7dfb0f"
+    },
+    "inputs/native_four.tsv": {
+      "bytes": 726,
+      "sha256": "4cb39888dea08da2be40744430ade7b131b3df5e4277e740b44093a8cdb7a593"
+    },
+    "inputs/rna/imr90_original_overlap_profile.four.h5ad": {
+      "bytes": 10784373,
+      "sha256": "d20b00eacac93a497646f646163cdd6568057ba15ae0dd2ca2cbe2f9a58a61d9"
+    },
+    "workflow_remaining3/align/alignment_manifest.tsv": {
+      "bytes": 1511,
+      "sha256": "e452f9417c7485c7d811b3090c0966245c21220039258425de271108ac81bfdc"
+    },
+    "workflow_remaining3/align/alignment_prepare_summary.json": {
+      "bytes": 2458,
+      "sha256": "4c5142ee6e092837d5c85890cb241bfd7b5063e7484fb95893c8292d4f63b050"
+    },
+    "workflow_remaining3/align/bwa_mem/alignment_manifest.tsv": {
+      "bytes": 1511,
+      "sha256": "e452f9417c7485c7d811b3090c0966245c21220039258425de271108ac81bfdc"
+    },
+    "workflow_remaining3/align/bwa_mem/alignment_prepare_summary.json": {
+      "bytes": 2278,
+      "sha256": "52401efad1f6c1d09593736ad5b2b167506c71cceef87a996ba45d5a6e05846e"
+    },
+    "workflow_remaining3/align/bwa_mem/bwa_mem/IMR90_A_101.sam": {
+      "bytes": 6736279319,
+      "sha256": "a6c4e8789c5fc1233e69a2ab191d9017a4b5b6262de080fe07907abf5e67b74b"
+    },
+    "workflow_remaining3/align/bwa_mem/bwa_mem/IMR90_A_102.sam": {
+      "bytes": 6318106502,
+      "sha256": "d7bdf4a217752cf07a31449f6d5be84f80dc644a1a16447d0c9d9720f4f966f6"
+    },
+    "workflow_remaining3/align/bwa_mem/bwa_mem/IMR90_A_103.sam": {
+      "bytes": 6150673203,
+      "sha256": "6c7bac39d9d43db211867483266a196125f0e208e66e0ee320891ead02aaa4e7"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/IMR90_A_102.align.log": {
+      "bytes": 1963,
+      "sha256": "b8e43b90071e8edce52f5a4f7da83005cd4607b1fd5389efaed9057544435c4e"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/alignment.sam": {
+      "bytes": 6318106502,
+      "sha256": "d7bdf4a217752cf07a31449f6d5be84f80dc644a1a16447d0c9d9720f4f966f6"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/alignment.sam.provenance.json": {
+      "bytes": 890,
+      "sha256": "3b0c181b8939d7069c1d8fc7b66d1a1c030d056ef36cf65da266448a6cdc96c4"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/IMR90_A_103.align.log": {
+      "bytes": 1963,
+      "sha256": "058e88da29c8e9b3f7bb8347f115705c1c2b9c0c4686d0d9b702bb0850395055"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/alignment.sam": {
+      "bytes": 6150673203,
+      "sha256": "6c7bac39d9d43db211867483266a196125f0e208e66e0ee320891ead02aaa4e7"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/alignment.sam.provenance.json": {
+      "bytes": 890,
+      "sha256": "76c99dd2651c70661be93d83cd60ef541f677e82fd04bbbdf1e5ace777728e57"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/IMR90_A_101.align.log": {
+      "bytes": 1963,
+      "sha256": "03edae893657c99d639b3f7ca3e424c2645cd08bdec8e98cc4dc5496f7d2d2e9"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/alignment.sam": {
+      "bytes": 6736279319,
+      "sha256": "a6c4e8789c5fc1233e69a2ab191d9017a4b5b6262de080fe07907abf5e67b74b"
+    },
+    "workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/alignment.sam.provenance.json": {
+      "bytes": 890,
+      "sha256": "c5a1991e984dec008c3b972079404d6207ac8e7a933feadc162885c7f00a753b"
+    },
+    "workflow_remaining3/align/bwa_mem/chunks/chunk_00001.json": {
+      "bytes": 615,
+      "sha256": "921c302a981da617fa5408317f005d7d067358fc6d19aeb8f97a06be15db4f57"
+    },
+    "workflow_remaining3/align/bwa_mem/chunks/chunk_00002.json": {
+      "bytes": 615,
+      "sha256": "8b4ea0093da772186f8892c4cea101a2436b7e48332b9aa499b9cb392a1cf9e6"
+    },
+    "workflow_remaining3/align/bwa_mem/chunks/chunk_00003.json": {
+      "bytes": 615,
+      "sha256": "4f13cbf6b97453f1bcc36dae64bf8ed94eadf0ef06cffbcdd9b20b5393e618e9"
+    },
+    "workflow_remaining3/anndata/circ_counts.h5ad": {
+      "bytes": 205818,
+      "sha256": "bf9741845671a855b52411f9238801eb440a96fdbd7a76467bf88fa3627fd3a7"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_101.ciri3.log": {
+      "bytes": 1925,
+      "sha256": "490b55eea7c1b59899e9c7d437598e1c737ff63bfe23420d02d1281f44960b9e"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_101.ciri3_run/ciri3_raw.tsv": {
+      "bytes": 15067,
+      "sha256": "9e8165d456c60a19b6c4d790ad8c4b64d03a7ce50b388b34c3ff025693a1a84d"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_101.ciri3_run/ciri3_raw.tsv.log": {
+      "bytes": 986,
+      "sha256": "9d87165b8ec54e5ffa1a343882b395a912836a4b79567551ee28355d59b3c7b4"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_101.tsv": {
+      "bytes": 4967,
+      "sha256": "7b2a223d24c5676a811f43d8c6a20318106d47593346ea766e88a85090ecdd83"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_101.tsv.provenance.json": {
+      "bytes": 887,
+      "sha256": "00c50ae61001ac2aae8cb40b2bd8f1e0218a1096caff560ae3e2abec6caea356"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_102.ciri3.log": {
+      "bytes": 1926,
+      "sha256": "0afff8a99c82258449424840bff2572738f416ceb864af334150df34882193c7"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_102.ciri3_run/ciri3_raw.tsv": {
+      "bytes": 18682,
+      "sha256": "c779310db7d99e8cc432ebd7af965012322d489f0b5df8da943db2a456c1f63e"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_102.ciri3_run/ciri3_raw.tsv.log": {
+      "bytes": 986,
+      "sha256": "af7234209759dfb0b323a86f6dcab4eb0b2f5366bf7f01a2111463ad310b80bc"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_102.tsv": {
+      "bytes": 5845,
+      "sha256": "b3dfa0b619e19cfe8586d6d596e66f609b003ed39e425e8cbde59d3212e55872"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_102.tsv.provenance.json": {
+      "bytes": 887,
+      "sha256": "a64d7714fa5afeb2eb8e9b4e2f7658a487d6a25d672733314c6c09d3935881c4"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_103.ciri3.log": {
+      "bytes": 1926,
+      "sha256": "43bc4b3d5f0a84fcaf1e5bca661818495accf84c468a6974e84caad290421a7e"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_103.ciri3_run/ciri3_raw.tsv": {
+      "bytes": 21021,
+      "sha256": "9be109dedb5eb87f9843aa6303a66545f24be355aab499e4584a59e747c861b1"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_103.ciri3_run/ciri3_raw.tsv.log": {
+      "bytes": 986,
+      "sha256": "65bbb9d18a33af4e07af36dd5f60d81f2d9ff5bdc28859f8cab5ef973c080ddc"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_103.tsv": {
+      "bytes": 6376,
+      "sha256": "8ba882739c7663d64ec92b61a481e058a5a965942e1d48ef7bc0feec9be9645a"
+    },
+    "workflow_remaining3/ciri3/IMR90_A_103.tsv.provenance.json": {
+      "bytes": 887,
+      "sha256": "325bb258dbba56ed81b98a3362ba1eadc689254b84989df24849f97f281133b3"
+    },
+    "workflow_remaining3/ciri3/chunks/chunk_00001.json": {
+      "bytes": 1071,
+      "sha256": "3a23a22539174a31a15c79af748ff7553176d375228c017d67221380751f8e9b"
+    },
+    "workflow_remaining3/ciri3/chunks/chunk_00002.json": {
+      "bytes": 1073,
+      "sha256": "2146dd7e04ce7b20af59070041d390a51597ecf9341619ab6d67d1ef14d819ba"
+    },
+    "workflow_remaining3/ciri3/chunks/chunk_00003.json": {
+      "bytes": 1071,
+      "sha256": "3ad5fdbaa0c270fb31459e4c983d7137f26fd6845954f699227b9d3ccf978cba"
+    },
+    "workflow_remaining3/ciri3/detector_run_summary.json": {
+      "bytes": 3831,
+      "sha256": "a5737317e09c75012c89a79279e40d2a5ee7f38287792e9f733c8bf37c002f18"
+    },
+    "workflow_remaining3/logs/run_ciri3_summary.json": {
+      "bytes": 388,
+      "sha256": "c50352f69df6e7319c2d28313ce7276ec70c7b6f2ca536296f6dff7175ef694d"
+    },
+    "workflow_remaining3/manifests/single_end_manifest.tsv": {
+      "bytes": 597,
+      "sha256": "3b4205e44ba7fb9e50b2c80ded11df19d6abf76190b32da3c965e41e6a85fcdd"
+    },
+    "workflow_remaining3/matrix/cell_index.txt": {
+      "bytes": 36,
+      "sha256": "a9e06df3c034e95e9ffc54e23aa733061fbb369c96ccb42f7aca8f07d32c4dc1"
+    },
+    "workflow_remaining3/matrix/circ_counts.mtx": {
+      "bytes": 2590,
+      "sha256": "bf1eea6809834b8b22ba2f7b28158e3c4eff20ccf927c37b26f19876743788f5"
+    },
+    "workflow_remaining3/matrix/circ_feature_table.tsv": {
+      "bytes": 42261,
+      "sha256": "f54155dc1b98d363833ae01bd12f49d93fe200463b9754da8bb55b4fc4c90ebb"
+    },
+    "workflow_remaining3/matrix/circ_index.txt": {
+      "bytes": 7281,
+      "sha256": "475e796abb78a99d1613d08092f3ff5ed218b5d3646626edaeb51629102d718a"
+    },
+    "workflow_remaining3/qc/cell_qc.tsv": {
+      "bytes": 495,
+      "sha256": "210930ad2bcd623d5fccdb23b1ec37ab31ec4d6abc310b1a2a04766fad5edde5"
+    },
+    "workflow_remaining3/qc/circ_qc.tsv": {
+      "bytes": 45431,
+      "sha256": "47addc36abdb2cc9f36bc1e930aee8c17d485d83cf0f0a6c3b8f8131c18a8b48"
+    },
+    "workflow_remaining3/qc/metrics.json": {
+      "bytes": 64394,
+      "sha256": "e535be70f6ee72759e9a33225b47246f3043997c00c4cc1dde428cf766866def"
+    },
+    "workflow_remaining3/qc/report.html": {
+      "bytes": 29318,
+      "sha256": "bdd2aa5ebdd982591ce5ea694617ffbf6f753d9e332603ff1171341b48502783"
+    },
+    "workflow_remaining3/qc/rna_gene_qc.tsv": {
+      "bytes": 3305416,
+      "sha256": "e77d834255bdb169164508fff7797ff6e6c7e835d27a910aa56a224356c3c1e8"
+    },
+    "workflow_remaining3/qc/rna_qc.tsv": {
+      "bytes": 305,
+      "sha256": "f7d707bf3536ca90ba12404321879ff0f8b81ff756f88e2a3776fec580eb8eec"
+    },
+    "workflow_remaining3/rna/gene_counts.tsv": {
+      "bytes": 2238669,
+      "sha256": "c0f77a172a5fbf35cf6f70e5a839d693ebe2fae7822fe6ab9a88f8b64f2a0b7f"
+    },
+    "workflow_remaining3/rna/gene_feature_table.tsv": {
+      "bytes": 4284804,
+      "sha256": "3ff0e2b141673d925eb7fd30ba9e49656c499f2c13d6a2f7cd79fc08d08dc972"
+    },
+    "workflow_remaining3/rna/rna_import_summary.json": {
+      "bytes": 2928,
+      "sha256": "de8365a45a54386a40a1bccb293fe2f6df21d1a3d5684c1ec87645c3fb5a5462"
+    },
+    "workflow_remaining3/workflow_summary.json": {
+      "bytes": 11244,
+      "sha256": "2eb813fe8af8584f1a01adf1faf0b35ad24eaea0cfea8738b8f2954a22e22c74"
+    }
+  },
+  "finalization_note": "Final stage/log hashes and resource totals refreshed after preservation-packet stage exit; all scientific assertions unchanged.",
+  "fixed_source_records": [
+    {
+      "alignment_status": "aligned",
+      "binding_record": "${A02_ROOT}/records/native_completion_binding.json",
+      "cell_id": "IMR90_A_100",
+      "derived_status_source": "e6843a38469d49f96d44758a4e37893ebbe2734b",
+      "detector_status": "completed",
+      "gsm": "GSM8558852",
+      "native_path": "${A02_ROOT}/workflow_firstcell/ciri3/IMR90_A_100.ciri3_run/ciri3_raw.tsv",
+      "native_sha256": "4c807adc516e5367a315b4ac3d6d41c9d6d573a3bf222904c05865c24c5964f6",
+      "original_detector_status": "unknown",
+      "run": "SRR30918126",
+      "source_commit": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8"
+    },
+    {
+      "alignment_output_binding": {
+        "alignment_log": "workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/IMR90_A_101.align.log",
+        "alignment_log_sha256": "03edae893657c99d639b3f7ca3e424c2645cd08bdec8e98cc4dc5496f7d2d2e9",
+        "limitation": "No independent hash of BWA stdout stream; reviewed workflow byte-copy/rename contract binds the SAM path.",
+        "manifest": "workflow_remaining3/align/bwa_mem/alignment_manifest.tsv",
+        "manifest_sha256": "e452f9417c7485c7d811b3090c0966245c21220039258425de271108ac81bfdc",
+        "method": "fresh workflow manifest + BWA exit 0 + detector pre-input hash",
+        "output_path": "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/alignment.sam",
+        "output_sha256": "a6c4e8789c5fc1233e69a2ab191d9017a4b5b6262de080fe07907abf5e67b74b",
+        "wrapper_direct_output_hash_available": false
+      },
+      "alignment_record": "${CONTINUATION_ROOT}/records/tool_commands/1792112722789222493-205956-bwa.json",
+      "alignment_record_sha256": "2b83d9eb6aa7ccfde32416fa065053459338f9f8046878b82c4ca115224fdc1c",
+      "alignment_status": "aligned",
+      "cell_id": "IMR90_A_101",
+      "detector_record": "${CONTINUATION_ROOT}/records/tool_commands/1792114323688788897-207270-java.json",
+      "detector_record_sha256": "e02f78b75594480edf751776ae51f3df65d5fd214fead5b81cc01641d812d6f8",
+      "detector_status": "completed",
+      "emitted_bwa_argv": [
+        "${A02_ROOT}/env-bwa/bin/bwa",
+        "mem",
+        "-t",
+        "8",
+        "-k",
+        "15",
+        "-T",
+        "15",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "${CONTINUATION_ROOT}/inputs/fastq/SRR30918117.fastq.gz"
+      ],
+      "emitted_detector_argv": [
+        "${A02_ROOT}/env/lib/jvm/bin/java",
+        "-jar",
+        "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar",
+        "-I",
+        "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/alignment.sam",
+        "-O",
+        "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_101.ciri3_run/ciri3_raw.tsv",
+        "-F",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "-T",
+        "8",
+        "-G",
+        "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_101.ciri3_run/ciri3_internal.log",
+        "-A",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf",
+        "-S",
+        "0",
+        "-Ma",
+        "0"
+      ],
+      "executable_sha256": {
+        "bwa": "598c1303107857bfcf1c954c09871d6c16811988020ffd95ce518983ffc0c85c",
+        "java": "9966bf6337aec59196f96f95cf5acd509139688bbe8cf1b81aad112ffca4aaf2"
+      },
+      "gsm": "GSM8558853",
+      "input_sha256": {
+        "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar": "569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa": "e49b92b3e4f321bf254c042f25b726d9931c4d74c7523e8b6bb530e63b0cfd4b",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf": "e93ee43555a8b5c9079b0ce8f91fa56e27450bb1da6bdda091d22cadeeca007f",
+        "${CONTINUATION_ROOT}/inputs/fastq/SRR30918117.fastq.gz": "7aa0076827961ad8fecbf5b4aebb5494151551c7006757e5a04a120c6f538443",
+        "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/f23d50636825fbae/alignment.sam": "a6c4e8789c5fc1233e69a2ab191d9017a4b5b6262de080fe07907abf5e67b74b"
+      },
+      "native_path": "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_101.ciri3_run/ciri3_raw.tsv",
+      "native_sha256": "9e8165d456c60a19b6c4d790ad8c4b64d03a7ce50b388b34c3ff025693a1a84d",
+      "original_detector_status": "unknown",
+      "recorded_environment": {
+        "CIRCYTO_CIRI3_EXTRA_ARGS": "-S 0 -Ma 0",
+        "JAVA_TOOL_OPTIONS": "-Xmx16g -XX:ActiveProcessorCount=8",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "run": "SRR30918117",
+      "source_commit": "e6843a38469d49f96d44758a4e37893ebbe2734b"
+    },
+    {
+      "alignment_output_binding": {
+        "alignment_log": "workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/IMR90_A_102.align.log",
+        "alignment_log_sha256": "b8e43b90071e8edce52f5a4f7da83005cd4607b1fd5389efaed9057544435c4e",
+        "limitation": "No independent hash of BWA stdout stream; reviewed workflow byte-copy/rename contract binds the SAM path.",
+        "manifest": "workflow_remaining3/align/bwa_mem/alignment_manifest.tsv",
+        "manifest_sha256": "e452f9417c7485c7d811b3090c0966245c21220039258425de271108ac81bfdc",
+        "method": "fresh workflow manifest + BWA exit 0 + detector pre-input hash",
+        "output_path": "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/alignment.sam",
+        "output_sha256": "d7bdf4a217752cf07a31449f6d5be84f80dc644a1a16447d0c9d9720f4f966f6",
+        "wrapper_direct_output_hash_available": false
+      },
+      "alignment_record": "${CONTINUATION_ROOT}/records/tool_commands/1792113275259548638-206290-bwa.json",
+      "alignment_record_sha256": "910fb69027bc526f34c38defecdeb7a3704253163ec51b9888cc1274ba1c9c12",
+      "alignment_status": "aligned",
+      "cell_id": "IMR90_A_102",
+      "detector_record": "${CONTINUATION_ROOT}/records/tool_commands/1792114375680528290-207375-java.json",
+      "detector_record_sha256": "071e40fea55c2ed270be81edd155ea0e3db415cb615e8667d78372629ffdb1a9",
+      "detector_status": "completed",
+      "emitted_bwa_argv": [
+        "${A02_ROOT}/env-bwa/bin/bwa",
+        "mem",
+        "-t",
+        "8",
+        "-k",
+        "15",
+        "-T",
+        "15",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "${CONTINUATION_ROOT}/inputs/fastq/SRR30918116.fastq.gz"
+      ],
+      "emitted_detector_argv": [
+        "${A02_ROOT}/env/lib/jvm/bin/java",
+        "-jar",
+        "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar",
+        "-I",
+        "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/alignment.sam",
+        "-O",
+        "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_102.ciri3_run/ciri3_raw.tsv",
+        "-F",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "-T",
+        "8",
+        "-G",
+        "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_102.ciri3_run/ciri3_internal.log",
+        "-A",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf",
+        "-S",
+        "0",
+        "-Ma",
+        "0"
+      ],
+      "executable_sha256": {
+        "bwa": "598c1303107857bfcf1c954c09871d6c16811988020ffd95ce518983ffc0c85c",
+        "java": "9966bf6337aec59196f96f95cf5acd509139688bbe8cf1b81aad112ffca4aaf2"
+      },
+      "gsm": "GSM8558854",
+      "input_sha256": {
+        "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar": "569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa": "e49b92b3e4f321bf254c042f25b726d9931c4d74c7523e8b6bb530e63b0cfd4b",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf": "e93ee43555a8b5c9079b0ce8f91fa56e27450bb1da6bdda091d22cadeeca007f",
+        "${CONTINUATION_ROOT}/inputs/fastq/SRR30918116.fastq.gz": "b6fe8136d893fc2c8e3ad33569f91400bd7dc92742ca0f16fde86b32af34efbd",
+        "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/62ddbf728ea932d1/alignment.sam": "d7bdf4a217752cf07a31449f6d5be84f80dc644a1a16447d0c9d9720f4f966f6"
+      },
+      "native_path": "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_102.ciri3_run/ciri3_raw.tsv",
+      "native_sha256": "c779310db7d99e8cc432ebd7af965012322d489f0b5df8da943db2a456c1f63e",
+      "original_detector_status": "unknown",
+      "recorded_environment": {
+        "CIRCYTO_CIRI3_EXTRA_ARGS": "-S 0 -Ma 0",
+        "JAVA_TOOL_OPTIONS": "-Xmx16g -XX:ActiveProcessorCount=8",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "run": "SRR30918116",
+      "source_commit": "e6843a38469d49f96d44758a4e37893ebbe2734b"
+    },
+    {
+      "alignment_output_binding": {
+        "alignment_log": "workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/IMR90_A_103.align.log",
+        "alignment_log_sha256": "058e88da29c8e9b3f7bb8347f115705c1c2b9c0c4686d0d9b702bb0850395055",
+        "limitation": "No independent hash of BWA stdout stream; reviewed workflow byte-copy/rename contract binds the SAM path.",
+        "manifest": "workflow_remaining3/align/bwa_mem/alignment_manifest.tsv",
+        "manifest_sha256": "e452f9417c7485c7d811b3090c0966245c21220039258425de271108ac81bfdc",
+        "method": "fresh workflow manifest + BWA exit 0 + detector pre-input hash",
+        "output_path": "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/alignment.sam",
+        "output_sha256": "6c7bac39d9d43db211867483266a196125f0e208e66e0ee320891ead02aaa4e7",
+        "wrapper_direct_output_hash_available": false
+      },
+      "alignment_record": "${CONTINUATION_ROOT}/records/tool_commands/1792113805756893518-206833-bwa.json",
+      "alignment_record_sha256": "976a49f2d421e9c5fe730ce8b9c03df3e53621dfb9c7eea8e4510ab2bec7e9c9",
+      "alignment_status": "aligned",
+      "cell_id": "IMR90_A_103",
+      "detector_record": "${CONTINUATION_ROOT}/records/tool_commands/1792114439391858242-207466-java.json",
+      "detector_record_sha256": "da42f3c165808d14d9a341be0149cd6018f63a6cdeb9665bfeef9d81ca3adfb5",
+      "detector_status": "completed",
+      "emitted_bwa_argv": [
+        "${A02_ROOT}/env-bwa/bin/bwa",
+        "mem",
+        "-t",
+        "8",
+        "-k",
+        "15",
+        "-T",
+        "15",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "${CONTINUATION_ROOT}/inputs/fastq/SRR30918115.fastq.gz"
+      ],
+      "emitted_detector_argv": [
+        "${A02_ROOT}/env/lib/jvm/bin/java",
+        "-jar",
+        "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar",
+        "-I",
+        "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/alignment.sam",
+        "-O",
+        "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_103.ciri3_run/ciri3_raw.tsv",
+        "-F",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa",
+        "-T",
+        "8",
+        "-G",
+        "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_103.ciri3_run/ciri3_internal.log",
+        "-A",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf",
+        "-S",
+        "0",
+        "-Ma",
+        "0"
+      ],
+      "executable_sha256": {
+        "bwa": "598c1303107857bfcf1c954c09871d6c16811988020ffd95ce518983ffc0c85c",
+        "java": "9966bf6337aec59196f96f95cf5acd509139688bbe8cf1b81aad112ffca4aaf2"
+      },
+      "gsm": "GSM8558855",
+      "input_sha256": {
+        "${A02_ROOT}/external/CIRI3_Java_18.0.1.jar": "569428a4fe0d6573dbeeda6d3d4a0d457ac01d01bbf0b49ab1a42b84e24f1be0",
+        "${A02_ROOT}/ref/GRCh38.primary_assembly.genome.fa": "e49b92b3e4f321bf254c042f25b726d9931c4d74c7523e8b6bb530e63b0cfd4b",
+        "${A02_ROOT}/ref/gencode.v45.primary_assembly.annotation.gtf": "e93ee43555a8b5c9079b0ce8f91fa56e27450bb1da6bdda091d22cadeeca007f",
+        "${CONTINUATION_ROOT}/inputs/fastq/SRR30918115.fastq.gz": "3f04cdbf6fad52bc99de2979cd4ba7701b88bfa41e04c54374e9f95279d3dc31",
+        "${CONTINUATION_ROOT}/workflow_remaining3/align/bwa_mem/cache/b62700e225636bff/alignment.sam": "6c7bac39d9d43db211867483266a196125f0e208e66e0ee320891ead02aaa4e7"
+      },
+      "native_path": "${CONTINUATION_ROOT}/workflow_remaining3/ciri3/IMR90_A_103.ciri3_run/ciri3_raw.tsv",
+      "native_sha256": "9be109dedb5eb87f9843aa6303a66545f24be355aab499e4584a59e747c861b1",
+      "original_detector_status": "unknown",
+      "recorded_environment": {
+        "CIRCYTO_CIRI3_EXTRA_ARGS": "-S 0 -Ma 0",
+        "JAVA_TOOL_OPTIONS": "-Xmx16g -XX:ActiveProcessorCount=8",
+        "OMP_NUM_THREADS": "1",
+        "OPENBLAS_NUM_THREADS": "1"
+      },
+      "run": "SRR30918115",
+      "source_commit": "e6843a38469d49f96d44758a4e37893ebbe2734b"
+    }
+  ],
+  "focused_tests": {
+    "errors": 0,
+    "failures": 0,
+    "skipped": 0,
+    "tests": 36
+  },
+  "helper_freeze_and_failed_audit_preservation_checked": true,
+  "helper_hashes": {
+    "frozen_utc": "2026-10-16T01:05:07.275427+00:00",
+    "sha256": {
+      "browser_reports.py": "aa61570fae0cbb4fcdd894f3a8ac8da06da9c101f95fa3dc162e6db7cd53b272",
+      "build_status_wheel.py": "b67ae6a0859d4a9aaf3c8a7bd689a36bedea73b85801bbc4049052a703d7a85e",
+      "continuation_checks.py": "ac7d8901dfd30e2bb81b23039986ffdd7fff51381b61ff93d5da963661de7083",
+      "continuation_inputs.py": "93ac4366fb3011a6d424e20332c59636012daca647a188aec73c59dffc4e0d09",
+      "continuation_packet.py": "3592235aafa3e2e2913bf7747f7e5cbb024cc4e1e58540642560d604175cb40a",
+      "continuation_records.py": "c5e74eb9a6dd248a1342b3ad83ba4c9915cbad94df7df5655e023367f9d24d78",
+      "environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+      "execution_records.py": "45ef3604fc5a123064a685db821d6080dac3e2eaad41d78213d955a0d43e4db4",
+      "finalize_record.py": "ff787b5b6a3c0be2bd162f4d0fcc7c115071249392fd722730d6c824861dbe07",
+      "independent_checks.py": "6a4922b17827dcfd3268af352b2c6574b898f420b1deb317a0622d268d41e425",
+      "prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+      "probe_controls.py": "0998f36ae75548bd7b250a06c814adb8df2692983f2089882dec729ded15dc4e",
+      "replay_alignment_status.py": "699010bae3a66396d5afded9c275bf6eb68aa7523599940355f2a600a4858714",
+      "run_stage.py": "48bcdbc1631d9fc70bf8d1f993e7f3cbb86fe5e4bc2a6309a13ad809a1febdd0",
+      "test_browser_reports.py": "c0badbed8e678474b389651e826e1d7504c291e5f7ddc3d8a33ecbebeaccea95",
+      "test_continuation.py": "0aa131aafa9737c4459f2c2f492eb2805534466b344108f14fc236e27462734f",
+      "test_execution_records.py": "6fcfcc75edb7e9a214524efdfbe44e1605ee7e9a3e11eddf2e69065218800d9e",
+      "test_finalize_record.py": "ae29ae8cb7b1bd7e6af4563b57506670732a234efcac7a3b4a00265e03478f42",
+      "test_independent_checks.py": "bfa9b24114c3612441c645062dd4d2ce3b7aba2c19d177811a9e8bbdeb66706d",
+      "test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+      "test_status_revalidation.py": "9882d461997d0535397e3e3a14b7e0d5528fe3b06ff4233d98065f8dfeafbe2a",
+      "test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+      "tool_audit.py": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+    }
+  },
+  "installed_module_origins": {
+    "anndata": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/anndata/__init__.py",
+    "circyto": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/circyto/__init__.py",
+    "h5py": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/h5py/__init__.py",
+    "mudata": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/mudata/__init__.py",
+    "numpy": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/numpy/__init__.py",
+    "pandas": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/pandas/__init__.py",
+    "scipy": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/lib/python3.10/site-packages/scipy/__init__.py"
+  },
+  "linked_local_records": {
+    "records/acceptance_v3/browser_acceptance.json": {
+      "bytes": 2895,
+      "sha256": "64eebe6e0d6ab08ced1d766991e2038c2ba573bc8d5bf859a3aea1de5d879ba0"
+    },
+    "records/acceptance_v3/cohort_summary.json": {
+      "bytes": 677,
+      "sha256": "c360394f8b0cb5477fb64febebad61aa373648e2c96412d5b0edd6f5f2769881"
+    },
+    "records/acceptance_v3/workflow_report_audit.json": {
+      "bytes": 537,
+      "sha256": "5b9af31b06884d2ad706c3943caa4055dbca41826e9e9f0dfd2ebdc74cb5fbb4"
+    },
+    "records/budget.json": {
+      "bytes": 637,
+      "sha256": "98132292dd9a89d078394ad7fc48591d1d600941d0a3ab0aa01cbe5772a95a1c"
+    },
+    "records/continuation-probe_control_tests.json": {
+      "bytes": 20257,
+      "sha256": "0be37486bb02f25c2aa3ee679f83019e4af3873090cec1febd19525663132a24"
+    },
+    "records/continuation_helpers.json": {
+      "bytes": 2297,
+      "sha256": "e3913b357bee87bba6d8c0e63318087eac4f24039feb4031b79fbc5dffad942d"
+    },
+    "records/continuation_helpers_v2.json": {
+      "bytes": 3444,
+      "sha256": "27d72f908353db3583de388e3c780874907b5e545f6d52df3ff3becd3398d54c"
+    },
+    "records/continuation_helpers_v3.json": {
+      "bytes": 4361,
+      "sha256": "3582ea25f5293271acaacad5750cd85760e9486dccf613db428770b8e5162eee"
+    },
+    "records/ena_comparison.json": {
+      "bytes": 196,
+      "sha256": "3014adc24523fbc4cf4ab2dd7a7e3de9b27b289d4b28ee11ba6c724196a050e6"
+    },
+    "records/fastq-SRR30918115.json": {
+      "bytes": 1756,
+      "sha256": "82f53686147434ec80b2be5f03f1a83cf7bf69f93e4b2f6de8d51a889502a7d0"
+    },
+    "records/fastq-SRR30918116.json": {
+      "bytes": 1753,
+      "sha256": "67262eae120cc8f674d2924c26588122ec4850ef16a360868015e06969cb3366"
+    },
+    "records/fastq-SRR30918117.json": {
+      "bytes": 1753,
+      "sha256": "495ce76574667d9c6642efd971cf789e4b07f54e7ba6061231cc188d0faf2b85"
+    },
+    "records/focused_helpers_v3.xml": {
+      "bytes": 5611,
+      "sha256": "e9484b688e0bb5d4a84f50085380eea58bdd1b27ff364b361d4ca4fc4423a799"
+    },
+    "records/joint_native_sources.json": {
+      "bytes": 15414,
+      "sha256": "32f1e809fba7f58cd7102e59a3346ccdcf5582d2720b88446625ffd2be595e7e"
+    },
+    "records/memory_ceiling_observation.json": {
+      "bytes": 363,
+      "sha256": "0d93cd64977a7138567a4ac1a99324abc478fe1c610691aee0d106033b20625e"
+    },
+    "records/native_completion_bindings.json": {
+      "bytes": 13932,
+      "sha256": "ccc6d69954c03f9b8dbba9239c6e08309aef6a0348d9072d84830a3b05231993"
+    },
+    "records/packet_result.json": {
+      "bytes": 2026,
+      "sha256": "10e8ef407dd1bb3a45f6a5ed8b457263b19ef02a0453e1dcc041df23d321767a"
+    },
+    "records/preservation_after.json": {
+      "bytes": 777,
+      "sha256": "e4fd7c9b107cbd610b28e30a8f668cb4c2b822145bfdb6d5cb4d766bea99197a"
+    },
+    "records/preservation_before.json": {
+      "bytes": 359907,
+      "sha256": "b695b9e4e7ae4290999c86c10a8f8ff6f1e2220d02ab2c6c335ed3144ef56080"
+    },
+    "records/repaired_A100_artifacts_verified.json": {
+      "bytes": 2299,
+      "sha256": "8f4f03ff6a6e5ec9e8fe8df5c099a87f7ce75fb49a0b732dc729bb54e63995a1"
+    },
+    "records/rna_extraction.json": {
+      "bytes": 703,
+      "sha256": "36da1eddaae62ab50f5fea0493631980325b35c3d3c06a82e2a4c2f56b610a25"
+    },
+    "records/starting_refs.json": {
+      "bytes": 1260,
+      "sha256": "d0b084d7e548d2433413a83a9aa1b744d7ada5f478b1ae27a2150cc322484acd"
+    }
+  },
+  "offline_browser_acceptance": {
+    "complete": true,
+    "recorded_utc": "2026-10-16T01:52:43.189798+00:00",
+    "results": [
+      {
+        "DOM_sha256": "3641219481f8ac54dca41694607a7663255c930d2568280d3a8be647f66c3db3",
+        "SVG_values_equal": 2,
+        "argv": [
+          "/usr/bin/google-chrome",
+          "--headless",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--disable-background-networking",
+          "--disable-sync",
+          "--no-first-run",
+          "--no-default-browser-check",
+          "--disable-extensions",
+          "--disable-component-update",
+          "--host-resolver-rules=MAP * ~NOTFOUND",
+          "--user-data-dir=${CONTINUATION_ROOT}/tmp/chrome-new_workflow",
+          "--window-size=1440,1200",
+          "--screenshot=${CONTINUATION_ROOT}/records/acceptance_v3/browser_new_workflow/report.png",
+          "--dump-dom",
+          "file://${CONTINUATION_ROOT}/workflow_remaining3/qc/report.html"
+        ],
+        "cards_equal": 6,
+        "exit_code": 0,
+        "network": "DNS disabled; local file and inline assets only",
+        "report": "new_workflow",
+        "screenshot": "records/acceptance_v3/browser_new_workflow/report.png",
+        "screenshot_sha256": "f9f9195580052934bfafd00fea7fc11aa5abd2e4462d635367fe7d3200694d19",
+        "source_sha256": "bdd2aa5ebdd982591ce5ea694617ffbf6f753d9e332603ff1171341b48502783",
+        "tables_equal": 10
+      },
+      {
+        "DOM_sha256": "5fa42403fb7e6c9433c2806351681795c545e6edf0f965b8ca2ed65734c97492",
+        "SVG_values_equal": 0,
+        "argv": [
+          "/usr/bin/google-chrome",
+          "--headless",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--disable-background-networking",
+          "--disable-sync",
+          "--no-first-run",
+          "--no-default-browser-check",
+          "--disable-extensions",
+          "--disable-component-update",
+          "--host-resolver-rules=MAP * ~NOTFOUND",
+          "--user-data-dir=${CONTINUATION_ROOT}/tmp/chrome-native_import",
+          "--window-size=1440,1200",
+          "--screenshot=${CONTINUATION_ROOT}/records/acceptance_v3/browser_native_import/report.png",
+          "--dump-dom",
+          "file://${CONTINUATION_ROOT}/import_four/qc/report.html"
+        ],
+        "cards_equal": 0,
+        "exit_code": 0,
+        "network": "DNS disabled; local file and inline assets only",
+        "report": "native_import",
+        "screenshot": "records/acceptance_v3/browser_native_import/report.png",
+        "screenshot_sha256": "660f08e0a07db8a9db1ddd101010c34a41211bfec2bd04aa0a332d8a30359c73",
+        "source_sha256": "2fc5745c5d6029ff8fc0db9a095c67b576710960c95abd2799aa279c26261163",
+        "tables_equal": 3
+      }
+    ]
+  },
+  "old_full_suite_reused_not_rerun": "523 passed, 10 skipped, 9 warnings from prior repair review only",
+  "preflight_record": {
+    "path": "records/preflight.json",
+    "sha256": "ecd155dddf81e49f129f8aea4d604afe2a8e31f5bed8b82236aff1e8225405f6"
+  },
+  "preservation": {
+    "before_manifest_sha256": "b695b9e4e7ae4290999c86c10a8f8ff6f1e2220d02ab2c6c335ed3144ef56080",
+    "earlier_cmpb_files_compared": 40,
+    "original_H5MU_sha256": {
+      "${ORIGINAL_OBJECT_ROOT}/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "${ORIGINAL_OBJECT_ROOT}/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8"
+    },
+    "original_and_repair_files_compared": 1643,
+    "original_branch_tips_unchanged": true,
+    "path_sets_equal": true,
+    "protected_files_compared": 64,
+    "protected_manifest_sha256": "426f8a5a45586a60206f7dae6cdde156fc634d41d55bf06e3028f8f2ac115248",
+    "repair_branch_unchanged": true,
+    "status": "PASS"
+  },
+  "prior_failures_retained": true,
+  "production_source": "e6843a38469d49f96d44758a4e37893ebbe2734b",
+  "resolved_distributions": {
+    "Pygments": "2.21.0",
+    "anndata": "0.11.4",
+    "annotated-doc": "0.0.5",
+    "array-api-compat": "1.15.0",
+    "circyto": "0.10.0",
+    "exceptiongroup": "1.3.1",
+    "h5py": "3.16.0",
+    "markdown-it-py": "4.2.0",
+    "mdurl": "0.1.2",
+    "mudata": "0.3.10",
+    "natsort": "8.4.0",
+    "numpy": "2.2.6",
+    "packaging": "26.3",
+    "pandas": "2.3.3",
+    "pip": "26.2.1",
+    "python-dateutil": "2.9.0.post0",
+    "pytz": "2026.5",
+    "rich": "15.0.0",
+    "scipy": "1.15.3",
+    "scverse-misc": "0.0.3",
+    "session-info2": "0.4.1",
+    "setuptools": "84.0.0",
+    "shellingham": "1.5.4",
+    "six": "1.17.0",
+    "typer": "0.27.3",
+    "typing_extensions": "4.16.0",
+    "tzdata": "2026.5",
+    "wheel": "0.48.0"
+  },
+  "warnings_by_stage_log": {
+    "continuation-independent-acceptance-v2.log": {
+      "FutureWarning": 8
+    },
+    "continuation-independent-acceptance-v3.log": {
+      "FutureWarning": 8
+    },
+    "continuation-independent-acceptance.log": {
+      "FutureWarning": 8
+    }
+  },
+  "warnings_interpretation": "MuData future pull-on-update defaults; ordinary reads/writes retain all tested fields. No workflow-report warnings. Final focused tests: 36 passed, no skips or warnings.",
+  "wheel_sha256": "28c7cbde3c31cf90dd7c247487ba5f410c5b82f6f97d7a2281a0ce52912f7383",
+  "workflow_report_audit": {
+    "cohort": [
+      "IMR90_A_101",
+      "IMR90_A_102",
+      "IMR90_A_103"
+    ],
+    "collector_cell_columns": [
+      "IMR90_A_101",
+      "IMR90_A_102",
+      "IMR90_A_103"
+    ],
+    "denominator": 3,
+    "native_annotation_policy": "Native gene/type/read IDs retained in source and joint import; workflow host fields are separate GTF-derived annotations.",
+    "new_RNA_summary": {
+      "method": "simple-overlap",
+      "n_cells": "3",
+      "n_genes": "63241"
+    },
+    "numerical_values_preserved": true,
+    "warnings": [],
+    "workflow_status": "completed"
+  }
+}

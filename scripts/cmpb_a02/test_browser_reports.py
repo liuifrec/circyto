@@ -17,7 +17,7 @@ class BrowserOrchestration(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             fixture = "<html><body><table><tr><th>synthetic</th></tr><tr><td>7</td></tr></table></body></html>"
-            for name in ["workflow_firstcell", "import_firstcell"]:
+            for name in ["workflow_remaining3", "import_four"]:
                 path = root / name / "qc/report.html"
                 path.parent.mkdir(parents=True)
                 path.write_text(fixture)
@@ -27,7 +27,8 @@ class BrowserOrchestration(unittest.TestCase):
             )
             fake.chmod(0o755)
             with (
-                patch.object(sys, "argv", ["browser_reports.py", "--root", str(root)]),
+                patch.object(sys, "argv", ["browser_reports.py", "--root", str(root),
+                    "--workflow-directory", "workflow_remaining3", "--import-directory", "import_four"]),
                 patch.object(browser_reports.shutil, "which", return_value=str(fake)),
                 contextlib.redirect_stdout(io.StringIO()),
             ):
