@@ -1,0 +1,8 @@
+{
+  "final_build_acceptance_sha256": "5560dce1915b36ea88cd73788075c3d66d21444fbcf0cb8a6d0362a250d8295c",
+  "original_failed_acceptance_record_sha256": "7c87745112eaaeae658e0f1819b6b333d921a5ad2199d378278e3b986e9ce663",
+  "packet_generation_source_sha256": "acf7c5713b131cbd57de11a7b9cfa9ff5643dee4f1e7b5bc8d8a2eb89e246078",
+  "preservation_review_sha256": "fbd3f7f82f17728d7dd281513e9fb95bf60ce78cf6740f45995ab2e7c9645f11",
+  "recorded_utc": "2026-10-16T00:04:10.824543+00:00",
+  "replay_acceptance_sha256": "af13338a520cc3f599e490a3394bf8f08280f5fb48baa30487d59889b3ba2211"
+}

@@ -1,0 +1,155 @@
+{
+  "artifacts": {
+    "artifacts/circyto-0.10.0-py3-none-any.whl": {
+      "bytes": 389658,
+      "sha256": "28c7cbde3c31cf90dd7c247487ba5f410c5b82f6f97d7a2281a0ce52912f7383"
+    },
+    "artifacts/circyto-0.10.0.tar.gz": {
+      "bytes": 574139,
+      "sha256": "e7b8ac5202bda683c9401fcefeb4d539f0442d8f7b12984c40f95835a0efcff7"
+    },
+    "rebuilt/circyto-0.10.0-py3-none-any.whl": {
+      "bytes": 389658,
+      "sha256": "aeb90fcd4246051cf336ecf52c7be8d6b2b08b47f1300537ba002e8faf1149b1"
+    }
+  },
+  "evidence_base": "b9726b2a9ab2cffcacc7bd22a2eae5f969b09234",
+  "final_full_suite": {
+    "critical_skip_audit": "PASS",
+    "junit_sha256": "3e830f794964d7d01a387dc191627f739b0b83b774cc84d9d0e688a6e6bd1fa3",
+    "log_sha256": "90cf3856f02e756e671bd1c3304bbee3344dcaaf72e26b4b17b942a75103100b",
+    "passed": 523,
+    "skipped": 10,
+    "skips": [
+      {
+        "module": "tests.test_circexplorer2_chr21_manifest2_integration",
+        "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 CLI smoke test",
+        "test": "test_circexplorer2_cli_smoke"
+      },
+      {
+        "module": "tests.test_circexplorer2_integration",
+        "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 integration test",
+        "test": "test_circexplorer2_chr21_manifest2_integration"
+      },
+      {
+        "module": "tests.test_ciri2_se_chr21_integration",
+        "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test",
+        "test": "test_ciri2_single_end_chr21_known_positive"
+      },
+      {
+        "module": "tests.test_cirifull_chr21_integration",
+        "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test",
+        "test": "test_cirifull_chr21_nonempty_matrix"
+      },
+      {
+        "module": "tests.test_find_circ3_integration",
+        "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test",
+        "test": "test_find_circ3_chr21_manifest2_integration"
+      },
+      {
+        "module": "tests.test_mudata_export",
+        "reason": "mudata installed",
+        "test": "test_export_mudata_missing_package_gives_clear_error"
+      },
+      {
+        "module": "tests.test_multidetector_demo",
+        "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test",
+        "test": "test_multidetector_ciri_full_and_find_circ3_demo"
+      },
+      {
+        "module": "tests.test_scanpy_downstream",
+        "reason": "mudata or scanpy not installed",
+        "test": "test_scanpy_qc_report_outputs"
+      },
+      {
+        "module": "tests.test_scanpy_downstream",
+        "reason": "mudata or scanpy not installed",
+        "test": "test_scanpy_pca_outputs"
+      },
+      {
+        "module": "tests.test_smartseq3_ciri3_workflow",
+        "reason": "mudata installed",
+        "test": "test_mudata_requested_without_package_raises"
+      }
+    ],
+    "warnings": 9
+  },
+  "installed_acceptance": "PASS; official native sample and synthetic RNA labels preserved",
+  "native_checks_passed": 149,
+  "original_semantic_failures": [
+    {
+      "check": "recorded_alignment_vs_report",
+      "expected": "aligned",
+      "observed": "missing",
+      "scope": "NEW WORKFLOW STATUS SEMANTICS",
+      "status": "FAIL"
+    },
+    {
+      "check": "recorded_alignment_vs_workflow_AnnData",
+      "expected": "aligned",
+      "observed": "missing",
+      "scope": "NEW WORKFLOW STATUS SEMANTICS",
+      "status": "FAIL"
+    },
+    {
+      "check": "bound_completed_workflow_report_state",
+      "expected": "completed",
+      "observed": "incomplete",
+      "scope": "NEW WORKFLOW STATUS SEMANTICS",
+      "status": "FAIL"
+    },
+    {
+      "check": "bound_completed_cohort_denominator",
+      "expected": "1",
+      "observed": "None",
+      "scope": "NEW WORKFLOW STATUS SEMANTICS",
+      "status": "FAIL"
+    }
+  ],
+  "original_source_commit": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+  "packaging_exclusions": "PASS",
+  "platform_limit": "Linux x86_64, Python 3.10.22; no new cross-platform or detector accuracy claim",
+  "production_source_commit": "e6843a38469d49f96d44758a4e37893ebbe2734b",
+  "regressions": {
+    "final_handoff_passed": 20,
+    "original_handoff_failed_before": true,
+    "reuse_conflict_failed_before": true
+  },
+  "report_checks_passed_including_status": 483,
+  "retained_unsuccessful_stages": [
+    {
+      "exit_code": 1,
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-baseline-regression.log",
+      "log_sha256": "cf74ce807e4c49c06254794e457c61c8901c7e043b0285485e4f0ecb15c7f7ce",
+      "stage": "repair-baseline-regression"
+    },
+    {
+      "exit_code": 1,
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-focused-tests.log",
+      "log_sha256": "dd32b6da6e08cf0d1647ba69c1787e3d42f327d6c70b5831883187da8e65f754",
+      "stage": "repair-focused-tests"
+    },
+    {
+      "exit_code": 1,
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-full-default-suite.log",
+      "log_sha256": "5155170d4a2ab48f9cbc4adb90d0fd127176984611c9d12dbd731b93ec884cab",
+      "stage": "repair-full-default-suite"
+    },
+    {
+      "exit_code": 1,
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-reuse-conflict-before.log",
+      "log_sha256": "f6a499e0e8fbd5ab8c74af372ead5c0e69f9feeac205323faebb8ac1d7e8284d",
+      "stage": "repair-reuse-conflict-before"
+    },
+    {
+      "exit_code": 1,
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-offline-reports.log",
+      "log_sha256": "c1699873b61b5a198dc7a490b49ae9d2e6c78668c5747419049d682959a302c1",
+      "stage": "repair-offline-reports"
+    }
+  ],
+  "sdist_derived_python_members_equal": true,
+  "twine_check": "PASS for wheel, sdist and sdist-derived wheel",
+  "unresolved_revalidation_checks": [],
+  "version_policy": "Local unpublished repair retaining metadata 0.10.0; identify by source commit and SHA-256, not the frozen manuscript artifact."
+}

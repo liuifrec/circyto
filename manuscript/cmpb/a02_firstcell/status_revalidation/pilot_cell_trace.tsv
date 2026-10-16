@@ -1,0 +1,5 @@
+"cell_id"	"gsm"	"srr"	"new_raw_execution_this_session"	"original_A02_execution"	"original_acceptance"	"status_revalidation"	"new_detector_status"	"historical_detector_status"	"native_candidates"	"native_support"
+"IMR90_A_100"	"GSM8558852"	"SRR30918126"	"none"	"finished"	"failed"	"passed"	"completed"	"unknown"	"142"	"474"
+"IMR90_A_101"	"GSM8558853"	"SRR30918117"	"none"	"not_started"	"not_started"	"not_started"	"unprocessed"	"unknown"	""	""
+"IMR90_A_102"	"GSM8558854"	"SRR30918116"	"none"	"not_started"	"not_started"	"not_started"	"unprocessed"	"unknown"	""	""
+"IMR90_A_103"	"GSM8558855"	"SRR30918115"	"none"	"not_started"	"not_started"	"not_started"	"unprocessed"	"unknown"	""	""

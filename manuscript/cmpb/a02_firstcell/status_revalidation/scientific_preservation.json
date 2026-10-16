@@ -1,0 +1,28 @@
+{
+  "after_workflow_h5ad_sha256": "e5b804d3733f222e6ff018ec872b994b8f37371e1f522abb7b63162d05e0d323",
+  "before_workflow_h5ad_sha256": "9f5c8176420230810cd752aacb7b7f709f3d658ff6a5463f70338ab50b21cc98",
+  "candidates": 142,
+  "circ_qc_bytes_equal": true,
+  "native_source_sha256": "4c807adc516e5367a315b4ac3d6d41c9d6d573a3bf222904c05865c24c5964f6",
+  "support": 474,
+  "workflow_X_dtype": "int32",
+  "workflow_roundtrip": "PASS",
+  "workflow_values_axes_annotations_layers_metadata_equal_except": {
+    "obs.alignment_seconds": {
+      "after": [
+        "495.261"
+      ],
+      "before": [
+        ""
+      ]
+    },
+    "obs.alignment_status": {
+      "after": [
+        "aligned"
+      ],
+      "before": [
+        "missing"
+      ]
+    }
+  }
+}

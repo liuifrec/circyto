@@ -1,0 +1,23 @@
+{
+  "original_write_guard": "Python audit hook plus complete before/after source hashes; native HDF5 writes target independent copies",
+  "postprocessing_external_attempts": [],
+  "probes": [
+    {
+      "argv": "('bwa', ['bwa', 'mem'], None, None)",
+      "event": "subprocess.Popen"
+    },
+    {
+      "argv": "('bwa', ['bwa', 'index'], None, None)",
+      "event": "subprocess.Popen"
+    },
+    {
+      "argv": "('STAR', ['STAR', '--runMode', 'genomeGenerate'], None, None)",
+      "event": "subprocess.Popen"
+    },
+    {
+      "argv": "('java', ['java', '-jar', 'CIRI3.jar'], None, None)",
+      "event": "subprocess.Popen"
+    }
+  ],
+  "raw_analysis_rerun": false
+}

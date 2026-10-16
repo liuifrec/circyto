@@ -1,0 +1,51 @@
+{
+  "initial_state_sha256": "ec7891da07265e8b570a737096627c6fca24642270aab79f2a635016902a83ab",
+  "original_H5MU_sha256": {
+    "${ORIGINAL_OBJECT_ROOT}/emtab8735_smartseq3/full_length.hostgene_fixed.h5mu": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "${ORIGINAL_OBJECT_ROOT}/scrr_imr90/full_length_rna_circ_cnv.hostgene_fixed.h5mu": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8"
+  },
+  "original_branch_tips": {
+    "refs/heads/feature/biogenesis-foundation": "43371e8f5cde590e1d1248cf2c6c79d0e190a06e",
+    "refs/heads/feature/nanopore-feasibility": "4cbd40eb8f35f0885652f8b580f7a19ebd572833",
+    "refs/heads/feature/native-ciri3-import": "9a80ec537aed2a81495c2e14b58f9f9c20e51375",
+    "refs/heads/feature/qc-report-usability": "5bc38f293e66d4051c1badac254f4501f6983acf",
+    "refs/heads/fix/external-detector-distribution": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+    "refs/heads/main": "44697355bcab1c525ca7ef9b130e2ad0094d9e1b",
+    "refs/heads/manuscript/bioinformatics-application-note-v2": "c29831c3f6e7a31b708cce493c0be8036176077a",
+    "refs/heads/manuscript/cmpb-evaluation": "b9726b2a9ab2cffcacc7bd22a2eae5f969b09234",
+    "refs/heads/manuscript/nikaido-response": "42459975b055d771197fbe181c6c56ffec7647cb",
+    "refs/heads/release/pip-conda-preparation": "0f13ad4f21966f65f809ffba3bacaaebd09ec1c3",
+    "refs/heads/review/pre-release-integration": "f841c296db8a6fda870eebc5b553eab10095fa0d",
+    "refs/heads/validation/manuscript-final": "3eb4acdf1c6f55c6edd88e8aa4e21f8f15376d06",
+    "refs/heads/validation/pr13-freeze": "43371e8f5cde590e1d1248cf2c6c79d0e190a06e"
+  },
+  "original_cmpb_files_sha256": {
+    "manuscript/cmpb/a02_first_cell_amendment.md": "de52730310f35cef8091cc778b425f428aeba3e3617b7bffec438f7e405f244c",
+    "manuscript/cmpb/a02_firstcell/commands.json": "ef2f8605a1511ddf98998d6888410ad2a63146c3c9fe6cd3f7dc1cdf459df25f",
+    "manuscript/cmpb/a02_firstcell/control_tests.json": "9d60fdc518d374b19add019846d2610fa28e42529834966cb743def8d1bef2df",
+    "manuscript/cmpb/a02_firstcell/environment_manifest.json": "8524b23fd782e151aa080a067348a6ea4a13fd53cd1a693d89ef72200dd14d75",
+    "manuscript/cmpb/a02_firstcell/executed_helper_manifest.json": "934d890a768a051622c881a2f057f2d3f90cc224c08588061cd6a01dd315466c",
+    "manuscript/cmpb/a02_firstcell/first_cell_acceptance.md": "7c87745112eaaeae658e0f1819b6b333d921a5ad2199d378278e3b986e9ce663",
+    "manuscript/cmpb/a02_firstcell/handoff_verification.json": "67ce0d8231f1ea01938c1418b9122b51e740249131a772b45095cb261299ad84",
+    "manuscript/cmpb/a02_firstcell/input_manifest.json": "75cb40709d72f49dd419a0b9c2114f948ff4273981ff455ec670a46db12466a8",
+    "manuscript/cmpb/a02_firstcell/native_value_checks.tsv": "921108193885d38af55155fa579aa3e8349ecd18f34d488ac5bb2f6dfc6212a2",
+    "manuscript/cmpb/a02_firstcell/output_artifact_manifest.json": "ea1acf4de34c5894dc8c567967ac196638542552633061e409c6ccf5bd861f17",
+    "manuscript/cmpb/a02_firstcell/pilot_cell_trace.tsv": "b1eb8ed05e3996997be7f9bef85d75340c7e67155e7db06f59bbeb076618a437",
+    "manuscript/cmpb/a02_firstcell/pilot_progress.json": "aa4a32e335b541c56eabe8be71781fa352c3daf4896cddcc3335fb0407d64431",
+    "manuscript/cmpb/a02_firstcell/report_value_checks.tsv": "6d79b243e36b61fc8ba2d63080aa8b5bf5a169259bf82d356dd479045b68ce93",
+    "manuscript/cmpb/a02_firstcell/reproduce_first_cell.md": "c703abd8269af754906c88709f440b4270b16cb13194cc51012c3a803f6fdbe1",
+    "manuscript/cmpb/a02_firstcell/resource_usage.json": "9271bf3c418319eb0a8bfba096752a4ef905fb43ef93b9b173853a43044cff3b",
+    "manuscript/cmpb/benchmark_plan.yaml": "d638847b30016fd76f4ec14f6e79932e61c4f29f6e341c7d096763a1a2d6516b",
+    "manuscript/cmpb/claim_evidence.tsv": "a3fbc349f45fe83d420fa2081efdf2cb617f56750e6f4c951d680208d55e719c",
+    "manuscript/cmpb/data_provenance.tsv": "e36ef371fb091648274462d4557564ca081f64613fe1849619cd7230b78fff5b",
+    "manuscript/cmpb/figure_plan.md": "86bbfcafadd64c402f6127b24c5d72851c4c789694834f5185449dab0b808f1c",
+    "manuscript/cmpb/missing_inputs.md": "1894057e697c6a536d6bed302024100790b7edb7378d0b58ce88e50d50638568",
+    "manuscript/cmpb/study_design.md": "26b350b95b0cc82d1767136f9eb5292875255f43ac5f93d450ed16c5ddd04f32"
+  },
+  "original_evaluated_wheel_sha256": "eca5f45f35b351ec44df4e5b0f73eb4e5e0564e2691631f8eb417b0e8a7ca03b",
+  "original_installed_python_members_equal_wheel": 87,
+  "protected_actual_path_set_equal": true,
+  "protected_files_compared": 64,
+  "protected_manifest_sha256": "426f8a5a45586a60206f7dae6cdde156fc634d41d55bf06e3028f8f2ac115248",
+  "status": "PASS"
+}

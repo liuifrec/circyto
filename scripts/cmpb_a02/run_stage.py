@@ -166,6 +166,11 @@ def launch(root, spec_path):
     lock = (root / "records/stage.lock").open("a")
     fcntl.flock(lock.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
     spec = json.loads(spec_path.read_text())
+    # A separately authorized replay can keep its own ledger while charging
+    # retained original data and new outputs to the same evaluation disk cap.
+    footprint_root = Path(spec.get("footprint_root", root)).resolve(strict=True)
+    if not root.is_relative_to(footprint_root):
+        raise ValueError("footprint_root must contain the stage ledger root")
     stage = spec["stage"]
     if not stage or any(
         c not in "abcdefghijklmnopqrstuvwxyz0123456789-_" for c in stage
@@ -197,7 +202,7 @@ def launch(root, spec_path):
     if spec["category"] == "probe":
         remaining = min(remaining, int(spec.get("wall_seconds", 10)))
         memory = min(memory, int(spec.get("memory_bytes", 128 * 1024**2)))
-    if remaining <= 0 or footprint(root) >= budget["disk_stop_bytes"]:
+    if remaining <= 0 or footprint(footprint_root) >= budget["disk_stop_bytes"]:
         raise RuntimeError("Aggregate time/disk budget exhausted before launch")
     unit = "circyto-a02-" + stage
     copied = root / "specs" / (stage + ".json")
@@ -294,7 +299,7 @@ def launch(root, spec_path):
             "systemd_properties": properties.stdout.strip().splitlines(),
             "systemd_query_exit": properties.returncode,
             "log_sha256": digest(root / rec["log"]),
-            "footprint_bytes_after": footprint(root),
+            "footprint_bytes_after": footprint(footprint_root),
         }
     )
     dump(record, rec)
@@ -318,6 +323,9 @@ def launch(root, spec_path):
 
 def guard(root, spec_path):
     spec = json.loads(spec_path.read_text())
+    footprint_root = Path(spec.get("footprint_root", root)).resolve(strict=True)
+    if not root.is_relative_to(footprint_root):
+        raise ValueError("footprint_root must contain the stage ledger root")
     group = cgroup_path()
     controls = {
         n: (group / n).read_text().strip() if (group / n).exists() else None
@@ -332,7 +340,8 @@ def guard(root, spec_path):
         "status": "preflight",
         "memory_current_peak_bytes": 0,
         "process_tree_rss_peak_bytes": 0,
-        "disk_peak_bytes": footprint(root),
+        "disk_peak_bytes": footprint(footprint_root),
+        "footprint_root": str(footprint_root),
         "poll_seconds": 0.25,
         "disk_poll_seconds": 1,
         "cpu_enforcement": "inherited affinity 0-7 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
@@ -384,7 +393,7 @@ def guard(root, spec_path):
                 dump(path, state)
                 return 125  # systemd KillMode kills every descendant on main exit
             if time.monotonic() - last_disk >= 1:
-                used = footprint(root)
+                used = footprint(footprint_root)
                 state["disk_peak_bytes"] = max(state["disk_peak_bytes"], used)
                 if used >= spec["disk_stop_bytes"]:
                     state.update(

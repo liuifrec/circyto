@@ -1,0 +1,59 @@
+{
+  "copy_policy": "shutil.copyfile; different inodes; mutable QC/HDF5 never hard linked",
+  "files": {
+    "import_firstcell/anndata/circ_counts.h5ad": {
+      "bytes": 119364,
+      "sha256": "28bbbaeb8a73e3b3e1adf45657674b81adcb7d923aee75733cdafff9181b4735"
+    },
+    "import_firstcell/mudata/circyto_multimodal.h5mu": {
+      "bytes": 26686968,
+      "sha256": "9559218c0ba47268f1f8556012c442ee374d62ba11e6437f640a9f9df87ebbf4"
+    },
+    "import_firstcell/qc/report.html": {
+      "bytes": 61293,
+      "sha256": "20cc7ca1f96f1cfe808c984a88792cf8ade35de51783e3bc4a384519cc823a0c"
+    },
+    "records/acceptance/circ_roundtrip.h5ad": {
+      "bytes": 119436,
+      "sha256": "edc2d2769bfac3374957154bed09eea1c55985704434141862042f65e84e2255"
+    },
+    "records/acceptance/multimodal_roundtrip.h5mu": {
+      "bytes": 15877073,
+      "sha256": "1cb5268c7f90305c1c02c24093e842547b3918632d50750be0a9718b7bbe5da4"
+    },
+    "records/acceptance/workflow_roundtrip.h5ad": {
+      "bytes": 127336,
+      "sha256": "b592711a914d0b2e39092064ae28dd35f922e9a7627257c26f250aa926c3ee44"
+    },
+    "workflow_firstcell/align/alignment_prepare_summary.json": {
+      "bytes": 1169,
+      "sha256": "e217c21c37d157f0f5ed544ad57d72ab01a4cb1499f749a1e76fe8829eee37ea"
+    },
+    "workflow_firstcell/anndata/circ_counts.h5ad": {
+      "bytes": 127416,
+      "sha256": "e5b804d3733f222e6ff018ec872b994b8f37371e1f522abb7b63162d05e0d323"
+    },
+    "workflow_firstcell/qc/cell_qc.tsv": {
+      "bytes": 287,
+      "sha256": "f7ad7708a68d11dda917f0727e35b9d8036781ac2c196330ae096c2dbfcd58d6"
+    },
+    "workflow_firstcell/qc/circ_qc.tsv": {
+      "bytes": 20594,
+      "sha256": "336fa3bf95d2050b425152bf6d4bd0fd7b35e1e454a2d310e77b6887110f99cd"
+    },
+    "workflow_firstcell/qc/metrics.json": {
+      "bytes": 32045,
+      "sha256": "f32816d15d700d37341f345bfc80ae7daac6f8242ea2cb8cf233af9a7181383f"
+    },
+    "workflow_firstcell/qc/report.html": {
+      "bytes": 28129,
+      "sha256": "f922fc9b6ddabb7e7f8f606103cdebb016a080339c0e600142e2955fc633449b"
+    },
+    "workflow_firstcell/workflow_summary.json": {
+      "bytes": 11214,
+      "sha256": "0fef4c342cdd43f922645880de6941893e340de47449748a8b7c2c89ccce112b"
+    }
+  },
+  "replay_copies_manifest_sha256": "1963e851427078f65031800b845aaadc20e3097c6ab2ca1ff055acbaeed5d19a",
+  "root": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+}

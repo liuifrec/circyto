@@ -1,0 +1,5 @@
+check	expected	original_observed	original_status	replay_observed	replay_status
+recorded_alignment_vs_report	aligned	missing	FAIL	aligned	PASS
+recorded_alignment_vs_workflow_AnnData	aligned	missing	FAIL	aligned	PASS
+bound_completed_workflow_report_state	completed	incomplete	FAIL	completed	PASS
+bound_completed_cohort_denominator	1	None	FAIL	1	PASS

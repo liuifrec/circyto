@@ -1,0 +1,214 @@
+{
+  "combined_active_stage_elapsed_seconds": 5222.453979874015,
+  "last_managed_stage_finished_utc": "2026-10-15T23:56:45.556532+00:00",
+  "measurement_limits": [
+    "Memory/RSS sampled every 0.25 seconds; disk every roughly one second.",
+    "CPU quota controller unavailable; inherited CPUs 0-7 and all-descendant-thread watchdog remain enforced.",
+    "20 GiB memory.max; memory.swap.max=0; user-service RuntimeMaxSec capped to remaining authorized time; KillMode=control-group.",
+    "Disk stop at 79 GiB across original plus repair data; not a filesystem quota.",
+    "Active stage times exclude editing/review between managed commands; calendar time includes them through last managed stage."
+  ],
+  "original": {
+    "active_stage_elapsed_seconds": 5046.323993214974,
+    "first_cell_stage_seconds": 691.7681198979844,
+    "last_managed_stage_finished_utc": "2026-10-15T08:19:26.866652+00:00",
+    "sampled_cgroup_memory_peak_bytes": 19476078592,
+    "sampled_process_tree_RSS_peak_bytes_where_recorded": 12141371392,
+    "shared_preparation_stage_seconds": 4344.314701724987
+  },
+  "original_budget_deadline_epoch": 1792102494.4280953,
+  "repair_active_stage_elapsed_seconds": 176.1299866590416,
+  "repair_budget": {
+    "authorization": "User explicitly authorized a new two-hour repair/tests/build/A100-only postprocessing window; no alignment/detection or other cells.",
+    "cpus": [
+      0,
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7
+    ],
+    "deadline_epoch": 1792114836.0,
+    "disk_cap_bytes": 85899345920,
+    "disk_stop_bytes": 84825604096,
+    "first_cell_memory_max_bytes": 21474836480,
+    "first_cell_wall_cap_seconds": 14400,
+    "original_budget_deadline_epoch": 1792102494.4280953,
+    "original_budget_sha256": "56b8182bf7cc717f8f7a230c318429ddeea07c6693fc053c940b2a4a8c784363",
+    "shared_memory_max_bytes": 21474836480,
+    "started_epoch": 1792107636.0,
+    "started_utc": "2026-10-15T23:40:36Z",
+    "wall_cap_seconds": 7200
+  },
+  "repair_calendar_seconds_through_last_managed_stage": 969.5565319061279,
+  "replay_elapsed_seconds": 32.623488201992586,
+  "sampled_repair_cgroup_peak_bytes": 7576420352,
+  "sampled_repair_process_tree_RSS_peak_bytes": 1303691264,
+  "sampled_total_evaluation_disk_peak_bytes": 22005318833,
+  "stages": [
+    {
+      "disk_peak_bytes": 21176001658,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 750891008,
+      "rss_peak_bytes": 176078848,
+      "seconds": 16.34760014800122,
+      "stage": "repair-bootstrap",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21112722554,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 9646080,
+      "rss_peak_bytes": 22302720,
+      "seconds": 1.0697876019985415,
+      "stage": "repair-baseline-regression",
+      "status": "failed",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21112919162,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 90238976,
+      "rss_peak_bytes": 153059328,
+      "seconds": 1.8813989650225267,
+      "stage": "repair-focused-tests",
+      "status": "failed",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21121213562,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 107520000,
+      "rss_peak_bytes": 163442688,
+      "seconds": 3.8711484230007045,
+      "stage": "repair-focused-tests-v2",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21555557510,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 603955200,
+      "rss_peak_bytes": 270249984,
+      "seconds": 19.723108701000456,
+      "stage": "repair-build-install",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21538829446,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 244572160,
+      "rss_peak_bytes": 300818432,
+      "seconds": 20.054933658975642,
+      "stage": "repair-full-default-suite",
+      "status": "failed",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21595948166,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 251527168,
+      "rss_peak_bytes": 324714496,
+      "seconds": 24.498766479984624,
+      "stage": "repair-full-installed-suite",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21595305094,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 9383936,
+      "rss_peak_bytes": 21995520,
+      "seconds": 1.5763703340198845,
+      "stage": "repair-reuse-conflict-before",
+      "status": "failed",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21587391622,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 87031808,
+      "rss_peak_bytes": 150806528,
+      "seconds": 2.189199323998764,
+      "stage": "repair-final-regressions",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21964395666,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 593932288,
+      "rss_peak_bytes": 264835072,
+      "seconds": 19.6413619480154,
+      "stage": "repair-final-build-install",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21947470994,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 248078336,
+      "rss_peak_bytes": 328765440,
+      "seconds": 24.377125772996806,
+      "stage": "repair-final-full-suite",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21893330066,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 9388032,
+      "rss_peak_bytes": 22036480,
+      "seconds": 1.6174646510044113,
+      "stage": "repair-critical-skip-audit",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21997884562,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 7576420352,
+      "rss_peak_bytes": 248049664,
+      "seconds": 33.97897109002224,
+      "stage": "repair-a100-replay",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21997958290,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 9826304,
+      "rss_peak_bytes": 22114304,
+      "seconds": 1.5407355049974285,
+      "stage": "repair-offline-reports",
+      "status": "failed",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 21998073029,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 659324928,
+      "rss_peak_bytes": 1303691264,
+      "seconds": 2.1702939000097103,
+      "stage": "repair-offline-reports-v2",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    },
+    {
+      "disk_peak_bytes": 22005318833,
+      "memory_max_bytes": "21474836480",
+      "memory_peak_bytes": 10182656,
+      "rss_peak_bytes": 22994944,
+      "seconds": 1.5917201559932437,
+      "stage": "repair-preservation-review",
+      "status": "succeeded",
+      "swap_max_bytes": "0"
+    }
+  ],
+  "total_evaluation_footprint_bytes_at_packet": 22005318833,
+  "within_authorized_deadline": true
+}

@@ -1,0 +1,81 @@
+{
+  "acceptance": {
+    "complete": true,
+    "recorded_utc": "2026-10-15T23:55:29.564727+00:00",
+    "results": [
+      {
+        "DOM_sha256": "5b81d83563628c634aeddf469797b5ea8324f809c8f79bbd00b10718ad8e79d0",
+        "SVG_values_equal": 2,
+        "argv": [
+          "/usr/bin/google-chrome",
+          "--headless",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--disable-background-networking",
+          "--disable-sync",
+          "--no-first-run",
+          "--no-default-browser-check",
+          "--disable-extensions",
+          "--disable-component-update",
+          "--host-resolver-rules=MAP * ~NOTFOUND",
+          "--user-data-dir=${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/tmp/chrome-new_workflow",
+          "--window-size=1440,1200",
+          "--screenshot=${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/records/acceptance/browser_new_workflow/report.png",
+          "--dump-dom",
+          "file://${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/workflow_firstcell/qc/report.html"
+        ],
+        "cards_equal": 6,
+        "exit_code": 0,
+        "network": "DNS disabled; local file and inline assets only",
+        "report": "new_workflow",
+        "screenshot": "records/acceptance/browser_new_workflow/report.png",
+        "screenshot_sha256": "a7f8ce76bd1ed3ea21649c1ef296139e1b3c0fe45eed60352011537a1182de15",
+        "source_sha256": "f922fc9b6ddabb7e7f8f606103cdebb016a080339c0e600142e2955fc633449b",
+        "tables_equal": 10
+      },
+      {
+        "DOM_sha256": "9a521236016282bd58d978d081d6497a0506df75f3f99692cc1b3e7749f0eef1",
+        "SVG_values_equal": 0,
+        "argv": [
+          "/usr/bin/google-chrome",
+          "--headless",
+          "--disable-gpu",
+          "--disable-dev-shm-usage",
+          "--disable-background-networking",
+          "--disable-sync",
+          "--no-first-run",
+          "--no-default-browser-check",
+          "--disable-extensions",
+          "--disable-component-update",
+          "--host-resolver-rules=MAP * ~NOTFOUND",
+          "--user-data-dir=${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/tmp/chrome-native_import",
+          "--window-size=1440,1200",
+          "--screenshot=${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/records/acceptance/browser_native_import/report.png",
+          "--dump-dom",
+          "file://${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/import_firstcell/qc/report.html"
+        ],
+        "cards_equal": 0,
+        "exit_code": 0,
+        "network": "DNS disabled; local file and inline assets only",
+        "report": "native_import",
+        "screenshot": "records/acceptance/browser_native_import/report.png",
+        "screenshot_sha256": "7989c9e830430c3c12855b2379217b81d4f2b74a4edefa314fa8f4cb0c48a4fb",
+        "source_sha256": "20cc7ca1f96f1cfe808c984a88792cf8ade35de51783e3bc4a384519cc823a0c",
+        "tables_equal": 3
+      }
+    ]
+  },
+  "copies": [
+    {
+      "copy": "${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/workflow_firstcell/qc/report.html",
+      "sha256": "f922fc9b6ddabb7e7f8f606103cdebb016a080339c0e600142e2955fc633449b",
+      "source": "${A02_ROOT}/status_revalidation_20261016/final_candidate/workflow_firstcell/qc/report.html"
+    },
+    {
+      "copy": "${A02_ROOT}/status_revalidation_20261016/final_candidate/browser_attempt2/import_firstcell/qc/report.html",
+      "sha256": "20cc7ca1f96f1cfe808c984a88792cf8ade35de51783e3bc4a384519cc823a0c",
+      "source": "${A02_ROOT}/status_revalidation_20261016/final_candidate/import_firstcell/qc/report.html"
+    }
+  ],
+  "first_attempt": "Chrome Unix socket path too long; original failed browser files/log retained. Retry used /tmp/circyto-a02-r -> persistent repair tmp directory, not disposable storage."
+}

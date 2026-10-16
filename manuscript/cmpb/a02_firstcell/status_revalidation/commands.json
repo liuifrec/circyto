@@ -1,0 +1,942 @@
+{
+  "constraints_sha256": "e6967fdbddf583b7a53baf9dc8203ec7aa4b02844dabcded1183cbe982b82cd4",
+  "final_build_commands": [
+    {
+      "argv": [
+        "git",
+        "-C",
+        "${REPO}",
+        "archive",
+        "--format=tar",
+        "--output=${A02_ROOT}/status_revalidation_20261016/final_candidate/inputs/repair-source.tar",
+        "e6843a38469d49f96d44758a4e37893ebbe2734b",
+        "circyto",
+        "docs",
+        "examples",
+        "pyproject.toml",
+        "setup.py",
+        "MANIFEST.in",
+        "README.md",
+        "LICENSE",
+        "THIRD_PARTY_NOTICES.md",
+        "CITATION.cff"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-m",
+        "build",
+        "--sdist",
+        "--wheel",
+        "--outdir",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/artifacts",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/build-source"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-m",
+        "twine",
+        "check",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/artifacts/circyto-0.10.0-py3-none-any.whl",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/artifacts/circyto-0.10.0.tar.gz"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-m",
+        "build",
+        "--wheel",
+        "--outdir",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/rebuilt",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/sdist-source/circyto-0.10.0"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-m",
+        "twine",
+        "check",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/rebuilt/circyto-0.10.0-py3-none-any.whl"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-m",
+        "venv",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "-r",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/inputs/constraints.txt"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-m",
+        "pip",
+        "install",
+        "--no-deps",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/artifacts/circyto-0.10.0-py3-none-any.whl"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-m",
+        "pip",
+        "check"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/check_installed_distribution.py"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "--help"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "import-circ",
+        "--help"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/circyto",
+        "report",
+        "--help"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/validate_native_ciri3.py",
+        "--fixtures",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/native_ciri3",
+        "--out",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-native-acceptance"
+      ],
+      "cwd": "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+    }
+  ],
+  "managed_stages": [
+    {
+      "argv": [
+        "${A02_ROOT}/env/bin/python",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/bootstrap_env.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:42:31.648313+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${A02_ROOT}/status_revalidation_20261016/helpers/bootstrap_env.py": "bbe9d5bdc899031b811d031b0c0c9c2ddaff3484cc06e435530aa7e52a70d6c3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-bootstrap",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=7100s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-bootstrap.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-bootstrap.log",
+      "log_sha256": "2c66b5c6858f028fe71992087b87873888e154c1f7c15414518278f633173a86",
+      "spec_sha256": "9008ffd1bb5e6d396f63b00fbfec4895aa26e00d6849bd772188c65cb30d407d",
+      "stage": "repair-bootstrap",
+      "started_utc": "2026-10-15T23:42:15.299238+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','tests/test_alignment_status_handoff.py::test_real_single_end_writer_reaches_qc_object_and_report','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/baseline-regression.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:42:45.897955+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-baseline-regression",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=7071s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-baseline-regression.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-baseline-regression.log",
+      "log_sha256": "cf74ce807e4c49c06254794e457c61c8901c7e043b0285485e4f0ecb15c7f7ce",
+      "spec_sha256": "3557b41592ae08612ceb0602ca4aad894971d1a3b7f264cd2c625fb280b114d6",
+      "stage": "repair-baseline-regression",
+      "started_utc": "2026-10-15T23:42:44.826698+00:00",
+      "status": "failed"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','tests/test_alignment_status_handoff.py','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/focused-tests.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:43:43.660241+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-focused-tests",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=7014s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-focused-tests.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-focused-tests.log",
+      "log_sha256": "dd32b6da6e08cf0d1647ba69c1787e3d42f327d6c70b5831883187da8e65f754",
+      "spec_sha256": "97209f4e4dfe41b60ec64db46cfe670f74e6573b39b5c46ddfdc84b02b5f80ed",
+      "stage": "repair-focused-tests",
+      "started_utc": "2026-10-15T23:43:41.777204+00:00",
+      "status": "failed"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','tests/test_alignment_status_handoff.py','tests/test_alignment_first_pipeline.py','tests/test_full_length_workflow.py','tests/test_run_ciri3_protocols.py','tests/test_qc_report.py','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/focused-tests-v2.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:44:12.123498+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-focused-tests-v2",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6988s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-focused-tests-v2.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-focused-tests-v2.log",
+      "log_sha256": "59fe9127499875b5d3a94bb7be69e59e39e28b0c2450b80aa3efbb9b72d2f130",
+      "spec_sha256": "1e6bed5b77958f11a7edb9b65cb6c3d8c61b1b3f6d714a9d889f92eb3d7617f7",
+      "stage": "repair-focused-tests-v2",
+      "started_utc": "2026-10-15T23:44:08.250878+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "${REPO}/scripts/cmpb_a02/build_status_wheel.py",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--repo",
+        "${REPO}",
+        "--commit",
+        "bb1b8559d86c34ac955546e5381959f2f0593704"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/installed-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:46:23.306424+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${REPO}/scripts/cmpb_a02/browser_reports.py": "2fd2ed87fab11c78ec2bd0b279d67dd1bfa9779aa632fd5c9c80daee9b7e0f21",
+        "${REPO}/scripts/cmpb_a02/build_status_wheel.py": "b67ae6a0859d4a9aaf3c8a7bd689a36bedea73b85801bbc4049052a703d7a85e",
+        "${REPO}/scripts/cmpb_a02/environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+        "${REPO}/scripts/cmpb_a02/execution_records.py": "5eb4173711abefd69e98aa0a6653eda67d4245bb7a92add134ae584e4d6e0161",
+        "${REPO}/scripts/cmpb_a02/finalize_record.py": "ff787b5b6a3c0be2bd162f4d0fcc7c115071249392fd722730d6c824861dbe07",
+        "${REPO}/scripts/cmpb_a02/independent_checks.py": "63b33ec49920800791b268c80e9890f6a2d0434b06d49d3c9698c0906d8798fe",
+        "${REPO}/scripts/cmpb_a02/prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+        "${REPO}/scripts/cmpb_a02/probe_controls.py": "fb3c0c47fed528967ba364d1a2261dd0a7ea73ee3bbae56b1d21769a7d793dc0",
+        "${REPO}/scripts/cmpb_a02/run_stage.py": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+        "${REPO}/scripts/cmpb_a02/test_browser_reports.py": "e2450cfbb01fd4f0cee0386a4a9280249d367bd73880af2b75fc3e17b784cf51",
+        "${REPO}/scripts/cmpb_a02/test_execution_records.py": "6fcfcc75edb7e9a214524efdfbe44e1605ee7e9a3e11eddf2e69065218800d9e",
+        "${REPO}/scripts/cmpb_a02/test_finalize_record.py": "ae29ae8cb7b1bd7e6af4563b57506670732a234efcac7a3b4a00265e03478f42",
+        "${REPO}/scripts/cmpb_a02/test_independent_checks.py": "bfa9b24114c3612441c645062dd4d2ce3b7aba2c19d177811a9e8bbdeb66706d",
+        "${REPO}/scripts/cmpb_a02/test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+        "${REPO}/scripts/cmpb_a02/test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+        "${REPO}/scripts/cmpb_a02/tool_audit.py": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-build-install",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6872s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-build-install.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-build-install.log",
+      "log_sha256": "da6bcc67c0d4de249ac194fbb478e7c4468708a4e1863e39f6eef4fa83eb90a8",
+      "spec_sha256": "2566bdf69ea363780c115a8ea0ef16a7f1ab559ea7623158c1d73170860786d9",
+      "stage": "repair-build-install",
+      "started_utc": "2026-10-15T23:46:03.578821+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','.','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/full-tests.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:49:14.679130+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-full-default-suite",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6701s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-full-default-suite.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-full-default-suite.log",
+      "log_sha256": "5155170d4a2ab48f9cbc4adb90d0fd127176984611c9d12dbd731b93ec884cab",
+      "spec_sha256": "c72ce4b4cf448ea189e3ab04bdabde74a24f8c8cfc47c9810f341d41adbc4771",
+      "stage": "repair-full-default-suite",
+      "started_utc": "2026-10-15T23:48:54.622989+00:00",
+      "status": "failed"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import subprocess;subprocess.run(['${A02_ROOT}/status_revalidation_20261016/test-env/bin/python','-m','pip','install','--no-deps','${A02_ROOT}/status_revalidation_20261016/artifacts/circyto-0.10.0-py3-none-any.whl'],check=True);import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','.','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/full-installed-tests.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:49:59.287987+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-full-installed-suite",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6661s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-full-installed-suite.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-full-installed-suite.log",
+      "log_sha256": "fd079571b79cdaa3202869ed3e3513669aafec216aa016e666a3b8205222be1d",
+      "spec_sha256": "4622287937a86255810ad36f1d9c31658f9060b0b9d9d9d9777678b8fa0d5cd5",
+      "stage": "repair-full-installed-suite",
+      "started_utc": "2026-10-15T23:49:34.787895+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','tests/test_alignment_status_handoff.py::test_ambiguous_child_evidence_is_rejected_without_writing_success[reuse_conflict]','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/reuse-conflict-before.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:50:40.111950+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-reuse-conflict-before",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6598s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-reuse-conflict-before.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-reuse-conflict-before.log",
+      "log_sha256": "f6a499e0e8fbd5ab8c74af372ead5c0e69f9feeac205323faebb8ac1d7e8284d",
+      "spec_sha256": "2d5dbe8ee0c3d188bd98d9bebfa58814d90c3a48a66260c510d1cee7f8077231",
+      "stage": "repair-reuse-conflict-before",
+      "started_utc": "2026-10-15T23:50:38.534284+00:00",
+      "status": "failed"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','tests/test_alignment_status_handoff.py','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/final-regressions.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:51:04.577826+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-final-regressions",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6574s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-final-regressions.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-final-regressions.log",
+      "log_sha256": "7153bb7dc759ddd807203c539c7c363c2f98752017867af5dfadda8999ddc3a9",
+      "spec_sha256": "187680816d260e7129771d0a0d856b6ddd43b0337e80ac44044c9f7cc87b9b79",
+      "stage": "repair-final-regressions",
+      "started_utc": "2026-10-15T23:51:02.387695+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "${REPO}/scripts/cmpb_a02/build_status_wheel.py",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate",
+        "--repo",
+        "${REPO}",
+        "--commit",
+        "e6843a38469d49f96d44758a4e37893ebbe2734b"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:51:58.454799+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${REPO}/scripts/cmpb_a02/browser_reports.py": "2fd2ed87fab11c78ec2bd0b279d67dd1bfa9779aa632fd5c9c80daee9b7e0f21",
+        "${REPO}/scripts/cmpb_a02/build_status_wheel.py": "b67ae6a0859d4a9aaf3c8a7bd689a36bedea73b85801bbc4049052a703d7a85e",
+        "${REPO}/scripts/cmpb_a02/environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+        "${REPO}/scripts/cmpb_a02/execution_records.py": "5eb4173711abefd69e98aa0a6653eda67d4245bb7a92add134ae584e4d6e0161",
+        "${REPO}/scripts/cmpb_a02/finalize_record.py": "ff787b5b6a3c0be2bd162f4d0fcc7c115071249392fd722730d6c824861dbe07",
+        "${REPO}/scripts/cmpb_a02/independent_checks.py": "63b33ec49920800791b268c80e9890f6a2d0434b06d49d3c9698c0906d8798fe",
+        "${REPO}/scripts/cmpb_a02/prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+        "${REPO}/scripts/cmpb_a02/probe_controls.py": "fb3c0c47fed528967ba364d1a2261dd0a7ea73ee3bbae56b1d21769a7d793dc0",
+        "${REPO}/scripts/cmpb_a02/replay_alignment_status.py": "699010bae3a66396d5afded9c275bf6eb68aa7523599940355f2a600a4858714",
+        "${REPO}/scripts/cmpb_a02/run_stage.py": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+        "${REPO}/scripts/cmpb_a02/test_browser_reports.py": "e2450cfbb01fd4f0cee0386a4a9280249d367bd73880af2b75fc3e17b784cf51",
+        "${REPO}/scripts/cmpb_a02/test_execution_records.py": "6fcfcc75edb7e9a214524efdfbe44e1605ee7e9a3e11eddf2e69065218800d9e",
+        "${REPO}/scripts/cmpb_a02/test_finalize_record.py": "ae29ae8cb7b1bd7e6af4563b57506670732a234efcac7a3b4a00265e03478f42",
+        "${REPO}/scripts/cmpb_a02/test_independent_checks.py": "bfa9b24114c3612441c645062dd4d2ce3b7aba2c19d177811a9e8bbdeb66706d",
+        "${REPO}/scripts/cmpb_a02/test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+        "${REPO}/scripts/cmpb_a02/test_status_revalidation.py": "9882d461997d0535397e3e3a14b7e0d5528fe3b06ff4233d98065f8dfeafbe2a",
+        "${REPO}/scripts/cmpb_a02/test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+        "${REPO}/scripts/cmpb_a02/tool_audit.py": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-final-build-install",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6537s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-final-build-install.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-final-build-install.log",
+      "log_sha256": "3ca27b22354cdf4355229e4ef6c1035cb2e3633514961177ac09f61f12e0ede7",
+      "spec_sha256": "40dbc17bf819c492d6bc0387e7425eccfbf38e03089ddee2e8d9a3c82f33095b",
+      "stage": "repair-final-build-install",
+      "started_utc": "2026-10-15T23:51:38.811522+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-c",
+        "import subprocess;subprocess.run(['${A02_ROOT}/status_revalidation_20261016/test-env/bin/python','-m','pip','install','--no-deps','--force-reinstall','${A02_ROOT}/status_revalidation_20261016/final_candidate/artifacts/circyto-0.10.0-py3-none-any.whl'],check=True);import os,sys,runpy; os.chdir('${REPO}');sys.path.insert(0,'${REPO}');os.environ['CIRCYTO_SKIP_INTEGRATION']='1';os.environ['_TYPER_FORCE_DISABLE_TERMINAL']='1';sys.argv=['pytest','-q','.','--junitxml=${A02_ROOT}/status_revalidation_20261016/records/final-full-tests.xml'];runpy.run_module('pytest',run_name='__main__')"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:52:33.309260+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-final-full-suite",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6507s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-final-full-suite.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-final-full-suite.log",
+      "log_sha256": "90cf3856f02e756e671bd1c3304bbee3344dcaaf72e26b4b17b942a75103100b",
+      "spec_sha256": "6ba8a49990c0a9da090b04455da89548cac209c89ab6d492ba0d0faf85319236",
+      "stage": "repair-final-full-suite",
+      "started_utc": "2026-10-15T23:52:08.931147+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "${REPO}/.github/scripts/check_acceptance_junit.py",
+        "${A02_ROOT}/status_revalidation_20261016/records/final-full-tests.xml"
+      ],
+      "environment": {
+        "PATH": "${A02_ROOT}/status_revalidation_20261016/test-env/bin:/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:53:18.982354+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${REPO}/.github/scripts/check_acceptance_junit.py": "ea52767c3830b0a7f0ef48385724964c43f2cf8bb9a5adf775a57f349b403957",
+        "${REPO}/.github/scripts/check_installed_distribution.py": "cef5621ef5db2d252ee1f92cb0d6dbb0770988af4205322850e9caa8785566a3"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-critical-skip-audit",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6439s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-critical-skip-audit.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-critical-skip-audit.log",
+      "log_sha256": "fb28c17c5820d85029382fe51218e4b470ae981c7fd4cb4993e4ab0a498c3715",
+      "spec_sha256": "1e1c808e999ecce0f95d7584f1a6b58ffe6cc53b3874434ed59fe89db05d46e3",
+      "stage": "repair-critical-skip-audit",
+      "started_utc": "2026-10-15T23:53:17.362137+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "${REPO}/scripts/cmpb_a02/replay_alignment_status.py",
+        "--original",
+        "${A02_ROOT}",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:54:06.204696+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${REPO}/scripts/cmpb_a02/browser_reports.py": "2fd2ed87fab11c78ec2bd0b279d67dd1bfa9779aa632fd5c9c80daee9b7e0f21",
+        "${REPO}/scripts/cmpb_a02/build_status_wheel.py": "b67ae6a0859d4a9aaf3c8a7bd689a36bedea73b85801bbc4049052a703d7a85e",
+        "${REPO}/scripts/cmpb_a02/environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+        "${REPO}/scripts/cmpb_a02/execution_records.py": "5eb4173711abefd69e98aa0a6653eda67d4245bb7a92add134ae584e4d6e0161",
+        "${REPO}/scripts/cmpb_a02/finalize_record.py": "ff787b5b6a3c0be2bd162f4d0fcc7c115071249392fd722730d6c824861dbe07",
+        "${REPO}/scripts/cmpb_a02/independent_checks.py": "63b33ec49920800791b268c80e9890f6a2d0434b06d49d3c9698c0906d8798fe",
+        "${REPO}/scripts/cmpb_a02/prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+        "${REPO}/scripts/cmpb_a02/probe_controls.py": "fb3c0c47fed528967ba364d1a2261dd0a7ea73ee3bbae56b1d21769a7d793dc0",
+        "${REPO}/scripts/cmpb_a02/replay_alignment_status.py": "699010bae3a66396d5afded9c275bf6eb68aa7523599940355f2a600a4858714",
+        "${REPO}/scripts/cmpb_a02/run_stage.py": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+        "${REPO}/scripts/cmpb_a02/test_browser_reports.py": "e2450cfbb01fd4f0cee0386a4a9280249d367bd73880af2b75fc3e17b784cf51",
+        "${REPO}/scripts/cmpb_a02/test_execution_records.py": "6fcfcc75edb7e9a214524efdfbe44e1605ee7e9a3e11eddf2e69065218800d9e",
+        "${REPO}/scripts/cmpb_a02/test_finalize_record.py": "ae29ae8cb7b1bd7e6af4563b57506670732a234efcac7a3b4a00265e03478f42",
+        "${REPO}/scripts/cmpb_a02/test_independent_checks.py": "bfa9b24114c3612441c645062dd4d2ce3b7aba2c19d177811a9e8bbdeb66706d",
+        "${REPO}/scripts/cmpb_a02/test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+        "${REPO}/scripts/cmpb_a02/test_status_revalidation.py": "9882d461997d0535397e3e3a14b7e0d5528fe3b06ff4233d98065f8dfeafbe2a",
+        "${REPO}/scripts/cmpb_a02/test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+        "${REPO}/scripts/cmpb_a02/tool_audit.py": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-a100-replay",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6424s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-a100-replay.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-a100-replay.log",
+      "log_sha256": "5bfde57fa15ba5e83886e59b333953431ac6a3a4798e643fef8b841f03e8fc4d",
+      "spec_sha256": "e37bf83accb937cf381c5d95e3ef6172ea12ad80bf4bec54200cdb752cadf791",
+      "stage": "repair-a100-replay",
+      "started_utc": "2026-10-15T23:53:32.223901+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "${REPO}/scripts/cmpb_a02/browser_reports.py",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:54:38.034360+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${REPO}/scripts/cmpb_a02/browser_reports.py": "2fd2ed87fab11c78ec2bd0b279d67dd1bfa9779aa632fd5c9c80daee9b7e0f21",
+        "${REPO}/scripts/cmpb_a02/build_status_wheel.py": "b67ae6a0859d4a9aaf3c8a7bd689a36bedea73b85801bbc4049052a703d7a85e",
+        "${REPO}/scripts/cmpb_a02/environment_audit.py": "c73a6fb08c8cb988d487f9f2b200250db6e7e899b36060faf723ec151af104df",
+        "${REPO}/scripts/cmpb_a02/execution_records.py": "5eb4173711abefd69e98aa0a6653eda67d4245bb7a92add134ae584e4d6e0161",
+        "${REPO}/scripts/cmpb_a02/finalize_record.py": "ff787b5b6a3c0be2bd162f4d0fcc7c115071249392fd722730d6c824861dbe07",
+        "${REPO}/scripts/cmpb_a02/independent_checks.py": "63b33ec49920800791b268c80e9890f6a2d0434b06d49d3c9698c0906d8798fe",
+        "${REPO}/scripts/cmpb_a02/prepare_inputs.py": "83efffa652082a499fe7244ef8f217914b84a596710257fdda96c9b76bb9dd42",
+        "${REPO}/scripts/cmpb_a02/probe_controls.py": "fb3c0c47fed528967ba364d1a2261dd0a7ea73ee3bbae56b1d21769a7d793dc0",
+        "${REPO}/scripts/cmpb_a02/replay_alignment_status.py": "699010bae3a66396d5afded9c275bf6eb68aa7523599940355f2a600a4858714",
+        "${REPO}/scripts/cmpb_a02/run_stage.py": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+        "${REPO}/scripts/cmpb_a02/test_browser_reports.py": "e2450cfbb01fd4f0cee0386a4a9280249d367bd73880af2b75fc3e17b784cf51",
+        "${REPO}/scripts/cmpb_a02/test_execution_records.py": "6fcfcc75edb7e9a214524efdfbe44e1605ee7e9a3e11eddf2e69065218800d9e",
+        "${REPO}/scripts/cmpb_a02/test_finalize_record.py": "ae29ae8cb7b1bd7e6af4563b57506670732a234efcac7a3b4a00265e03478f42",
+        "${REPO}/scripts/cmpb_a02/test_independent_checks.py": "bfa9b24114c3612441c645062dd4d2ce3b7aba2c19d177811a9e8bbdeb66706d",
+        "${REPO}/scripts/cmpb_a02/test_prepare_inputs.py": "954184a2486102ebf25288950ff9315478face0a236d09eff1be81b582e6b423",
+        "${REPO}/scripts/cmpb_a02/test_status_revalidation.py": "9882d461997d0535397e3e3a14b7e0d5528fe3b06ff4233d98065f8dfeafbe2a",
+        "${REPO}/scripts/cmpb_a02/test_tool_audit.py": "d26d9019ddad2c6358b293a60673f00dd367b613a0722060ac13eb9b038ef661",
+        "${REPO}/scripts/cmpb_a02/tool_audit.py": "e1149e545c27f6652a11dfa2279749f21f85ef2adb14c5bdad2c9ec236480286"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-offline-reports",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6360s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-offline-reports.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-offline-reports.log",
+      "log_sha256": "c1699873b61b5a198dc7a490b49ae9d2e6c78668c5747419049d682959a302c1",
+      "spec_sha256": "2c915e9504c7e2a145e72b7573fd87d260ea0a8113e47656ce424ec4805b3aa8",
+      "stage": "repair-offline-reports",
+      "started_utc": "2026-10-15T23:54:36.492093+00:00",
+      "status": "failed"
+    },
+    {
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-c",
+        "import json,shutil,subprocess,hashlib\nfrom pathlib import Path\nr=Path('${A02_ROOT}/status_revalidation_20261016/final_candidate')\nb=r/'browser_attempt2'\nb.mkdir()\ncopies=[]\nfor name in ['workflow_firstcell','import_firstcell']:\n    src=r/name/'qc/report.html'\n    dst=b/name/'qc/report.html'\n    dst.parent.mkdir(parents=True)\n    shutil.copyfile(src,dst)\n    assert src.read_bytes()==dst.read_bytes()\n    copies.append({'source':str(src),'copy':str(dst),'sha256':hashlib.sha256(src.read_bytes()).hexdigest()})\n(b/'copies.json').write_text(json.dumps(copies,indent=2)+'\\n')\nsubprocess.run([str(r/'installed-env/bin/python'),'${REPO}/scripts/cmpb_a02/browser_reports.py','--root',str(b)],check=True)\n"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin",
+        "TMPDIR": "/tmp/circyto-a02-r"
+      },
+      "finished_utc": "2026-10-15T23:55:29.682759+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {},
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-offline-reports-v2",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6309s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-offline-reports-v2.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-offline-reports-v2.log",
+      "log_sha256": "4f2c26cc7e0c7fdf62d6bc517279e4bc306fc99a6a0aa006a3da856d450d1d87",
+      "spec_sha256": "8a72212a1e40cbb3c65b3968e17db816757fcbe61e473122050a3103f9a8bf42",
+      "stage": "repair-offline-reports-v2",
+      "started_utc": "2026-10-15T23:55:27.511152+00:00",
+      "status": "succeeded"
+    },
+    {
+      "argv": [
+        "/usr/bin/python3",
+        "${SESSION_RECORDS}/preservation_review.py"
+      ],
+      "environment": {
+        "PATH": "/usr/bin:/bin"
+      },
+      "finished_utc": "2026-10-15T23:56:45.556532+00:00",
+      "footprint_root": "${A02_ROOT}",
+      "helper_sha256": "2171db8618994111c111af531da95400b7cfd83077ff0bf14dddd1f834c44f04",
+      "invoked_python_source_sha256": {
+        "${SESSION_RECORDS}/preservation_review.py": "ffe8a5125bdea5887310e35a0f2ec56e69da09522b5e0eaf3273cc2471016250",
+        "${SESSION_RECORDS}/setup.py": "3648192a4dcdb37cfe359d53ffbeed8359260dda467231d7d981a96441eca14c"
+      },
+      "launcher_argv": [
+        "systemd-run",
+        "--user",
+        "--unit=circyto-a02-repair-preservation-review",
+        "--wait",
+        "--pipe",
+        "--property=MemoryMax=21474836480",
+        "--property=MemorySwapMax=0",
+        "--property=RuntimeMaxSec=6232s",
+        "--property=TimeoutStopSec=1s",
+        "--property=KillMode=control-group",
+        "--property=OOMPolicy=kill",
+        "--property=CPUAffinity=0-7",
+        "--property=CPUQuota=800%",
+        "--property=TasksMax=512",
+        "/usr/bin/python3",
+        "${A02_ROOT}/status_revalidation_20261016/helpers/run_stage-2171db8618994111.py",
+        "guard",
+        "--root",
+        "${A02_ROOT}/status_revalidation_20261016",
+        "--spec",
+        "${A02_ROOT}/status_revalidation_20261016/specs/repair-preservation-review.json"
+      ],
+      "log": "${A02_ROOT}/status_revalidation_20261016/logs/repair-preservation-review.log",
+      "log_sha256": "f544334b5077a9f225ef3de488218265a4d37f2e35aeee237dbd609bf574ccd8",
+      "spec_sha256": "e1f386c6104d6b9a49111ed3ea994b24f00832f1af952a2f45ad47251ab5bf30",
+      "stage": "repair-preservation-review",
+      "started_utc": "2026-10-15T23:56:43.962726+00:00",
+      "status": "succeeded"
+    }
+  ],
+  "raw_analysis_commands": "Not repeated; exact original argv retained in ../commands.json and original persistent records/tool_commands.",
+  "replay_helper_sha256": "699010bae3a66396d5afded9c275bf6eb68aa7523599940355f2a600a4858714"
+}
