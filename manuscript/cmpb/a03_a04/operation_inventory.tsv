@@ -1,0 +1,10 @@
+operation	shared_required_work	circyto	independent_reference	interpretation
+Input mapping	Same biological cell/sample/native-file mapping and explicit metadata	User supplies mapping TSV	User supplies same mapping TSV	Descriptive operation inventory, not a human-effort score
+Completion evidence	Same A02 bound statuses; unknown never inferred complete	User supplies cells TSV	User supplies same cells TSV	Descriptive operation inventory, not a human-effort score
+Native parsing/validation	Same 13-column format and declarations	Installed import-circ implementation	Bespoke reference CSV/identity/declaration validation	Descriptive operation inventory, not a human-effort score
+Sparse object construction	Exact integers; ID-aware axes	Installed exporter	Bespoke construction with ordinary SciPy/AnnData	Descriptive operation inventory, not a human-effort score
+RNA integration	Same full RNA, own axis, maps, fields	Installed MuData integration	Ordinary MuData API with explicit global membership	Descriptive operation inventory, not a human-effort score
+Evidence	Hash inputs before/after; copy non-RNA source bytes	Installed provenance implementation	Bespoke hashing/copy checks	Descriptive operation inventory, not a human-effort score
+QC and HTML	Per-cell/candidate QC TSV, JSON, offline first-100 HTML	Installed report	Bespoke report, different cosmetic format	Descriptive operation inventory, not a human-effort score
+Annotation computation	No GTF computation in either measured arm	Not performed	Not performed	Descriptive operation inventory, not a human-effort score
+Human effort	Not measured; no code-length or usability endpoint	Not assessed	Not assessed	Descriptive operation inventory, not a human-effort score

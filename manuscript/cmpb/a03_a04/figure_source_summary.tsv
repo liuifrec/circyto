@@ -1,0 +1,1348 @@
+panel	scenario	model	nominal_fraction	arm	metric	value	scope
+Figure3A-B	CONTROL	deterministic		circyto	accepted_valid	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	all_value_checks_passed	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	accepted_valid	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	all_value_checks_passed	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	accepted_valid	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	cell_assignment_errors	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	CONTROL	deterministic		unsafe	value_contract_failed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.05	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	all_value_checks_passed	8	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	cell_assignment_errors	36	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.1	unsafe	value_contract_failed	12	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	cell_assignment_errors	127	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	cell_assignment_errors	243	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R01	uniform	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	cell_assignment_errors	277	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	state_errors	38	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.05	unsafe	value_contract_failed	19	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	cell_assignment_errors	173	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	contract_errors	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.1	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	cell_assignment_errors	277	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	contract_errors	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	state_errors	120	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	cell_assignment_errors	296	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	contract_errors	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	state_errors	240	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	profile-associated	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	cell_assignment_errors	251	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.05	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	cell_assignment_errors	165	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	contract_errors	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.1	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	cell_assignment_errors	244	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	contract_errors	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	state_errors	120	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	cell_assignment_errors	282	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	contract_errors	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	state_errors	240	simulation configurations; seeds are not biological replicates
+Figure3A-B	R02	uniform	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R03	deterministic		circyto	correct_rejection	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R03	deterministic		circyto	planned	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R03	deterministic		reference	correct_rejection	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R03	deterministic		reference	planned	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R03	deterministic		unsafe	correct_rejection	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R03	deterministic		unsafe	planned	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R04	deterministic		unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	report_errors	252071	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.05	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	report_errors	258440	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	state_errors	80	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.1	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	report_errors	286001	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	state_errors	240	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	report_errors	326048	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	state_errors	480	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	profile-associated	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	report_errors	251597	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.05	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	report_errors	258677	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	state_errors	80	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.1	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	report_errors	285968	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	state_errors	240	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	report_errors	324947	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	state_errors	480	simulation configurations; seeds are not biological replicates
+Figure3A-B	R05	uniform	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	report_errors	252071	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.05	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	report_errors	258440	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	state_errors	80	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.1	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	report_errors	286001	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	state_errors	240	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	report_errors	326048	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	state_errors	480	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	profile-associated	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0	unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	report_errors	251597	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	state_errors	40	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.05	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	report_errors	258677	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	state_errors	80	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.1	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	report_errors	285968	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	state_errors	240	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.25	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	all_value_checks_passed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	accepted_valid	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	planned	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	report_errors	324947	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	state_errors	480	simulation configurations; seeds are not biological replicates
+Figure3A-B	R06	uniform	0.5	unsafe	value_contract_failed	20	simulation configurations; seeds are not biological replicates
+Figure3A-B	R07	deterministic		circyto	correct_rejection	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R07	deterministic		circyto	planned	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R07	deterministic		reference	correct_rejection	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R07	deterministic		reference	planned	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R07	deterministic		unsafe	correct_rejection	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R07	deterministic		unsafe	planned	3	simulation configurations; seeds are not biological replicates
+Figure3A-B	R08	deterministic		circyto	correct_rejection	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R08	deterministic		circyto	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R08	deterministic		reference	correct_rejection	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R08	deterministic		reference	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R08	deterministic		unsafe	correct_rejection	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R08	deterministic		unsafe	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R09	deterministic		unsafe	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		circyto	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	all_value_checks_passed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	report_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		reference	state_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	accepted_valid	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	annotation_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	cell_assignment_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	contract_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	count_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	planned	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	report_errors	19545	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	source_errors	0	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	state_errors	46	simulation configurations; seeds are not biological replicates
+Figure3A-B	R10	deterministic		unsafe	value_contract_failed	1	simulation configurations; seeds are not biological replicates
+Figure3A-B	R11	deterministic		circyto	correct_rejection	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R11	deterministic		circyto	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R11	deterministic		reference	correct_rejection	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R11	deterministic		reference	planned	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R11	deterministic		unsafe	correct_rejection	2	simulation configurations; seeds are not biological replicates
+Figure3A-B	R11	deterministic		unsafe	planned	2	simulation configurations; seeds are not biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		circyto	wall_seconds_minimum	1.1902688610134646	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		circyto	wall_seconds_median	1.199262957990868	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		circyto	wall_seconds_maximum	1.2433307349856477	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		circyto	peak_rss_kib_minimum	187336	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		circyto	peak_rss_kib_median	187572	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		circyto	peak_rss_kib_maximum	188036	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		reference	wall_seconds_minimum	0.6320196730084717	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		reference	wall_seconds_median	0.6535120240005199	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		reference	wall_seconds_maximum	0.6699966969899833	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		reference	peak_rss_kib_minimum	155860	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		reference	peak_rss_kib_median	156000	three process runs; not scaling or biological replicates
+Figure4B	A02-real-four-cell	warm cache/fresh process		reference	peak_rss_kib_maximum	156668	three process runs; not scaling or biological replicates
+Figure3C	CONTROL	deterministic		circyto	candidate_rows	2444	candidate/configuration rows; full-cohort composition is separate
+Figure3C	CONTROL	deterministic		reference	candidate_rows	2444	candidate/configuration rows; full-cohort composition is separate
+Figure3C	CONTROL	deterministic		unsafe	candidate_rows	2444	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R01	uniform	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	profile-associated	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R02	uniform	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R04	deterministic		circyto	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R04	deterministic		reference	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R04	deterministic		unsafe	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.05	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.1	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.25	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	profile-associated	0.5	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.05	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.1	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.25	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R05	uniform	0.5	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.05	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.1	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.25	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	profile-associated	0.5	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.05	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.05	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.05	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.05	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.1	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.1	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.1	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.1	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.25	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.25	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.25	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.25	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.5	circyto	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.5	reference	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.5	unsafe	candidate_rows	48860	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R06	uniform	0.5	unsafe	nonzero_same_cohort_error	48840	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R09	deterministic		circyto	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R09	deterministic		reference	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R09	deterministic		unsafe	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		circyto	arm_undefined	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		circyto	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		circyto	oracle_undefined	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		reference	arm_undefined	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		reference	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		reference	oracle_undefined	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		unsafe	candidate_rows	2443	candidate/configuration rows; full-cohort composition is separate
+Figure3C	R10	deterministic		unsafe	oracle_undefined	2443	candidate/configuration rows; full-cohort composition is separate

@@ -1,0 +1,557 @@
+{
+  "a04_budget": {
+    "deadline_epoch": 1792127478.4146216,
+    "started_utc": "2026-10-16T02:51:18.414610+00:00"
+  },
+  "active_stage_seconds": 7300.362001249945,
+  "control_probe_manifest_sha256": "17ef0748ac99c55a35f41154ccc85cc49551c17f309ebad2d7b4cca441a9f3b9",
+  "control_probes": [
+    {
+      "exit_code": 0,
+      "expected_stop_reason": null,
+      "passed": true,
+      "probe": "inheritance",
+      "record": "records/a0304-probe-inheritance.json",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 7,
+      "expected_stop_reason": null,
+      "passed": true,
+      "probe": "exit-failure",
+      "record": "records/a0304-probe-exit-failure.json",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 1,
+      "expected_stop_reason": null,
+      "passed": true,
+      "probe": "wall-stop",
+      "record": "records/a0304-probe-wall-stop.json",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 1,
+      "expected_stop_reason": null,
+      "passed": true,
+      "probe": "memory-stop",
+      "record": "records/a0304-probe-memory-stop.json",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 125,
+      "expected_stop_reason": "automatic disk threshold",
+      "passed": true,
+      "probe": "disk-stop",
+      "record": "records/a0304-probe-disk-stop.json",
+      "surviving_test_pids": []
+    },
+    {
+      "exit_code": 125,
+      "expected_stop_reason": "CPU affinity widened",
+      "passed": true,
+      "probe": "affinity-stop",
+      "record": "records/a0304-probe-affinity-stop.json",
+      "surviving_test_pids": []
+    }
+  ],
+  "finalization_note": "Includes completed packet-writing stage; storage sampled before this small metadata update. This bookkeeping is not another measured algorithm run.",
+  "measurement_limits": "Cgroup sampled peak includes cache; summed process RSS is sampled, timed child peak RSS comes from /usr/bin/time. Disk watchdog is not filesystem quota. Human pauses excluded from algorithm timings.",
+  "new_storage_bytes": 15226417152,
+  "nonzero_stage_interpretation": "Control probes intentionally test nonzero exits/termination; a04-grid and a04-continued-grid exit 130 are recorded owner-authorized administrative checkpoints. Scientific arm exits and acceptance remain separately tabulated.",
+  "recorded_utc": "2026-10-16T05:09:26.101443+00:00",
+  "session_budget": {
+    "a03_deadline_epoch": 1792121949.6461918,
+    "cpus": [
+      0,
+      1
+    ],
+    "deadline_epoch": 1792129149.6461918,
+    "disk_cap_bytes": 85899345920,
+    "disk_stop_bytes": 84825604096,
+    "memory_cap_bytes": 4294967296,
+    "new_disk_cap_bytes": 17179869184,
+    "new_disk_stop_bytes": 16965120819,
+    "scope": "A03 reference and A04 robustness",
+    "started_epoch": 1792118349.6461918,
+    "started_utc": "2026-10-16T02:39:09.646192+00:00",
+    "wall_cap_seconds": 10800
+  },
+  "stages": [
+    {
+      "RSS_peak": 20152320,
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,subprocess; print(json.dumps({\"parent_affinity\":sorted(os.sched_getaffinity(0))})); subprocess.run([\"/usr/bin/python3\",\"-c\",\"import os; print(sorted(os.sched_getaffinity(0)))\"],check=True)"
+      ],
+      "disk_peak": 42065028273,
+      "elapsed_seconds": 1.6529604200040922,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T02:41:41.767899+00:00",
+      "log": "logs/a0304-probe-inheritance.log",
+      "memory_peak": 9285632,
+      "record_sha256": "b351cb60f2fbf3a978f84a9ae8e2f2915f7048f7fcf84b565705a1ff3a6ec4ca",
+      "stage": "a0304-probe-inheritance",
+      "started_utc": "2026-10-16T02:41:40.113857+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 20332544,
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "raise SystemExit(7)"
+      ],
+      "disk_peak": 42065052849,
+      "elapsed_seconds": 1.6267319239850622,
+      "exit_code": 7,
+      "finished_utc": "2026-10-16T02:41:44.754300+00:00",
+      "log": "logs/a0304-probe-exit-failure.log",
+      "memory_peak": 9379840,
+      "record_sha256": "16839f39e86601a9dc66f7137e5a707434f6722060437d01a92338452b1d48f3",
+      "stage": "a0304-probe-exit-failure",
+      "started_utc": "2026-10-16T02:41:43.126281+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 20324352,
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a0304-probe-wall-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); time.sleep(30)"
+      ],
+      "disk_peak": 42065081521,
+      "elapsed_seconds": 2.246027048007818,
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T02:41:48.360197+00:00",
+      "log": "logs/a0304-probe-wall-stop.log",
+      "memory_peak": 9371648,
+      "record_sha256": "09214c0028a481a312bd310a84e1979a230ff99f65b5adb935a039da9fa664c0",
+      "stage": "a0304-probe-wall-stop",
+      "started_utc": "2026-10-16T02:41:46.112720+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 0,
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a0304-probe-memory-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); x=bytearray(256*1024**2); time.sleep(30)"
+      ],
+      "disk_peak": 42065102001,
+      "elapsed_seconds": 0.7672688859747723,
+      "exit_code": 1,
+      "finished_utc": "2026-10-16T02:41:50.506042+00:00",
+      "log": "logs/a0304-probe-memory-stop.log",
+      "memory_peak": 0,
+      "record_sha256": "8550bbee04c43ff28bb67f9bf833b75501bcfb20e2de7525b35845c4b4593657",
+      "stage": "a0304-probe-memory-stop",
+      "started_utc": "2026-10-16T02:41:49.737332+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 24403968,
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a0304-probe-disk-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); pathlib.Path(\"tmp/a0304-probe-disk-stop-disk.bin\").write_bytes(b\"x\"*(4*1024**2)); time.sleep(30)"
+      ],
+      "disk_peak": 42069333169,
+      "elapsed_seconds": 1.3988054170040414,
+      "exit_code": 125,
+      "finished_utc": "2026-10-16T02:41:53.970412+00:00",
+      "log": "logs/a0304-probe-disk-stop.log",
+      "memory_peak": 10350592,
+      "record_sha256": "b47fca3d9fe4c2a8a5a8a09cf187272e46e1fa52149405214d832983b4b28d1f",
+      "stage": "a0304-probe-disk-stop",
+      "started_utc": "2026-10-16T02:41:52.570342+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 31899648,
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a0304-probe-affinity-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); os.sched_setaffinity(0,{8}); time.sleep(30)"
+      ],
+      "disk_peak": 42069357745,
+      "elapsed_seconds": 1.6473637449962553,
+      "exit_code": 125,
+      "finished_utc": "2026-10-16T02:41:57.056998+00:00",
+      "log": "logs/a0304-probe-affinity-stop.log",
+      "memory_peak": 14467072,
+      "record_sha256": "47f60609b1318664f636e1709d6a5d1890f193e71d631c92f6409f08c9294a37",
+      "stage": "a0304-probe-affinity-stop",
+      "started_utc": "2026-10-16T02:41:55.408139+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 151093248,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_reference.py",
+        "--junitxml=${EVAL_ROOT}/records/reference-tests-initial.xml"
+      ],
+      "disk_peak": 42069693617,
+      "elapsed_seconds": 2.1580788280116394,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T02:48:12.242510+00:00",
+      "log": "logs/a03-helper-tests-initial.log",
+      "memory_peak": 105918464,
+      "record_sha256": "f29180528dadde659ba5efe52fc7c3c91987a2b60e3845d7ace33844432dcaa0",
+      "stage": "a03-helper-tests-initial",
+      "started_utc": "2026-10-16T02:48:10.082424+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 311255040,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/execute.py",
+        "control",
+        "--root",
+        "${EVAL_ROOT}"
+      ],
+      "disk_peak": 42097259697,
+      "elapsed_seconds": 3.8791565250139683,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T02:49:47.628322+00:00",
+      "log": "logs/a03-control.log",
+      "memory_peak": 238473216,
+      "record_sha256": "8e908c9422d53b1e34302b71b593febcc3fb2a7e9ca5a3a7fe476235344c4b03",
+      "stage": "a03-control",
+      "started_utc": "2026-10-16T02:49:43.747541+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 458702848,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/execute.py",
+        "measure",
+        "--root",
+        "${EVAL_ROOT}"
+      ],
+      "disk_peak": 42271258665,
+      "elapsed_seconds": 12.165665593987796,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T02:50:39.852117+00:00",
+      "log": "logs/a03-measure.log",
+      "memory_peak": 489857024,
+      "record_sha256": "885158b3cad9e4f9123aefcbc652da73918fa0508796da2ecd72dc138e72395a",
+      "stage": "a03-measure",
+      "started_utc": "2026-10-16T02:50:27.684200+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 23560192,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/prepare_a04.py",
+        "--root",
+        "${EVAL_ROOT}"
+      ],
+      "disk_peak": 42288470681,
+      "elapsed_seconds": 1.6522522989835124,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T02:51:20.737092+00:00",
+      "log": "logs/a04-base.log",
+      "memory_peak": 10346496,
+      "record_sha256": "0165b73851c24c890deaabfe88d0a2d1893584a20a4af8220174f50d33a96609",
+      "stage": "a04-base",
+      "started_utc": "2026-10-16T02:51:19.083208+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 152600576,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_reference.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_robustness.py",
+        "--junitxml=${EVAL_ROOT}/records/a04-helper-tests.xml"
+      ],
+      "disk_peak": 42296334365,
+      "elapsed_seconds": 3.378365159005625,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T02:58:48.514676+00:00",
+      "log": "logs/a04-helper-tests.log",
+      "memory_peak": 97517568,
+      "record_sha256": "1ef6d30ca8093ff01c7c95f36d415a1634f80a6a64c63356ef4dd596877d0331",
+      "stage": "a04-helper-tests",
+      "started_utc": "2026-10-16T02:58:45.134348+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 697335808,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/robustness.py",
+        "--root",
+        "${EVAL_ROOT}"
+      ],
+      "disk_peak": 48114369713,
+      "elapsed_seconds": 2757.2035761860025,
+      "exit_code": 130,
+      "finished_utc": "2026-10-16T03:45:11.820496+00:00",
+      "log": "logs/a04-grid.log",
+      "memory_peak": 4294967296,
+      "record_sha256": "5930bf401113090071328240df2e79345fb89bfc4ce4fb852dc41c2b172bc232",
+      "stage": "a04-grid",
+      "started_utc": "2026-10-16T02:59:14.615080+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 153030656,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "-p",
+        "no:cacheprovider",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_reference.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_robustness.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_handoff.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_output_audit.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_checkpoint.py",
+        "--junitxml=${EVAL_ROOT}/records/a04-final-helper-tests.xml"
+      ],
+      "disk_peak": 48114701489,
+      "elapsed_seconds": 3.3514692560129333,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T03:46:36.767835+00:00",
+      "log": "logs/a04-final-helper-tests.log",
+      "memory_peak": 103268352,
+      "record_sha256": "b1e6c80d254daa42efac263b03d1ff2c3e15838dfe025b760e957710ff9b09ab",
+      "stage": "a04-final-helper-tests",
+      "started_utc": "2026-10-16T03:46:33.413169+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 646541312,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/robustness.py",
+        "--root",
+        "${EVAL_ROOT}",
+        "--continuation"
+      ],
+      "disk_peak": 50895856817,
+      "elapsed_seconds": 1275.736569392,
+      "exit_code": 130,
+      "finished_utc": "2026-10-16T04:08:10.086922+00:00",
+      "log": "logs/a04-continued-grid.log",
+      "memory_peak": 3279196160,
+      "record_sha256": "a519e8c681711ad7106640dfe8d673cfb4c07958264dae376051d95c4f315591",
+      "stage": "a04-continued-grid",
+      "started_utc": "2026-10-16T03:46:54.348417+00:00",
+      "status": "failed"
+    },
+    {
+      "RSS_peak": 21970944,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_checkpoint.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_handoff.py",
+        "--junitxml=${EVAL_ROOT}/records/a04-time-checkpoint-tests.xml"
+      ],
+      "disk_peak": 50826884273,
+      "elapsed_seconds": 1.7186074669880327,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T04:08:50.656137+00:00",
+      "log": "logs/a04-time-checkpoint-tests.log",
+      "memory_peak": 9572352,
+      "record_sha256": "08cd7187db3df91aeb3b11fd0e88508b2487d1d78053d375d1b5c063a5f6671f",
+      "stage": "a04-time-checkpoint-tests",
+      "started_utc": "2026-10-16T04:08:48.935201+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 648601600,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/robustness.py",
+        "--root",
+        "${EVAL_ROOT}",
+        "--final-segment"
+      ],
+      "disk_peak": 57289753777,
+      "elapsed_seconds": 3002.067592474981,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T04:59:00.458261+00:00",
+      "log": "logs/a04-final-grid.log",
+      "memory_peak": 4294967296,
+      "record_sha256": "e51719cb8c6a49d96bc8e6d54441ed39f1eea49c951d3773f371cfc8df07bfe1",
+      "stage": "a04-final-grid",
+      "started_utc": "2026-10-16T04:08:58.388207+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 153645056,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_checkpoint.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_handoff.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_output_audit.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_reference.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_robustness.py",
+        "--junitxml=${EVAL_ROOT}/records/a04-handoff-tests.xml"
+      ],
+      "disk_peak": 57203853645,
+      "elapsed_seconds": 3.560747371026082,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T04:59:22.473077+00:00",
+      "log": "logs/a04-handoff-tests.log",
+      "memory_peak": 104890368,
+      "record_sha256": "8ea87abba7b5010969ad167cb97b2792f8124e77d6421e244f7350914a58ea8e",
+      "stage": "a04-handoff-tests",
+      "started_utc": "2026-10-16T04:59:18.908545+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 133443584,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/output_audit.py",
+        "--root",
+        "${EVAL_ROOT}"
+      ],
+      "disk_peak": 57205122225,
+      "elapsed_seconds": 164.0432816990069,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T05:02:30.825457+00:00",
+      "log": "logs/a04-output-audit.log",
+      "memory_peak": 4294967296,
+      "record_sha256": "ef7b9d6be873e1dbe346f8b9b4353cfc4294bae956bd9702af4827be05f2ecc1",
+      "stage": "a04-output-audit",
+      "started_utc": "2026-10-16T04:59:46.779052+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 101756928,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/handoff.py",
+        "--root",
+        "${EVAL_ROOT}",
+        "--repo",
+        "${ANALYSIS_WORKTREE}"
+      ],
+      "disk_peak": 57278215345,
+      "elapsed_seconds": 51.56115451597725,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T05:03:42.513242+00:00",
+      "log": "logs/a04-handoff.log",
+      "memory_peak": 4294926336,
+      "record_sha256": "8d3c1e92f5d8efa5b1b8340cff2e8b0719815907b8082be5da66050bcf2d8c7b",
+      "stage": "a04-handoff",
+      "started_utc": "2026-10-16T05:02:50.950016+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 153473024,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_checkpoint.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_handoff.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_output_audit.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_reference.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_robustness.py",
+        "--junitxml=${EVAL_ROOT}/records/a04-metadata-correction-tests.xml"
+      ],
+      "disk_peak": 57278950385,
+      "elapsed_seconds": 3.4034776789776515,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T05:06:27.329561+00:00",
+      "log": "logs/a04-metadata-correction-tests.log",
+      "memory_peak": 96825344,
+      "record_sha256": "c0494b62a64c435a1cb6fb5c312f71172c4ced83964538fe809d2a10667029b5",
+      "stage": "a04-metadata-correction-tests",
+      "started_utc": "2026-10-16T05:06:23.923327+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 22142976,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/correct_packet_metadata.py",
+        "--root",
+        "${EVAL_ROOT}",
+        "--repo",
+        "${ANALYSIS_WORKTREE}"
+      ],
+      "disk_peak": 57278772401,
+      "elapsed_seconds": 1.6914572549867444,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T05:07:36.422599+00:00",
+      "log": "logs/a04-metadata-correction.log",
+      "memory_peak": 9650176,
+      "record_sha256": "b550e772796698c7274935343b4b359e047c88a1feabb6c1e7c41e48a28c08ac",
+      "stage": "a04-metadata-correction",
+      "started_utc": "2026-10-16T05:07:34.729411+00:00",
+      "status": "succeeded"
+    },
+    {
+      "RSS_peak": 153137152,
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/test-env/bin/python",
+        "-B",
+        "-m",
+        "pytest",
+        "-q",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_checkpoint.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_handoff.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_output_audit.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_reference.py",
+        "${ANALYSIS_WORKTREE}/scripts/cmpb_a03_a04/test_robustness.py",
+        "--junitxml=${EVAL_ROOT}/records/a04-final-review-tests.xml"
+      ],
+      "disk_peak": 57279571121,
+      "elapsed_seconds": 3.451392109011067,
+      "exit_code": 0,
+      "finished_utc": "2026-10-16T05:08:30.208222+00:00",
+      "log": "logs/a04-final-review-tests.log",
+      "memory_peak": 87314432,
+      "record_sha256": "57afa70b3bca3d7a59fd0102066920d19bb28e8b724e03a0dc451209ba3e48c5",
+      "stage": "a04-final-review-tests",
+      "started_utc": "2026-10-16T05:08:26.753703+00:00",
+      "status": "succeeded"
+    }
+  ],
+  "whole_A02_storage_bytes": 57279104177
+}

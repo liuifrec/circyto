@@ -1,0 +1,26 @@
+{
+  "checks": [
+    {
+      "after_sha256": "f311711e3c28f62cd19a424c439e96dee0a17378114386d6bc5bc7b0c75be28e",
+      "before_sha256": "8d7ddf3a65f1ff1b975787ceb699845b6e33c97602cbda86df608ed5c915f9c3",
+      "file": "additional_output_checks.tsv",
+      "parsed_fields_identical": true,
+      "rows": 2127
+    },
+    {
+      "after_sha256": "2ae61b60037e7e2d109ce0805bf0d68340459991ba2180f3876b75270a72e761",
+      "before_sha256": "0e27c683ee48719e90d3bdde93d5db4d3b382beb3101d5c41142f29620417192",
+      "file": "administrative_prior_attempts.tsv",
+      "parsed_fields_identical": true,
+      "rows": 4
+    },
+    {
+      "after_sha256": "c8035794cb1ddd80b254a4b62c24349d2c461c93a4dff7fb82797f6c3457ca5b",
+      "before_sha256": "fbcd070828b163e1afde69b935d50002a7cb08f21bc7d57b95424e8577728fe8",
+      "file": "completed_cohort_prevalence.tsv",
+      "parsed_fields_identical": true,
+      "rows": 2115
+    }
+  ],
+  "operation": "Quote empty final TSV fields in repository review copies so default git diff --check accepts semantic empty fields; no original source/output stream changed"
+}
