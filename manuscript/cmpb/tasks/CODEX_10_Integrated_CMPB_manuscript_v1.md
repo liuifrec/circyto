@@ -5,17 +5,17 @@
 ## 1. Start from the accepted local figure lineage
 
 Base the new, isolated local worktree on the **locally accepted Figures 2–4 figure-review commit**
-\`6e5a1a0fbc5d2a6a9361814057ec31bdc9fcb882\`.
-Its parent/accepted Figure 4: \`81ffd7509fcaa4cbb44b7f9e82064edfd40e9837\`; A06 \`f858edff019b295c8e92e1c8645884ab9d2b721e\`; A05 \`90381340cc0365bc66c815d06ff01b2978dc3d34\`; A03/A04 \`02ee3d4acfed63c5b2f02c4baef6d22c822d4dac\`; A02 \`307758f57a39c009393d03fc0f69e4638b2498c6\`. The GitHub task-planning branch is a *separate branch based on A05 for task discovery*, not a substitute for the newest local figure lineage. Verify actual local branch tips and ancestry before writing. If the accepted latest local commit cannot be found, **stop** rather than silently using older figures. Never reset, force-push or replace prior branches. Create \`manuscript/cmpb-manuscript-v1-review\` if free (otherwise a uniquely named alternative).
+`6e5a1a0fbc5d2a6a9361814057ec31bdc9fcb882`.
+Its parent/accepted Figure 4: `81ffd7509fcaa4cbb44b7f9e82064edfd40e9837`; A06 `f858edff019b295c8e92e1c8645884ab9d2b721e`; A05 `90381340cc0365bc66c815d06ff01b2978dc3d34`; A03/A04 `02ee3d4acfed63c5b2f02c4baef6d22c822d4dac`; A02 `307758f57a39c009393d03fc0f69e4638b2498c6`. The GitHub task-planning branch is a *separate branch based on A05 for task discovery*, not a substitute for the newest local figure lineage. Verify actual local branch tips and ancestry before writing. If the accepted latest local commit cannot be found, **stop** rather than silently using older figures. Never reset, force-push or replace prior branches. Create `manuscript/cmpb-manuscript-v1-review` if free (otherwise a uniquely named alternative).
 
 Freeze and reference the following accepted evidence, each at its original scope:
-- A02 real four-cell technical acceptance: \`manuscript/cmpb/a02_complete/cohort_acceptance.md\`, cell trace, native checks, report checks. Preserve A100 original failed alignment-status result and separate repaired status replay.
-- A03/A04: \`manuscript/cmpb/a03_a04/results_for_review.md\`, reference-comparison run table, complete robustness outcomes, denominators/error aggregates and source manifest.
-- A05: \`manuscript/cmpb/a05_descriptive/a05_results_for_review.md\` and \`cnv_eligibility_decision.md\`.
-- A06: \`manuscript/cmpb/a06_scaling/results_for_review.md\` and scaling run/summary tables.
-- Figures 2–3: \`manuscript/cmpb/figures2_3_review/\` including captions, figure-source tables, validation and revised Figure 4 copies.
-- Frozen earlier original manuscript: \`manuscript/bioinformatics-application-note-v2@c29831c3f6e7a31b708cce493c0be8036176077a\` with \`manuscript/application_note_evidence.md\`, \`manuscript/README.md\`, \`manuscript/figure_legends.md\`, \`manuscript/reproduce.md\`, \`manuscript/submission_readiness.md\`, existing original Figure 1B/C sources and archival provenance.
-- \`manuscript/nikaido_response.md\`, \`docs/circrna_workflow_comparison.md\` at pinned Nikaido audit \`42459975b055d771197fbe181c6c56ffec7647cb\`, \`manuscript/cmpb/study_design.md\`, \`benchmark_plan.yaml\`, \`claim_evidence.tsv\`, \`figure_plan.md\`.
+- A02 real four-cell technical acceptance: `manuscript/cmpb/a02_complete/cohort_acceptance.md`, cell trace, native checks, report checks. Preserve A100 original failed alignment-status result and separate repaired status replay.
+- A03/A04: `manuscript/cmpb/a03_a04/results_for_review.md`, reference-comparison run table, complete robustness outcomes, denominators/error aggregates and source manifest.
+- A05: `manuscript/cmpb/a05_descriptive/a05_results_for_review.md` and `cnv_eligibility_decision.md`.
+- A06: `manuscript/cmpb/a06_scaling/results_for_review.md` and scaling run/summary tables.
+- Figures 2–3: `manuscript/cmpb/figures2_3_review/` including captions, figure-source tables, validation and revised Figure 4 copies.
+- Frozen earlier original manuscript: `manuscript/bioinformatics-application-note-v2@c29831c3f6e7a31b708cce493c0be8036176077a` with `manuscript/application_note_evidence.md`, `manuscript/README.md`, `manuscript/figure_legends.md`, `manuscript/reproduce.md`, `manuscript/submission_readiness.md`, existing original Figure 1B/C sources and archival provenance.
+- `manuscript/nikaido_response.md`, `docs/circrna_workflow_comparison.md` at pinned Nikaido audit `42459975b055d771197fbe181c6c56ffec7647cb`, `manuscript/cmpb/study_design.md`, `benchmark_plan.yaml`, `claim_evidence.tsv`, `figure_plan.md`.
 
 The external circulated manuscript and approved BioRender Figure 1A may not be present in the repo: **locate and inventory only supplied/current authorized copies; do not make up, silently reconstruct, edit or replace them**. The original authors/title and coauthor-approved Conclusions content are authoritative only where actually documented; report external-source gaps explicitly. The original published/project reports are not permission to invent original execution hashes.
 
@@ -50,7 +50,7 @@ Suggested narrative:
 6. Conclusion: preserve the previously approved sentence *verbatim*, if confirmed in the accepted original record:
    "By representing circRNAs as an explicitly annotated single-cell modality, circyto enables future investigations into how circRNA profiles relate to cellular transcriptional states, host-gene expression, and genomic alterations within individual cells."
    Do not amplify future potential into achieved biological association.
-7. Availability/declarations, bibliography and supplementary inventory. Distinguish historical frozen v0.10.0, evaluated repaired but unpublished implementation commit \`e6843a38469d49f96d44758a4e37893ebbe2734b\`, locally tested wheel hash \`28c7cbde3c31cf90dd7c247487ba5f410c5b82f6f97d7a2281a0ce52912f7383\`, and eventual future release (not performed). External CIRI3 JAR excluded from the distributable artifact. Never invent an active PyPI/Bioconda release or data/archival DOI.
+7. Availability/declarations, bibliography and supplementary inventory. Distinguish historical frozen v0.10.0, evaluated repaired but unpublished implementation commit `e6843a38469d49f96d44758a4e37893ebbe2734b`, locally tested wheel hash `28c7cbde3c31cf90dd7c247487ba5f410c5b82f6f97d7a2281a0ce52912f7383`, and eventual future release (not performed). External CIRI3 JAR excluded from the distributable artifact. Never invent an active PyPI/Bioconda release or data/archival DOI.
 
 **CNV gate:** A05 verified 23 × 60,607 stored GEO state values but not source callability/missingness semantics; no Figure 2 CNV heatmap, calculated CNV effect, or invented zero interpretation. The 23 historical profiles are *descriptive stored measurements* with unknown per-cell completion; the four-cell new pilot does not recover their original detection provenance.
 
@@ -62,18 +62,18 @@ Propose **Table 1: supported and verified computational tasks across circyto and
 
 Reuse **Figure 1A only as the currently approved BioRender original**, if actually available and authorized; if absent create a clearly labeled placeholder/source request, not a replacement scaffold or AI-drawn figure. Reuse accepted RNA-derived Figure 1B/C with their original scientific data. Link **latest reader-facing Figures 2/3 and title-revised Figure 4**, SVG as authoritative, without rescaling scientific data or relabeling quantities. Include full numbered captions source-linked, but do not embed machine-generated graphics in place of missing Figure 1A.
 
-The bibliography must be real: check available exact DOI/author/year/title sources in the original manuscript, Nikaido evidence, and reputable literature. Mark missing citation identifiers rather than hallucinating. Use citations to CIRI3, nf-core/circrna, CirComPara2, circtools, original Smart-seq3 and GSE278958 source, AnnData/MuData and any justified relevant prior framework literature. Do not copy abstract paragraphs from sources. Provide a separate bibliography audit table with \`verified\`, \`incomplete\`, \`unverified\` and exactly where checked.
+The bibliography must be real: check available exact DOI/author/year/title sources in the original manuscript, Nikaido evidence, and reputable literature. Mark missing citation identifiers rather than hallucinating. Use citations to CIRI3, nf-core/circrna, CirComPara2, circtools, original Smart-seq3 and GSE278958 source, AnnData/MuData and any justified relevant prior framework literature. Do not copy abstract paragraphs from sources. Provide a separate bibliography audit table with `verified`, `incomplete`, `unverified` and exactly where checked.
 
 ## 5. Deliverables, safety, owner stop gate
 
-Create a **new** \`manuscript/cmpb/manuscript_v1_review/\` directory containing at least:
-- \`manuscript.md\` complete draft with clearly marked author/affiliation placeholders only when original approval cannot be verified.
-- \`abstract.md\`, \`figures_legends.md\`, \`table1_*.tsv\`, \`table2_*.tsv\`, \`supplementary_inventory.md\`, \`references.bib\` (only verified entries plus separately tracked missing sources).
-- \`claim_to_sentence_audit.tsv\` (every quantitative manuscript sentence → accepted exact source, version, cohort, check); \`reference_audit.tsv\`; \`manuscript_readiness.md\` with unresolved scientific/reviewer decisions and source/figure availability.
-- \`editorial_decisions.md\` explaining differences from the original Application Note and no internal A-code reader-facing headings; \`diff_preservation.json\` confirming no original text/figures/production/data altered.
+Create a **new** `manuscript/cmpb/manuscript_v1_review/` directory containing at least:
+- `manuscript.md` complete draft with clearly marked author/affiliation placeholders only when original approval cannot be verified.
+- `abstract.md`, `figures_legends.md`, `table1_*.tsv`, `table2_*.tsv`, `supplementary_inventory.md`, `references.bib` (only verified entries plus separately tracked missing sources).
+- `claim_to_sentence_audit.tsv` (every quantitative manuscript sentence → accepted exact source, version, cohort, check); `reference_audit.tsv`; `manuscript_readiness.md` with unresolved scientific/reviewer decisions and source/figure availability.
+- `editorial_decisions.md` explaining differences from the original Application Note and no internal A-code reader-facing headings; `diff_preservation.json` confirming no original text/figures/production/data altered.
 
 Check the draft for errors of scope/denominator, false biological/competitor claims, reference integrity, figure labels, internal A-code leaks, software lineage and consistent units; use a separate lightweight linter, but manuscript logic needs human review. No new analysis, no reloading large read files or full 715-case grid, no science alteration, no correcting historic sources to fit story.
 
 Use existing local tools; target a bounded **writing-focused** session (suggest <= 90 minutes with no large computations). Commit **new manuscript review directory only** on isolated local branch, clean diff; **do not push, merge, tag, publish, submit, contact coauthors, send emails or change release artifacts** without a separate owner instruction.
 
-Export a compact, checksum-verified ZIP to \`~/Downloads/CIRCYTO_CMPB_MANUSCRIPT_V1_<timestamp>/\` containing the complete new draft, tables, citations and audit packet; do not include H5MU/FASTQ/JAR/environments/bulk objects/private details. Report exact path, size, SHA256, local commit, outstanding source gates, draft word count and whether all four figures have accepted/located source files. Stop for owner review. Coauthor approval and final CMPB journal formatting remain subsequent distinct steps.
+Export a compact, checksum-verified ZIP to `~/Downloads/CIRCYTO_CMPB_MANUSCRIPT_V1_<timestamp>/` containing the complete new draft, tables, citations and audit packet; do not include H5MU/FASTQ/JAR/environments/bulk objects/private details. Report exact path, size, SHA256, local commit, outstanding source gates, draft word count and whether all four figures have accepted/located source files. Stop for owner review. Coauthor approval and final CMPB journal formatting remain subsequent distinct steps.
