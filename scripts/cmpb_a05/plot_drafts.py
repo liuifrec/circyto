@@ -2,6 +2,7 @@
 import argparse
 import csv
 import html
+import hashlib
 import json
 import math
 from pathlib import Path
@@ -30,7 +31,9 @@ class SVG:
         self.parts.append(f'<line x1="{x1:.4f}" y1="{y1:.4f}" x2="{x2:.4f}" y2="{y2:.4f}" stroke="{color}"/>')
 
     def dot(self, x, y, label, color="#176c89", radius=3, identifier="", xr=0, yr=0):
-        self.parts.append(f'<circle cx="{x:.6f}" cy="{y:.6f}" r="{radius}" fill="{color}" fill-opacity="0.68" data-id="{html.escape(identifier, quote=True)}" data-x="{xr}" data-y="{yr}"><title>{html.escape(label)}</title></circle>')
+        # Self-closing circle also works in the installed ImageMagick SVG reader,
+        # which silently drops circles containing a nested SVG title element.
+        self.parts.append(f'<circle cx="{x:.6f}" cy="{y:.6f}" r="{radius}" fill="{color}" fill-opacity="0.68" aria-label="{html.escape(label, quote=True)}" data-id="{html.escape(identifier, quote=True)}" data-x="{xr}" data-y="{yr}"/>')
 
     def save(self, path, footer):
         for i, line in enumerate(footer): self.text(35, self.h-40+i*15, line, 10)
@@ -58,13 +61,16 @@ def axes(svg, x, y, w, h, xmax, ymax, xlabel, ylabel, title):
 
 def main():
     ap=argparse.ArgumentParser();ap.add_argument("--tables",type=Path,required=True);ap.add_argument("--out",type=Path,required=True)
+    ap.add_argument("--renderer-commit",help="Pin the recorded renderer commit when recreating from a ZIP without Git metadata")
     args=ap.parse_args();args.out.mkdir(exist_ok=True,parents=True)
     cells=read(args.tables/"descriptive_cell_metrics.tsv");candidates=read(args.tables/"descriptive_candidate_metrics.tsv");thresholds=read(args.tables/"threshold_sensitivity.tsv")
     provenance=json.loads((args.tables/"analysis_provenance.json").read_text())
     observations=[]; manifest=[]
     # Renderer commit binds plotting code separately from analysis helper commit.
     repo=Path(__file__).resolve().parents[2]
-    renderer_commit=subprocess.check_output(["git","rev-parse","HEAD"],cwd=repo,text=True).strip() if (repo/".git").exists() else "see packet README commit"
+    renderer_commit=args.renderer_commit or (subprocess.check_output(["git","rev-parse","HEAD"],cwd=repo,text=True).strip() if (repo/".git").exists() else provenance['helper_commit'])
+    renderer_sha256=hashlib.sha256(Path(__file__).read_bytes()).hexdigest()
+    assert json.loads((args.tables/'cnv_gate.json').read_text())['decision']=='NOT VERIFIED', 'Review gate decision before choosing this RNA/circ-only draft'
     def record(fig,panel,dataset,oid,x,y,source,order):
         observations.append(dict(figure=fig,panel=panel,dataset=dataset,observation_id=oid,display_order=order,
             x=x,y=y,source_table=source,source_object_sha256=provenance['source_hashes'][dataset],analysis_helper_commit=provenance['helper_commit'],renderer_commit=renderer_commit))
@@ -73,7 +79,7 @@ def main():
         footer=[note, f"Object SHA256 {sha} | helper {provenance['helper_commit'][:12]}; renderer {renderer_commit[:12]}"]
         svg.save(args.out/name,footer)
         manifest.append(dict(figure=name,dataset=dataset,source_tables=source_tables,source_object_sha256=sha,
-            analysis_helper_commit=provenance['helper_commit'],renderer_commit=renderer_commit,scope_note=note))
+            analysis_helper_commit=provenance['helper_commit'],renderer_commit=renderer_commit,renderer_sha256=renderer_sha256,scope_note=note))
     for dataset,slug in [("Smart-seq3","smartseq3"),("IMR90","imr90")]:
         cc=[r for r in cells if r['dataset']==dataset];cv=[r for r in candidates if r['dataset']==dataset]
         matched=[r for r in cc if r['matched_rna_circ']=='True']
