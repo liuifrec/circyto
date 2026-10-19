@@ -1,0 +1,24 @@
+chromosome	bins	first_start	last_end	minimum_bin_bases	maximum_bin_bases	out_of_order	overlapping_adjacent	gaps_between_adjacent	coordinate_convention	source_object_sha256
+chr1	4979	0	248950000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr2	4843	0	242150000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr3	3965	0	198250000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr4	3804	0	190200000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr5	3630	0	181500000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr6	3416	0	170800000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr7	3186	0	159300000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr8	2902	0	145100000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr9	2767	0	138350000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr10	2675	0	133750000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr11	2701	0	135050000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr12	2665	0	133250000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr13	2287	0	114350000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr14	2140	0	107000000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr15	2039	0	101950000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr16	1806	0	90300000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr17	1665	0	83250000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr18	1607	0	80350000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr19	1172	0	58600000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr20	1288	0	64400000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr21	934	0	46700000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chr22	1016	0	50800000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+chrX	3120	0	156000000	50000	50000	0	0	0	stored start/end with bin_size=end-start; public equality checked	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8

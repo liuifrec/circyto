@@ -1,0 +1,6 @@
+Running as unit: circyto-a05-preservation.service
+{"passed": true, "protected_files": 654, "production_members": 87}
+Finished with result: success
+Main processes terminated with: code=exited/status=0
+Service runtime: 791ms
+CPU time consumed: 631ms

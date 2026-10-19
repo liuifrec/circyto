@@ -1,0 +1,5 @@
+dataset	source_object_sha256	helper_commit	modality	rows	columns	stored_entries	numerical_nonzeros	explicit_sparse_zeros	total_signal	dtype	missing_stored_values	unique_cell_ids	unique_feature_ids	axis_orientation
+Smart-seq3	0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339	6ec0ad2f6977a593fabdc5978a3043511214bb61	circ	192	2503	2659	2659	0	5711	int32	0	True	True	cells by features
+Smart-seq3	0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339	6ec0ad2f6977a593fabdc5978a3043511214bb61	rna	192	63187	1695807	1695807	0	42535540	int32	0	True	True	cells by features
+IMR90	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8	6ec0ad2f6977a593fabdc5978a3043511214bb61	circ	23	2443	2914	2914	0	7422	int32	0	True	True	cells by features
+IMR90	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8	6ec0ad2f6977a593fabdc5978a3043511214bb61	rna	23	63187	376158	376158	0	67525881	int32	0	True	True	cells by features

@@ -1,0 +1,5 @@
+Running as unit: circyto-a05-a05-probe-wall-stop.service
+Finished with result: timeout
+Main processes terminated with: code=killed/status=TERM
+Service runtime: 2.176s
+CPU time consumed: 52ms

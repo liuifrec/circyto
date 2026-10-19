@@ -1,0 +1,6 @@
+Running as unit: circyto-a05-inspect-fixed.service
+{"Smart-seq3": {"sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339", "modalities": {"circ": [192, 2503], "rna": [192, 63187]}}, "IMR90": {"sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8", "modalities": {"circ": [23, 2443], "cnv": [23, 60607], "rna": [23, 63187]}}}
+Finished with result: success
+Main processes terminated with: code=exited/status=0
+Service runtime: 795ms
+CPU time consumed: 620ms

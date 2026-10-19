@@ -1,0 +1,12 @@
+{
+  "helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+  "analyze_sha256": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+  "source_hashes": {
+    "Smart-seq3": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "IMR90": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8"
+  },
+  "sources_modified": false,
+  "correlations": "not calculated; descriptive scatter only; no p-values or fitted association models",
+  "source_order": "unchanged stored global cell order and circ var order",
+  "missing_encoding": "blank numeric field; explicit unknown status"
+}

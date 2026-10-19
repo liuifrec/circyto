@@ -1,0 +1,88 @@
+[
+  {
+    "figure": "smartseq3_rna_circ_scatter_draft.svg",
+    "dataset": "Smart-seq3",
+    "source_tables": [
+      "descriptive_cell_metrics.tsv"
+    ],
+    "source_object_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "Descriptive stored measurements; no correlation test, causal inference or cross-assay comparison. RNA-only DIYHEK_192 is retained in tables/distributions."
+  },
+  {
+    "figure": "smartseq3_distributions_draft.svg",
+    "dataset": "Smart-seq3",
+    "source_tables": [
+      "descriptive_cell_metrics.tsv",
+      "descriptive_candidate_metrics.tsv"
+    ],
+    "source_object_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "Empirical cumulative distributions; stored-row fractions are not completed-cohort or biological prevalence."
+  },
+  {
+    "figure": "smartseq3_threshold_sensitivity_draft.svg",
+    "dataset": "Smart-seq3",
+    "source_tables": [
+      "threshold_sensitivity.tsv"
+    ],
+    "source_object_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "No biological cutoff is recommended; zero rows remain in every threshold denominator."
+  },
+  {
+    "figure": "imr90_rna_circ_scatter_draft.svg",
+    "dataset": "IMR90",
+    "source_tables": [
+      "descriptive_cell_metrics.tsv"
+    ],
+    "source_object_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "Descriptive stored measurements; no correlation test, causal inference or cross-assay comparison."
+  },
+  {
+    "figure": "imr90_distributions_draft.svg",
+    "dataset": "IMR90",
+    "source_tables": [
+      "descriptive_cell_metrics.tsv",
+      "descriptive_candidate_metrics.tsv"
+    ],
+    "source_object_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "Empirical cumulative distributions; stored-row fractions are not completed-cohort or biological prevalence."
+  },
+  {
+    "figure": "imr90_threshold_sensitivity_draft.svg",
+    "dataset": "IMR90",
+    "source_tables": [
+      "threshold_sensitivity.tsv"
+    ],
+    "source_object_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "No biological cutoff is recommended; zero rows remain in every threshold denominator."
+  },
+  {
+    "figure": "figure2c_rna_circ_only_alternative.svg",
+    "dataset": "IMR90",
+    "source_tables": [
+      "descriptive_cell_metrics.tsv"
+    ],
+    "source_object_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+    "analysis_helper_commit": "6ec0ad2f6977a593fabdc5978a3043511214bb61",
+    "renderer_commit": "640980f9bf2035a01070a43522f8e8f6b989eae6",
+    "renderer_sha256": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+    "scope_note": "Historical simple-overlap RNA; circ assay completion and original reference digests unknown. No CNV/association inference."
+  }
+]

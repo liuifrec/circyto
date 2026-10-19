@@ -1,0 +1,5 @@
+Running as unit: circyto-a05-a05-probe-disk-stop.service
+Finished with result: exit-code
+Main processes terminated with: code=exited/status=125
+Service runtime: 1.046s
+CPU time consumed: 49ms

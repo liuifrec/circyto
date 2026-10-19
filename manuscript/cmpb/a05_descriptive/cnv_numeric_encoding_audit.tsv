@@ -1,0 +1,15 @@
+source	encoding	count	interpretation	source_object_sha256
+original /mod/cnv/X	0	115093	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+original /mod/cnv/X	1	30594	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+original /mod/cnv/X	2	1236818	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+original /mod/cnv/X	3	10242	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+original /mod/cnv/X	4	298	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+original /mod/cnv/X	5	15	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+original /mod/cnv/X	8	901	stored integer only; no callability assigned	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	0-somy	115093	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	1-somy	30594	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	2-somy	1236818	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	3-somy	10242	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	4-somy	298	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	5-somy	15	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz	8-somy	901	public categorical token; numeric parser does not supply mask semantics	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8

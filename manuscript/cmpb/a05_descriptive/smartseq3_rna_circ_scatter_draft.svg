@@ -1,0 +1,431 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="480" viewBox="0 0 1140 480">
+<style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#23313d} .axis{stroke:#7c8a96;stroke-width:1} .grid{stroke:#e6ebef;stroke-width:1}</style>
+<rect width="100%" height="100%" fill="white"/>
+<metadata>{&quot;analyze_sha256&quot;: &quot;e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638&quot;, &quot;correlations&quot;: &quot;not calculated; descriptive scatter only; no p-values or fitted association models&quot;, &quot;dataset&quot;: &quot;Smart-seq3&quot;, &quot;helper_commit&quot;: &quot;6ec0ad2f6977a593fabdc5978a3043511214bb61&quot;, &quot;missing_encoding&quot;: &quot;blank numeric field; explicit unknown status&quot;, &quot;renderer_commit&quot;: &quot;640980f9bf2035a01070a43522f8e8f6b989eae6&quot;, &quot;source_hashes&quot;: {&quot;IMR90&quot;: &quot;bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8&quot;, &quot;Smart-seq3&quot;: &quot;0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339&quot;}, &quot;source_order&quot;: &quot;unchanged stored global cell order and circ var order&quot;, &quot;sources_modified&quot;: false}</metadata>
+<text x="35.0000" y="31.0000" font-size="21" text-anchor="start" font-weight="bold">Smart-seq3 | stored RNA and circ burden</text>
+<text x="35.0000" y="55.0000" font-size="12" text-anchor="start" font-weight="normal">All 191 recorded shared identities; historical circ completion unknown</text>
+<text x="85.0000" y="95.0000" font-size="14" text-anchor="start" font-weight="bold">A</text>
+<line x1="85.0000" y1="355.0000" x2="525.0000" y2="355.0000" stroke="#e6ebef"/>
+<text x="85.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<text x="77.0000" y="359.0000" font-size="10" text-anchor="end" font-weight="normal">0</text>
+<line x1="85.0000" y1="293.7500" x2="525.0000" y2="293.7500" stroke="#e6ebef"/>
+<text x="195.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">1.88e+05</text>
+<text x="77.0000" y="297.7500" font-size="10" text-anchor="end" font-weight="normal">50</text>
+<line x1="85.0000" y1="232.5000" x2="525.0000" y2="232.5000" stroke="#e6ebef"/>
+<text x="305.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">3.75e+05</text>
+<text x="77.0000" y="236.5000" font-size="10" text-anchor="end" font-weight="normal">100</text>
+<line x1="85.0000" y1="171.2500" x2="525.0000" y2="171.2500" stroke="#e6ebef"/>
+<text x="415.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">5.62e+05</text>
+<text x="77.0000" y="175.2500" font-size="10" text-anchor="end" font-weight="normal">150</text>
+<line x1="85.0000" y1="110.0000" x2="525.0000" y2="110.0000" stroke="#e6ebef"/>
+<text x="525.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">7.5e+05</text>
+<text x="77.0000" y="114.0000" font-size="10" text-anchor="end" font-weight="normal">200</text>
+<line x1="85.0000" y1="355.0000" x2="525.0000" y2="355.0000" stroke="#7c8a96"/>
+<line x1="85.0000" y1="110.0000" x2="85.0000" y2="355.0000" stroke="#7c8a96"/>
+<text x="305.0000" y="395.0000" font-size="11" text-anchor="middle" font-weight="normal">RNA overlap-profile total (stored counts)</text>
+<text x="85.0000" y="76.0000" font-size="11" text-anchor="start" font-weight="normal">circ junction-read support (stored units)</text>
+<circle cx="231.637333" cy="313.350000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_1: 249950, 34" data-id="DIYHEK_1" data-x="249950" data-y="34"/>
+<circle cx="204.925227" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_10: 204418, 13" data-id="DIYHEK_10" data-x="204418" data-y="13"/>
+<circle cx="284.653227" cy="290.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_100: 340318, 53" data-id="DIYHEK_100" data-x="340318" data-y="53"/>
+<circle cx="257.440107" cy="302.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_101: 293932, 43" data-id="DIYHEK_101" data-x="293932" data-y="43"/>
+<circle cx="249.482560" cy="319.475000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_102: 280368, 29" data-id="DIYHEK_102" data-x="280368" data-y="29"/>
+<circle cx="294.048107" cy="282.725000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_103: 356332, 59" data-id="DIYHEK_103" data-x="356332" data-y="59"/>
+<circle cx="253.614453" cy="297.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_104: 287411, 47" data-id="DIYHEK_104" data-x="287411" data-y="47"/>
+<circle cx="197.333760" cy="323.150000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_105: 191478, 26" data-id="DIYHEK_105" data-x="191478" data-y="26"/>
+<circle cx="273.804587" cy="324.375000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_106: 321826, 25" data-id="DIYHEK_106" data-x="321826" data-y="25"/>
+<circle cx="161.128213" cy="325.600000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_107: 129764, 24" data-id="DIYHEK_107" data-x="129764" data-y="24"/>
+<circle cx="253.664320" cy="297.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_108: 287496, 47" data-id="DIYHEK_108" data-x="287496" data-y="47"/>
+<circle cx="378.558027" cy="113.675000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_109: 500383, 197" data-id="DIYHEK_109" data-x="500383" data-y="197"/>
+<circle cx="125.889493" cy="352.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_11: 69698, 2" data-id="DIYHEK_11" data-x="69698" data-y="2"/>
+<circle cx="370.189227" cy="230.050000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_110: 486118, 102" data-id="DIYHEK_110" data-x="486118" data-y="102"/>
+<circle cx="304.171627" cy="276.600000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_111: 373588, 64" data-id="DIYHEK_111" data-x="373588" data-y="64"/>
+<circle cx="335.776533" cy="253.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_112: 427460, 83" data-id="DIYHEK_112" data-x="427460" data-y="83"/>
+<circle cx="274.272160" cy="288.850000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_113: 322623, 54" data-id="DIYHEK_113" data-x="322623" data-y="54"/>
+<circle cx="305.546187" cy="259.450000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_114: 375931, 78" data-id="DIYHEK_114" data-x="375931" data-y="78"/>
+<circle cx="517.352800" cy="234.950000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_115: 736965, 98" data-id="DIYHEK_115" data-x="736965" data-y="98"/>
+<circle cx="330.867307" cy="296.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_116: 419092, 48" data-id="DIYHEK_116" data-x="419092" data-y="48"/>
+<circle cx="227.531840" cy="314.575000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_117: 242952, 33" data-id="DIYHEK_117" data-x="242952" data-y="33"/>
+<circle cx="222.027147" cy="317.025000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_118: 233569, 31" data-id="DIYHEK_118" data-x="233569" data-y="31"/>
+<circle cx="166.680427" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_119: 139228, 6" data-id="DIYHEK_119" data-x="139228" data-y="6"/>
+<circle cx="363.763467" cy="286.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_12: 475165, 56" data-id="DIYHEK_12" data-x="475165" data-y="56"/>
+<circle cx="308.401493" cy="285.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_120: 380798, 57" data-id="DIYHEK_120" data-x="380798" data-y="57"/>
+<circle cx="153.070933" cy="329.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_121: 116030, 21" data-id="DIYHEK_121" data-x="116030" data-y="21"/>
+<circle cx="160.331520" cy="346.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_122: 128406, 7" data-id="DIYHEK_122" data-x="128406" data-y="7"/>
+<circle cx="223.636960" cy="329.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_123: 236313, 21" data-id="DIYHEK_123" data-x="236313" data-y="21"/>
+<circle cx="157.850507" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_124: 124177, 13" data-id="DIYHEK_124" data-x="124177" data-y="13"/>
+<circle cx="169.657173" cy="341.525000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_125: 144302, 11" data-id="DIYHEK_125" data-x="144302" data-y="11"/>
+<circle cx="120.449333" cy="340.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_126: 60425, 12" data-id="DIYHEK_126" data-x="60425" data-y="12"/>
+<circle cx="139.037280" cy="342.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_127: 92109, 10" data-id="DIYHEK_127" data-x="92109" data-y="10"/>
+<circle cx="153.838880" cy="328.050000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_128: 117339, 22" data-id="DIYHEK_128" data-x="117339" data-y="22"/>
+<circle cx="149.446507" cy="341.525000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_129: 109852, 11" data-id="DIYHEK_129" data-x="109852" data-y="11"/>
+<circle cx="200.420800" cy="342.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_13: 196740, 10" data-id="DIYHEK_13" data-x="196740" data-y="10"/>
+<circle cx="166.930347" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_130: 139654, 16" data-id="DIYHEK_130" data-x="139654" data-y="16"/>
+<circle cx="112.863147" cy="352.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_131: 47494, 2" data-id="DIYHEK_131" data-x="47494" data-y="2"/>
+<circle cx="179.251520" cy="324.375000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_132: 160656, 25" data-id="DIYHEK_132" data-x="160656" data-y="25"/>
+<circle cx="149.334453" cy="345.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_133: 109661, 8" data-id="DIYHEK_133" data-x="109661" data-y="8"/>
+<circle cx="148.011520" cy="343.975000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_134: 107406, 9" data-id="DIYHEK_134" data-x="107406" data-y="9"/>
+<circle cx="159.588213" cy="341.525000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_135: 127139, 11" data-id="DIYHEK_135" data-x="127139" data-y="11"/>
+<circle cx="174.299467" cy="329.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_136: 152215, 21" data-id="DIYHEK_136" data-x="152215" data-y="21"/>
+<circle cx="99.974080" cy="350.100000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_137: 25524, 4" data-id="DIYHEK_137" data-x="25524" data-y="4"/>
+<circle cx="165.006080" cy="337.850000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_138: 136374, 14" data-id="DIYHEK_138" data-x="136374" data-y="14"/>
+<circle cx="146.317227" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_139: 104518, 13" data-id="DIYHEK_139" data-x="104518" data-y="13"/>
+<circle cx="156.575093" cy="342.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_14: 122003, 10" data-id="DIYHEK_14" data-x="122003" data-y="10"/>
+<circle cx="107.579627" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_140: 38488, 6" data-id="DIYHEK_140" data-x="38488" data-y="6"/>
+<circle cx="149.444747" cy="341.525000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_141: 109849, 11" data-id="DIYHEK_141" data-x="109849" data-y="11"/>
+<circle cx="124.194613" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_142: 66809, 6" data-id="DIYHEK_142" data-x="66809" data-y="6"/>
+<circle cx="104.599947" cy="352.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_143: 33409, 2" data-id="DIYHEK_143" data-x="33409" data-y="2"/>
+<circle cx="151.107947" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_144: 112684, 3" data-id="DIYHEK_144" data-x="112684" data-y="3"/>
+<circle cx="131.791360" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_145: 79758, 6" data-id="DIYHEK_145" data-x="79758" data-y="6"/>
+<circle cx="145.407307" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_146: 102967, 16" data-id="DIYHEK_146" data-x="102967" data-y="16"/>
+<circle cx="213.223040" cy="303.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_147: 218562, 42" data-id="DIYHEK_147" data-x="218562" data-y="42"/>
+<circle cx="169.014187" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_148: 143206, 6" data-id="DIYHEK_148" data-x="143206" data-y="6"/>
+<circle cx="141.764693" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_149: 96758, 13" data-id="DIYHEK_149" data-x="96758" data-y="13"/>
+<circle cx="176.542293" cy="343.975000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_15: 156038, 9" data-id="DIYHEK_15" data-x="156038" data-y="9"/>
+<circle cx="133.229280" cy="348.875000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_150: 82209, 5" data-id="DIYHEK_150" data-x="82209" data-y="5"/>
+<circle cx="120.711573" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_151: 60872, 6" data-id="DIYHEK_151" data-x="60872" data-y="6"/>
+<circle cx="124.389973" cy="346.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_152: 67142, 7" data-id="DIYHEK_152" data-x="67142" data-y="7"/>
+<circle cx="216.871520" cy="302.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_153: 224781, 43" data-id="DIYHEK_153" data-x="224781" data-y="43"/>
+<circle cx="150.936640" cy="345.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_154: 112392, 8" data-id="DIYHEK_154" data-x="112392" data-y="8"/>
+<circle cx="117.030240" cy="353.775000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_155: 54597, 1" data-id="DIYHEK_155" data-x="54597" data-y="1"/>
+<circle cx="141.231413" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_156: 95849, 16" data-id="DIYHEK_156" data-x="95849" data-y="16"/>
+<circle cx="187.155093" cy="326.825000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_157: 174128, 23" data-id="DIYHEK_157" data-x="174128" data-y="23"/>
+<circle cx="167.509387" cy="331.725000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_158: 140641, 19" data-id="DIYHEK_158" data-x="140641" data-y="19"/>
+<circle cx="260.174560" cy="308.450000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_159: 298593, 38" data-id="DIYHEK_159" data-x="298593" data-y="38"/>
+<circle cx="132.670187" cy="345.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_16: 81256, 8" data-id="DIYHEK_16" data-x="81256" data-y="8"/>
+<circle cx="206.557920" cy="326.825000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_160: 207201, 23" data-id="DIYHEK_160" data-x="207201" data-y="23"/>
+<circle cx="125.986880" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_161: 69864, 16" data-id="DIYHEK_161" data-x="69864" data-y="16"/>
+<circle cx="113.798293" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_162: 49088, 13" data-id="DIYHEK_162" data-x="49088" data-y="13"/>
+<circle cx="139.857440" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_163: 93507, 13" data-id="DIYHEK_163" data-x="93507" data-y="13"/>
+<circle cx="113.910347" cy="346.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_164: 49279, 7" data-id="DIYHEK_164" data-x="49279" data-y="7"/>
+<circle cx="134.656053" cy="340.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_165: 84641, 12" data-id="DIYHEK_165" data-x="84641" data-y="12"/>
+<circle cx="139.029067" cy="334.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_166: 92095, 17" data-id="DIYHEK_166" data-x="92095" data-y="17"/>
+<circle cx="106.497227" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_167: 36643, 3" data-id="DIYHEK_167" data-x="36643" data-y="3"/>
+<circle cx="117.032000" cy="348.875000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_168: 54600, 5" data-id="DIYHEK_168" data-x="54600" data-y="5"/>
+<circle cx="168.668053" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_169: 142616, 13" data-id="DIYHEK_169" data-x="142616" data-y="13"/>
+<circle cx="173.494560" cy="343.975000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_17: 150843, 9" data-id="DIYHEK_17" data-x="150843" data-y="9"/>
+<circle cx="131.863520" cy="345.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_170: 79881, 8" data-id="DIYHEK_170" data-x="79881" data-y="8"/>
+<circle cx="240.335253" cy="341.525000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_171: 264776, 11" data-id="DIYHEK_171" data-x="264776" data-y="11"/>
+<circle cx="171.526880" cy="328.050000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_172: 147489, 22" data-id="DIYHEK_172" data-x="147489" data-y="22"/>
+<circle cx="157.064960" cy="347.650000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_173: 122838, 6" data-id="DIYHEK_173" data-x="122838" data-y="6"/>
+<circle cx="146.830560" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_174: 105393, 16" data-id="DIYHEK_174" data-x="105393" data-y="16"/>
+<circle cx="161.330027" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_175: 130108, 3" data-id="DIYHEK_175" data-x="130108" data-y="3"/>
+<circle cx="135.494987" cy="345.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_176: 86071, 8" data-id="DIYHEK_176" data-x="86071" data-y="8"/>
+<circle cx="165.263040" cy="346.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_177: 136812, 7" data-id="DIYHEK_177" data-x="136812" data-y="7"/>
+<circle cx="115.862773" cy="353.775000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_178: 52607, 1" data-id="DIYHEK_178" data-x="52607" data-y="1"/>
+<circle cx="116.150827" cy="348.875000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_179: 53098, 5" data-id="DIYHEK_179" data-x="53098" data-y="5"/>
+<circle cx="173.097973" cy="328.050000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_18: 150167, 22" data-id="DIYHEK_18" data-x="150167" data-y="22"/>
+<circle cx="134.173227" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_180: 83818, 3" data-id="DIYHEK_180" data-x="83818" data-y="3"/>
+<circle cx="149.699360" cy="340.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_181: 110283, 12" data-id="DIYHEK_181" data-x="110283" data-y="12"/>
+<circle cx="145.671307" cy="350.100000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_182: 103417, 4" data-id="DIYHEK_182" data-x="103417" data-y="4"/>
+<circle cx="175.758507" cy="340.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_183: 154702, 12" data-id="DIYHEK_183" data-x="154702" data-y="12"/>
+<circle cx="172.848640" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_184: 149742, 3" data-id="DIYHEK_184" data-x="149742" data-y="3"/>
+<circle cx="174.928373" cy="312.125000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_185: 153287, 35" data-id="DIYHEK_185" data-x="153287" data-y="35"/>
+<circle cx="116.017067" cy="346.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_186: 52870, 7" data-id="DIYHEK_186" data-x="52870" data-y="7"/>
+<circle cx="112.166187" cy="346.425000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_187: 46306, 7" data-id="DIYHEK_187" data-x="46306" data-y="7"/>
+<circle cx="123.079947" cy="341.525000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_188: 64909, 11" data-id="DIYHEK_188" data-x="64909" data-y="11"/>
+<circle cx="118.271040" cy="352.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_189: 56712, 2" data-id="DIYHEK_189" data-x="56712" data-y="2"/>
+<circle cx="161.561173" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_19: 130502, 3" data-id="DIYHEK_19" data-x="130502" data-y="3"/>
+<circle cx="104.882720" cy="350.100000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_190: 33891, 4" data-id="DIYHEK_190" data-x="33891" data-y="4"/>
+<circle cx="107.489280" cy="352.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_191: 38334, 2" data-id="DIYHEK_191" data-x="38334" data-y="2"/>
+<circle cx="193.779147" cy="342.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_2: 185419, 10" data-id="DIYHEK_2" data-x="185419" data-y="10"/>
+<circle cx="158.361493" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_20: 125048, 16" data-id="DIYHEK_20" data-x="125048" data-y="16"/>
+<circle cx="156.894827" cy="334.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_21: 122548, 17" data-id="DIYHEK_21" data-x="122548" data-y="17"/>
+<circle cx="213.348587" cy="307.225000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_22: 218776, 39" data-id="DIYHEK_22" data-x="218776" data-y="39"/>
+<circle cx="120.381867" cy="351.325000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_23: 60310, 3" data-id="DIYHEK_23" data-x="60310" data-y="3"/>
+<circle cx="218.852693" cy="320.700000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_24: 228158, 28" data-id="DIYHEK_24" data-x="228158" data-y="28"/>
+<circle cx="203.635147" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_25: 202219, 13" data-id="DIYHEK_25" data-x="202219" data-y="13"/>
+<circle cx="229.552907" cy="339.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_26: 246397, 13" data-id="DIYHEK_26" data-x="246397" data-y="13"/>
+<circle cx="250.452320" cy="282.725000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_27: 282021, 59" data-id="DIYHEK_27" data-x="282021" data-y="59"/>
+<circle cx="211.368000" cy="329.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_28: 215400, 21" data-id="DIYHEK_28" data-x="215400" data-y="21"/>
+<circle cx="227.552373" cy="317.025000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_29: 242987, 31" data-id="DIYHEK_29" data-x="242987" data-y="31"/>
+<circle cx="197.498613" cy="336.625000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_3: 191759, 15" data-id="DIYHEK_3" data-x="191759" data-y="15"/>
+<circle cx="214.858080" cy="317.025000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_30: 221349, 31" data-id="DIYHEK_30" data-x="221349" data-y="31"/>
+<circle cx="216.625707" cy="330.500000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_31: 224362, 20" data-id="DIYHEK_31" data-x="224362" data-y="20"/>
+<circle cx="252.211733" cy="296.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_32: 285020, 48" data-id="DIYHEK_32" data-x="285020" data-y="48"/>
+<circle cx="191.201333" cy="323.150000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_33: 181025, 26" data-id="DIYHEK_33" data-x="181025" data-y="26"/>
+<circle cx="293.297760" cy="312.125000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_34: 355053, 35" data-id="DIYHEK_34" data-x="355053" data-y="35"/>
+<circle cx="177.367147" cy="329.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_35: 157444, 21" data-id="DIYHEK_35" data-x="157444" data-y="21"/>
+<circle cx="205.661493" cy="331.725000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_36: 205673, 19" data-id="DIYHEK_36" data-x="205673" data-y="19"/>
+<circle cx="294.485760" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_37: 357078, 80" data-id="DIYHEK_37" data-x="357078" data-y="80"/>
+<circle cx="247.484960" cy="314.575000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_38: 276963, 33" data-id="DIYHEK_38" data-x="276963" data-y="33"/>
+<circle cx="286.749387" cy="335.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_39: 343891, 16" data-id="DIYHEK_39" data-x="343891" data-y="16"/>
+<circle cx="155.601227" cy="324.375000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_4: 120343, 25" data-id="DIYHEK_4" data-x="120343" data-y="25"/>
+<circle cx="307.230507" cy="293.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_40: 378802, 50" data-id="DIYHEK_40" data-x="378802" data-y="50"/>
+<circle cx="239.540907" cy="324.375000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_41: 263422, 25" data-id="DIYHEK_41" data-x="263422" data-y="25"/>
+<circle cx="225.832267" cy="337.850000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_42: 240055, 14" data-id="DIYHEK_42" data-x="240055" data-y="14"/>
+<circle cx="320.922133" cy="307.225000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_43: 402140, 39" data-id="DIYHEK_43" data-x="402140" data-y="39"/>
+<circle cx="255.075840" cy="293.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_44: 289902, 50" data-id="DIYHEK_44" data-x="289902" data-y="50"/>
+<circle cx="193.225920" cy="334.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_45: 184476, 17" data-id="DIYHEK_45" data-x="184476" data-y="17"/>
+<circle cx="359.317120" cy="290.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_46: 467586, 53" data-id="DIYHEK_46" data-x="467586" data-y="53"/>
+<circle cx="150.788800" cy="332.950000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_47: 112140, 18" data-id="DIYHEK_47" data-x="112140" data-y="18"/>
+<circle cx="282.787040" cy="296.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_48: 337137, 48" data-id="DIYHEK_48" data-x="337137" data-y="48"/>
+<circle cx="359.534773" cy="290.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_49: 467957, 53" data-id="DIYHEK_49" data-x="467957" data-y="53"/>
+<circle cx="199.906880" cy="318.250000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_5: 195864, 30" data-id="DIYHEK_5" data-x="195864" data-y="30"/>
+<circle cx="246.807947" cy="308.450000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_50: 275809, 38" data-id="DIYHEK_50" data-x="275809" data-y="38"/>
+<circle cx="277.693013" cy="296.200000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_51: 328454, 48" data-id="DIYHEK_51" data-x="328454" data-y="48"/>
+<circle cx="242.681333" cy="307.225000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_52: 268775, 39" data-id="DIYHEK_52" data-x="268775" data-y="39"/>
+<circle cx="294.919893" cy="334.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_53: 357818, 17" data-id="DIYHEK_53" data-x="357818" data-y="17"/>
+<circle cx="218.559360" cy="319.475000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_54: 227658, 29" data-id="DIYHEK_54" data-x="227658" data-y="29"/>
+<circle cx="276.751413" cy="282.725000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_55: 326849, 59" data-id="DIYHEK_55" data-x="326849" data-y="59"/>
+<circle cx="264.082347" cy="319.475000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_56: 305254, 29" data-id="DIYHEK_56" data-x="305254" data-y="29"/>
+<circle cx="232.802453" cy="301.100000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_57: 251936, 44" data-id="DIYHEK_57" data-x="251936" data-y="44"/>
+<circle cx="304.933120" cy="280.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_58: 374886, 61" data-id="DIYHEK_58" data-x="374886" data-y="61"/>
+<circle cx="161.135253" cy="326.825000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_59: 129776, 23" data-id="DIYHEK_59" data-x="129776" data-y="23"/>
+<circle cx="214.199253" cy="318.250000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_6: 220226, 30" data-id="DIYHEK_6" data-x="220226" data-y="30"/>
+<circle cx="270.802027" cy="310.900000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_60: 316708, 36" data-id="DIYHEK_60" data-x="316708" data-y="36"/>
+<circle cx="298.913920" cy="325.600000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_61: 364626, 24" data-id="DIYHEK_61" data-x="364626" data-y="24"/>
+<circle cx="250.070400" cy="288.850000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_62: 281370, 54" data-id="DIYHEK_62" data-x="281370" data-y="54"/>
+<circle cx="334.660693" cy="290.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_63: 425558, 53" data-id="DIYHEK_63" data-x="425558" data-y="53"/>
+<circle cx="288.297013" cy="279.050000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_64: 346529, 62" data-id="DIYHEK_64" data-x="346529" data-y="62"/>
+<circle cx="292.924053" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_65: 354416, 40" data-id="DIYHEK_65" data-x="354416" data-y="40"/>
+<circle cx="246.951093" cy="310.900000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_66: 276053, 36" data-id="DIYHEK_66" data-x="276053" data-y="36"/>
+<circle cx="268.945227" cy="334.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_67: 313543, 17" data-id="DIYHEK_67" data-x="313543" data-y="17"/>
+<circle cx="344.233333" cy="291.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_68: 441875, 52" data-id="DIYHEK_68" data-x="441875" data-y="52"/>
+<circle cx="327.052800" cy="299.875000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_69: 412590, 45" data-id="DIYHEK_69" data-x="412590" data-y="45"/>
+<circle cx="237.454133" cy="325.600000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_7: 259865, 24" data-id="DIYHEK_7" data-x="259865" data-y="24"/>
+<circle cx="289.062613" cy="254.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_70: 347834, 82" data-id="DIYHEK_70" data-x="347834" data-y="82"/>
+<circle cx="185.633280" cy="323.150000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_71: 171534, 26" data-id="DIYHEK_71" data-x="171534" data-y="26"/>
+<circle cx="337.640960" cy="270.475000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_72: 430638, 69" data-id="DIYHEK_72" data-x="430638" data-y="69"/>
+<circle cx="219.638240" cy="318.250000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_73: 229497, 30" data-id="DIYHEK_73" data-x="229497" data-y="30"/>
+<circle cx="252.099680" cy="285.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_74: 284829, 57" data-id="DIYHEK_74" data-x="284829" data-y="57"/>
+<circle cx="323.439520" cy="271.700000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_75: 406431, 68" data-id="DIYHEK_75" data-x="406431" data-y="68"/>
+<circle cx="287.783093" cy="308.450000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_76: 345653, 38" data-id="DIYHEK_76" data-x="345653" data-y="38"/>
+<circle cx="294.763253" cy="310.900000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_77: 357551, 36" data-id="DIYHEK_77" data-x="357551" data-y="36"/>
+<circle cx="229.226133" cy="328.050000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_78: 245840, 22" data-id="DIYHEK_78" data-x="245840" data-y="22"/>
+<circle cx="254.088480" cy="318.250000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_79: 288219, 30" data-id="DIYHEK_79" data-x="288219" data-y="30"/>
+<circle cx="186.080320" cy="331.725000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_8: 172296, 19" data-id="DIYHEK_8" data-x="172296" data-y="19"/>
+<circle cx="318.869973" cy="291.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_80: 398642, 52" data-id="DIYHEK_80" data-x="398642" data-y="52"/>
+<circle cx="251.081227" cy="304.775000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_81: 283093, 41" data-id="DIYHEK_81" data-x="283093" data-y="41"/>
+<circle cx="300.245067" cy="274.150000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_82: 366895, 66" data-id="DIYHEK_82" data-x="366895" data-y="66"/>
+<circle cx="175.454027" cy="326.825000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_83: 154183, 23" data-id="DIYHEK_83" data-x="154183" data-y="23"/>
+<circle cx="314.188960" cy="274.150000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_84: 390663, 66" data-id="DIYHEK_84" data-x="390663" data-y="66"/>
+<circle cx="312.110400" cy="290.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_85: 387120, 53" data-id="DIYHEK_85" data-x="387120" data-y="53"/>
+<circle cx="312.267040" cy="303.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_86: 387387, 42" data-id="DIYHEK_86" data-x="387387" data-y="42"/>
+<circle cx="377.123627" cy="237.400000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_87: 497938, 96" data-id="DIYHEK_87" data-x="497938" data-y="96"/>
+<circle cx="342.995467" cy="236.175000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_88: 439765, 97" data-id="DIYHEK_88" data-x="439765" data-y="97"/>
+<circle cx="301.102773" cy="313.350000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_89: 368357, 34" data-id="DIYHEK_89" data-x="368357" data-y="34"/>
+<circle cx="198.074720" cy="340.300000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_9: 192741, 12" data-id="DIYHEK_9" data-x="192741" data-y="12"/>
+<circle cx="253.234293" cy="290.075000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_90: 286763, 53" data-id="DIYHEK_90" data-x="286763" data-y="53"/>
+<circle cx="278.701493" cy="266.800000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_91: 330173, 72" data-id="DIYHEK_91" data-x="330173" data-y="72"/>
+<circle cx="325.174880" cy="266.800000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_92: 409389, 72" data-id="DIYHEK_92" data-x="409389" data-y="72"/>
+<circle cx="238.364053" cy="329.275000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_93: 261416, 21" data-id="DIYHEK_93" data-x="261416" data-y="21"/>
+<circle cx="228.760907" cy="319.475000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_94: 245047, 29" data-id="DIYHEK_94" data-x="245047" data-y="29"/>
+<circle cx="202.456533" cy="293.750000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_95: 200210, 50" data-id="DIYHEK_95" data-x="200210" data-y="50"/>
+<circle cx="287.222827" cy="270.475000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_96: 344698, 69" data-id="DIYHEK_96" data-x="344698" data-y="69"/>
+<circle cx="223.111307" cy="308.450000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_97: 235417, 38" data-id="DIYHEK_97" data-x="235417" data-y="38"/>
+<circle cx="400.232427" cy="268.025000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_98: 537328, 71" data-id="DIYHEK_98" data-x="537328" data-y="71"/>
+<circle cx="378.563307" cy="254.550000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_99: 500392, 82" data-id="DIYHEK_99" data-x="500392" data-y="82"/>
+<text x="640.0000" y="95.0000" font-size="14" text-anchor="start" font-weight="bold">B</text>
+<line x1="640.0000" y1="355.0000" x2="1080.0000" y2="355.0000" stroke="#e6ebef"/>
+<text x="640.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<text x="632.0000" y="359.0000" font-size="10" text-anchor="end" font-weight="normal">0</text>
+<line x1="640.0000" y1="293.7500" x2="1080.0000" y2="293.7500" stroke="#e6ebef"/>
+<text x="750.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">3.75e+03</text>
+<text x="632.0000" y="297.7500" font-size="10" text-anchor="end" font-weight="normal">13.8</text>
+<line x1="640.0000" y1="232.5000" x2="1080.0000" y2="232.5000" stroke="#e6ebef"/>
+<text x="860.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">7.5e+03</text>
+<text x="632.0000" y="236.5000" font-size="10" text-anchor="end" font-weight="normal">27.5</text>
+<line x1="640.0000" y1="171.2500" x2="1080.0000" y2="171.2500" stroke="#e6ebef"/>
+<text x="970.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">1.12e+04</text>
+<text x="632.0000" y="175.2500" font-size="10" text-anchor="end" font-weight="normal">41.2</text>
+<line x1="640.0000" y1="110.0000" x2="1080.0000" y2="110.0000" stroke="#e6ebef"/>
+<text x="1080.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">1.5e+04</text>
+<text x="632.0000" y="114.0000" font-size="10" text-anchor="end" font-weight="normal">55</text>
+<line x1="640.0000" y1="355.0000" x2="1080.0000" y2="355.0000" stroke="#7c8a96"/>
+<line x1="640.0000" y1="110.0000" x2="640.0000" y2="355.0000" stroke="#7c8a96"/>
+<text x="860.0000" y="395.0000" font-size="11" text-anchor="middle" font-weight="normal">RNA positive features (count)</text>
+<text x="640.0000" y="76.0000" font-size="11" text-anchor="start" font-weight="normal">positive circ candidates (count)</text>
+<circle cx="893.909333" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_1: 8656, 11" data-id="DIYHEK_1" data-x="8656" data-y="11"/>
+<circle cx="905.349333" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_10: 9046, 10" data-id="DIYHEK_10" data-x="9046" data-y="10"/>
+<circle cx="903.677333" cy="243.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_100: 8989, 25" data-id="DIYHEK_100" data-x="8989" data-y="25"/>
+<circle cx="927.994667" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_101: 9818, 22" data-id="DIYHEK_101" data-x="9818" data-y="22"/>
+<circle cx="926.469333" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_102: 9766, 18" data-id="DIYHEK_102" data-x="9766" data-y="18"/>
+<circle cx="922.245333" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_103: 9622, 22" data-id="DIYHEK_103" data-x="9622" data-y="22"/>
+<circle cx="893.176000" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_104: 8631, 19" data-id="DIYHEK_104" data-x="8631" data-y="19"/>
+<circle cx="898.925333" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_105: 8827, 10" data-id="DIYHEK_105" data-x="8827" data-y="10"/>
+<circle cx="914.530667" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_106: 9359, 11" data-id="DIYHEK_106" data-x="9359" data-y="11"/>
+<circle cx="887.074667" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_107: 8423, 12" data-id="DIYHEK_107" data-x="8423" data-y="12"/>
+<circle cx="895.258667" cy="252.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_108: 8702, 23" data-id="DIYHEK_108" data-x="8702" data-y="23"/>
+<circle cx="932.072000" cy="132.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_109: 9957, 50" data-id="DIYHEK_109" data-x="9957" data-y="50"/>
+<circle cx="863.138667" cy="350.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_11: 7607, 1" data-id="DIYHEK_11" data-x="7607" data-y="1"/>
+<circle cx="950.786667" cy="118.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_110: 10595, 53" data-id="DIYHEK_110" data-x="10595" data-y="53"/>
+<circle cx="905.936000" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_111: 9066, 22" data-id="DIYHEK_111" data-x="9066" data-y="22"/>
+<circle cx="946.973333" cy="194.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_112: 10465, 36" data-id="DIYHEK_112" data-x="10465" data-y="36"/>
+<circle cx="926.821333" cy="243.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_113: 9778, 25" data-id="DIYHEK_113" data-x="9778" data-y="25"/>
+<circle cx="926.410667" cy="239.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_114: 9764, 26" data-id="DIYHEK_114" data-x="9764" data-y="26"/>
+<circle cx="946.533333" cy="172.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_115: 10450, 41" data-id="DIYHEK_115" data-x="10450" data-y="41"/>
+<circle cx="919.048000" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_116: 9513, 22" data-id="DIYHEK_116" data-x="9513" data-y="22"/>
+<circle cx="904.586667" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_117: 9020, 13" data-id="DIYHEK_117" data-x="9020" data-y="13"/>
+<circle cx="912.829333" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_118: 9301, 13" data-id="DIYHEK_118" data-x="9301" data-y="13"/>
+<circle cx="894.730667" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_119: 8684, 5" data-id="DIYHEK_119" data-x="8684" data-y="5"/>
+<circle cx="914.413333" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_12: 9355, 21" data-id="DIYHEK_12" data-x="9355" data-y="21"/>
+<circle cx="927.936000" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_120: 9816, 22" data-id="DIYHEK_120" data-x="9816" data-y="22"/>
+<circle cx="895.464000" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_121: 8709, 10" data-id="DIYHEK_121" data-x="8709" data-y="10"/>
+<circle cx="896.080000" cy="337.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_122: 8730, 4" data-id="DIYHEK_122" data-x="8730" data-y="4"/>
+<circle cx="905.848000" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_123: 9063, 10" data-id="DIYHEK_123" data-x="9063" data-y="10"/>
+<circle cx="928.464000" cy="319.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_124: 9834, 8" data-id="DIYHEK_124" data-x="9834" data-y="8"/>
+<circle cx="894.349333" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_125: 8671, 5" data-id="DIYHEK_125" data-x="8671" data-y="5"/>
+<circle cx="862.112000" cy="319.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_126: 7572, 8" data-id="DIYHEK_126" data-x="7572" data-y="8"/>
+<circle cx="869.797333" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_127: 7834, 6" data-id="DIYHEK_127" data-x="7834" data-y="6"/>
+<circle cx="877.101333" cy="292.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_128: 8083, 14" data-id="DIYHEK_128" data-x="8083" data-y="14"/>
+<circle cx="882.088000" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_129: 8253, 9" data-id="DIYHEK_129" data-x="8253" data-y="9"/>
+<circle cx="898.720000" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_13: 8820, 5" data-id="DIYHEK_13" data-x="8820" data-y="5"/>
+<circle cx="906.757333" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_130: 9094, 13" data-id="DIYHEK_130" data-x="9094" data-y="13"/>
+<circle cx="864.810667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_131: 7664, 2" data-id="DIYHEK_131" data-x="7664" data-y="2"/>
+<circle cx="903.618667" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_132: 8987, 12" data-id="DIYHEK_132" data-x="8987" data-y="12"/>
+<circle cx="893.234667" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_133: 8633, 5" data-id="DIYHEK_133" data-x="8633" data-y="5"/>
+<circle cx="882.968000" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_134: 8283, 7" data-id="DIYHEK_134" data-x="8283" data-y="7"/>
+<circle cx="893.586667" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_135: 8645, 6" data-id="DIYHEK_135" data-x="8645" data-y="6"/>
+<circle cx="899.130667" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_136: 8834, 13" data-id="DIYHEK_136" data-x="8834" data-y="13"/>
+<circle cx="710.194667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_137: 2393, 2" data-id="DIYHEK_137" data-x="2393" data-y="2"/>
+<circle cx="874.520000" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_138: 7995, 11" data-id="DIYHEK_138" data-x="7995" data-y="11"/>
+<circle cx="882.498667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_139: 8267, 9" data-id="DIYHEK_139" data-x="8267" data-y="9"/>
+<circle cx="929.696000" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_14: 9876, 7" data-id="DIYHEK_14" data-x="9876" data-y="7"/>
+<circle cx="843.514667" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_140: 6938, 5" data-id="DIYHEK_140" data-x="6938" data-y="5"/>
+<circle cx="878.744000" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_141: 8139, 6" data-id="DIYHEK_141" data-x="8139" data-y="6"/>
+<circle cx="868.858667" cy="337.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_142: 7802, 4" data-id="DIYHEK_142" data-x="7802" data-y="4"/>
+<circle cx="824.506667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_143: 6290, 2" data-id="DIYHEK_143" data-x="6290" data-y="2"/>
+<circle cx="885.490667" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_144: 8369, 3" data-id="DIYHEK_144" data-x="8369" data-y="3"/>
+<circle cx="883.144000" cy="337.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_145: 8289, 4" data-id="DIYHEK_145" data-x="8289" data-y="4"/>
+<circle cx="900.480000" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_146: 8880, 7" data-id="DIYHEK_146" data-x="8880" data-y="7"/>
+<circle cx="909.690667" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_147: 9194, 18" data-id="DIYHEK_147" data-x="9194" data-y="18"/>
+<circle cx="891.152000" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_148: 8562, 5" data-id="DIYHEK_148" data-x="8562" data-y="5"/>
+<circle cx="882.880000" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_149: 8280, 9" data-id="DIYHEK_149" data-x="8280" data-y="9"/>
+<circle cx="913.093333" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_15: 9310, 7" data-id="DIYHEK_15" data-x="9310" data-y="7"/>
+<circle cx="869.298667" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_150: 7817, 3" data-id="DIYHEK_150" data-x="7817" data-y="3"/>
+<circle cx="858.416000" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_151: 7446, 3" data-id="DIYHEK_151" data-x="7446" data-y="3"/>
+<circle cx="867.861333" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_152: 7768, 6" data-id="DIYHEK_152" data-x="7768" data-y="6"/>
+<circle cx="904.762667" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_153: 9026, 22" data-id="DIYHEK_153" data-x="9026" data-y="22"/>
+<circle cx="890.037333" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_154: 8524, 6" data-id="DIYHEK_154" data-x="8524" data-y="6"/>
+<circle cx="856.656000" cy="350.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_155: 7386, 1" data-id="DIYHEK_155" data-x="7386" data-y="1"/>
+<circle cx="875.136000" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_156: 8016, 11" data-id="DIYHEK_156" data-x="8016" data-y="11"/>
+<circle cx="918.285333" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_157: 9487, 12" data-id="DIYHEK_157" data-x="9487" data-y="12"/>
+<circle cx="895.698667" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_158: 8717, 7" data-id="DIYHEK_158" data-x="8717" data-y="7"/>
+<circle cx="921.629333" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_159: 9601, 18" data-id="DIYHEK_159" data-x="9601" data-y="18"/>
+<circle cx="874.314667" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_16: 7988, 5" data-id="DIYHEK_16" data-x="7988" data-y="5"/>
+<circle cx="918.256000" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_160: 9486, 12" data-id="DIYHEK_160" data-x="9486" data-y="12"/>
+<circle cx="876.162667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_161: 8051, 9" data-id="DIYHEK_161" data-x="8051" data-y="9"/>
+<circle cx="845.890667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_162: 7019, 9" data-id="DIYHEK_162" data-x="7019" data-y="9"/>
+<circle cx="881.648000" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_163: 8238, 9" data-id="DIYHEK_163" data-x="8238" data-y="9"/>
+<circle cx="853.224000" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_164: 7269, 2" data-id="DIYHEK_164" data-x="7269" data-y="2"/>
+<circle cx="886.312000" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_165: 8397, 10" data-id="DIYHEK_165" data-x="8397" data-y="10"/>
+<circle cx="888.658667" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_166: 8477, 13" data-id="DIYHEK_166" data-x="8477" data-y="13"/>
+<circle cx="832.602667" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_167: 6566, 3" data-id="DIYHEK_167" data-x="6566" data-y="3"/>
+<circle cx="851.141333" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_168: 7198, 2" data-id="DIYHEK_168" data-x="7198" data-y="2"/>
+<circle cx="906.992000" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_169: 9102, 6" data-id="DIYHEK_169" data-x="9102" data-y="6"/>
+<circle cx="885.872000" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_17: 8382, 5" data-id="DIYHEK_17" data-x="8382" data-y="5"/>
+<circle cx="868.506667" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_170: 7790, 5" data-id="DIYHEK_170" data-x="7790" data-y="5"/>
+<circle cx="926.440000" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_171: 9765, 7" data-id="DIYHEK_171" data-x="9765" data-y="7"/>
+<circle cx="896.050667" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_172: 8729, 11" data-id="DIYHEK_172" data-x="8729" data-y="11"/>
+<circle cx="893.117333" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_173: 8629, 5" data-id="DIYHEK_173" data-x="8629" data-y="5"/>
+<circle cx="857.946667" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_174: 7430, 12" data-id="DIYHEK_174" data-x="7430" data-y="12"/>
+<circle cx="897.722667" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_175: 8786, 3" data-id="DIYHEK_175" data-x="8786" data-y="3"/>
+<circle cx="881.648000" cy="319.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_176: 8238, 8" data-id="DIYHEK_176" data-x="8238" data-y="8"/>
+<circle cx="875.194667" cy="337.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_177: 8018, 4" data-id="DIYHEK_177" data-x="8018" data-y="4"/>
+<circle cx="859.237333" cy="350.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_178: 7474, 1" data-id="DIYHEK_178" data-x="7474" data-y="1"/>
+<circle cx="855.306667" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_179: 7340, 3" data-id="DIYHEK_179" data-x="7340" data-y="3"/>
+<circle cx="900.626667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_18: 8885, 9" data-id="DIYHEK_18" data-x="8885" data-y="9"/>
+<circle cx="883.848000" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_180: 8313, 3" data-id="DIYHEK_180" data-x="8313" data-y="3"/>
+<circle cx="893.557333" cy="319.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_181: 8644, 8" data-id="DIYHEK_181" data-x="8644" data-y="8"/>
+<circle cx="898.338667" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_182: 8807, 3" data-id="DIYHEK_182" data-x="8807" data-y="3"/>
+<circle cx="900.832000" cy="319.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_183: 8892, 8" data-id="DIYHEK_183" data-x="8892" data-y="8"/>
+<circle cx="894.290667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_184: 8669, 2" data-id="DIYHEK_184" data-x="8669" data-y="2"/>
+<circle cx="898.749333" cy="279.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_185: 8821, 17" data-id="DIYHEK_185" data-x="8821" data-y="17"/>
+<circle cx="848.560000" cy="341.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_186: 7110, 3" data-id="DIYHEK_186" data-x="7110" data-y="3"/>
+<circle cx="853.165333" cy="332.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_187: 7267, 5" data-id="DIYHEK_187" data-x="7267" data-y="5"/>
+<circle cx="851.434667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_188: 7208, 9" data-id="DIYHEK_188" data-x="7208" data-y="9"/>
+<circle cx="857.506667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_189: 7415, 2" data-id="DIYHEK_189" data-x="7415" data-y="2"/>
+<circle cx="891.357333" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_19: 8569, 2" data-id="DIYHEK_19" data-x="8569" data-y="2"/>
+<circle cx="833.512000" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_190: 6597, 2" data-id="DIYHEK_190" data-x="6597" data-y="2"/>
+<circle cx="831.810667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_191: 6539, 2" data-id="DIYHEK_191" data-x="6539" data-y="2"/>
+<circle cx="907.197333" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_2: 9109, 6" data-id="DIYHEK_2" data-x="9109" data-y="6"/>
+<circle cx="901.360000" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_20: 8910, 9" data-id="DIYHEK_20" data-x="8910" data-y="9"/>
+<circle cx="900.362667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_21: 8876, 9" data-id="DIYHEK_21" data-x="8876" data-y="9"/>
+<circle cx="905.994667" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_22: 9068, 19" data-id="DIYHEK_22" data-x="9068" data-y="19"/>
+<circle cx="858.738667" cy="346.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_23: 7457, 2" data-id="DIYHEK_23" data-x="7457" data-y="2"/>
+<circle cx="911.392000" cy="283.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_24: 9252, 16" data-id="DIYHEK_24" data-x="9252" data-y="16"/>
+<circle cx="960.701333" cy="328.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_25: 10933, 6" data-id="DIYHEK_25" data-x="10933" data-y="6"/>
+<circle cx="918.842667" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_26: 9506, 9" data-id="DIYHEK_26" data-x="9506" data-y="9"/>
+<circle cx="931.309333" cy="234.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_27: 9931, 27" data-id="DIYHEK_27" data-x="9931" data-y="27"/>
+<circle cx="911.890667" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_28: 9269, 12" data-id="DIYHEK_28" data-x="9269" data-y="12"/>
+<circle cx="919.106667" cy="265.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_29: 9515, 20" data-id="DIYHEK_29" data-x="9515" data-y="20"/>
+<circle cx="906.757333" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_3: 9094, 10" data-id="DIYHEK_3" data-x="9094" data-y="10"/>
+<circle cx="911.538667" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_30: 9257, 19" data-id="DIYHEK_30" data-x="9257" data-y="19"/>
+<circle cx="900.802667" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_31: 8891, 10" data-id="DIYHEK_31" data-x="8891" data-y="10"/>
+<circle cx="905.349333" cy="252.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_32: 9046, 23" data-id="DIYHEK_32" data-x="9046" data-y="23"/>
+<circle cx="904.381333" cy="288.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_33: 9013, 15" data-id="DIYHEK_33" data-x="9013" data-y="15"/>
+<circle cx="920.808000" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_34: 9573, 18" data-id="DIYHEK_34" data-x="9573" data-y="18"/>
+<circle cx="889.656000" cy="292.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_35: 8511, 14" data-id="DIYHEK_35" data-x="8511" data-y="14"/>
+<circle cx="916.760000" cy="292.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_36: 9435, 14" data-id="DIYHEK_36" data-x="9435" data-y="14"/>
+<circle cx="926.146667" cy="239.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_37: 9755, 26" data-id="DIYHEK_37" data-x="9755" data-y="26"/>
+<circle cx="912.946667" cy="292.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_38: 9305, 14" data-id="DIYHEK_38" data-x="9305" data-y="14"/>
+<circle cx="926.264000" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_39: 9759, 10" data-id="DIYHEK_39" data-x="9759" data-y="10"/>
+<circle cx="879.301333" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_4: 8158, 12" data-id="DIYHEK_4" data-x="8158" data-y="12"/>
+<circle cx="923.624000" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_40: 9669, 19" data-id="DIYHEK_40" data-x="9669" data-y="19"/>
+<circle cx="897.488000" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_41: 8778, 13" data-id="DIYHEK_41" data-x="8778" data-y="13"/>
+<circle cx="909.544000" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_42: 9189, 9" data-id="DIYHEK_42" data-x="9189" data-y="9"/>
+<circle cx="920.162667" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_43: 9551, 19" data-id="DIYHEK_43" data-x="9551" data-y="19"/>
+<circle cx="918.197333" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_44: 9484, 21" data-id="DIYHEK_44" data-x="9484" data-y="21"/>
+<circle cx="897.781333" cy="314.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_45: 8788, 9" data-id="DIYHEK_45" data-x="8788" data-y="9"/>
+<circle cx="928.874667" cy="239.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_46: 9848, 26" data-id="DIYHEK_46" data-x="9848" data-y="26"/>
+<circle cx="883.290667" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_47: 8294, 10" data-id="DIYHEK_47" data-x="8294" data-y="10"/>
+<circle cx="922.773333" cy="257.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_48: 9640, 22" data-id="DIYHEK_48" data-x="9640" data-y="22"/>
+<circle cx="926.498667" cy="239.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_49: 9767, 26" data-id="DIYHEK_49" data-x="9767" data-y="26"/>
+<circle cx="911.010667" cy="283.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_5: 9239, 16" data-id="DIYHEK_5" data-x="9239" data-y="16"/>
+<circle cx="922.802667" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_50: 9641, 18" data-id="DIYHEK_50" data-x="9641" data-y="18"/>
+<circle cx="910.336000" cy="252.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_51: 9216, 23" data-id="DIYHEK_51" data-x="9216" data-y="23"/>
+<circle cx="915.498667" cy="279.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_52: 9392, 17" data-id="DIYHEK_52" data-x="9392" data-y="17"/>
+<circle cx="930.048000" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_53: 9888, 11" data-id="DIYHEK_53" data-x="9888" data-y="11"/>
+<circle cx="908.048000" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_54: 9138, 12" data-id="DIYHEK_54" data-x="9138" data-y="12"/>
+<circle cx="907.813333" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_55: 9130, 21" data-id="DIYHEK_55" data-x="9130" data-y="21"/>
+<circle cx="916.906667" cy="288.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_56: 9440, 15" data-id="DIYHEK_56" data-x="9440" data-y="15"/>
+<circle cx="905.554667" cy="283.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_57: 9053, 16" data-id="DIYHEK_57" data-x="9053" data-y="16"/>
+<circle cx="938.026667" cy="225.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_58: 10160, 29" data-id="DIYHEK_58" data-x="10160" data-y="29"/>
+<circle cx="897.458667" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_59: 8777, 11" data-id="DIYHEK_59" data-x="8777" data-y="11"/>
+<circle cx="910.834667" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_6: 9233, 18" data-id="DIYHEK_6" data-x="9233" data-y="18"/>
+<circle cx="913.680000" cy="288.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_60: 9330, 15" data-id="DIYHEK_60" data-x="9330" data-y="15"/>
+<circle cx="930.576000" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_61: 9906, 11" data-id="DIYHEK_61" data-x="9906" data-y="11"/>
+<circle cx="916.818667" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_62: 9437, 19" data-id="DIYHEK_62" data-x="9437" data-y="19"/>
+<circle cx="864.194667" cy="270.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_63: 7643, 19" data-id="DIYHEK_63" data-x="7643" data-y="19"/>
+<circle cx="915.616000" cy="265.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_64: 9396, 20" data-id="DIYHEK_64" data-x="9396" data-y="20"/>
+<circle cx="918.549333" cy="279.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_65: 9496, 17" data-id="DIYHEK_65" data-x="9496" data-y="17"/>
+<circle cx="905.466667" cy="288.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_66: 9050, 15" data-id="DIYHEK_66" data-x="9050" data-y="15"/>
+<circle cx="919.458667" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_67: 9527, 10" data-id="DIYHEK_67" data-x="9527" data-y="10"/>
+<circle cx="922.802667" cy="252.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_68: 9641, 23" data-id="DIYHEK_68" data-x="9641" data-y="23"/>
+<circle cx="921.306667" cy="283.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_69: 9590, 16" data-id="DIYHEK_69" data-x="9590" data-y="16"/>
+<circle cx="916.056000" cy="306.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_7: 9411, 11" data-id="DIYHEK_7" data-x="9411" data-y="11"/>
+<circle cx="866.864000" cy="199.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_70: 7734, 35" data-id="DIYHEK_70" data-x="7734" data-y="35"/>
+<circle cx="900.597333" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_71: 8884, 13" data-id="DIYHEK_71" data-x="8884" data-y="13"/>
+<circle cx="920.016000" cy="230.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_72: 9546, 28" data-id="DIYHEK_72" data-x="9546" data-y="28"/>
+<circle cx="932.600000" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_73: 9975, 13" data-id="DIYHEK_73" data-x="9975" data-y="13"/>
+<circle cx="914.853333" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_74: 9370, 21" data-id="DIYHEK_74" data-x="9370" data-y="21"/>
+<circle cx="916.202667" cy="216.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_75: 9416, 31" data-id="DIYHEK_75" data-x="9416" data-y="31"/>
+<circle cx="935.562667" cy="252.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_76: 10076, 23" data-id="DIYHEK_76" data-x="10076" data-y="23"/>
+<circle cx="927.261333" cy="279.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_77: 9793, 17" data-id="DIYHEK_77" data-x="9793" data-y="17"/>
+<circle cx="921.922667" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_78: 9611, 13" data-id="DIYHEK_78" data-x="9611" data-y="13"/>
+<circle cx="929.549333" cy="265.909091" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_79: 9871, 20" data-id="DIYHEK_79" data-x="9871" data-y="20"/>
+<circle cx="904.968000" cy="310.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_8: 9033, 10" data-id="DIYHEK_8" data-x="9033" data-y="10"/>
+<circle cx="925.589333" cy="283.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_80: 9736, 16" data-id="DIYHEK_80" data-x="9736" data-y="16"/>
+<circle cx="917.200000" cy="288.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_81: 9450, 15" data-id="DIYHEK_81" data-x="9450" data-y="15"/>
+<circle cx="920.602667" cy="239.181818" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_82: 9566, 26" data-id="DIYHEK_82" data-x="9566" data-y="26"/>
+<circle cx="886.253333" cy="292.636364" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_83: 8395, 14" data-id="DIYHEK_83" data-x="8395" data-y="14"/>
+<circle cx="948.410667" cy="221.363636" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_84: 10514, 30" data-id="DIYHEK_84" data-x="10514" data-y="30"/>
+<circle cx="918.813333" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_85: 9505, 21" data-id="DIYHEK_85" data-x="9505" data-y="21"/>
+<circle cx="912.800000" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_86: 9300, 21" data-id="DIYHEK_86" data-x="9300" data-y="21"/>
+<circle cx="909.925333" cy="208.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_87: 9202, 33" data-id="DIYHEK_87" data-x="9202" data-y="33"/>
+<circle cx="843.632000" cy="176.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_88: 6942, 40" data-id="DIYHEK_88" data-x="6942" data-y="40"/>
+<circle cx="911.773333" cy="283.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_89: 9265, 16" data-id="DIYHEK_89" data-x="9265" data-y="16"/>
+<circle cx="911.626667" cy="323.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_9: 9260, 7" data-id="DIYHEK_9" data-x="9260" data-y="7"/>
+<circle cx="932.600000" cy="230.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_90: 9975, 28" data-id="DIYHEK_90" data-x="9975" data-y="28"/>
+<circle cx="910.365333" cy="234.727273" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_91: 9217, 27" data-id="DIYHEK_91" data-x="9217" data-y="27"/>
+<circle cx="928.434667" cy="230.272727" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_92: 9833, 28" data-id="DIYHEK_92" data-x="9833" data-y="28"/>
+<circle cx="925.384000" cy="297.090909" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_93: 9729, 13" data-id="DIYHEK_93" data-x="9729" data-y="13"/>
+<circle cx="914.002667" cy="301.545455" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_94: 9341, 12" data-id="DIYHEK_94" data-x="9341" data-y="12"/>
+<circle cx="913.210667" cy="261.454545" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_95: 9314, 21" data-id="DIYHEK_95" data-x="9314" data-y="21"/>
+<circle cx="938.026667" cy="225.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_96: 10160, 29" data-id="DIYHEK_96" data-x="10160" data-y="29"/>
+<circle cx="886.986667" cy="274.818182" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_97: 8420, 18" data-id="DIYHEK_97" data-x="8420" data-y="18"/>
+<circle cx="928.024000" cy="208.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_98: 9819, 33" data-id="DIYHEK_98" data-x="9819" data-y="33"/>
+<circle cx="945.829333" cy="208.000000" r="3" fill="#176c89" fill-opacity="0.68" aria-label="DIYHEK_99: 10426, 33" data-id="DIYHEK_99" data-x="10426" data-y="33"/>
+<text x="35.0000" y="440.0000" font-size="10" text-anchor="start" font-weight="normal">Descriptive stored measurements; no correlation test, causal inference or cross-assay comparison. RNA-only DIYHEK_192 is retained in tables/distributions.</text>
+<text x="35.0000" y="455.0000" font-size="10" text-anchor="start" font-weight="normal">Object SHA256 0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339 | helper 6ec0ad2f6977; renderer 640980f9bf20</text>
+</svg>

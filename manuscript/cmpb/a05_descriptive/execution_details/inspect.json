@@ -1,0 +1,60 @@
+{
+  "argv": [
+    "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+    "-B",
+    "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py",
+    "${A05_ROOT}",
+    "${ORIGINAL_OBJECT_ROOT}"
+  ],
+  "category": "a05",
+  "elapsed_seconds": 0.8287660339847207,
+  "environment": {},
+  "finished_utc": "2026-10-18T23:58:47.944056+00:00",
+  "footprint_bytes_after": 5353472,
+  "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+  "invoked_python_source_sha256": {
+    "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "d550384753a27c39f0387e5eb0efa26c2c6212bca3312089344a119a07a3e099",
+    "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+    "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06"
+  },
+  "launcher_argv": [
+    "systemd-run",
+    "--user",
+    "--unit=circyto-a05-inspect",
+    "--wait",
+    "--pipe",
+    "--property=MemoryMax=4294967296",
+    "--property=MemorySwapMax=0",
+    "--property=RuntimeMaxSec=3496s",
+    "--property=TimeoutStopSec=1s",
+    "--property=KillMode=control-group",
+    "--property=OOMPolicy=kill",
+    "--property=CPUAffinity=0-1",
+    "--property=CPUQuota=200%",
+    "--property=TasksMax=512",
+    "/usr/bin/python3",
+    "${A05_ROOT}/helpers/run_stage-2c4c27700fa4c68a.py",
+    "guard",
+    "--root",
+    "${A05_ROOT}",
+    "--spec",
+    "${A05_ROOT}/specs/inspect.json"
+  ],
+  "launcher_exit_code": 1,
+  "log": "logs/inspect.log",
+  "log_sha256": "223578045e9d1cf9a3bfdefaeae8d3a990435607b711687fb91694abfd5843de",
+  "schema": "circyto.cmpb.a05.stage.v1",
+  "spec_sha256": "b3e7ef74be864afa2bb8f866cd6c6bf8764eb772728cf05f50092c92e3981b20",
+  "stage": "inspect",
+  "started_utc": "2026-10-18T23:58:47.114210+00:00",
+  "status": "failed",
+  "systemd_properties": [
+    "Result=exit-code",
+    "ExecMainStatus=1",
+    "ControlGroup=",
+    "MemoryCurrent=[not set]",
+    "CPUUsageNSec=644734000",
+    "ActiveState=failed"
+  ],
+  "systemd_query_exit": 0
+}

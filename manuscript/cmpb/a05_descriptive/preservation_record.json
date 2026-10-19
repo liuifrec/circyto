@@ -1,0 +1,31 @@
+{
+  "protected_files_checked": 654,
+  "protected_file_changes": [],
+  "frozen_ref_changes": {},
+  "original_objects": {
+    "Smart-seq3": {
+      "git_archive_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "before_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "after_sha256": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+      "unchanged": true
+    },
+    "IMR90": {
+      "git_archive_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "before_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "after_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+      "unchanged": true
+    }
+  },
+  "installed_production_source": "e6843a38469d49f96d44758a4e37893ebbe2734b",
+  "installed_python_members_checked": 87,
+  "installed_member_changes": [],
+  "reused_A02_commit": "307758f57a39c009393d03fc0f69e4638b2498c6",
+  "reused_A03_A04_commit": "02ee3d4acfed63c5b2f02c4baef6d22c822d4dac",
+  "complete_prevalence_gzip": {
+    "sha256": "8163178301f702fb4217fc0e48d4390ed82aa39244a8d1efd2cc681ad9152b8c",
+    "bytes": 71757173,
+    "rows_from_accepted_record": 5159619,
+    "action": "read-only SHA256; prior gzip CRC and row-count evidence reused without reanalysis or copying"
+  },
+  "passed": true
+}

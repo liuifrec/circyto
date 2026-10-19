@@ -1,0 +1,6 @@
+{
+  "review": "Manual inspection of PNG previews after self-closing-circle compatibility correction",
+  "decision": "Reviewed raster markers, labels, ranges, source ordering and no clipping; numerical SVG/source checks passed.",
+  "limitation": "Draft figures only; publication layout/selection awaits review.",
+  "corrected_initial_issue": "Installed ImageMagick ignored circles with nested title nodes; first PNG set retained locally and excluded from handoff."
+}

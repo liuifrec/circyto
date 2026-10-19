@@ -1,0 +1,25 @@
+{
+  "passed": true,
+  "assertions": 2192325,
+  "scientific_oracles": [
+    {
+      "dataset": "Smart-seq3",
+      "independent_assertions": 1758371,
+      "method": "raw CSR indptr/indices/data with Python integer dictionaries; no scipy matrix reductions",
+      "passed": true
+    },
+    {
+      "dataset": "IMR90",
+      "independent_assertions": 433912,
+      "method": "raw CSR indptr/indices/data with Python integer dictionaries; no scipy matrix reductions",
+      "passed": true
+    }
+  ],
+  "plotted_observations_checked": 10874,
+  "figures_checked": 7,
+  "source_hashes_before_after": {
+    "Smart-seq3": "0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339",
+    "IMR90": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8"
+  },
+  "limitations": "Assertions are technical checks, not independent biological replications."
+}

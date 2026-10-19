@@ -1,0 +1,8 @@
+{
+  "decision": "NOT VERIFIED",
+  "conflicts": [],
+  "reason": "Exact callability/missing-state definition for these exported bins not recovered; no mask in H5MU; no documented export mapping from filtered/model bins to 0-somy/zero.",
+  "source_object_sha256": "bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8",
+  "no_aggregation": true,
+  "no_heatmap": true
+}

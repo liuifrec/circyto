@@ -1,0 +1,6 @@
+Running as unit: circyto-a05-verify-reviewed.service
+{"passed": true, "assertions": 2192325, "plotted_observations": 10874}
+Finished with result: success
+Main processes terminated with: code=exited/status=0
+Service runtime: 12.732s
+CPU time consumed: 12.657s

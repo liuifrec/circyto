@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1140" height="490" viewBox="0 0 1140 490">
+<style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#23313d} .axis{stroke:#7c8a96;stroke-width:1} .grid{stroke:#e6ebef;stroke-width:1}</style>
+<rect width="100%" height="100%" fill="white"/>
+<metadata>{&quot;analyze_sha256&quot;: &quot;e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638&quot;, &quot;correlations&quot;: &quot;not calculated; descriptive scatter only; no p-values or fitted association models&quot;, &quot;dataset&quot;: &quot;IMR90&quot;, &quot;helper_commit&quot;: &quot;6ec0ad2f6977a593fabdc5978a3043511214bb61&quot;, &quot;missing_encoding&quot;: &quot;blank numeric field; explicit unknown status&quot;, &quot;renderer_commit&quot;: &quot;640980f9bf2035a01070a43522f8e8f6b989eae6&quot;, &quot;source_hashes&quot;: {&quot;IMR90&quot;: &quot;bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8&quot;, &quot;Smart-seq3&quot;: &quot;0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339&quot;}, &quot;source_order&quot;: &quot;unchanged stored global cell order and circ var order&quot;, &quot;sources_modified&quot;: false}</metadata>
+<text x="35.0000" y="31.0000" font-size="21" text-anchor="start" font-weight="bold">IMR90 | prespecified support thresholds</text>
+<text x="35.0000" y="55.0000" font-size="12" text-anchor="start" font-weight="normal">Each threshold starts from original X; 23 stored rows and 2443 original candidates</text>
+<text x="85.0000" y="95.0000" font-size="14" text-anchor="start" font-weight="bold">A</text>
+<line x1="85.0000" y1="355.0000" x2="525.0000" y2="355.0000" stroke="#e6ebef"/>
+<text x="85.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<text x="77.0000" y="359.0000" font-size="10" text-anchor="end" font-weight="normal">0</text>
+<line x1="85.0000" y1="293.7500" x2="525.0000" y2="293.7500" stroke="#e6ebef"/>
+<text x="195.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">1.25</text>
+<text x="77.0000" y="297.7500" font-size="10" text-anchor="end" font-weight="normal">625</text>
+<line x1="85.0000" y1="232.5000" x2="525.0000" y2="232.5000" stroke="#e6ebef"/>
+<text x="305.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">2.5</text>
+<text x="77.0000" y="236.5000" font-size="10" text-anchor="end" font-weight="normal">1.25e+03</text>
+<line x1="85.0000" y1="171.2500" x2="525.0000" y2="171.2500" stroke="#e6ebef"/>
+<text x="415.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">3.75</text>
+<text x="77.0000" y="175.2500" font-size="10" text-anchor="end" font-weight="normal">1.88e+03</text>
+<line x1="85.0000" y1="110.0000" x2="525.0000" y2="110.0000" stroke="#e6ebef"/>
+<text x="525.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">5</text>
+<text x="77.0000" y="114.0000" font-size="10" text-anchor="end" font-weight="normal">2.5e+03</text>
+<line x1="85.0000" y1="355.0000" x2="525.0000" y2="355.0000" stroke="#7c8a96"/>
+<line x1="85.0000" y1="110.0000" x2="85.0000" y2="355.0000" stroke="#7c8a96"/>
+<text x="305.0000" y="395.0000" font-size="11" text-anchor="middle" font-weight="normal">support threshold (units)</text>
+<text x="85.0000" y="76.0000" font-size="11" text-anchor="start" font-weight="normal">retained candidate features (count)</text>
+<circle cx="173.000000" cy="115.586000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 1, 2443" data-id="individual_entry:1" data-x="1" data-y="2443"/>
+<circle cx="261.000000" cy="245.632000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 2, 1116" data-id="individual_entry:2" data-x="2" data-y="1116"/>
+<circle cx="349.000000" cy="305.118000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 3, 509" data-id="individual_entry:3" data-x="3" data-y="509"/>
+<circle cx="525.000000" cy="343.436000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 5, 118" data-id="individual_entry:5" data-x="5" data-y="118"/>
+<polyline points="173.000000,115.586000 261.000000,245.632000 349.000000,305.118000 525.000000,343.436000" fill="none" stroke="#176c89"/>
+<circle cx="173.000000" cy="115.586000" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 1, 2443" data-id="pooled_candidate:1" data-x="1" data-y="2443"/>
+<circle cx="261.000000" cy="240.928000" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 2, 1164" data-id="pooled_candidate:2" data-x="2" data-y="1164"/>
+<circle cx="349.000000" cy="297.376000" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 3, 588" data-id="pooled_candidate:3" data-x="3" data-y="588"/>
+<circle cx="525.000000" cy="336.968000" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 5, 184" data-id="pooled_candidate:5" data-x="5" data-y="184"/>
+<polyline points="173.000000,115.586000 261.000000,240.928000 349.000000,297.376000 525.000000,336.968000" fill="none" stroke="#bb6d23"/>
+<text x="640.0000" y="95.0000" font-size="14" text-anchor="start" font-weight="bold">B</text>
+<line x1="640.0000" y1="355.0000" x2="1080.0000" y2="355.0000" stroke="#e6ebef"/>
+<text x="640.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<text x="632.0000" y="359.0000" font-size="10" text-anchor="end" font-weight="normal">0</text>
+<line x1="640.0000" y1="293.7500" x2="1080.0000" y2="293.7500" stroke="#e6ebef"/>
+<text x="750.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">1.25</text>
+<text x="632.0000" y="297.7500" font-size="10" text-anchor="end" font-weight="normal">1.88e+03</text>
+<line x1="640.0000" y1="232.5000" x2="1080.0000" y2="232.5000" stroke="#e6ebef"/>
+<text x="860.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">2.5</text>
+<text x="632.0000" y="236.5000" font-size="10" text-anchor="end" font-weight="normal">3.75e+03</text>
+<line x1="640.0000" y1="171.2500" x2="1080.0000" y2="171.2500" stroke="#e6ebef"/>
+<text x="970.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">3.75</text>
+<text x="632.0000" y="175.2500" font-size="10" text-anchor="end" font-weight="normal">5.62e+03</text>
+<line x1="640.0000" y1="110.0000" x2="1080.0000" y2="110.0000" stroke="#e6ebef"/>
+<text x="1080.0000" y="374.0000" font-size="10" text-anchor="middle" font-weight="normal">5</text>
+<text x="632.0000" y="114.0000" font-size="10" text-anchor="end" font-weight="normal">7.5e+03</text>
+<line x1="640.0000" y1="355.0000" x2="1080.0000" y2="355.0000" stroke="#7c8a96"/>
+<line x1="640.0000" y1="110.0000" x2="640.0000" y2="355.0000" stroke="#7c8a96"/>
+<text x="860.0000" y="395.0000" font-size="11" text-anchor="middle" font-weight="normal">support threshold (units)</text>
+<text x="640.0000" y="76.0000" font-size="11" text-anchor="start" font-weight="normal">retained support (stored junction-read units)</text>
+<circle cx="728.000000" cy="112.548000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 1, 7422" data-id="individual_entry:1" data-x="1" data-y="7422"/>
+<circle cx="816.000000" cy="163.834667" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 2, 5852" data-id="individual_entry:2" data-x="2" data-y="5852"/>
+<circle cx="904.000000" cy="209.502667" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 3, 4454" data-id="individual_entry:3" data-x="3" data-y="4454"/>
+<circle cx="1080.000000" cy="258.143333" r="4" fill="#176c89" fill-opacity="0.68" aria-label="individual_entry: 5, 2965" data-id="individual_entry:5" data-x="5" data-y="2965"/>
+<polyline points="728.000000,112.548000 816.000000,163.834667 904.000000,209.502667 1080.000000,258.143333" fill="none" stroke="#176c89"/>
+<circle cx="728.000000" cy="112.548000" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 1, 7422" data-id="pooled_candidate:1" data-x="1" data-y="7422"/>
+<circle cx="816.000000" cy="154.328667" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 2, 6143" data-id="pooled_candidate:2" data-x="2" data-y="6143"/>
+<circle cx="904.000000" cy="191.960667" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 3, 4991" data-id="pooled_candidate:3" data-x="3" data-y="4991"/>
+<circle cx="1080.000000" cy="236.093333" r="4" fill="#bb6d23" fill-opacity="0.68" aria-label="pooled_candidate: 5, 3640" data-id="pooled_candidate:5" data-x="5" data-y="3640"/>
+<polyline points="728.000000,112.548000 816.000000,154.328667 904.000000,191.960667 1080.000000,236.093333" fill="none" stroke="#bb6d23"/>
+<text x="85.0000" y="417.0000" font-size="12" text-anchor="start" font-weight="normal">Blue: individual entry &gt;= threshold. Orange: pooled candidate sum &gt;= threshold; all its original entries retained.</text>
+<text x="35.0000" y="450.0000" font-size="10" text-anchor="start" font-weight="normal">No biological cutoff is recommended; zero rows remain in every threshold denominator.</text>
+<text x="35.0000" y="465.0000" font-size="10" text-anchor="start" font-weight="normal">Object SHA256 bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8 | helper 6ec0ad2f6977; renderer 640980f9bf20</text>
+</svg>

@@ -1,0 +1,156 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1250" height="880" viewBox="0 0 1250 880">
+<style>text{font-family:DejaVu Sans,Arial,sans-serif;fill:#23313d} .axis{stroke:#7c8a96;stroke-width:1} .grid{stroke:#e6ebef;stroke-width:1}</style>
+<rect width="100%" height="100%" fill="white"/>
+<metadata>{&quot;analyze_sha256&quot;: &quot;e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638&quot;, &quot;correlations&quot;: &quot;not calculated; descriptive scatter only; no p-values or fitted association models&quot;, &quot;helper_commit&quot;: &quot;6ec0ad2f6977a593fabdc5978a3043511214bb61&quot;, &quot;missing_encoding&quot;: &quot;blank numeric field; explicit unknown status&quot;, &quot;source_hashes&quot;: {&quot;IMR90&quot;: &quot;bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8&quot;, &quot;Smart-seq3&quot;: &quot;0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339&quot;}, &quot;source_order&quot;: &quot;unchanged stored global cell order and circ var order&quot;, &quot;sources_modified&quot;: false}</metadata>
+<text x="35.0000" y="31.0000" font-size="21" text-anchor="start" font-weight="bold">Figure 2C alternative | IMR90 stored RNA and circ signals</text>
+<text x="35.0000" y="55.0000" font-size="12" text-anchor="start" font-weight="normal">23 shared identities in original source order. CNV callability NOT VERIFIED; RNA/circ-only review draft.</text>
+<text x="190.0000" y="90.0000" font-size="13" text-anchor="start" font-weight="bold">Positive circ candidates</text>
+<text x="190.0000" y="109.0000" font-size="11" text-anchor="start" font-weight="normal">count</text>
+<line x1="190.0000" y1="126.0000" x2="190.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="190.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<line x1="295.0000" y1="126.0000" x2="295.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="295.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">125</text>
+<line x1="400.0000" y1="126.0000" x2="400.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="400.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">250</text>
+<text x="172.0000" y="144.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_126</text>
+<circle cx="272.320000" cy="140.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_126: 98" data-id="IMR90_A_126" data-x="98" data-y="0"/>
+<text x="172.0000" y="172.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_125</text>
+<circle cx="289.960000" cy="168.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_125: 119" data-id="IMR90_A_125" data-x="119" data-y="1"/>
+<text x="172.0000" y="200.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_122</text>
+<circle cx="263.080000" cy="196.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_122: 87" data-id="IMR90_A_122" data-x="87" data-y="2"/>
+<text x="172.0000" y="228.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_119</text>
+<circle cx="283.240000" cy="224.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_119: 111" data-id="IMR90_A_119" data-x="111" data-y="3"/>
+<text x="172.0000" y="256.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_117</text>
+<circle cx="263.920000" cy="252.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_117: 88" data-id="IMR90_A_117" data-x="88" data-y="4"/>
+<text x="172.0000" y="284.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_115</text>
+<circle cx="300.880000" cy="280.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_115: 132" data-id="IMR90_A_115" data-x="132" data-y="5"/>
+<text x="172.0000" y="312.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_113</text>
+<circle cx="316.840000" cy="308.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_113: 151" data-id="IMR90_A_113" data-x="151" data-y="6"/>
+<text x="172.0000" y="340.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_112</text>
+<circle cx="290.800000" cy="336.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_112: 120" data-id="IMR90_A_112" data-x="120" data-y="7"/>
+<text x="172.0000" y="368.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_110</text>
+<circle cx="284.080000" cy="364.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_110: 112" data-id="IMR90_A_110" data-x="112" data-y="8"/>
+<text x="172.0000" y="396.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_109</text>
+<circle cx="280.720000" cy="392.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_109: 108" data-id="IMR90_A_109" data-x="108" data-y="9"/>
+<text x="172.0000" y="424.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_108</text>
+<circle cx="345.400000" cy="420.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_108: 185" data-id="IMR90_A_108" data-x="185" data-y="10"/>
+<text x="172.0000" y="452.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_107</text>
+<circle cx="313.480000" cy="448.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_107: 147" data-id="IMR90_A_107" data-x="147" data-y="11"/>
+<text x="172.0000" y="480.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_106</text>
+<circle cx="337.000000" cy="476.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_106: 175" data-id="IMR90_A_106" data-x="175" data-y="12"/>
+<text x="172.0000" y="508.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_103</text>
+<circle cx="289.960000" cy="504.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_103: 119" data-id="IMR90_A_103" data-x="119" data-y="13"/>
+<text x="172.0000" y="536.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_102</text>
+<circle cx="279.040000" cy="532.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_102: 106" data-id="IMR90_A_102" data-x="106" data-y="14"/>
+<text x="172.0000" y="564.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_101</text>
+<circle cx="264.760000" cy="560.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_101: 89" data-id="IMR90_A_101" data-x="89" data-y="15"/>
+<text x="172.0000" y="592.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_C_010</text>
+<circle cx="282.400000" cy="588.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_010: 110" data-id="IMR90_C_010" data-x="110" data-y="16"/>
+<text x="172.0000" y="620.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_C_001</text>
+<circle cx="289.960000" cy="616.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_001: 119" data-id="IMR90_C_001" data-x="119" data-y="17"/>
+<text x="172.0000" y="648.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_098</text>
+<circle cx="293.320000" cy="644.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_098: 123" data-id="IMR90_A_098" data-x="123" data-y="18"/>
+<text x="172.0000" y="676.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_097</text>
+<circle cx="394.960000" cy="672.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_097: 244" data-id="IMR90_A_097" data-x="244" data-y="19"/>
+<text x="172.0000" y="704.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_128</text>
+<circle cx="280.720000" cy="700.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_128: 108" data-id="IMR90_A_128" data-x="108" data-y="20"/>
+<text x="172.0000" y="732.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_127</text>
+<circle cx="295.840000" cy="728.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_127: 126" data-id="IMR90_A_127" data-x="126" data-y="21"/>
+<text x="172.0000" y="760.0000" font-size="11" text-anchor="end" font-weight="normal">IMR90_A_100</text>
+<circle cx="305.080000" cy="756.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_100: 137" data-id="IMR90_A_100" data-x="137" data-y="22"/>
+<text x="450.0000" y="90.0000" font-size="13" text-anchor="start" font-weight="bold">circ support</text>
+<text x="450.0000" y="109.0000" font-size="11" text-anchor="start" font-weight="normal">junction-read units</text>
+<line x1="450.0000" y1="126.0000" x2="450.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="450.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<line x1="555.0000" y1="126.0000" x2="555.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="555.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">275</text>
+<line x1="660.0000" y1="126.0000" x2="660.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="660.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">550</text>
+<circle cx="545.072727" cy="140.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_126: 249" data-id="IMR90_A_126" data-x="249" data-y="0"/>
+<circle cx="556.527273" cy="168.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_125: 279" data-id="IMR90_A_125" data-x="279" data-y="1"/>
+<circle cx="569.127273" cy="196.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_122: 312" data-id="IMR90_A_122" data-x="312" data-y="2"/>
+<circle cx="566.072727" cy="224.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_119: 304" data-id="IMR90_A_119" data-x="304" data-y="3"/>
+<circle cx="580.200000" cy="252.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_117: 341" data-id="IMR90_A_117" data-x="341" data-y="4"/>
+<circle cx="555.000000" cy="280.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_115: 275" data-id="IMR90_A_115" data-x="275" data-y="5"/>
+<circle cx="574.854545" cy="308.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_113: 327" data-id="IMR90_A_113" data-x="327" data-y="6"/>
+<circle cx="552.709091" cy="336.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_112: 269" data-id="IMR90_A_112" data-x="269" data-y="7"/>
+<circle cx="574.854545" cy="364.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_110: 327" data-id="IMR90_A_110" data-x="327" data-y="8"/>
+<circle cx="548.890909" cy="392.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_109: 259" data-id="IMR90_A_109" data-x="259" data-y="9"/>
+<circle cx="601.963636" cy="420.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_108: 398" data-id="IMR90_A_108" data-x="398" data-y="10"/>
+<circle cx="549.272727" cy="448.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_107: 260" data-id="IMR90_A_107" data-x="260" data-y="11"/>
+<circle cx="600.054545" cy="476.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_106: 393" data-id="IMR90_A_106" data-x="393" data-y="12"/>
+<circle cx="631.745455" cy="504.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_103: 476" data-id="IMR90_A_103" data-x="476" data-y="13"/>
+<circle cx="571.036364" cy="532.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_102: 317" data-id="IMR90_A_102" data-x="317" data-y="14"/>
+<circle cx="548.127273" cy="560.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_101: 257" data-id="IMR90_A_101" data-x="257" data-y="15"/>
+<circle cx="521.781818" cy="588.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_010: 188" data-id="IMR90_C_010" data-x="188" data-y="16"/>
+<circle cx="578.290909" cy="616.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_001: 336" data-id="IMR90_C_001" data-x="336" data-y="17"/>
+<circle cx="582.872727" cy="644.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_098: 348" data-id="IMR90_A_098" data-x="348" data-y="18"/>
+<circle cx="644.345455" cy="672.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_097: 509" data-id="IMR90_A_097" data-x="509" data-y="19"/>
+<circle cx="576.381818" cy="700.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_128: 331" data-id="IMR90_A_128" data-x="331" data-y="20"/>
+<circle cx="554.236364" cy="728.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_127: 273" data-id="IMR90_A_127" data-x="273" data-y="21"/>
+<circle cx="600.436364" cy="756.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_100: 394" data-id="IMR90_A_100" data-x="394" data-y="22"/>
+<text x="710.0000" y="90.0000" font-size="13" text-anchor="start" font-weight="bold">RNA positive features</text>
+<text x="710.0000" y="109.0000" font-size="11" text-anchor="start" font-weight="normal">count</text>
+<line x1="710.0000" y1="126.0000" x2="710.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="710.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<line x1="815.0000" y1="126.0000" x2="815.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="815.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">1e+04</text>
+<line x1="920.0000" y1="126.0000" x2="920.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="920.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">2e+04</text>
+<circle cx="887.649500" cy="140.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_126: 16919" data-id="IMR90_A_126" data-x="16919" data-y="0"/>
+<circle cx="878.682500" cy="168.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_125: 16065" data-id="IMR90_A_125" data-x="16065" data-y="1"/>
+<circle cx="877.485500" cy="196.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_122: 15951" data-id="IMR90_A_122" data-x="15951" data-y="2"/>
+<circle cx="878.777000" cy="224.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_119: 16074" data-id="IMR90_A_119" data-x="16074" data-y="3"/>
+<circle cx="876.887000" cy="252.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_117: 15894" data-id="IMR90_A_117" data-x="15894" data-y="4"/>
+<circle cx="879.575000" cy="280.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_115: 16150" data-id="IMR90_A_115" data-x="16150" data-y="5"/>
+<circle cx="883.827500" cy="308.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_113: 16555" data-id="IMR90_A_113" data-x="16555" data-y="6"/>
+<circle cx="878.084000" cy="336.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_112: 16008" data-id="IMR90_A_112" data-x="16008" data-y="7"/>
+<circle cx="874.535000" cy="364.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_110: 15670" data-id="IMR90_A_110" data-x="15670" data-y="8"/>
+<circle cx="879.869000" cy="392.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_109: 16178" data-id="IMR90_A_109" data-x="16178" data-y="9"/>
+<circle cx="885.003500" cy="420.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_108: 16667" data-id="IMR90_A_108" data-x="16667" data-y="10"/>
+<circle cx="879.795500" cy="448.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_107: 16171" data-id="IMR90_A_107" data-x="16171" data-y="11"/>
+<circle cx="881.654000" cy="476.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_106: 16348" data-id="IMR90_A_106" data-x="16348" data-y="12"/>
+<circle cx="872.582000" cy="504.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_103: 15484" data-id="IMR90_A_103" data-x="15484" data-y="13"/>
+<circle cx="875.532500" cy="532.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_102: 15765" data-id="IMR90_A_102" data-x="15765" data-y="14"/>
+<circle cx="888.804500" cy="560.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_101: 17029" data-id="IMR90_A_101" data-x="17029" data-y="15"/>
+<circle cx="897.656000" cy="588.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_010: 17872" data-id="IMR90_C_010" data-x="17872" data-y="16"/>
+<circle cx="902.696000" cy="616.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_001: 18352" data-id="IMR90_C_001" data-x="18352" data-y="17"/>
+<circle cx="885.423500" cy="644.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_098: 16707" data-id="IMR90_A_098" data-x="16707" data-y="18"/>
+<circle cx="886.746500" cy="672.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_097: 16833" data-id="IMR90_A_097" data-x="16833" data-y="19"/>
+<circle cx="869.673500" cy="700.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_128: 15207" data-id="IMR90_A_128" data-x="15207" data-y="20"/>
+<circle cx="877.286000" cy="728.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_127: 15932" data-id="IMR90_A_127" data-x="15932" data-y="21"/>
+<circle cx="881.433500" cy="756.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_100: 16327" data-id="IMR90_A_100" data-x="16327" data-y="22"/>
+<text x="970.0000" y="90.0000" font-size="13" text-anchor="start" font-weight="bold">RNA overlap-profile total</text>
+<text x="970.0000" y="109.0000" font-size="11" text-anchor="start" font-weight="normal">stored counts</text>
+<line x1="970.0000" y1="126.0000" x2="970.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="970.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">0</text>
+<line x1="1075.0000" y1="126.0000" x2="1075.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="1075.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">1.75e+06</text>
+<line x1="1180.0000" y1="126.0000" x2="1180.0000" y2="775.0000" stroke="#e6ebef"/>
+<text x="1180.0000" y="798.0000" font-size="10" text-anchor="middle" font-weight="normal">3.5e+06</text>
+<circle cx="1136.330560" cy="140.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_126: 2772176" data-id="IMR90_A_126" data-x="2772176" data-y="0"/>
+<circle cx="1154.704120" cy="168.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_125: 3078402" data-id="IMR90_A_125" data-x="3078402" data-y="1"/>
+<circle cx="1151.364160" cy="196.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_122: 3022736" data-id="IMR90_A_122" data-x="3022736" data-y="2"/>
+<circle cx="1164.604120" cy="224.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_119: 3243402" data-id="IMR90_A_119" data-x="3243402" data-y="3"/>
+<circle cx="1139.574700" cy="252.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_117: 2826245" data-id="IMR90_A_117" data-x="2826245" data-y="4"/>
+<circle cx="1128.370960" cy="280.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_115: 2639516" data-id="IMR90_A_115" data-x="2639516" data-y="5"/>
+<circle cx="1158.784240" cy="308.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_113: 3146404" data-id="IMR90_A_113" data-x="3146404" data-y="6"/>
+<circle cx="1143.192400" cy="336.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_112: 2886540" data-id="IMR90_A_112" data-x="2886540" data-y="7"/>
+<circle cx="1140.401500" cy="364.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_110: 2840025" data-id="IMR90_A_110" data-x="2840025" data-y="8"/>
+<circle cx="1144.826680" cy="392.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_109: 2913778" data-id="IMR90_A_109" data-x="2913778" data-y="9"/>
+<circle cx="1160.707480" cy="420.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_108: 3178458" data-id="IMR90_A_108" data-x="3178458" data-y="10"/>
+<circle cx="1125.953320" cy="448.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_107: 2599222" data-id="IMR90_A_107" data-x="2599222" data-y="11"/>
+<circle cx="1178.234260" cy="476.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_106: 3470571" data-id="IMR90_A_106" data-x="3470571" data-y="12"/>
+<circle cx="1148.133580" cy="504.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_103: 2968893" data-id="IMR90_A_103" data-x="2968893" data-y="13"/>
+<circle cx="1148.406160" cy="532.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_102: 2973436" data-id="IMR90_A_102" data-x="2973436" data-y="14"/>
+<circle cx="1150.036840" cy="560.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_101: 3000614" data-id="IMR90_A_101" data-x="3000614" data-y="15"/>
+<circle cx="1126.259020" cy="588.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_010: 2604317" data-id="IMR90_C_010" data-x="2604317" data-y="16"/>
+<circle cx="1116.293560" cy="616.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_C_001: 2438226" data-id="IMR90_C_001" data-x="2438226" data-y="17"/>
+<circle cx="1160.980840" cy="644.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_098: 3183014" data-id="IMR90_A_098" data-x="3183014" data-y="18"/>
+<circle cx="1172.048980" cy="672.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_097: 3367483" data-id="IMR90_A_097" data-x="3367483" data-y="19"/>
+<circle cx="1129.053580" cy="700.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_128: 2650893" data-id="IMR90_A_128" data-x="2650893" data-y="20"/>
+<circle cx="1142.834020" cy="728.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_127: 2880567" data-id="IMR90_A_127" data-x="2880567" data-y="21"/>
+<circle cx="1140.457780" cy="756.000000" r="4" fill="#176c89" fill-opacity="0.68" aria-label="IMR90_A_100: 2840963" data-id="IMR90_A_100" data-x="2840963" data-y="22"/>
+<text x="35.0000" y="840.0000" font-size="10" text-anchor="start" font-weight="normal">Historical simple-overlap RNA; circ assay completion and original reference digests unknown. No CNV/association inference.</text>
+<text x="35.0000" y="855.0000" font-size="10" text-anchor="start" font-weight="normal">Object SHA256 bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8 | helper 6ec0ad2f6977; renderer 640980f9bf20</text>
+</svg>

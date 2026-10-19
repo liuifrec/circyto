@@ -1,0 +1,24 @@
+{
+  "affinity": [
+    0,
+    1
+  ],
+  "cgroup": "${USER_CGROUP}/app.slice/circyto-a05-a05-probe-memory-stop.service",
+  "child_pid": 395473,
+  "controls": {
+    "cgroup.controllers": "memory pids",
+    "cpu.max": null,
+    "memory.max": "67108864",
+    "memory.swap.max": "0"
+  },
+  "cpu_enforcement": "inherited affinity 0-1 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+  "disk_peak_bytes": 294912,
+  "disk_poll_seconds": 1,
+  "footprint_root": "${A05_ROOT}",
+  "memory_current_peak_bytes": 8622080,
+  "poll_seconds": 0.25,
+  "process_tree_rss_peak_bytes": 22085632,
+  "started_utc": "2026-10-18T23:57:32.394469+00:00",
+  "status": "running",
+  "updated_utc": "2026-10-18T23:57:32.397917+00:00"
+}

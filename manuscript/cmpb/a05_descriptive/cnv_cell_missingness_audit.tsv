@@ -1,0 +1,24 @@
+cell_id	source_cell_order	bins	state_nan	state_inf	state_zero	normalized_nan	normalized_inf	normalized_zero	state_zero_normalized_nonzero	state_nonzero_normalized_zero	callability	source_object_sha256
+IMR90_A_126	0	60607	0	0	5002	0	0	5003	263	264	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_125	1	60607	0	0	5024	0	0	5056	254	286	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_122	2	60607	0	0	4975	0	0	5032	224	281	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_119	3	60607	0	0	5063	0	0	5048	297	282	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_117	4	60607	0	0	5018	0	0	5026	266	274	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_115	5	60607	0	0	5003	0	0	5034	248	279	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_113	6	60607	0	0	5030	0	0	5041	267	278	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_112	7	60607	0	0	5008	0	0	5062	248	302	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_110	8	60607	0	0	5100	0	0	5048	310	258	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_109	9	60607	0	0	4958	0	0	5023	251	316	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_108	10	60607	0	0	4909	0	0	5006	218	315	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_107	11	60607	0	0	5054	0	0	5042	307	295	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_106	12	60607	0	0	5059	0	0	5044	276	261	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_103	13	60607	0	0	4923	0	0	5045	207	329	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_102	14	60607	0	0	5071	0	0	5064	302	295	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_101	15	60607	0	0	5055	0	0	5075	284	304	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_C_010	16	60607	0	0	4886	0	0	4931	242	287	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_C_001	17	60607	0	0	4801	0	0	4974	168	341	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_098	18	60607	0	0	5018	0	0	5083	251	316	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_097	19	60607	0	0	5049	0	0	5069	270	290	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_128	20	60607	0	0	4981	0	0	5022	238	279	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_127	21	60607	0	0	5037	0	0	5032	277	272	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8
+IMR90_A_100	22	60607	0	0	5069	0	0	5074	289	294	unknown; numerical zeros are not interpreted	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8

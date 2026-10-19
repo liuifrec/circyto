@@ -1,0 +1,61 @@
+{
+  "argv": [
+    "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+    "-B",
+    "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py",
+    "${A05_ROOT}",
+    "${ORIGINAL_OBJECT_ROOT}"
+  ],
+  "category": "a05",
+  "elapsed_seconds": 0.8325280550052412,
+  "environment": {},
+  "finished_utc": "2026-10-18T23:59:44.742425+00:00",
+  "footprint_bytes_after": 5390336,
+  "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+  "invoked_python_source_sha256": {
+    "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+    "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+    "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+    "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06"
+  },
+  "launcher_argv": [
+    "systemd-run",
+    "--user",
+    "--unit=circyto-a05-inspect-fixed",
+    "--wait",
+    "--pipe",
+    "--property=MemoryMax=4294967296",
+    "--property=MemorySwapMax=0",
+    "--property=RuntimeMaxSec=3440s",
+    "--property=TimeoutStopSec=1s",
+    "--property=KillMode=control-group",
+    "--property=OOMPolicy=kill",
+    "--property=CPUAffinity=0-1",
+    "--property=CPUQuota=200%",
+    "--property=TasksMax=512",
+    "/usr/bin/python3",
+    "${A05_ROOT}/helpers/run_stage-2c4c27700fa4c68a.py",
+    "guard",
+    "--root",
+    "${A05_ROOT}",
+    "--spec",
+    "${A05_ROOT}/specs/inspect-fixed.json"
+  ],
+  "launcher_exit_code": 0,
+  "log": "logs/inspect-fixed.log",
+  "log_sha256": "7c454ecc0156827005e93bc82e07a7bf499cc80bb610c87dcd81f4616384eb3f",
+  "schema": "circyto.cmpb.a05.stage.v1",
+  "spec_sha256": "bbfefc771539dc62a091b95b826495ce0e9d263190e330a3a55f8da32228ab69",
+  "stage": "inspect-fixed",
+  "started_utc": "2026-10-18T23:59:43.908969+00:00",
+  "status": "succeeded",
+  "systemd_properties": [
+    "Result=success",
+    "ExecMainStatus=0",
+    "ControlGroup=",
+    "MemoryCurrent=[not set]",
+    "CPUUsageNSec=[not set]",
+    "ActiveState=inactive"
+  ],
+  "systemd_query_exit": 0
+}

@@ -1,0 +1,5 @@
+Running as unit: circyto-a05-a05-probe-memory-stop.service
+Finished with result: oom-kill
+Main processes terminated with: code=killed/status=KILL
+Service runtime: 55ms
+CPU time consumed: 56ms

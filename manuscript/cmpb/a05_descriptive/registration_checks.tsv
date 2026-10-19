@@ -1,0 +1,3 @@
+dataset	source_object_sha256	helper_commit	check	expected	actual	passed
+Smart-seq3	0ecd36bb0a74455db7f0affb9ade5023c1934c1dd234aca975365c0b69d8b339	6ec0ad2f6977a593fabdc5978a3043511214bb61	registration_totals	[192, 2503, 2659, 5711, 2379]	[192, 2503, 2659, 5711, 2379]	True
+IMR90	bb2e12f7c3b36f9fa72d98cd71e8bea905a67f50e22af1d6b713550ee92b60c8	6ec0ad2f6977a593fabdc5978a3043511214bb61	registration_totals	[23, 2443, 2914, 7422, 2429]	[23, 2443, 2914, 7422, 2429]	True

@@ -1,0 +1,6 @@
+Running as unit: circyto-a05-describe.service
+{"cells": 215, "candidates": 4946, "nonzero_entries": 5573, "threshold_rows": 16}
+Finished with result: success
+Main processes terminated with: code=exited/status=0
+Service runtime: 2.571s
+CPU time consumed: 2.392s

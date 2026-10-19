@@ -1,0 +1,26 @@
+{
+  "affinity": [
+    0,
+    1
+  ],
+  "cgroup": "${USER_CGROUP}/app.slice/circyto-a05-public-cnv.service",
+  "child_exit_code": 0,
+  "child_pid": 395680,
+  "controls": {
+    "cgroup.controllers": "memory pids",
+    "cpu.max": null,
+    "memory.max": "4294967296",
+    "memory.swap.max": "0"
+  },
+  "cpu_enforcement": "inherited affinity 0-1 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
+  "disk_peak_bytes": 7323648,
+  "disk_poll_seconds": 1,
+  "finished_utc": "2026-10-18T23:59:50.394551+00:00",
+  "footprint_root": "${A05_ROOT}",
+  "memory_current_peak_bytes": 70815744,
+  "poll_seconds": 0.25,
+  "process_tree_rss_peak_bytes": 126914560,
+  "started_utc": "2026-10-18T23:59:44.818654+00:00",
+  "status": "finished",
+  "updated_utc": "2026-10-18T23:59:49.885031+00:00"
+}

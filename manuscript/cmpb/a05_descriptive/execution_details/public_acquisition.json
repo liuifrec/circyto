@@ -1,0 +1,56 @@
+[
+  {
+    "name": "GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE278nnn/GSE278958/suppl/GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz",
+    "accessed_utc": "2026-10-18T23:59:45.050823+00:00",
+    "response_url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE278nnn/GSE278958/suppl/GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_states_bin50kb.txt.gz",
+    "status": "retrieved",
+    "bytes": 327381,
+    "sha256": "42662ed6edc213a364eebd2adf3b14e33a4be31d8e21f0842aab4f1c347f3ce1"
+  },
+  {
+    "name": "GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_mappabilitynorm_bin50kb.txt.gz",
+    "url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE278nnn/GSE278958/suppl/GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_mappabilitynorm_bin50kb.txt.gz",
+    "accessed_utc": "2026-10-18T23:59:46.790998+00:00",
+    "response_url": "https://ftp.ncbi.nlm.nih.gov/geo/series/GSE278nnn/GSE278958/suppl/GSE278958_06_scRR-seq-DNA_IMR90_G1_summary_CNV_mappabilitynorm_bin50kb.txt.gz",
+    "status": "retrieved",
+    "bytes": 1567542,
+    "sha256": "e593ba0d9e7b175a16f2a662c66e2d2579b98c37a0d482918f15a3807a4b41c0"
+  },
+  {
+    "name": "geo_series.txt",
+    "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE278958&targ=self&form=text&view=full",
+    "accessed_utc": "2026-10-18T23:59:48.421337+00:00",
+    "response_url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSE278958&targ=self&form=text&view=full",
+    "status": "retrieved",
+    "bytes": 6856,
+    "sha256": "ec11fe13bfd6f1dd3ad76430ad98eef89efc3e1ae61d8269b3bf590d1148df01"
+  },
+  {
+    "name": "geo_dna_sample.txt",
+    "url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM8558875&targ=self&form=text&view=full",
+    "accessed_utc": "2026-10-18T23:59:48.930392+00:00",
+    "response_url": "https://www.ncbi.nlm.nih.gov/geo/query/acc.cgi?acc=GSM8558875&targ=self&form=text&view=full",
+    "status": "retrieved",
+    "bytes": 6306,
+    "sha256": "a704fe9ee460a9b87913944a5f9b8a9ea25d7f1c0b68c29041a0e4c5bedfae88"
+  },
+  {
+    "name": "Codes_Fig6_part1.txt",
+    "url": "https://raw.githubusercontent.com/mcbmieu/scRR-seq/0910c9a30ce1b7e8a56cb97ac07dcb63a585c626/MainFigures/Fig6/scripts/Codes_Fig6_part1.txt",
+    "accessed_utc": "2026-10-18T23:59:49.553033+00:00",
+    "response_url": "https://raw.githubusercontent.com/mcbmieu/scRR-seq/0910c9a30ce1b7e8a56cb97ac07dcb63a585c626/MainFigures/Fig6/scripts/Codes_Fig6_part1.txt",
+    "status": "retrieved",
+    "bytes": 3469,
+    "sha256": "4f5ea791dfe8adcaeb4fea33f52bf00eb64f4cf7b18645cafba0aa6af80b83b2"
+  },
+  {
+    "name": "Codes_Fig6_part2.R",
+    "url": "https://raw.githubusercontent.com/mcbmieu/scRR-seq/0910c9a30ce1b7e8a56cb97ac07dcb63a585c626/MainFigures/Fig6/scripts/Codes_Fig6_part2.R",
+    "accessed_utc": "2026-10-18T23:59:50.087229+00:00",
+    "response_url": "https://raw.githubusercontent.com/mcbmieu/scRR-seq/0910c9a30ce1b7e8a56cb97ac07dcb63a585c626/MainFigures/Fig6/scripts/Codes_Fig6_part2.R",
+    "status": "retrieved",
+    "bytes": 1905,
+    "sha256": "ba60623833c2a68e1ea9619b3f06b52caf2611dc3b1c0dd2b948e185d79cb6f7"
+  }
+]

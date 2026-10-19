@@ -1,0 +1,16 @@
+{
+  "scope": "A05 descriptive only",
+  "started_epoch": 1792367824.022836,
+  "started_utc": "2026-10-18T23:57:04.022847+00:00",
+  "deadline_epoch": 1792371424.022836,
+  "wall_cap_seconds": 3600,
+  "cpus": [
+    0,
+    1
+  ],
+  "memory_cap_bytes": 4294967296,
+  "disk_cap_bytes": 2147483648,
+  "disk_stop_bytes": 1879048192,
+  "new_disk_cap_bytes": 2147483648,
+  "new_disk_stop_bytes": 1879048192
+}

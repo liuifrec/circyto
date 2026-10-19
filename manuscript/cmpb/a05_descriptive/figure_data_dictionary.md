@@ -1,0 +1,31 @@
+# A05 source tables and figure dictionary
+
+All TSVs are UTF-8 with a header, tab delimiter and LF newlines. Blank numerical fields mean unavailable/undefined, not zero. Literal IDs and blank annotation strings are preserved. Boolean fields are True/False. Indices/orders are zero based. `dataset`, `source_object_sha256` and `helper_commit` identify lineage. These are historical stored measurements, not A02 rerun or A04 simulation values.
+
+| Table | Observation/key | Field meanings and denominators |
+| --- | --- | --- |
+| descriptive_cell_metrics.tsv | 215 rows; dataset + exact cell_id | `source_cell_order`: original global obs order; `circ_source_row`/`rna_source_row`: original modality positions. Physical row presence, recorded membership and historical processing status are distinct. `circ_positive_candidates` counts X>0; `circ_support` sums X in stored junction-read units. `rna_overlap_signal` sums historical simple-overlap counts; `rna_positive_features` counts positive RNA features. `matched_rna_circ` requires shared membership and exact ID intersection. `circ_zero_support_row` does not certify `completed_zero`. All completion fields stay unknown. |
+| modality_membership_audit.tsv | same 215 identities/order | Physical circ/RNA/CNV row presence; recorded circ/RNA membership; matched flag, source indices and unknown completion. Smart-seq3 DIYHEK_192 is physically present, rna_only, unmatched, circ zero. |
+| descriptive_candidate_metrics.tsv | 4,946 rows; dataset + candidate_id | Original var order; original circ_id/chrom/start/end/strand and every host_gene* field, including multi annotations, are retained. `positive_stored_cells`, `pooled_support`, `maximum_per_cell_support` are original X reductions. `stored_cell_fraction` uses 192/23 physical rows; `recorded_circ_member_fraction` uses 191/23 recorded members. Both denominators are explicit. Completed denominator/prevalence are blank because historical status is unknown. Host annotation provenance is original var, with original GTF digest unverified. |
+| circ_nonzero_entries.tsv | 5,573 positive cell/candidate records | Exact original positive support, biological IDs and source axis positions; implicit zeros reconstructed from complete cell/candidate axes, not interpreted as completed assays. This small circ-only sparse table is not a CNV per-bin export. |
+| threshold_sensitivity.tsv | 16 rows; dataset + mode + threshold | `individual_entry`: retain entries with original X>=t. `pooled_candidate`: original column sum>=t, retain all original entries in eligible columns. Counts, support, zero rows and medians use every physical row. No sequential filtering. |
+| threshold_cell_metrics.tsv | 1,720 rows; dataset + mode + threshold + cell_id | Every original stored cell at each threshold; remaining positive candidates/support and membership. |
+| distribution_summary.tsv | dataset + subset + metric | `n_total/n_finite/n_missing` describe the explicit subset. Minimum, Q25, median, Q75, maximum; linear interpolation. Candidate fractions are stored-cell fractions, not verified completed-cohort prevalence. |
+| matrix_audit.tsv | dataset + modality | Cells-by-features shape, CSR stored entries vs numerical nonzeros, explicit zeros, integer total signal, dtype and uniqueness/missing-value checks. |
+| registration_checks.tsv | dataset | Exact original audited tuple: rows, candidates, positive entries, support, host-annotated candidates. |
+| cnv_source_inventory.tsv | field | Original fields, source acquisition hashes/URLs, public equality results and gate. No original full per-bin arrays. |
+| cnv_numeric_encoding_audit.tsv | source + encoding | Numeric integer and public somy token frequencies only; no callability assignment. |
+| cnv_cell_missingness_audit.tsv | all 23 source cells | Numerical zero/NaN/Inf and discordant-zero counts only. They are NOT valid/invalid counts or masks. |
+| cnv_coordinate_audit.tsv | stored chromosome order | Bin counts, coordinate extent, width and gap/overlap/order checks; no chromosome selection or CNV aggregation. |
+| figure_observations.tsv | figure + panel + display_order (within mode for threshold plots) | Every plotted x/y value, identity, source table/hash and helper/renderer commits. ECDF rows use stable value then original-order sorting and rank/N; y is fraction. Figure 2C uses raw metric x and source cell ordinal y. Threshold observation_id includes mode and threshold. |
+
+`figure_manifest.json` maps every SVG to source tables, source object, helper and renderer. Every SVG embeds provenance and exact units/denominators in its labels/metadata. PNGs are previews of those SVGs; `png_render_record.json` binds source/render hashes, dimensions and the installed renderer. The revised SVG uses self-closing circle nodes for renderer compatibility. Source rows/IDs and all zero members remain unchanged.
+
+| Draft | Panels / axes and population |
+| --- | --- |
+| figure2c_rna_circ_only_alternative | All 23 IMR90 cells in unchanged stored order; x columns: positive circ candidates, circ support units, RNA positive features, RNA overlap-profile counts. No CNV. |
+| smartseq3_rna_circ_scatter_draft; imr90_rna_circ_scatter_draft | A: RNA overlap total x, circ support y. B: RNA positive features x, positive circ candidates y. N=191 recorded shared Smart-seq3 or 23 IMR90, separately. No fitted relation or coefficient. |
+| smartseq3_distributions_draft; imr90_distributions_draft | ECDF y=rank/N; x: per-row positive circ candidates, per-row circ support, positive stored cells/candidate, pooled support/candidate. All 192/23 stored rows and 2,503/2,443 candidates. |
+| smartseq3_threshold_sensitivity_draft; imr90_threshold_sensitivity_draft | x=registered threshold 1,2,3,5; y=retained candidate count or total support. Both threshold definitions, separate datasets. Lines only connect tested thresholds. |
+
+`source_object_inventory.json` records the original axes, metadata and HDF5 field inventory. Published metadata replaces workstation path prefixes with documented aliases; local control logs retain exact paths. Original biological IDs, numerical data and source object hashes are unchanged. `validation_record.json`, `preservation_record.json` and `execution_record.json` define check/resource scope and limitations.

@@ -1,0 +1,135 @@
+[
+  {
+    "svg": "smartseq3_rna_circ_scatter_draft.svg",
+    "png": "smartseq3_rna_circ_scatter_draft.png",
+    "svg_sha256": "4cb79845ee1a698022a33782002b5ececc891467ee62d597b02ea9781d93a348",
+    "png_sha256": "289c0ece369f478cf65b81560a71359473513b9eb98ef0a9ab6e2ac111952d58",
+    "width": 1425,
+    "height": 600,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/smartseq3_rna_circ_scatter_draft.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/smartseq3_rna_circ_scatter_draft.png"
+    ]
+  },
+  {
+    "svg": "smartseq3_distributions_draft.svg",
+    "png": "smartseq3_distributions_draft.png",
+    "svg_sha256": "c403ee736e904cf7f5b556fd4da2a65546bac3636c5ad2d9562efea04da896ab",
+    "png_sha256": "cf74b5e26226e4afc0e69357fe8e3e96eff2b6d12319d9b8697c702e2ca6bd4f",
+    "width": 1425,
+    "height": 1037,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/smartseq3_distributions_draft.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/smartseq3_distributions_draft.png"
+    ]
+  },
+  {
+    "svg": "smartseq3_threshold_sensitivity_draft.svg",
+    "png": "smartseq3_threshold_sensitivity_draft.png",
+    "svg_sha256": "b6b141505707bf986bd2ecbb630bc2801d4d700671a733d3ad479e197bf24a49",
+    "png_sha256": "37a97d429a3bdbf03f60c1092c9fcce224608f1ea11e40c28ac531d1ea811df8",
+    "width": 1425,
+    "height": 612,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/smartseq3_threshold_sensitivity_draft.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/smartseq3_threshold_sensitivity_draft.png"
+    ]
+  },
+  {
+    "svg": "imr90_rna_circ_scatter_draft.svg",
+    "png": "imr90_rna_circ_scatter_draft.png",
+    "svg_sha256": "5a68131ddf4d83f59f8bd56e9d25563342d277b61958293d88064d7ff31aea93",
+    "png_sha256": "d2a012d26019958445302473bb954613e66d674187e908720f7187738f303013",
+    "width": 1425,
+    "height": 600,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/imr90_rna_circ_scatter_draft.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/imr90_rna_circ_scatter_draft.png"
+    ]
+  },
+  {
+    "svg": "imr90_distributions_draft.svg",
+    "png": "imr90_distributions_draft.png",
+    "svg_sha256": "f1d31e33865c61b26f676d00df31b2bd385accd0a2e6102c2211f8b888a68f56",
+    "png_sha256": "974b63315423119458ba19a69a7dd55af4864839a26ee9a90bd986acc4166962",
+    "width": 1425,
+    "height": 1037,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/imr90_distributions_draft.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/imr90_distributions_draft.png"
+    ]
+  },
+  {
+    "svg": "imr90_threshold_sensitivity_draft.svg",
+    "png": "imr90_threshold_sensitivity_draft.png",
+    "svg_sha256": "562a211f980af986b1ab38bb6666b7e64d55c2efe80e59fee42c9fbf0ba9357b",
+    "png_sha256": "91c971a6c8fc0645a9e4c2b0dd19142923e3d2f12b2866be2a8537998d28591f",
+    "width": 1425,
+    "height": 612,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/imr90_threshold_sensitivity_draft.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/imr90_threshold_sensitivity_draft.png"
+    ]
+  },
+  {
+    "svg": "figure2c_rna_circ_only_alternative.svg",
+    "png": "figure2c_rna_circ_only_alternative.png",
+    "svg_sha256": "4f529c865c6413df1fe0c9a404baa699c26cbe7b5e602970d92d44b1a29a15c2",
+    "png_sha256": "b0a6f96910576b783679d7f728d4206b049ce475c8da42cb600d67b0e734357f",
+    "width": 1562,
+    "height": 1100,
+    "renderer": "Version: ImageMagick 6.9.11-60 Q16 x86_64 2021-01-25 https://imagemagick.org",
+    "argv": [
+      "/usr/bin/convert",
+      "-background",
+      "white",
+      "-density",
+      "120",
+      "${A05_ROOT}/results_review/figure2c_rna_circ_only_alternative.svg",
+      "-strip",
+      "${A05_ROOT}/results_review/figure2c_rna_circ_only_alternative.png"
+    ]
+  }
+]
