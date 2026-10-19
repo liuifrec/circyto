@@ -1,0 +1,12 @@
+{
+  "events": [
+    {
+      "action": "first accounting.py invocation with system python3",
+      "result": "ModuleNotFoundError: No module named anndata",
+      "scope": "administrative ledger closure; no matrix or result changes",
+      "resolution": "accounting, export and PNG helpers import their digest from the standard-library-only runner; scientific environment unchanged",
+      "partial_local_commit": "68af249f91d9a87c9ba3a480f0675a92980d2deb",
+      "publication": "not pushed; final accounting added in follow-up A05 commit"
+    }
+  ]
+}

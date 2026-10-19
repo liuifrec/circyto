@@ -6,7 +6,10 @@
     "${A05_ROOT}"
   ],
   "category": "a05",
+  "elapsed_seconds": 0.571888077975018,
   "environment": {},
+  "finished_utc": "2026-10-19T00:12:56.780686+00:00",
+  "footprint_bytes_after": 35115008,
   "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
   "invoked_python_source_sha256": {
     "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
@@ -44,10 +47,21 @@
     "--spec",
     "${A05_ROOT}/specs/finalize-review.json"
   ],
+  "launcher_exit_code": 0,
   "log": "logs/finalize-review.log",
+  "log_sha256": "fb0ed8dd4782d0fb50f1034e658ef59144d7a37b88e002fc176f58e4359dcdfe",
   "schema": "circyto.cmpb.a05.stage.v1",
   "spec_sha256": "5b0c0d59e781e3b2c58f77fcda797a3854a9bf94a27564ae579878c0366be7ba",
   "stage": "finalize-review",
   "started_utc": "2026-10-19T00:12:56.207781+00:00",
-  "status": "launching"
+  "status": "succeeded",
+  "systemd_properties": [
+    "Result=success",
+    "ExecMainStatus=0",
+    "ControlGroup=",
+    "MemoryCurrent=[not set]",
+    "CPUUsageNSec=[not set]",
+    "ActiveState=inactive"
+  ],
+  "systemd_query_exit": 0
 }

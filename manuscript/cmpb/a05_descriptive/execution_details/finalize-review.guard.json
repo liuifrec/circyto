@@ -4,6 +4,7 @@
     1
   ],
   "cgroup": "${USER_CGROUP}/app.slice/circyto-a05-finalize-review.service",
+  "child_exit_code": 0,
   "child_pid": 396194,
   "controls": {
     "cgroup.controllers": "memory pids",
@@ -14,11 +15,12 @@
   "cpu_enforcement": "inherited affinity 0-1 plus all-thread affinity watchdog; CPU quota only if cpu.max exists",
   "disk_peak_bytes": 25501696,
   "disk_poll_seconds": 1,
+  "finished_utc": "2026-10-19T00:12:56.758150+00:00",
   "footprint_root": "${A05_ROOT}",
-  "memory_current_peak_bytes": 8744960,
+  "memory_current_peak_bytes": 81186816,
   "poll_seconds": 0.25,
-  "process_tree_rss_peak_bytes": 21336064,
+  "process_tree_rss_peak_bytes": 129167360,
   "started_utc": "2026-10-19T00:12:56.249147+00:00",
-  "status": "running",
+  "status": "finished",
   "updated_utc": "2026-10-19T00:12:56.256114+00:00"
 }

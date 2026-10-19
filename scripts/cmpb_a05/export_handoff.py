@@ -9,7 +9,7 @@ import time
 import zipfile
 
 from accounting import storage
-from inspect_sources import digest
+from run_stage import digest
 
 BASE='02ee3d4acfed63c5b2f02c4baef6d22c822d4dac'
 PREFIXES=('manuscript/cmpb/a05_descriptive/','scripts/cmpb_a05/')

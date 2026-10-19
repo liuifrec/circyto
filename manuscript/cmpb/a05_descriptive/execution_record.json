@@ -1,0 +1,827 @@
+{
+  "schema": "circyto.cmpb.a05.execution.v1",
+  "recorded_utc": "2026-10-19T00:16:39.706481+00:00",
+  "scope": "A05 only; no A06 or sequencing rerun",
+  "budget": {
+    "scope": "A05 descriptive only",
+    "started_epoch": 1792367824.022836,
+    "started_utc": "2026-10-18T23:57:04.022847+00:00",
+    "deadline_epoch": 1792371424.022836,
+    "wall_cap_seconds": 3600,
+    "cpus": [
+      0,
+      1
+    ],
+    "memory_cap_bytes": 4294967296,
+    "disk_cap_bytes": 2147483648,
+    "disk_stop_bytes": 1879048192,
+    "new_disk_cap_bytes": 2147483648,
+    "new_disk_stop_bytes": 1879048192
+  },
+  "stages": [
+    {
+      "stage": "a05-probe-inheritance",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-18T23:57:29.079463+00:00",
+      "finished_utc": "2026-10-18T23:57:29.399360+00:00",
+      "elapsed_seconds": 0.3191702170006465,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 8495104,
+      "sampled_process_tree_rss_peak_bytes": 21278720,
+      "observed_disk_peak_bytes": 217088,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "134217728",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "expected destructive-to-own-process control",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,subprocess; print(json.dumps({\"parent_affinity\":sorted(os.sched_getaffinity(0))})); subprocess.run([\"/usr/bin/python3\",\"-c\",\"import os; print(sorted(os.sched_getaffinity(0)))\"],check=True)"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {}
+    },
+    {
+      "stage": "a05-probe-exit-failure",
+      "status": "failed",
+      "exit_code": 7,
+      "started_utc": "2026-10-18T23:57:29.541055+00:00",
+      "finished_utc": "2026-10-18T23:57:29.853588+00:00",
+      "elapsed_seconds": 0.311277061002329,
+      "kernel_cpu_usage_nsec": 37567000,
+      "sampled_cgroup_memory_peak_bytes": 8491008,
+      "sampled_process_tree_rss_peak_bytes": 19267584,
+      "observed_disk_peak_bytes": 241664,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "134217728",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "expected destructive-to-own-process control",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "raise SystemExit(7)"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {}
+    },
+    {
+      "stage": "a05-probe-wall-stop",
+      "status": "failed",
+      "exit_code": 1,
+      "started_utc": "2026-10-18T23:57:29.995614+00:00",
+      "finished_utc": "2026-10-18T23:57:32.200263+00:00",
+      "elapsed_seconds": 2.2033269390231,
+      "kernel_cpu_usage_nsec": 52670000,
+      "sampled_cgroup_memory_peak_bytes": 13381632,
+      "sampled_process_tree_rss_peak_bytes": 30740480,
+      "observed_disk_peak_bytes": 270336,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "134217728",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "expected destructive-to-own-process control",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a05-probe-wall-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); time.sleep(30)"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {}
+    },
+    {
+      "stage": "a05-probe-memory-stop",
+      "status": "failed",
+      "exit_code": 1,
+      "started_utc": "2026-10-18T23:57:32.349058+00:00",
+      "finished_utc": "2026-10-18T23:57:32.435430+00:00",
+      "elapsed_seconds": 0.0852014539996162,
+      "kernel_cpu_usage_nsec": 56288000,
+      "sampled_cgroup_memory_peak_bytes": 8622080,
+      "sampled_process_tree_rss_peak_bytes": 22085632,
+      "observed_disk_peak_bytes": 294912,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "67108864",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "expected destructive-to-own-process control",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a05-probe-memory-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); x=bytearray(256*1024**2); time.sleep(30)"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {}
+    },
+    {
+      "stage": "a05-probe-disk-stop",
+      "status": "failed",
+      "exit_code": 125,
+      "started_utc": "2026-10-18T23:57:32.577116+00:00",
+      "finished_utc": "2026-10-18T23:57:33.648090+00:00",
+      "elapsed_seconds": 1.0697647940251045,
+      "kernel_cpu_usage_nsec": 49548000,
+      "sampled_cgroup_memory_peak_bytes": 17809408,
+      "sampled_process_tree_rss_peak_bytes": 30773248,
+      "observed_disk_peak_bytes": 4521984,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "134217728",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "expected destructive-to-own-process control",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a05-probe-disk-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); pathlib.Path(\"tmp/a05-probe-disk-stop-disk.bin\").write_bytes(b\"x\"*(4*1024**2)); time.sleep(30)"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {}
+    },
+    {
+      "stage": "a05-probe-affinity-stop",
+      "status": "failed",
+      "exit_code": 125,
+      "started_utc": "2026-10-18T23:57:33.787974+00:00",
+      "finished_utc": "2026-10-18T23:57:34.107903+00:00",
+      "elapsed_seconds": 0.31880204600747675,
+      "kernel_cpu_usage_nsec": 45779000,
+      "sampled_cgroup_memory_peak_bytes": 13615104,
+      "sampled_process_tree_rss_peak_bytes": 30842880,
+      "observed_disk_peak_bytes": 4542464,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "134217728",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "expected destructive-to-own-process control",
+      "argv": [
+        "/usr/bin/python3",
+        "-c",
+        "import json,os,pathlib,subprocess,time; child=subprocess.Popen([\"/bin/sleep\",\"30\"]); pathlib.Path(\"records/a05-probe-affinity-stop.pids.json\").write_text(json.dumps([os.getpid(),child.pid])); os.sched_setaffinity(0,{8}); time.sleep(30)"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {}
+    },
+    {
+      "stage": "inspect",
+      "status": "failed",
+      "exit_code": 1,
+      "started_utc": "2026-10-18T23:58:47.114210+00:00",
+      "finished_utc": "2026-10-18T23:58:47.944056+00:00",
+      "elapsed_seconds": 0.8287660339847207,
+      "kernel_cpu_usage_nsec": 644734000,
+      "sampled_cgroup_memory_peak_bytes": 176103424,
+      "sampled_process_tree_rss_peak_bytes": 160940032,
+      "observed_disk_peak_bytes": 4595712,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "retained inventory stdout serialization failure, corrected by inspect-fixed",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py",
+        "${A05_ROOT}",
+        "${ORIGINAL_OBJECT_ROOT}"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "d550384753a27c39f0387e5eb0efa26c2c6212bca3312089344a119a07a3e099",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06"
+      }
+    },
+    {
+      "stage": "inspect-fixed",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-18T23:59:43.908969+00:00",
+      "finished_utc": "2026-10-18T23:59:44.742425+00:00",
+      "elapsed_seconds": 0.8325280550052412,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 108560384,
+      "sampled_process_tree_rss_peak_bytes": 168755200,
+      "observed_disk_peak_bytes": 5390336,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py",
+        "${A05_ROOT}",
+        "${ORIGINAL_OBJECT_ROOT}"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06"
+      }
+    },
+    {
+      "stage": "public-cnv",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-18T23:59:44.778107+00:00",
+      "finished_utc": "2026-10-18T23:59:50.410083+00:00",
+      "elapsed_seconds": 5.630479119980009,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 70815744,
+      "sampled_process_tree_rss_peak_bytes": 126914560,
+      "observed_disk_peak_bytes": 7323648,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py",
+        "${A05_ROOT}"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06"
+      }
+    },
+    {
+      "stage": "describe",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:06:53.588674+00:00",
+      "finished_utc": "2026-10-19T00:06:56.188539+00:00",
+      "elapsed_seconds": 2.5986955640255474,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 161644544,
+      "sampled_process_tree_rss_peak_bytes": 223277056,
+      "observed_disk_peak_bytes": 7516160,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py",
+        "--original",
+        "${ORIGINAL_OBJECT_ROOT}",
+        "--out",
+        "${A05_ROOT}/results"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "3c5c1375e1cd5e5f10925969aac579314960e1a4e46182bb2c679b110c26fe63",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "cnv-gate",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:06:56.222098+00:00",
+      "finished_utc": "2026-10-19T00:06:57.562587+00:00",
+      "elapsed_seconds": 1.3391175639990252,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 98791424,
+      "sampled_process_tree_rss_peak_bytes": 159940608,
+      "observed_disk_peak_bytes": 11542528,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py",
+        "${A05_ROOT}",
+        "${ORIGINAL_OBJECT_ROOT}",
+        "${A05_ROOT}/results"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "3c5c1375e1cd5e5f10925969aac579314960e1a4e46182bb2c679b110c26fe63",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "plots",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:07:19.881460+00:00",
+      "finished_utc": "2026-10-19T00:07:20.204669+00:00",
+      "elapsed_seconds": 0.32177381397923455,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 8880128,
+      "sampled_process_tree_rss_peak_bytes": 22089728,
+      "observed_disk_peak_bytes": 11591680,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py",
+        "--tables",
+        "${A05_ROOT}/results",
+        "--out",
+        "${A05_ROOT}/results"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "3c5c1375e1cd5e5f10925969aac579314960e1a4e46182bb2c679b110c26fe63",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "verify",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:07:20.242689+00:00",
+      "finished_utc": "2026-10-19T00:07:32.992199+00:00",
+      "elapsed_seconds": 12.748534551006742,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 143765504,
+      "sampled_process_tree_rss_peak_bytes": 204107776,
+      "observed_disk_peak_bytes": 15200256,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py",
+        "--original",
+        "${ORIGINAL_OBJECT_ROOT}",
+        "--tables",
+        "${A05_ROOT}/results"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "3c5c1375e1cd5e5f10925969aac579314960e1a4e46182bb2c679b110c26fe63",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "render",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:08:39.173321+00:00",
+      "finished_utc": "2026-10-19T00:08:43.032310+00:00",
+      "elapsed_seconds": 3.8563802110147662,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 87187456,
+      "sampled_process_tree_rss_peak_bytes": 150708224,
+      "observed_disk_peak_bytes": 15884288,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py",
+        "${A05_ROOT}/results"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "3c5c1375e1cd5e5f10925969aac579314960e1a4e46182bb2c679b110c26fe63",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "preservation",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:08:43.065818+00:00",
+      "finished_utc": "2026-10-19T00:08:43.886262+00:00",
+      "elapsed_seconds": 0.8192310839949641,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 67190784,
+      "sampled_process_tree_rss_peak_bytes": 124653568,
+      "observed_disk_peak_bytes": 16035840,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py",
+        "${A05_ROOT}"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "3c5c1375e1cd5e5f10925969aac579314960e1a4e46182bb2c679b110c26fe63",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "plots-reviewed",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:09:34.673291+00:00",
+      "finished_utc": "2026-10-19T00:09:34.992834+00:00",
+      "elapsed_seconds": 0.31821100000524893,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 8753152,
+      "sampled_process_tree_rss_peak_bytes": 21118976,
+      "observed_disk_peak_bytes": 20885504,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py",
+        "--tables",
+        "${A05_ROOT}/results_review",
+        "--out",
+        "${A05_ROOT}/results_review"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "render-reviewed",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:09:35.030903+00:00",
+      "finished_utc": "2026-10-19T00:09:38.895662+00:00",
+      "elapsed_seconds": 3.86327296399395,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 82890752,
+      "sampled_process_tree_rss_peak_bytes": 150433792,
+      "observed_disk_peak_bytes": 25227264,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py",
+        "${A05_ROOT}/results_review"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "verify-reviewed",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:09:38.935778+00:00",
+      "finished_utc": "2026-10-19T00:09:51.693756+00:00",
+      "elapsed_seconds": 12.756966585002374,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 144162816,
+      "sampled_process_tree_rss_peak_bytes": 204857344,
+      "observed_disk_peak_bytes": 25419776,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py",
+        "--original",
+        "${ORIGINAL_OBJECT_ROOT}",
+        "--tables",
+        "${A05_ROOT}/results_review"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "finalize-review",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:12:56.207781+00:00",
+      "finished_utc": "2026-10-19T00:12:56.780686+00:00",
+      "elapsed_seconds": 0.571888077975018,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 81186816,
+      "sampled_process_tree_rss_peak_bytes": 129167360,
+      "observed_disk_peak_bytes": 25501696,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/finalize_review.py",
+        "${A05_ROOT}"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/finalize_review.py": "6e1bf4547b3bea7fa04326190bab3cab567dca2d4eb8184dc6901c272a122b90",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65"
+      }
+    },
+    {
+      "stage": "packet-verify",
+      "status": "succeeded",
+      "exit_code": 0,
+      "started_utc": "2026-10-19T00:15:16.897531+00:00",
+      "finished_utc": "2026-10-19T00:15:17.474167+00:00",
+      "elapsed_seconds": 0.5749573989887722,
+      "kernel_cpu_usage_nsec": null,
+      "sampled_cgroup_memory_peak_bytes": 76779520,
+      "sampled_process_tree_rss_peak_bytes": 144297984,
+      "observed_disk_peak_bytes": 35176448,
+      "controls": {
+        "cgroup.controllers": "memory pids",
+        "cpu.max": null,
+        "memory.max": "4294967296",
+        "memory.swap.max": "0"
+      },
+      "affinity": [
+        0,
+        1
+      ],
+      "interpretation": "A05 controlled task",
+      "argv": [
+        "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+        "-B",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify_packet.py",
+        "${A05_ROOT}"
+      ],
+      "helper_sha256": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+      "invoked_python_source_sha256": {
+        "${A05_WORKTREE}/scripts/cmpb_a05/accounting.py": "9f8afc0db34b13db31a1cc0e31f8ba8941fa373f766f63e0ec5642d0493bad8b",
+        "${A05_WORKTREE}/scripts/cmpb_a05/acquire_cnv_metadata.py": "dc3f6ed626c704fffd8582034d61a5b624ea59d2795beb1a156d94c713360b77",
+        "${A05_WORKTREE}/scripts/cmpb_a05/analyze.py": "e475312da15ad37d93042e5cbd36a71512d6142c7c43cd2700a7d42dcfdcf638",
+        "${A05_WORKTREE}/scripts/cmpb_a05/cnv_gate.py": "57e4c70654654169498b7e8e75bee1504ec13e4134fc9a5b516be1a93cafba3c",
+        "${A05_WORKTREE}/scripts/cmpb_a05/export_handoff.py": "d96f4235378705871168c4d89c74edfd3395f68e7984df14a96e6a6edf9ee590",
+        "${A05_WORKTREE}/scripts/cmpb_a05/finalize_review.py": "6e1bf4547b3bea7fa04326190bab3cab567dca2d4eb8184dc6901c272a122b90",
+        "${A05_WORKTREE}/scripts/cmpb_a05/inspect_sources.py": "53ecaa5d7cf36c4ae72db75c6535a9d086831131e44cfaf9d874afd96decb620",
+        "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py": "5902c3caefac7abba0a781d82f732733ad3c8672336dcb823e83c02b7035d59e",
+        "${A05_WORKTREE}/scripts/cmpb_a05/preservation_audit.py": "8edbdac132c6404816e8c454180cd0de87a9b657137cc99256fa8f2afaa916c4",
+        "${A05_WORKTREE}/scripts/cmpb_a05/probe_controls.py": "2e6d71010361a5f04a773e008eec123bc8272a995147809f80b86e16caa81d29",
+        "${A05_WORKTREE}/scripts/cmpb_a05/render_png.py": "4cdb49a033ed7b4cb8eb7589379cbbc5ff74faf9a6e6b42f04b01c3705cc1b76",
+        "${A05_WORKTREE}/scripts/cmpb_a05/run_stage.py": "2c4c27700fa4c68ada842326f3bee95ae284af2b95af20fbbbaf97c5eae66a06",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify.py": "7b672764c7ce5728ac1f3446ab0ddc8c46715619b48ae8c0d1013942a509ee65",
+        "${A05_WORKTREE}/scripts/cmpb_a05/verify_packet.py": "8f736a4ee2c71d7af44de2e37a9c19223ddf1dfe0ffaa1f5dea8df42ec8668d6"
+      }
+    }
+  ],
+  "active_controlled_stage_seconds": 51.368344534013886,
+  "kernel_cpu_usage_nsec_total": null,
+  "known_stage_kernel_cpu_usage_nsec_sum": 886586000,
+  "stages_missing_kernel_cpu_accounting": [
+    "a05-probe-inheritance",
+    "inspect-fixed",
+    "public-cnv",
+    "describe",
+    "cnv-gate",
+    "plots",
+    "verify",
+    "render",
+    "preservation",
+    "plots-reviewed",
+    "render-reviewed",
+    "verify-reviewed",
+    "finalize-review",
+    "packet-verify"
+  ],
+  "cpu_accounting_limit": "systemd removes successful transient service accounting before the post-exit query on this host; unavailable exact CPU totals stay null. Rounded CPU-time strings, when emitted, remain in original stage logs. CPU affinity enforcement is separately verified.",
+  "job_window_elapsed_seconds_at_close": 1175.6836609840393,
+  "sampled_cgroup_memory_peak_bytes": 176103424,
+  "sampled_process_tree_rss_peak_bytes": 223277056,
+  "memory_measurement": "0.25-second samples; sampled maxima are not exact kernel lifetime high-water marks. All science had hard 4 GiB cgroup memory.max and zero memory.swap.max.",
+  "cpu_enforcement": "Inherited CPUs 0-1 plus 0.25-second all-thread affinity watchdog; cpu.max unavailable. Six enforcement probes passed; failure/timeout/OOM cleanup confirmed.",
+  "disk_enforcement": "1-second allocated-or-logical output watchdog, stop at 1.75 GiB; final pre-export accounting includes entire new materialized worktree, retained failed/reviewed attempts, inputs and caches. ZIP/Git overhead checked separately in export receipt against 2 GiB.",
+  "results_root_storage": {
+    "files": 217,
+    "logical_bytes": 28390348,
+    "allocated_or_logical_bytes": 28958720
+  },
+  "entire_new_worktree_storage": {
+    "files": 774,
+    "logical_bytes": 48666315,
+    "allocated_or_logical_bytes": 50401280
+  },
+  "accounted_pre_export_allocated_or_logical_bytes": 79360000,
+  "bookkeeping_scope": "Small interactive source-file editing, code review, Git operations and this final scalar ledger closure are not included in controlled-stage CPU/wall totals; their files are included in storage. Export has a separate timed receipt.",
+  "no_background_analysis_left_running": true
+}

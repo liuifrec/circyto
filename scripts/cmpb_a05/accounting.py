@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 import time
 
-from inspect_sources import digest
+from run_stage import digest
 
 
 def storage(root):
@@ -42,8 +42,10 @@ def main():
     record=dict(schema='circyto.cmpb.a05.execution.v1',recorded_utc=dt.datetime.now(dt.timezone.utc).isoformat(),
         scope='A05 only; no A06 or sequencing rerun',budget=budget,stages=stages,
         active_controlled_stage_seconds=sum(r['elapsed_seconds'] for r in stages),
-        kernel_cpu_usage_nsec_total=sum(r['kernel_cpu_usage_nsec'] or 0 for r in stages),
+        kernel_cpu_usage_nsec_total=(sum(r['kernel_cpu_usage_nsec'] for r in stages) if all(r['kernel_cpu_usage_nsec'] is not None for r in stages) else None),
+        known_stage_kernel_cpu_usage_nsec_sum=sum(r['kernel_cpu_usage_nsec'] or 0 for r in stages),
         stages_missing_kernel_cpu_accounting=[r['stage'] for r in stages if r['kernel_cpu_usage_nsec'] is None],
+        cpu_accounting_limit='systemd removes successful transient service accounting before the post-exit query on this host; unavailable exact CPU totals stay null. Rounded CPU-time strings, when emitted, remain in original stage logs. CPU affinity enforcement is separately verified.',
         job_window_elapsed_seconds_at_close=time.time()-budget['started_epoch'],
         sampled_cgroup_memory_peak_bytes=max(r['sampled_cgroup_memory_peak_bytes'] for r in stages),
         sampled_process_tree_rss_peak_bytes=max(r['sampled_process_tree_rss_peak_bytes'] for r in stages),

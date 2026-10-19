@@ -5,7 +5,7 @@ import struct
 import subprocess
 import sys
 
-from inspect_sources import digest
+from run_stage import digest
 
 
 def main():

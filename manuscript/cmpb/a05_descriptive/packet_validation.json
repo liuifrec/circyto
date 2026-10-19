@@ -1,0 +1,39 @@
+{
+  "passed": true,
+  "byte_identical_recreated_files": [
+    "smartseq3_rna_circ_scatter_draft.svg",
+    "smartseq3_distributions_draft.svg",
+    "smartseq3_threshold_sensitivity_draft.svg",
+    "imr90_rna_circ_scatter_draft.svg",
+    "imr90_distributions_draft.svg",
+    "imr90_threshold_sensitivity_draft.svg",
+    "figure2c_rna_circ_only_alternative.svg",
+    "figure_manifest.json",
+    "figure_observations.tsv"
+  ],
+  "unchanged_scientific_tables": [
+    "descriptive_cell_metrics.tsv",
+    "descriptive_candidate_metrics.tsv",
+    "modality_membership_audit.tsv",
+    "threshold_sensitivity.tsv",
+    "threshold_cell_metrics.tsv",
+    "distribution_summary.tsv",
+    "registration_checks.tsv",
+    "circ_nonzero_entries.tsv",
+    "matrix_audit.tsv"
+  ],
+  "independent_sorted_linear_quantile_checks": 100,
+  "forbidden_files": [],
+  "no_h5mu_raw_reads_or_full_cnv_arrays": true,
+  "plot_reproduction_command": [
+    "${A02_ROOT}/status_revalidation_20261016/final_candidate/installed-env/bin/python",
+    "-B",
+    "${A05_WORKTREE}/scripts/cmpb_a05/plot_drafts.py",
+    "--tables",
+    "${A05_WORKTREE}/manuscript/cmpb/a05_descriptive",
+    "--out",
+    "${A05_ROOT}/portable_reproduction",
+    "--renderer-commit",
+    "640980f9bf2035a01070a43522f8e8f6b989eae6"
+  ]
+}
