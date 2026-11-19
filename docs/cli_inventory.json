@@ -1,6 +1,6 @@
 {
   "schema_version": "circyto.release_cli_inventory.v1",
-  "circyto_version": "0.10.0",
+  "circyto_version": "0.11.0rc3",
   "command_count": 92,
   "notes": {
     "experimental": "True denotes an explicitly experimental or exploratory public command family.",
@@ -1428,14 +1428,8 @@
     },
     {
       "command_path": "report",
-      "one_line_purpose": "Create an offline HTML QC report and metrics.json from existing outputs.",
-      "required_arguments": [
-        {
-          "name": "workdir",
-          "cli_spelling": "--workdir",
-          "kind": "option"
-        }
-      ],
+      "one_line_purpose": "Create offline QC reports, optionally with an exact-cell RNA/circRNA explorer.",
+      "required_arguments": [],
       "optional_external_tools": [],
       "experimental": false,
       "manuscript_facing": false,

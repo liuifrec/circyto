@@ -1,0 +1,117 @@
+{
+  "status": "pass",
+  "source_checkpoint": "8f729b3",
+  "cells": 181,
+  "exposures": {
+    "12 Gy": 92,
+    "30 Gy": 89
+  },
+  "completed_zero_cells": 2,
+  "genes": 6,
+  "circs": 7,
+  "exact_cell_join": true,
+  "coordinates_exact": true,
+  "selected_native_values_exact": true,
+  "selected_expression_values_exact": true,
+  "input_hashes_unchanged": true,
+  "no_alignment_counting_calling_or_embedding_fit": true,
+  "scope": "Preserved accepted X_umap_single_primary. The newer personal_RNA_181_annotated.h5ad temporary artifact is unavailable; no attempt to recreate it.",
+  "generation_wall_seconds": 6.19957169398549,
+  "process_peak_rss_kib": 295308,
+  "python": "3.10.20",
+  "artifacts": {
+    "report.html": 106367,
+    "explorer.json": 76545
+  },
+  "sources": [
+    {
+      "name": "circ_annotated.h5ad",
+      "sha256": "28f825347cbcf6de0377ec6e1263be0195ea95dba2a75fc9423571cd97c207a1",
+      "unchanged": true
+    },
+    {
+      "name": "rna_analysis.h5ad",
+      "sha256": "a3aa755e751a99cd250c29e56e239d2b6f473e7d178ad3f7231669de9b4275c6",
+      "unchanged": true
+    },
+    {
+      "name": "candidate_identity.tsv",
+      "sha256": "82c7a3d1ca29bac9038081a46e009bc22421b87f89a2fb10d20faab3df9e2313",
+      "unchanged": true
+    },
+    {
+      "name": "summary.json",
+      "sha256": "deadda3d56eb4bc62289d3fbc1e90952b9ecf57764ffb98b3360bd4952086b36",
+      "unchanged": true
+    },
+    {
+      "name": "candidate_summary.tsv",
+      "sha256": "09598ac3cbd16c0e2075ecc1df4b8fde55414617c7681f6708d774cba7357603",
+      "unchanged": true
+    },
+    {
+      "name": "cell_qc.tsv",
+      "sha256": "95bd39562c4d6737ac03e5e6f626fbe5ed5f81250ea5247a7d69d639f6cf6e63",
+      "unchanged": true
+    }
+  ],
+  "cli": [
+    "report",
+    "--explorer",
+    "/home/liuyuchen/data/circyto_radiation_gse81812_20261106/results/primary/circ_annotated.h5ad",
+    "--rna",
+    "/home/liuyuchen/data/circyto_radiation_gse81812_20261106/results/primary/rna_analysis.h5ad",
+    "--output-dir",
+    "docs/examples/explorer/kyse180",
+    "--cells",
+    "docs/examples/explorer/kyse180/cells.txt",
+    "--umap-key",
+    "X_umap_single_primary",
+    "--expression-unit",
+    "gene-associated single reads (not UMIs)",
+    "--title",
+    "KYSE180 \u00b7 181 irradiated cells \u00b7 preserved accepted RNA embedding",
+    "--candidate-metadata",
+    "/home/liuyuchen/Github/circyto-explorer/review/radiation_umap_curation_20261109/curation/candidate_identity.tsv",
+    "--gene",
+    "MAN1A2",
+    "--gene",
+    "SLC8A1",
+    "--gene",
+    "MKI67",
+    "--gene",
+    "CDKN1A",
+    "--gene",
+    "KRT5",
+    "--gene",
+    "CCNB1",
+    "--circ",
+    "chr1:117402186|117420649",
+    "--circ",
+    "chr1:117402186|117442325",
+    "--circ",
+    "chr1:117402186|117414831",
+    "--circ",
+    "chr2:40428473|40430304",
+    "--circ",
+    "chr6:32521905|32554971",
+    "--circ",
+    "chr6:29887955|29942626",
+    "--circ",
+    "chr19:50961744|51029457",
+    "--obs-column",
+    "rna:rna_cluster_single_primary",
+    "--obs-column",
+    "rna:condition",
+    "--obs-column",
+    "rna:rna_total_assigned",
+    "--obs-column",
+    "rna:rna_detected_genes",
+    "--obs-column",
+    "rna:rna_unique_mapped_percent",
+    "--obs-column",
+    "rna:source_spots",
+    "--obs-column",
+    "circ:circ_observation_status"
+  ]
+}

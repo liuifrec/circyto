@@ -5,6 +5,7 @@ import xml.etree.ElementTree as ET
 REQUIRED = {
     "tests.test_distribution_artifacts", "tests.test_paths_resolution", "tests.test_doctor_readiness",
     "tests.test_import_circ", "tests.test_import_ciri3_native", "tests.test_qc_report",
+    "tests.test_single_cell_explorer",
     "tests.test_mudata_export", "tests.test_mudata_downstream",
     "tests.test_mudata_sync_semantics", "tests.test_export_multimodal",
     "tests.test_full_length_workflow", "tests.test_smartseq3_ciri3_workflow",

@@ -33,3 +33,11 @@ exclude circyto/resources/tools/CIRI-full_v2.0/CIRI-full_manual.txt
 include setup.py
 include docs/external_detectors.md
 include docs/detector_distribution_validation.md
+
+include examples/single_cell_explorer_demo.py
+include examples/replay_kyse180_explorer.py
+include examples/benchmark_explorer.py
+include docs/single_cell_explorer.md
+include docs/single_cell_explorer_validation.md
+include tests/explorer_headless.py
+recursive-include docs/examples/explorer *.html *.json *.tsv *.txt *.png

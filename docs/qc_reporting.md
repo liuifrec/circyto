@@ -1,5 +1,11 @@
 # Offline QC reports and external-laboratory quick start
 
+For optional RNA UMAPs, gene/circRNA search and interactive evidence exploration,
+see the [single-cell explorer guide](single_cell_explorer.md). The default
+`circyto report --workdir ...` behavior documented here is unchanged. Supply
+`--explorer` to opt in; `--output-dir` can keep the new report separate from
+existing QC and import bundles.
+
 This is the unreleased `feature/qc-report-usability` feature, based on
 `main@44697355bcab1c525ca7ef9b130e2ad0094d9e1b` (v0.10.0). It does not change
 the manuscript branch or its scientific software baseline. Established

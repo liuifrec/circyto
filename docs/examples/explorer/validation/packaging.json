@@ -1,0 +1,19 @@
+{
+  "status": "pass",
+  "version": "0.11.0rc3",
+  "installed_from": "/tmp/circyto-explorer-dist/circyto-0.11.0rc3-py3-none-any.whl",
+  "installed_import": "/tmp/circyto-explorer-wheel-env/lib/python3.10/site-packages/circyto/__init__.py",
+  "environment": "Separate venv with existing system-site dependencies; no new resolver/dependency installation",
+  "wheel_modules_match_source": true,
+  "sdist_modules_docs_examples_present": true,
+  "unresolved_java_assets_absent": true,
+  "installed_report_help": true,
+  "synthetic_html_and_json_byte_identical": true,
+  "wheel_sha256": "7b61beee5812fca45cf0418838a3cb655f756e69297617431417bba812310838",
+  "validated_modules": {
+    "circyto/pipeline/single_cell_explorer.py": "a53b57f3752c17a4635649c23927cb1cc6f1baaeea47ae8190c2bcd12375395b",
+    "circyto/pipeline/explorer_assets.py": "206f2abdf98c6235e60638a4ac714048ae571989fa823f61a667263d2c6b21fc",
+    "circyto/pipeline/qc_report.py": "0cfb4664d6a9db926a2d99f5b5b2c70b5a46401b1c7eece228371b71b0e77cbd",
+    "circyto/cli/report.py": "3d4039d64b0c0289e21c4f98cc17d85bbe602267fc2f806a972103e29d692c8c"
+  }
+}

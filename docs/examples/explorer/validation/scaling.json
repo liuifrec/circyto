@@ -1,0 +1,16 @@
+{
+  "status": "pass",
+  "cells": 1000,
+  "genes_available": 200000,
+  "circs_available": 20000,
+  "genes_embedded": 8,
+  "circs_embedded": 8,
+  "embedded_measurements": 16000,
+  "wall_seconds": 3.2188361849985085,
+  "process_peak_rss_kib": 273844,
+  "html_bytes": 380603,
+  "json_bytes": 350781,
+  "matrix_format": "backed CSR; only selected feature columns materialized",
+  "input_rna_nnz": 39997,
+  "input_circ_nnz": 4000
+}

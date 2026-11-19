@@ -1,0 +1,51 @@
+{
+  "status": "pass",
+  "checks": [
+    "Interface initializes under strict CSP",
+    "Every finite coordinate is plotted",
+    "Gene and circRNA points share exact RNA positions",
+    "Linked point inspection exposes exact biological identity",
+    "Exact BSJ search selects the candidate",
+    "Catalogue or host alias is searchable",
+    "Stable gene ID search and explicit expression unit",
+    "Duplicate symbols retain separate stable IDs",
+    "Search makes bounded feature coverage explicit",
+    "TSV frequency denominator excludes failed/unknown and retains completed zeros",
+    "TSV includes selected cells without UMAP coordinates",
+    "TSV cell identities, native values and processing states are exact",
+    "Group filter and exported cell scope agree",
+    "SVG export includes selected feature and measurement units",
+    "PNG export produces a nonempty image",
+    "QC selector uses stored values",
+    "Existing RNA annotations selectable",
+    "No JavaScript runtime exceptions",
+    "Responsive layout has no horizontal page overflow",
+    "No HTTP or CDN requests"
+  ],
+  "resources": [],
+  "browser": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) HeadlessChrome/157.0.0.0 Safari/537.36",
+  "viewport": [
+    500,
+    701
+  ],
+  "script_ms": 1981.699999988079,
+  "js_heap_bytes": 10000000,
+  "downloads": {
+    "circyto_detection_summary.tsv": {
+      "bytes": 507,
+      "type": "text/tab-separated-values"
+    },
+    "circyto_selected_cells.tsv": {
+      "bytes": 12381,
+      "type": "text/tab-separated-values"
+    },
+    "circyto_left.svg": {
+      "bytes": 27811,
+      "type": "image/svg+xml"
+    },
+    "circyto_right.png": {
+      "bytes": 109912,
+      "type": "image/png"
+    }
+  }
+}

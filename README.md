@@ -128,6 +128,26 @@ See the [report and workflow guide](docs/qc_reporting.md) for an executable
 planning example, manifest requirements, metric definitions, failure handling,
 and screenshot reproduction.
 
+An **optional single-cell explorer** adds searchable genes and circRNA aliases,
+paired RNA-UMAP plots, processing-state-aware detection frequencies, evidence
+links, and SVG/PNG/TSV exports. It reuses saved coordinates and bounded feature
+subsets; it never runs alignment, counting, calling, or clustering. The default
+QC report above is unchanged. The explorer uses embedded JavaScript and works
+offline without a server or CDN.
+
+```bash
+circyto report --explorer circ_counts.h5ad --rna processed_rna.h5ad \
+  --output-dir explorer_report --gene MAN1A2 --circ 'chr1:117402186|117420649' \
+  --expression-unit 'log1p CP10K'
+```
+
+Choose the expression label to match the actual stored matrix; the command does
+not normalize it. Open `explorer_report/report.html`. See the
+[explorer guide](docs/single_cell_explorer.md),
+[synthetic example](docs/examples/explorer/synthetic/report.html),
+[181-cell KYSE180 replay](docs/examples/explorer/kyse180/report.html), and
+[validation record](docs/single_cell_explorer_validation.md).
+
 ## Status
 
 `circyto` `v0.10.0` is the current experimental milestone.

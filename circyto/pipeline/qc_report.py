@@ -1,7 +1,7 @@
 """Offline, read-only interpretation of existing workflow QC artifacts.
 
-Only report.html and metrics.json are written. No scientific objects, detector
-outputs, or source summaries are loaded through pipeline execution code.
+By default only report.html and metrics.json are written. An explicitly supplied
+explorer adds explorer.json. No scientific computation or source mutation occurs.
 """
 from __future__ import annotations
 
@@ -418,8 +418,8 @@ def _histogram(values: list[int | None], title: str, axis: str) -> str:
     return "".join(parts)
 
 
-def render_report(payload: dict[str, Any]) -> str:
-    """Render escaped HTML with embedded CSS/SVG and no scripts or web assets."""
+def render_report(payload: dict[str, Any], *, explorer: dict[str, Any] | None = None) -> str:
+    """Render escaped offline HTML; scripts are added only for an optional explorer."""
     from circyto.pipeline.qc_report_style import STYLE
 
     metrics = payload["metrics"]
@@ -466,7 +466,7 @@ def render_report(payload: dict[str, Any]) -> str:
     prevalence_note = ("Prevalence: Not available. " + payload["candidate_prevalence_reason"]
                        if payload["candidate_prevalence_reason"] else
                        f'Prevalence = n_cells_detected / all {payload["candidate_prevalence_denominator"]} evaluated QC cells.')
-    return f'''<!doctype html>
+    document = f'''<!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'">
 <title>CIRCYTO · circRNA candidate QC</title><style>{STYLE}</style></head><body>
@@ -488,23 +488,40 @@ def render_report(payload: dict[str, Any]) -> str:
 <details><summary>Source checksums</summary>{source_table}</details><details><summary>QC consistency checks</summary>{checks}</details><details><summary>Metric definitions</summary>{definition_table}</details><details><summary>Optional existing RNA summary</summary>{rna_table}</details>
 <p class="muted">Machine hostname, full paths, command lines, and environment variables are omitted. Reference basenames are labels, not reference checksums. Cell and candidate identifiers are retained; review them before sharing. Original summaries remain in the results directory.</p></section>
 </main><footer>CIRCYTO · Standalone HTML · No network, scripts, or external assets required</footer></body></html>\n'''
+    if explorer is not None:
+        from circyto.pipeline.explorer_assets import render_explorer, script_policy
+
+        document = document.replace("default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'", script_policy())
+        document = document.replace('<main>', '<main>' + render_explorer(explorer), 1)
+        document = document.replace('<a href="#overview">Overview</a>', '<a href="#explorer">Explore</a><a href="#overview">Overview</a>', 1)
+        document = document.replace('No network, scripts, or external assets required', 'Embedded explorer scripts · No network or external assets required')
+        document = document.replace('This command only writes these two report files.', 'This optional report also writes explorer.json with the embedded feature subset.')
+    return document
 
 
-def generate_report(workdir: Path) -> dict[str, Any]:
+def generate_report(workdir: Path | None, *, explorer: dict[str, Any] | None = None,
+                    output_dir: Path | None = None, protected_sources: tuple[Path, ...] = ()) -> dict[str, Any]:
     """Generate both artifacts after validating destinations; preserve sources."""
-    root = Path(workdir).resolve()
-    if not root.is_dir():
+    root = Path(workdir).resolve() if workdir is not None else None
+    if root is not None and not root.is_dir():
         raise ValueError("--workdir must be an existing workflow directory")
-    qc = root / "qc"
+    if root is None and (explorer is None or output_dir is None):
+        raise ValueError("Standalone exploration requires --explorer and --output-dir")
+    qc = Path(output_dir).absolute() if output_dir is not None else root / "qc"
+    if output_dir is not None and any(p.is_symlink() for p in (qc, *qc.parents)):
+        raise ValueError("Report output directory must not contain symlinks")
     if qc.is_symlink() or (qc.exists() and not qc.is_dir()):
         raise ValueError("qc must be a real directory, not a symlink or file")
-    targets = [qc / "metrics.json", qc / "report.html"]
+    qc = qc.resolve()
+    targets = ([qc / "metrics.json"] if root is not None else []) + [qc / "report.html"]
+    if explorer is not None:
+        targets.append(qc / "explorer.json")
     for path in targets:
         if path.is_symlink() or (path.exists() and not path.is_file()):
             raise ValueError(f"Refusing unsafe report destination: qc/{path.name}")
-    if targets[0].is_file():
+    if (qc / "metrics.json").is_file():
         try:
-            existing = json.loads(targets[0].read_text(encoding="utf-8"))
+            existing = json.loads((qc / "metrics.json").read_text(encoding="utf-8"))
         except (ValueError, UnicodeError):
             existing = {}
         if isinstance(existing, dict) and str(existing.get("schema_version", "")).startswith("circyto.import_circ."):
@@ -513,11 +530,24 @@ def generate_report(workdir: Path) -> dict[str, Any]:
                 "Open its existing qc/report.html; to regenerate, rerun import-circ "
                 "from the original inputs into a new output directory. Existing QC is unchanged."
             )
-    if any((root / name).resolve() in targets for name in SOURCES):
+    sources = list(protected_sources) + ([root / name for name in SOURCES] if root is not None else [])
+    if any(Path(source).resolve() in targets for source in sources):
         raise ValueError("A source artifact resolves to a report destination; refusing to replace source data")
-    payload = collect_report_metrics(root)
-    contents = [json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n", render_report(payload)]
-    qc.mkdir(exist_ok=True)
+    if root is not None:
+        payload = collect_report_metrics(root)
+        if explorer is not None:
+            payload["explorer"] = {key: explorer[key] for key in ("schema_version", "selection", "join", "embedding", "sources", "warnings")}
+        contents = [json.dumps(payload, indent=2, sort_keys=True, allow_nan=False) + "\n", render_report(payload, explorer=explorer)]
+    else:
+        from circyto.pipeline.explorer_assets import render_explorer_document
+
+        payload = explorer
+        contents = [render_explorer_document(explorer)]
+    if explorer is not None:
+        from circyto.pipeline.single_cell_explorer import encode_payload
+
+        contents.append(encode_payload(explorer, max_bytes=explorer["selection"]["max_bytes"]) + "\n")
+    qc.mkdir(parents=True, exist_ok=True)
     staged: list[Path] = []
     try:
         for content in contents:
