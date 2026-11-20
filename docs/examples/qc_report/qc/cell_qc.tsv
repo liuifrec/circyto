@@ -1,0 +1,13 @@
+cell_id	circRNA_count	total_circRNA_support	detector_status	alignment_status
+demo_A01	2	11	success	aligned
+demo_A02	2	8	success	aligned
+demo_A03	0	0	empty	aligned
+demo_A04	4	16	success	aligned
+demo_A05	2	8	success	aligned
+demo_A06	1	5	success	aligned
+demo_B01	3	13	success	aligned
+demo_B02	0	0	empty	aligned
+demo_B03	2	3	success	aligned
+demo_B04	2	3	success	aligned
+demo_B05	1	2	success	aligned
+demo_B06	2	8	success	aligned

@@ -1,0 +1,15 @@
+# Tested on Linux x86_64 for installation, runtime help, doctor, and dry-run.
+# This is not a lockfile or a new biological end-to-end validation.
+name: circyto-ramda-se
+variables:
+  PYTHONNOUSERSITE: "1"
+channels:
+  - conda-forge
+  - bioconda
+  - nodefaults
+dependencies:
+  - python=3.10
+  - pip
+  - bwa=0.7.19
+  - samtools=1.22.1
+  - openjdk=17

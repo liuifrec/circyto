@@ -98,14 +98,14 @@ def detector_runtime_status(name: str) -> dict:
             status = "NOT READY"
             reason = (
                 f"Java version too old (found {details.get('java_version')}, "
-                f"need >={details.get('required_java_major')} for bundled CIRI3 jar)"
+                f"need >={details.get('required_java_major')} for reviewed CIRI3 jar)"
             )
         elif details.get("jar") or details.get("bin"):
             status = "PARTIAL"
             reason = "found local CIRI3 assets but runtime contract is incomplete"
         else:
             status = "NOT READY"
-            reason = "no local CIRI3 jar or wrapper detected"
+            reason = "no local CIRI3 jar or wrapper detected; install externally and set CIRCYTO_CIRI3_JAR or CIRCYTO_CIRI3_HOME"
         return {
             "status": status,
             "reason": reason,

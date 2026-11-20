@@ -294,7 +294,8 @@ def test_workflow_resume_skips_completed_stages(tmp_path: Path, monkeypatch) -> 
     assert "resume skip: matrix" in result.stdout
 
 
-def test_workflow_writes_summary_json(tmp_path: Path, monkeypatch) -> None:
+@pytest.mark.parametrize("report_mode", ["enabled", "disabled", "error"])
+def test_workflow_writes_summary_json(tmp_path: Path, monkeypatch, report_mode) -> None:
     from circyto.pipeline import workflow_smartseq3_ciri3 as workflow
 
     inputs = _build_cli_inputs(tmp_path)
@@ -373,6 +374,12 @@ def test_workflow_writes_summary_json(tmp_path: Path, monkeypatch) -> None:
     monkeypatch.setattr(workflow, "prepare_alignment_cache", _fake_prepare_alignment_cache)
     monkeypatch.setattr(workflow, "run_detector_alignment_manifest", _fake_run_detector_alignment_manifest)
 
+    if report_mode == "error":
+        from circyto.pipeline import qc_report
+        def fail_report(*args, **kwargs):
+            raise OSError("simulated report write error")
+        monkeypatch.setattr(qc_report, "generate_report", fail_report)
+
     result = runner.invoke(
         app,
         [
@@ -403,10 +410,20 @@ def test_workflow_writes_summary_json(tmp_path: Path, monkeypatch) -> None:
             "--top-n",
             "1",
             "--no-write-sink",
+            *(["--no-report"] if report_mode == "disabled" else []),
         ],
     )
 
-    assert result.exit_code == 0
+    if report_mode == "error":
+        assert result.exit_code != 0
+        assert "scientific results were retained" in result.output
+        assert "simulated report write error" in str(result.exception)
+    else:
+        assert result.exit_code == 0, result.output
+    assert (outdir / "qc/report.html").exists() == (report_mode == "enabled")
+    if report_mode == "enabled":
+        metrics = json.loads((outdir / "qc/metrics.json").read_text())
+        assert metrics["workflow"]["status"] == "completed"
     summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))
     assert summary["workflow"] == "smartseq3-ciri3"
     assert summary["experimental"] is True

@@ -876,7 +876,8 @@ def test_full_length_workflow_failed_run_does_not_delete_intermediates(tmp_path:
     assert doomed.exists()
 
 
-def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkeypatch) -> None:
+@pytest.mark.parametrize("report_mode", ["enabled", "disabled", "error"])
+def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkeypatch, report_mode) -> None:
     pytest.importorskip("anndata")
     import anndata as ad
 
@@ -952,6 +953,12 @@ def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkey
     monkeypatch.setattr(workflow, "run_ciri3_workflow", fake_run_ciri3_workflow)
 
     outdir = tmp_path / "run"
+    if report_mode == "error":
+        from circyto.pipeline import qc_report
+        def fail_report(*args, **kwargs):
+            raise OSError("simulated report write error")
+        monkeypatch.setattr(qc_report, "generate_report", fail_report)
+
     result = runner.invoke(
         app,
         [
@@ -968,9 +975,19 @@ def test_full_length_workflow_real_run_writes_h5ad_and_qc(tmp_path: Path, monkey
             "--gtf",
             str(gtf),
             "--export-h5ad",
+            *(["--no-report"] if report_mode == "disabled" else []),
         ],
     )
-    assert result.exit_code == 0, result.stdout
+    if report_mode == "error":
+        assert result.exit_code != 0
+        assert "scientific results were retained" in result.output
+        assert "simulated report write error" in str(result.exception)
+    else:
+        assert result.exit_code == 0, result.output
+    assert (outdir / "qc/report.html").exists() == (report_mode == "enabled")
+    if report_mode == "enabled":
+        metrics = json.loads((outdir / "qc/metrics.json").read_text())
+        assert metrics["workflow"]["status"] == "completed"
     h5ad_path = outdir / "anndata" / "circ_counts.h5ad"
     assert h5ad_path.exists()
     summary = json.loads((outdir / "workflow_summary.json").read_text(encoding="utf-8"))

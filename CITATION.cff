@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: >-
+  Please cite this software if you use circyto, and record the exact version
+  and Git commit. Unreleased feature-branch reporting is outside the frozen
+  v0.10.0 manuscript baseline. Cite the upstream detectors used in your analysis
+  separately; see THIRD_PARTY_NOTICES.md.
+type: software
+title: "circyto: protocol-aware single-cell circRNA workflows and multimodal export"
+authors:
+  - family-names: Liu
+    given-names: James
+version: 0.10.0
+repository-code: "https://github.com/liuifrec/circyto"
+url: "https://github.com/liuifrec/circyto"
+license: MIT
+abstract: >-
+  A Python CLI toolkit for single-cell circRNA detector orchestration,
+  matrix generation, annotation, quality control, and AnnData/MuData export.

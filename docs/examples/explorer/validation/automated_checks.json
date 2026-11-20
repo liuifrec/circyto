@@ -1,0 +1,33 @@
+{
+  "status": "pass",
+  "command": "CIRCYTO_SKIP_INTEGRATION=1 python -m pytest -q tests",
+  "passed": 554,
+  "skipped": 10,
+  "failed": [],
+  "explorer_tests": 37,
+  "acceptance_modules": [
+    "tests.test_distribution_artifacts: 4 executed, 0 explicitly allowed skips",
+    "tests.test_doctor_readiness: 2 executed, 0 explicitly allowed skips",
+    "tests.test_export_multimodal: 1 executed, 0 explicitly allowed skips",
+    "tests.test_full_length_workflow: 22 executed, 0 explicitly allowed skips",
+    "tests.test_import_circ: 40 executed, 0 explicitly allowed skips",
+    "tests.test_import_ciri3_native: 34 executed, 0 explicitly allowed skips",
+    "tests.test_mudata_downstream: 2 executed, 0 explicitly allowed skips",
+    "tests.test_mudata_export: 5 executed, 1 explicitly allowed skips",
+    "tests.test_mudata_sync_semantics: 8 executed, 0 explicitly allowed skips",
+    "tests.test_paths_resolution: 18 executed, 0 explicitly allowed skips",
+    "tests.test_qc_report: 55 executed, 0 explicitly allowed skips",
+    "tests.test_single_cell_explorer: 37 executed, 0 explicitly allowed skips",
+    "tests.test_smartseq3_ciri3_workflow: 15 executed, 1 explicitly allowed skips"
+  ],
+  "versions": {
+    "anndata": "0.11.4",
+    "mudata": "0.3.10",
+    "numpy": "2.2.6",
+    "pandas": "2.3.3",
+    "scipy": "1.15.3",
+    "pytest": "9.1.1",
+    "typer": "0.27.0"
+  },
+  "root_collection_limitation": "Inherited scripts/radiation_gse81812/test_recipe.py imports read_record from unqualified prepare_inputs, colliding with scripts/cmpb_a02/prepare_inputs.py; analysis scripts unchanged."
+}

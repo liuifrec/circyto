@@ -1,0 +1,34 @@
+{
+  "result": "NATIVE CIRI3 IMPORT VALIDATED",
+  "scope": "Official 13-column single-sample demonstration, not a biological benchmark",
+  "python": "3.10.20 | packaged by conda-forge | (main, Jun 11 2026, 03:31:56) [GCC 14.3.0]",
+  "platform": "Linux-6.8.0-138-generic-x86_64-with-glibc2.35",
+  "circyto_import_path": "/tmp/circyto-native/venv/lib/python3.10/site-packages/circyto/__init__.py",
+  "source_sha256": "4885fc00bd30817ebdf81ba9f3344c48ddb18bcb56d2a077cee2297ff7f594ed",
+  "source_bytes": 1913,
+  "schema": "ciri3.native-result-13.v1",
+  "shape": [
+    1,
+    6
+  ],
+  "nnz": 6,
+  "support": 50,
+  "processing_status": "unknown",
+  "native_producer_version": "unknown",
+  "rna_check": {
+    "scope": "technical ID alignment only; no biologically matched upstream RNA is available",
+    "input_sha256": "e6bebdbb114693c8231aa4d98858eddb81bbe1b4c87bb170195664dcc371d1f4",
+    "n_shared": 1
+  },
+  "measurements": {
+    "first": {
+      "elapsed_seconds": 0.62,
+      "peak_rss_kib": 124272
+    },
+    "repeat": {
+      "elapsed_seconds": 0.59,
+      "peak_rss_kib": 123696
+    }
+  },
+  "reproducibility": "identical text/Matrix Market outputs; no HDF5 byte identity asserted"
+}

@@ -359,7 +359,7 @@ def _runtime_errors(details: dict[str, Any]) -> list[str]:
         found = details.get("java_version") or "unknown"
         need = details.get("required_java_major", CIRI3_MIN_JAVA_MAJOR)
         errors.append(
-            f"CIRI3 jar found, but Java version is too old (found {found}, need >={need} for the bundled CIRI3 jar)."
+            f"CIRI3 jar found, but Java version is too old (found {found}, need >={need} for the reviewed CIRI3 jar)."
         )
     elif details.get("jar") and details.get("java") and details.get("java_version_error"):
         errors.append(f"CIRI3 jar found, but Java version could not be verified: {details['java_version_error']}.")
@@ -368,7 +368,7 @@ def _runtime_errors(details: dict[str, Any]) -> list[str]:
     elif details.get("bin") and not details["template_configured"]:
         errors.append("CIRI3 wrapper found, but no CIRCYTO_CIRI3_CMD_TEMPLATE is configured.")
     elif not details.get("jar") and not details.get("bin"):
-        errors.append("No CIRI3 jar or wrapper detected.")
+        errors.append("No CIRI3 jar or wrapper detected. JARs are not bundled; install CIRI3 externally and set CIRCYTO_CIRI3_JAR or CIRCYTO_CIRI3_HOME.")
 
     if not details["template_configured"] and not details["direct_ready"]:
         errors.append("No direct jar contract available and no CIRCYTO_CIRI3_CMD_TEMPLATE configured.")
