@@ -1,5 +1,10 @@
 # Single-cell explorer validation
 
+This page preserves the original feature-branch validation. The subsequent
+[software-branch integration](single_cell_explorer_integration.md) uses the
+0.10.0 software baseline and records fresh package, installed-wheel, browser
+and default-QC checks without importing the intervening research history.
+
 Validation date: 19 November 2026. Development branch:
 `feature/single-cell-explorer`, based on the latest local checkpoint `8f729b3`
 (`analysis/personal-rna-20261109`), in a separate `circyto-explorer` worktree.

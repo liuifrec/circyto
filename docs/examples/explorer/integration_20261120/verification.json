@@ -1,0 +1,356 @@
+{
+  "status": "pass",
+  "date": "2026-11-20",
+  "baseline": "6c280426ebf10abcbcaeab72f87c9d34060d6ee8",
+  "feature": "faf1996033b58abc15a0d139cc16f8cfdeb263d3",
+  "feature_parent": "8f729b3143adc2530b174fef802c1181a6e3ad06",
+  "cherry_pick": "19f6758e6941f793187159fa1bb1a9444b71102a",
+  "version": "0.10.0",
+  "research_parent_not_in_ancestry": true,
+  "runtime_modules_identical_to_accepted_feature": {
+    "circyto/cli/report.py": "3d4039d64b0c0289e21c4f98cc17d85bbe602267fc2f806a972103e29d692c8c",
+    "circyto/pipeline/qc_report.py": "0cfb4664d6a9db926a2d99f5b5b2c70b5a46401b1c7eece228371b71b0e77cbd",
+    "circyto/pipeline/single_cell_explorer.py": "a53b57f3752c17a4635649c23927cb1cc6f1baaeea47ae8190c2bcd12375395b",
+    "circyto/pipeline/explorer_assets.py": "206f2abdf98c6235e60638a4ac714048ae571989fa823f61a667263d2c6b21fc"
+  },
+  "tests": {
+    "package-tests.xml": {
+      "passed": 517,
+      "skipped": 10,
+      "failures": 0,
+      "skip_reasons": [
+        {
+          "module": "tests.test_circexplorer2_chr21_manifest2_integration",
+          "test": "test_circexplorer2_cli_smoke",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 CLI smoke test"
+        },
+        {
+          "module": "tests.test_circexplorer2_integration",
+          "test": "test_circexplorer2_chr21_manifest2_integration",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping CIRCexplorer2 integration test"
+        },
+        {
+          "module": "tests.test_ciri2_se_chr21_integration",
+          "test": "test_ciri2_single_end_chr21_known_positive",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_cirifull_chr21_integration",
+          "test": "test_cirifull_chr21_nonempty_matrix",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_find_circ3_integration",
+          "test": "test_find_circ3_chr21_manifest2_integration",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_mudata_export",
+          "test": "test_export_mudata_missing_package_gives_clear_error",
+          "reason": "mudata installed"
+        },
+        {
+          "module": "tests.test_multidetector_demo",
+          "test": "test_multidetector_ciri_full_and_find_circ3_demo",
+          "reason": "CIRCYTO_SKIP_INTEGRATION is set, skipping integration test"
+        },
+        {
+          "module": "tests.test_scanpy_downstream",
+          "test": "test_scanpy_qc_report_outputs",
+          "reason": "mudata or scanpy not installed"
+        },
+        {
+          "module": "tests.test_scanpy_downstream",
+          "test": "test_scanpy_pca_outputs",
+          "reason": "mudata or scanpy not installed"
+        },
+        {
+          "module": "tests.test_smartseq3_ciri3_workflow",
+          "test": "test_mudata_requested_without_package_raises",
+          "reason": "mudata installed"
+        }
+      ],
+      "sha256": "7f17877c47138d2a30b764e3643131802db187830aaadd6dfbb3a437dae8c86a"
+    },
+    "installed-tests.xml": {
+      "passed": 174,
+      "skipped": 0,
+      "failures": 0,
+      "skip_reasons": [],
+      "sha256": "2862db2638f89fadfa117c9648e68d7ed1eb880f04a04576c1dfbe6c32f0d1f8"
+    }
+  },
+  "acceptance_modules": 13,
+  "browser": {
+    "status": "pass",
+    "cases": {
+      "narrow": {
+        "status": "pass",
+        "checks": 19,
+        "viewport": [
+          500,
+          1000
+        ],
+        "http_requests": 0
+      },
+      "missing_umap": {
+        "status": "pass",
+        "checks": 14,
+        "viewport": [
+          1440,
+          1000
+        ],
+        "http_requests": 0
+      },
+      "combined": {
+        "status": "pass",
+        "checks": 20,
+        "viewport": [
+          1440,
+          1000
+        ],
+        "http_requests": 0
+      },
+      "synthetic": {
+        "status": "pass",
+        "checks": 20,
+        "viewport": [
+          1440,
+          1057
+        ],
+        "http_requests": 0
+      },
+      "kyse180": {
+        "status": "pass",
+        "checks": 19,
+        "viewport": [
+          1440,
+          1057
+        ],
+        "http_requests": 0
+      }
+    }
+  },
+  "default_qc": {
+    "cases": 8,
+    "artifacts": 16,
+    "source_and_installed_wheel_byte_identical": true,
+    "cli_output_unchanged_except_destination": true
+  },
+  "offline_replay": {
+    "status": "pass",
+    "comparisons": {
+      "synthetic/explorer.json": "byte-identical to visually accepted faf1996 output",
+      "synthetic/report.html": "byte-identical to visually accepted faf1996 output",
+      "kyse180/explorer.json": "byte-identical to visually accepted faf1996 output",
+      "kyse180/report.html": "byte-identical to visually accepted faf1996 output",
+      "kyse180/cells_and_group_summaries": "byte-identical"
+    }
+  },
+  "accepted_native_replay": {
+    "cells": 181,
+    "exposures": {
+      "12 Gy": 92,
+      "30 Gy": 89
+    },
+    "completed_zero_cells": 2,
+    "genes": 6,
+    "circs": 7,
+    "exact_cell_join": true,
+    "coordinates_exact": true,
+    "selected_native_values_exact": true,
+    "selected_expression_values_exact": true,
+    "input_hashes_unchanged": true,
+    "sources": [
+      {
+        "name": "circ_annotated.h5ad",
+        "sha256": "28f825347cbcf6de0377ec6e1263be0195ea95dba2a75fc9423571cd97c207a1",
+        "unchanged": true
+      },
+      {
+        "name": "rna_analysis.h5ad",
+        "sha256": "a3aa755e751a99cd250c29e56e239d2b6f473e7d178ad3f7231669de9b4275c6",
+        "unchanged": true
+      },
+      {
+        "name": "candidate_identity.tsv",
+        "sha256": "82c7a3d1ca29bac9038081a46e009bc22421b87f89a2fb10d20faab3df9e2313",
+        "unchanged": true
+      },
+      {
+        "name": "summary.json",
+        "sha256": "deadda3d56eb4bc62289d3fbc1e90952b9ecf57764ffb98b3360bd4952086b36",
+        "unchanged": true
+      },
+      {
+        "name": "candidate_summary.tsv",
+        "sha256": "09598ac3cbd16c0e2075ecc1df4b8fde55414617c7681f6708d774cba7357603",
+        "unchanged": true
+      },
+      {
+        "name": "cell_qc.tsv",
+        "sha256": "95bd39562c4d6737ac03e5e6f626fbe5ed5f81250ea5247a7d69d639f6cf6e63",
+        "unchanged": true
+      }
+    ]
+  },
+  "packaging": {
+    "wheel_and_sdist_built": true,
+    "installed_modules_match_source": true,
+    "pip_check": "pass",
+    "research_materials_absent": true,
+    "java_assets_excluded": true,
+    "dependency_scope": "Existing environment dependencies; user-site disabled for installed checks; no fresh resolver claim"
+  },
+  "preservation": {
+    "original_untracked_files": 26,
+    "original_untracked_hashes_unchanged": true,
+    "protected_tracked_entries": 9,
+    "protected_tracked_entries_unchanged": true,
+    "source_worktree_clean": true,
+    "source_branch_unchanged": true,
+    "other_existing_branches_unchanged": true,
+    "native_results_unchanged": true,
+    "manuscript_review_and_SRRC_unchanged": true
+  },
+  "resources": [
+    {
+      "stage": "package-suite-path",
+      "status": "completed",
+      "settings": {
+        "memory.max": "4294967296",
+        "memory.swap.max": "0",
+        "cpu.max": "not delegated",
+        "cpuset.cpus.effective": "not delegated"
+      },
+      "elapsed_seconds": 23.523,
+      "peak_bytes": 259817472,
+      "observed_descendants": 48,
+      "all_observed_affinities": [
+        0,
+        1
+      ],
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    {
+      "stage": "verify-install-isolated-user-site",
+      "status": "completed",
+      "settings": {
+        "memory.max": "4294967296",
+        "memory.swap.max": "0",
+        "cpu.max": "not delegated",
+        "cpuset.cpus.effective": "not delegated"
+      },
+      "elapsed_seconds": 0.604,
+      "peak_bytes": 68775936,
+      "observed_descendants": 5,
+      "all_observed_affinities": [
+        0,
+        1
+      ],
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    {
+      "stage": "installed-wheel-and-replay",
+      "status": "completed",
+      "settings": {
+        "memory.max": "4294967296",
+        "memory.swap.max": "0",
+        "cpu.max": "not delegated",
+        "cpuset.cpus.effective": "not delegated"
+      },
+      "elapsed_seconds": 17.896,
+      "peak_bytes": 318328832,
+      "observed_descendants": 21,
+      "all_observed_affinities": [
+        0,
+        1
+      ],
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    {
+      "stage": "browser-smoke",
+      "status": "failed",
+      "settings": {
+        "memory.max": "4294967296",
+        "memory.swap.max": "0",
+        "cpu.max": "not delegated",
+        "cpuset.cpus.effective": "not delegated"
+      },
+      "elapsed_seconds": 2.015,
+      "peak_bytes": 327737344,
+      "observed_descendants": 54,
+      "all_observed_affinities": [
+        0,
+        1
+      ],
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    },
+    {
+      "stage": "browser-real-completion-node",
+      "status": "completed",
+      "settings": {
+        "memory.max": "4294967296",
+        "memory.swap.max": "0",
+        "cpu.max": "not delegated",
+        "cpuset.cpus.effective": "not delegated"
+      },
+      "elapsed_seconds": 1.615,
+      "peak_bytes": 285569024,
+      "observed_descendants": 50,
+      "all_observed_affinities": [
+        0,
+        1
+      ],
+      "memory_events": "low 0\nhigh 0\nmax 0\noom 0\noom_kill 0\noom_group_kill 0\n"
+    }
+  ],
+  "changed_files": [
+    ".github/scripts/check_acceptance_junit.py",
+    "MANIFEST.in",
+    "README.md",
+    "circyto/cli/report.py",
+    "circyto/pipeline/explorer_assets.py",
+    "circyto/pipeline/qc_report.py",
+    "circyto/pipeline/single_cell_explorer.py",
+    "docs/cli_inventory.json",
+    "docs/examples/explorer/integration_20261120/installed-tests.xml",
+    "docs/examples/explorer/integration_20261120/package-tests.xml",
+    "docs/examples/explorer/integration_20261120/verification.json",
+    "docs/examples/explorer/kyse180/cells.txt",
+    "docs/examples/explorer/kyse180/explorer.json",
+    "docs/examples/explorer/kyse180/report.html",
+    "docs/examples/explorer/kyse180/validation.json",
+    "docs/examples/explorer/kyse180/verified_summary.tsv",
+    "docs/examples/explorer/synthetic/explorer.json",
+    "docs/examples/explorer/synthetic/report.html",
+    "docs/examples/explorer/validation/automated_checks.json",
+    "docs/examples/explorer/validation/candidate.png",
+    "docs/examples/explorer/validation/kyse180.png",
+    "docs/examples/explorer/validation/kyse180_browser.json",
+    "docs/examples/explorer/validation/missing_umap_browser.json",
+    "docs/examples/explorer/validation/narrow.png",
+    "docs/examples/explorer/validation/narrow_browser.json",
+    "docs/examples/explorer/validation/packaging.json",
+    "docs/examples/explorer/validation/preservation.json",
+    "docs/examples/explorer/validation/scaling.json",
+    "docs/examples/explorer/validation/synthetic.png",
+    "docs/examples/explorer/validation/synthetic_browser.json",
+    "docs/qc_reporting.md",
+    "docs/single_cell_explorer.md",
+    "docs/single_cell_explorer_integration.md",
+    "docs/single_cell_explorer_validation.md",
+    "examples/benchmark_explorer.py",
+    "examples/replay_kyse180_explorer.py",
+    "examples/single_cell_explorer_demo.py",
+    "tests/explorer_headless.py",
+    "tests/test_single_cell_explorer.py"
+  ],
+  "detailed_logs": "/tmp/circyto-explorer-integration-20261120",
+  "setup_notes": [
+    "Initial suite launch lacked Python on the child process search path; corrected launcher, full rerun passed.",
+    "Initial artifact guard matched the existing circyto/analysis software module; narrowed to top-level research paths.",
+    "Unrelated user-site Kaggle dependencies failed pip check; disabled user-site without changing installed packages.",
+    "Virtual-time narrow DOM capture ended with a pending probe; real CDP completion polling passed all remaining cases."
+  ]
+}

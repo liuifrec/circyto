@@ -209,13 +209,17 @@ policy. File/link guards protect sources and existing import bundles.
 
 ```bash
 PYTHONPATH=. python examples/single_cell_explorer_demo.py
-PYTHONPATH=. python examples/replay_kyse180_explorer.py
+PYTHONPATH=. python examples/replay_kyse180_explorer.py \
+  --source /path/to/accepted/results/primary \
+  --candidate-metadata /path/to/candidate_identity.tsv \
+  --out /path/to/new/explorer-replay
 PYTHONPATH=. python examples/benchmark_explorer.py
 CIRCYTO_SKIP_INTEGRATION=1 python -m pytest -q tests
 ```
 
-The KYSE180 script needs the preserved local data directory or `--source PATH`;
-it only reads existing objects, writes reports and verifies exact values and
+The KYSE180 script requires explicit `--source` and `--candidate-metadata`
+paths. Scientific input objects and curation tables are not bundled as software
+dependencies. It only reads existing objects, writes reports and verifies exact values and
 source hashes. It uses the saved 181-cell `X_umap_single_primary`, not the later
 personal-RNA H5AD whose historical temporary path is unavailable. Its selected
 genes use raw gene-associated single reads, explicitly not UMIs. The seven

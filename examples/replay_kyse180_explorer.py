@@ -31,12 +31,14 @@ def sha(path):
 
 def main():
     parser = argparse.ArgumentParser(__doc__)
-    parser.add_argument('--source', type=Path, default=Path('/home/liuyuchen/data/circyto_radiation_gse81812_20261106/results/primary'))
+    parser.add_argument('--source', type=Path, required=True,
+                        help='Existing accepted primary results directory; read-only.')
+    parser.add_argument('--candidate-metadata', type=Path, required=True,
+                        help='Existing seven-candidate identity TSV; read-only and not bundled with the software.')
     parser.add_argument('--out', type=Path, default=Path('docs/examples/explorer/kyse180'))
     args = parser.parse_args()
-    repo = Path(__file__).resolve().parents[1]
     cpath, rpath = args.source/'circ_annotated.h5ad', args.source/'rna_analysis.h5ad'
-    annotation = repo/'review/radiation_umap_curation_20261109/curation/candidate_identity.tsv'
+    annotation = args.candidate_metadata
     source_files = [cpath, rpath, annotation, args.source/'summary.json', args.source/'candidate_summary.tsv', args.source/'cell_qc.tsv']
     before = {str(p): sha(p) for p in source_files}
     r = ad.read_h5ad(rpath, backed='r')
