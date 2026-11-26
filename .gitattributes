@@ -7,3 +7,10 @@ examples/native_ciri3/result.txt.log -text
 examples/native_ciri3/annotated_simulation.txt -text
 # The original license ends with a blank line; retain the published bytes.
 examples/native_ciri3/LICENSE.upstream.txt -text whitespace=-blank-at-eof
+
+# New GitHub/Git source archives must not redistribute unresolved Java detectors.
+# This does not rewrite historical tags or remove the binaries from Git clones.
+*.jar export-ignore
+*.class export-ignore
+circyto/resources/tools/CIRI-full_v2.0/CIRI-full_manual.txt export-ignore
+tools/CIRI-full_v2.0/CIRI-full_manual.txt export-ignore
