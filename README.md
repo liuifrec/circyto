@@ -9,10 +9,12 @@
   <a href="https://github.com/liuifrec/circyto/blob/main/LICENSE">
   <img alt="License" src="https://img.shields.io/github/license/liuifrec/circyto?cacheSeconds=3600&v=2">
   </a>
-  <a href="https://pypi.org/project/circyto/"><img alt="Python" src="https://img.shields.io/badge/python-3.10%2B-blue"></a>
+  <img alt="Python 3.10+" src="https://img.shields.io/badge/python-3.10%2B-blue">
 </p>
 
 # circyto
+
+> **Manuscript status (20 November 2026):** “circyto for integrated single-cell circRNA analysis in radiation research” (Yu-Chen Liu, Kengo Yoshida and Yoichiro Kusunoki) was **submitted** as a Full Length Article to *Computer Methods and Programs in Biomedicine* (CMPB). It has **not** been accepted or published; no journal DOI is available. See the [submitted-study scope and evidence](docs/cmpb_submission.md).
 
 A CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
 
@@ -41,7 +43,7 @@ For a real single-end run, first index the exact reference with
 `bwa index ref/genome.fa`; the workflow does not build this index. The optional
 [RamDA environment recipe](environment.ramda-se.yml) supplies tested external
 runtimes. See the concise [reviewer guide](docs/reviewer_guide.md) for installation,
-commands, outputs, and the separate frozen manuscript reproduction route.
+commands, outputs, and the distinction between software demonstrations and the submitted study.
 
 Existing cell-resolved circRNA results can be imported without running a detector: see
 [`circyto import-circ`](docs/import_circ.md) for validated AnnData/MuData export,
@@ -49,7 +51,7 @@ processing-status metadata and an offline QC report.
 
 ## Import native CIRI3 results without rerunning CIRI3
 
-The feature branch accepts native **13-column single-sample** CIRI3 result files.
+The current `main` source supports native **13-column single-sample** CIRI3 result files.
 With the installed wheel on PATH, the included official output example runs without
 Java, an aligner or raw sequencing data:
 
@@ -71,12 +73,12 @@ and [acceptance evidence](docs/native_ciri3_validation.md), including version,
 pooled-output and coordinate limitations. The example directory is distributed
 in the source archive and can be copied outside the checkout.
 
-## Offline QC report quick start (feature branch)
+## Offline QC report quick start
 
-The `feature/qc-report-usability` branch adds offline HTML reporting. This feature
-is **not part of the v0.10.0 manuscript software baseline**; the package version
-has deliberately not changed. From a checkout of this feature branch, this
-example is executable without reference downloads or external detectors:
+Offline HTML reporting is present in the current `main` source tree after the
+November 20 integration merges, but it should not be conflated with the
+historical manuscript software snapshots. From a current checkout this example
+runs with synthetic documentation data, without reference downloads or external detectors:
 
 ```bash
 python3 -m venv .venv
@@ -150,7 +152,7 @@ not normalize it. Open `explorer_report/report.html`. See the
 
 ## Status
 
-`circyto` `v0.10.0` is the current experimental milestone.
+The repository's package metadata reports **`0.10.0`** as an experimental **source-tree milestone**. The latest published GitHub release is **`v0.8.3`**; current `main` includes later commits and should be installed from source with a recorded commit hash. There is no verified PyPI distribution for `circyto` as of 26 November 2026. Do not treat the source version as a new tagged release.
 
 - The validated pooled SMART-Seq3 end-to-end path is FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
 - The validated single-end full-length RamDA/scRR path is FASTQ -> BWA-MEM -> CIRI3 direct SAM -> matrix -> `h5ad`.
@@ -165,7 +167,7 @@ not normalize it. Open `explorer_report/report.html`. See the
 
 A concise benchmark-oriented summary of validated and exploratory workflow tiers is available in [`docs/validated_workflows_summary.md`](docs/validated_workflows_summary.md).
 
-Manuscript-facing reproducibility plans and reusable summary scripts are organized under [`manuscript/`](manuscript/) and [`scripts/manuscript/`](scripts/manuscript/). Command and schema references are available in [`docs/manuscript_reproducibility.md`](docs/manuscript_reproducibility.md), [`docs/modality_schema.md`](docs/modality_schema.md), [`docs/mudata_schema.md`](docs/mudata_schema.md), and [`docs/host_gene_provenance.md`](docs/host_gene_provenance.md).
+The [CMPB submission record](docs/cmpb_submission.md) describes what the November 2026 paper actually evaluates. Earlier [manuscript workspace](manuscript/) and [manuscript reproducibility plans](docs/manuscript_reproducibility.md) cover a broader, historical genome-state/multimodal proposal and should not be cited as the submitted CMPB study's methods. General data contracts remain documented in [modality schema](docs/modality_schema.md), [MuData schema](docs/mudata_schema.md), and [host-gene provenance](docs/host_gene_provenance.md).
 
 ### Current Capability Table
 
@@ -556,7 +558,7 @@ Validated real-data result for E-MTAB-8735 diySpike `all192`:
 - recurrent known circRNAs: `51`
 - recurrent novel circRNAs: `26`
 
-This is still an experimental release, but the SMART-Seq3 + STAR + CIRI3 + annotation workflow has been validated on real data rather than only synthetic smoke assets.
+This **historical software workflow benchmark** documents a validated run, not the submitted CMPB analysis. In particular, its 2,503 circRNA features must not be substituted for the manuscript's **2,991 Smart-seq3 candidate BSJs**, which come from the manuscript-specific analysis described in the [CMPB submission record](docs/cmpb_submission.md).
 
 ## Testing
 
@@ -586,15 +588,24 @@ Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-
 
 ## Citation
 
-A methods manuscript is under preparation. In the meantime, please cite this repository:
+The methods manuscript, **“circyto for integrated single-cell circRNA analysis in radiation research,”**
+by Yu-Chen Liu, Kengo Yoshida and Yoichiro Kusunoki was **submitted** to
+*Computer Methods and Programs in Biomedicine* on **20 November 2026**. It is
+**not yet an accepted or published article** and does not have a journal DOI.
+Do not present a submission as a published citation.
 
-> Liu, Y.-C. et al. "Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto." GitHub repository: https://github.com/liuifrec/circyto
+For now, cite the software as **Yu-Chen Liu, circyto, GitHub repository**
+([`CITATION.cff`](CITATION.cff)), recording the exact version **and Git commit**
+used. Cite the upstream circRNA caller(s) separately. When the manuscript is
+published, a verified bibliographic citation can be added.
 
-## Pre-release review status
+## Distribution and review status
 
-See the [integration review and release-readiness matrix](docs/pre_release_readiness.md)
-and [external per-cell CIRI3 + RNA acceptance checklist](docs/external_ciri3_acceptance.md).
-These features are ready for draft code review, not cleared for public release.
-Native demonstration compatibility does not establish biological single-cell
-acceptance. Detector distribution review remains open. RERF internal review
-and the frozen manuscript baseline remain independent.
+The repository is publicly accessible and contains merged code for import and
+offline reporting, but an up-to-date tagged distribution is **not** implied.
+External-detector redistribution/notice checks and independent biological
+acceptance tests remain distinct from source availability. See the
+[release-readiness matrix](docs/pre_release_readiness.md) and
+[external CIRI3 acceptance checklist](docs/external_ciri3_acceptance.md).
+The current software feature set must not be equated with the frozen
+analysis provenance for the submitted manuscript.

@@ -1,6 +1,6 @@
 # Current Project Status
 
-This page is the short operational snapshot for `circyto` as of the current manuscript-preparation phase.
+This page records the repository's broader operational capabilities; some entries are historical and extend beyond the **submitted** CMPB article. For the paper submitted on **20 November 2026**, see [CMPB manuscript scope and evidence](cmpb_submission.md). Do not equate these features with validation in that paper.
 
 ## Validated
 
@@ -42,7 +42,7 @@ This page is the short operational snapshot for `circyto` as of the current manu
 - `Raw DNA FASTQ reprocessing`
   - not implemented inside circyto; current CNV and RT support imports processed GEO-style summaries
 
-## Current manuscript-ready layers
+## Broader software capability layers (not all evaluated in CMPB)
 
 - `Layer 1`
   - core circRNA detection workflows
