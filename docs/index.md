@@ -2,6 +2,8 @@
 
 Welcome to the `circyto` documentation.
 
+**Manuscript status:** “circyto for integrated single-cell circRNA analysis in radiation research” was submitted to *Computer Methods and Programs in Biomedicine* on **20 November 2026**. This is **not** an accepted or published paper. See the [CMPB submission scope and evidence](cmpb_submission.md) for manuscript-specific counts and boundaries. The current repository also includes experimental work outside that paper.
+
 `circyto` is a CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data.
 
 ## Current Capabilities
@@ -22,6 +24,9 @@ Welcome to the `circyto` documentation.
 | HAP1 full | pending full FASTQ download and full workflow run |
 
 ## Sections
+
+- [CMPB submitted manuscript: scope and provenance](cmpb_submission.md)
+- [Reviewer quick guide](reviewer_guide.md)
 
 - [Getting started](getting_started.md)
 - [Validated workflows summary](validated_workflows_summary.md)
