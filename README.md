@@ -152,7 +152,7 @@ not normalize it. Open `explorer_report/report.html`. See the
 
 ## Status
 
-The repository's package metadata reports **`0.10.0`** as an experimental **source-tree milestone**. The latest published GitHub release is **`v0.8.3`**; current `main` includes later commits and should be installed from source with a recorded commit hash. There is no verified PyPI distribution for `circyto` as of 26 November 2026. Do not treat the source version as a new tagged release.
+**Release preparation:** the source-tree package version is **`0.11.0`**, distinct from the historical annotated `v0.10.0` tag and the frozen manuscript analysis. A version number in source is not proof that PyPI or a GitHub Release has been published. Check [GitHub Releases](https://github.com/liuifrec/circyto/releases) and [the PyPI project](https://pypi.org/project/circyto/) for actual release availability. New releases exclude third-party Java JARs; callers still require external detector installation.
 
 - The validated pooled SMART-Seq3 end-to-end path is FASTQs -> demux -> manifest selection -> STAR alignment -> BWA rescue for CIRI3 STAR tuple mode -> CIRI3 detection -> matrix collection -> QC -> `h5ad` export -> circRNA annotation.
 - The validated single-end full-length RamDA/scRR path is FASTQ -> BWA-MEM -> CIRI3 direct SAM -> matrix -> `h5ad`.
@@ -188,7 +188,17 @@ The [CMPB submission record](docs/cmpb_submission.md) describes what the Novembe
 
 ## Installation
 
-### Source install
+### Install the released package (once available on PyPI)
+
+```bash
+python -m pip install "circyto[mudata]==0.11.0"
+circyto --version
+circyto doctor
+```
+
+**Not yet published:** this command becomes usable only after the owner completes the tagged release and its separately approved PyPI Trusted Publisher upload. A tag or a merged PR alone does not publish to PyPI. `circyto doctor` also reports optional external tools such as Java/CIRI3; they are not installed by pip.
+
+### Source install (available now)
 
 ```bash
 git clone https://github.com/liuifrec/circyto
@@ -256,7 +266,7 @@ circyto detectors
 
 What these checks mean:
 
-- `circyto --version` should report `0.10.0`.
+- `circyto --version` should match the version of the installed source or distribution (currently `0.11.0` on this release-preparation branch).
 - `circyto doctor` checks Python/runtime setup and external dependencies.
 - `circyto detectors` reports detector readiness and required external tools.
 
@@ -583,8 +593,9 @@ Additional references:
 - **Alignment-first execution details**: [docs/alignment_first_execution.md](docs/alignment_first_execution.md)
 - **CLI contract notes**: [docs/cli_policy.md](docs/cli_policy.md)
 - **Roadmap and milestone status**: [ROADMAP.md](ROADMAP.md)
+- **Version/tag/PyPI release instructions**: [docs/release_process.md](docs/release_process.md)
 
-Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-only shell-style examples are not part of the recommended `v0.10.0` public path and are intentionally omitted from this README.
+Legacy commands such as `circyto collect`, `circyto convert`, and old CIRI-full-only shell-style examples are not part of the recommended current experimental public path and are intentionally omitted from this README.
 
 ## Citation
 

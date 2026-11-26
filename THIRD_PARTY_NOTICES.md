@@ -4,6 +4,22 @@ Packaging branch audit: 2026-10-13, based on PR #19 head
 `f841c296db8a6fda870eebc5b553eab10095fa0d`. No package version change.
 The MIT license covers circyto-authored code, not third-party assets.
 
+## New source-archive boundary for v0.11.0 preparation (26 November 2026)
+
+The next software release adds Git `.gitattributes` `export-ignore` rules
+for every Java `.jar`/`.class` and both tracked copies of the unresolved
+`CIRI-full_manual.txt`. This is **additional to**, not a substitute for,
+the wheel/sdist exclusions and build guard described below. The manual
+release workflow must confirm that a fresh `git archive` and both Python
+artifact formats contain none of these files before any upload. The Java
+detectors remain external dependencies.
+
+**Historical tags and Git clones are unchanged:** older source archives
+and tracked historical blobs still exist. The archive rules do not establish
+retroactive redistribution permission or a complete legal assessment of
+all retained third-party code. Confirm the applicable institutional/release
+approval before publishing the new artifacts.
+
 | Asset | Current wheel/sdist policy | Confirmed evidence / unresolved questions |
 | --- | --- | --- |
 | CIRI3 JARs, embedded HTSJDK classes | **Excluded**; external user installation | Official pinned CIRI3 tree supplies GPLv2 and Java source. Exact corresponding build/dependency notice route is not certified. |

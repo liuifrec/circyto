@@ -1,0 +1,167 @@
+name: Release validation and manual PyPI publication
+
+# No automatic upload on a tag push. The owner must explicitly run this
+# workflow with an existing, immutable vX.Y.Z tag and approve the pypi environment.
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Existing release tag to validate and publish (for example v0.11.0)'
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: circyto-pypi-${{ inputs.tag }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    name: Validate tagged source (Python ${{ matrix.python }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.10', '3.12']
+    env:
+      CIRCYTO_SKIP_INTEGRATION: '1'
+      _TYPER_FORCE_DISABLE_TERMINAL: '1'
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify tag format, identity and main ancestry
+        shell: bash
+        run: |
+          set -euo pipefail
+          python - <<'PY'
+          import os, re
+          tag = os.environ['RELEASE_TAG']
+          if not re.fullmatch(r'v[0-9]+\.[0-9]+\.[0-9]+', tag):
+              raise SystemExit('Refusing non-semver release tag: ' + tag)
+          PY
+          git show-ref --verify --quiet "refs/tags/${RELEASE_TAG}"
+          git fetch --quiet origin main
+          git merge-base --is-ancestor HEAD origin/main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - name: Install and check release version
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install -e '.[dev]'
+          python -m pip check
+          python - <<'PY'
+          import os
+          from importlib.metadata import version
+          from circyto import __version__
+          expected = os.environ['RELEASE_TAG'].removeprefix('v')
+          assert version('circyto') == __version__ == expected, (version('circyto'), __version__, expected)
+          PY
+          test "$(circyto --version)" = "${RELEASE_TAG#v}"
+      - name: Run complete detector-independent test suite
+        run: python -m pytest -q . --junitxml=test-results.xml
+      - name: Verify essential tests actually executed
+        if: always()
+        run: python .github/scripts/check_acceptance_junit.py test-results.xml
+
+  build:
+    name: Check GitHub archive and build installable artifacts
+    needs: test
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      RELEASE_TAG: ${{ inputs.tag }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.tag }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Exclude unresolved detector assets from Git source archives
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git archive --format=tar HEAD | tar -tf - | grep -E '\.(jar|class)$|CIRI-full_manual\.txt$'; then
+            echo 'Git source archive contains forbidden third-party assets' >&2
+            exit 1
+          fi
+      - name: Build and check wheel/sdist
+        run: |
+          python -m pip install --upgrade pip build twine
+          python -m build
+          python -m twine check dist/*
+          python - <<'PY'
+          from pathlib import Path
+          from zipfile import ZipFile
+          from tarfile import open as taropen
+          dist = Path('dist')
+          wheels = list(dist.glob('circyto-*.whl'))
+          sdists = list(dist.glob('circyto-*.tar.gz'))
+          assert len(wheels) == len(sdists) == 1, (wheels, sdists)
+          with ZipFile(wheels[0]) as archive:
+              wheel_members = archive.namelist()
+              assert archive.testzip() is None
+          with taropen(sdists[0], 'r:gz') as archive:
+              sdist_members = archive.getnames()
+          for kind, members in [('wheel', wheel_members), ('sdist', sdist_members)]:
+              forbidden = [name for name in members if Path(name).suffix.lower() in {'.jar', '.class'} or name.endswith('CIRI-full_manual.txt')]
+              assert not forbidden, (kind, forbidden)
+          PY
+      - name: Clean pip installation outside the checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          python -m venv "$RUNNER_TEMP/circyto-release-env"
+          WHEEL="$(find "$GITHUB_WORKSPACE/dist" -maxdepth 1 -name 'circyto-*.whl' -print -quit)"
+          test -n "$WHEEL"
+          "$RUNNER_TEMP/circyto-release-env/bin/python" -m pip install "${WHEEL}[mudata]"
+          "$RUNNER_TEMP/circyto-release-env/bin/python" -m pip check
+          (
+            cd "$RUNNER_TEMP"
+            "$RUNNER_TEMP/circyto-release-env/bin/python" - <<'PY'
+          import os
+          from importlib.metadata import version
+          import circyto
+          expected = os.environ['RELEASE_TAG'].removeprefix('v')
+          assert version('circyto') == circyto.__version__ == expected
+          assert 'site-packages' in circyto.__file__, circyto.__file__
+          PY
+            test "$("$RUNNER_TEMP/circyto-release-env/bin/circyto" --version)" = "${RELEASE_TAG#v}"
+            "$RUNNER_TEMP/circyto-release-env/bin/circyto" doctor
+            "$RUNNER_TEMP/circyto-release-env/bin/circyto" import-circ --help
+            "$RUNNER_TEMP/circyto-release-env/bin/circyto" report --help
+          )
+      - name: Retain reviewed distribution files
+        uses: actions/upload-artifact@v4
+        with:
+          name: circyto-verified-distributions
+          path: dist/
+          if-no-files-found: error
+
+  publish:
+    name: Publish to PyPI using owner-approved Trusted Publishing
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: pypi
+      url: https://pypi.org/project/circyto/
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: circyto-verified-distributions
+          path: dist/
+      - name: Publish verified distributions to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1

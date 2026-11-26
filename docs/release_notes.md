@@ -1,6 +1,10 @@
 # Release Notes
 
-## Unreleased
+## Release candidate v0.11.0 (not published)
+
+The repository source has advanced beyond the annotated historical `v0.10.0` tag and current public release `v0.8.3`. This candidate retains the merged native CIRI3 import, offline quality report, single-cell explorer, and external-detector distribution hardening. The registered version is aligned across `pyproject.toml`, `circyto.__version__`, and `CITATION.cff`. New GitHub source archives exclude unresolved Java binaries/manual files; wheel and sdist continue to omit them. The PyPI upload is a **separate manual step**, guarded by the new release workflow and PyPI Trusted Publishing registration. Do not infer new biological validation or manuscript acceptance from the release.
+
+## Previously unreleased capabilities
 
 ### Full-Length RNA SComatic Adapter
 

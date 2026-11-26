@@ -9,6 +9,7 @@ from pathlib import Path
 import pytest
 from typer.testing import CliRunner
 
+from circyto import __version__
 from circyto.cli.circyto import app
 from circyto.pipeline.qc_report import collect_report_metrics, generate_report
 
@@ -442,4 +443,6 @@ def test_documentation_demo_matches_matrix_and_checked_in_metrics(tmp_path):
     assert np.sum(matrix, axis=1).tolist() == [row["total_support"] for row in payload["per_candidate"]]
     assert np.count_nonzero(matrix, axis=0).tolist() == [row["candidate_count"] for row in payload["per_cell"]]
     assert np.count_nonzero(matrix, axis=1).tolist() == [row["n_cells_detected"] for row in payload["per_candidate"]]
+    assert payload["reporter_version"] == __version__
+    assert payload["reporter_feature"] == "offline QC reporting (outside the submitted CMPB analysis scope)"
     assert payload == json.loads((repo / "docs/examples/qc_report/qc/metrics.json").read_text())

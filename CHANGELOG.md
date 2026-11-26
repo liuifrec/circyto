@@ -7,6 +7,17 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and 
 ---
 ## [Unreleased]
 
+## [0.11.0] - Prepared 2026-11-26 (not published yet)
+
+### Release engineering
+
+- Bump source metadata, CLI runtime version, and software citation to 0.11.0; the historical v0.10.0 tag remains unchanged.
+- Add explicit, manually approved PyPI Trusted Publishing workflow with pre-publication tests and distribution checks.
+- Exclude unresolved third-party Java JAR/class files and the CIRI-full manual from new GitHub/Git source archives via `.gitattributes`; wheel and sdist exclusions remain in place.
+- Validate source/archive version alignment and independent clean-wheel installation before publication.
+- Document release steps separately from the submitted CMPB manuscript.
+
+
 ### Added
 
 - Add manuscript-facing reproducibility documentation, schema references, example command files, and lightweight manuscript summary scripts for MuData inventory, HAP1 RT/circRNA analysis, IMR90 CNV/circRNA analysis, cross-dataset host-gene overlap, and known/novel circRNA summaries.

@@ -1,6 +1,8 @@
 name: CI
 
 on:
+  push:
+    branches: [ main ]
   pull_request:
     branches: [ main ]
   workflow_dispatch:
@@ -46,6 +48,14 @@ jobs:
         if: always()
         run: python .github/scripts/check_acceptance_junit.py test-results.xml
 
+      - name: Verify generated source archives omit unresolved Java assets
+        shell: bash
+        run: |
+          set -euo pipefail
+          if git archive --format=tar HEAD | tar -tf - | grep -E '\.(jar|class)$|CIRI-full_manual\.txt$'; then
+            echo 'Forbidden third-party Java assets found in generated source archive' >&2
+            exit 1
+          fi
       - name: Build and exercise installed wheel outside checkout
         run: |
           python -m build
