@@ -6,9 +6,10 @@ see the [single-cell explorer guide](single_cell_explorer.md). The default
 `--explorer` to opt in; `--output-dir` can keep the new report separate from
 existing QC and import bundles.
 
-This is the unreleased `feature/qc-report-usability` feature, based on
-`main@44697355bcab1c525ca7ef9b130e2ad0094d9e1b` (v0.10.0). It does not change
-the manuscript branch or its scientific software baseline. Established
+Offline QC reporting was integrated into the repository on 20 November 2026 and
+is included in the v0.11.0 release candidate. It was introduced after the
+historical v0.10.0 manuscript software snapshot. The CMPB article submitted on
+20 November 2026 does not claim this synthetic reporting demo as biological evidence. Established
 high-level workflows retain their experimental CLI status. The legacy top-level
 `run` command is preserved; a new manifest-based `run` interface is deferred
 because overloading its existing required arguments would create a compatibility
@@ -261,9 +262,9 @@ use its default Chrome sandbox. Font rendering may vary by OS/browser version.
 
 ## Submission positioning
 
-The feature can be described as an optional usability extension once its own
-code and artifacts are reviewed. With the manuscript software baseline frozen
-at v0.10.0, the recommended scope is a **post-review usability enhancement**.
+Offline QC reporting is a usability extension in the v0.11.0 release candidate,
+separate from the scientific evaluation in the CMPB submission. Releasing this
+capability must not retroactively change the historical manuscript evidence.
 Do not attribute this report to the existing manuscript baseline, use synthetic
 demonstration counts as scientific evidence, or replace any scientific figures.
 See [validation results](qc_reporting_validation.md) for the tested scope.
