@@ -9,7 +9,7 @@ title: "circyto: single-cell circular RNA evidence integration and multimodal ex
 authors:
   - family-names: Liu
     given-names: Yu-Chen
-version: 0.10.0
+version: 0.11.0
 repository-code: "https://github.com/liuifrec/circyto"
 url: "https://github.com/liuifrec/circyto"
 license: MIT
