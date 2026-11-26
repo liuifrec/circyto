@@ -4,11 +4,12 @@
 established circRNA detectors: manifests and demultiplexing, alignment reuse,
 QC, host-gene provenance, sparse matrices, AnnData and optional RNA/circ MuData.
 See the [documented software comparison](circrna_workflow_comparison.md).
-The HTML reporter is an unreleased feature, outside the frozen manuscript
-baseline `44697355bcab1c525ca7ef9b130e2ad0094d9e1b`.
+The offline HTML reporter is now present on `main` following the November 20
+merges; it should not be treated as evidence from the submitted CMPB study.
+For the paper's scope and results, see [the CMPB submission record](cmpb_submission.md).
 
-**Install and try it.** Python 3.10+ and the feature wheel suffice for reporting.
-Given its matching wheel and source archive in the current directory:
+**Install and try it.** Python 3.10+ and a wheel built from the chosen commit suffice for reporting.
+Given a matching wheel and source archive **built from the same source commit** in the current directory:
 
 ```bash
 python3 -m venv reviewer-env
@@ -71,11 +72,11 @@ Regenerate with `circyto report --workdir results/ramda`. Support is not a UMI
 count; failed/unprocessed cells are not biological negatives; recorded
 host-gene coverage is not annotation accuracy or circRNA validation.
 
-**Reproduce the manuscript.** Use a separate full clone pinned to manuscript
-commit `c29831c3f6e7a31b708cce493c0be8036176077a` and follow its
-[reproduction instructions](https://github.com/liuifrec/circyto/blob/c29831c3f6e7a31b708cce493c0be8036176077a/manuscript/reproduce.md).
-They specify the Python stack, two checksum-identified historical H5MU objects,
-their Git archive recovery, and the offline regeneration command. These objects
-are processed evidence, not original completed workflow directories. A dedicated
-processed-data deposit remains pending; this report demo does not reproduce
-manuscript biology. The feature must not delay RERF internal review.
+**Submitted CMPB study:** The [CMPB submission record](cmpb_submission.md)
+summarizes the 437-cell evaluation and its analysis boundaries. The historical
+commit `c29831c3f6e7a31b708cce493c0be8036176077a` and its
+[reproduction instructions](https://github.com/liuifrec/circyto/blob/c29831c3f6e7a31b708cce493c0be8036176077a/manuscript/reproduce.md)
+refer to an earlier manuscript-generation snapshot, not a verified exact
+reproduction recipe for the November 20 CMPB submission. Do not claim that
+running the synthetic report demo regenerates the submitted figures.
+A durable processed-data deposit remains to be verified.
