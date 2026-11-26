@@ -23,7 +23,7 @@ from circyto import __version__
 
 
 SCHEMA_VERSION = "circyto.qc_report.v1"
-REPORT_FEATURE = "qc-report-usability (unreleased; outside the v0.10.0 manuscript baseline)"
+REPORT_FEATURE = "offline QC reporting (outside the submitted CMPB analysis scope)"
 SUCCESS = {"success", "empty", "skipped_existing", "aligned", "reused_input", "reused_cached", "completed"}
 CELL_COMPLETION = {
     "alignment": {"aligned", "reused_input", "reused_cached"},
