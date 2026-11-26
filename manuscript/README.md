@@ -1,10 +1,12 @@
 # circyto Manuscript Workspace
 
-Working title:
+> **Historical planning workspace, not the submitted paper.** The earlier working title below reflects a broader genome-state concept. The actual manuscript, **“circyto for integrated single-cell circRNA analysis in radiation research,”** was submitted to CMPB on **20 November 2026**. See the [submitted study record](../docs/cmpb_submission.md) for the final scope.
+
+Earlier working title:
 
 > Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto
 
-This directory organizes manuscript-facing plans and reproducibility notes for `circyto` `v0.10.0`.
+This directory preserves historical manuscript-facing plans and reproducibility notes for `circyto` `v0.10.0`. Its proposed figures, modalities, and datasets are not the approved November 2026 paper's definitive methods.
 
 `circyto` should be described as a CLI/scverse-compatible framework for single-cell circular RNA detection, annotation, and multimodal integration from full-length single-cell RNA-seq and full-length single-cell multi-omic data. The framework connects RNA, circRNA, replication timing, CNV, and exploratory RNA-derived candidate variant signal layers in AnnData and MuData objects.
 
