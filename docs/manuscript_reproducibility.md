@@ -1,6 +1,8 @@
 # Manuscript Reproducibility
 
-This page documents the expected inputs, processed outputs, and command shapes for the `circyto` manuscript:
+**Historical planning document:** This page describes the earlier broad genome-state/multimodal proposal, **not** the methods or figures of the manuscript submitted to CMPB on 20 November 2026. For the actual submitted paper, see [CMPB submission scope and evidence](cmpb_submission.md). Do not treat this page's HAP1 and DNA-modality procedures as part of the submitted evaluation.
+
+Earlier working title:
 
 > Genome-state-associated circular RNA programs revealed by multimodal full-length single-cell sequencing with circyto
 
